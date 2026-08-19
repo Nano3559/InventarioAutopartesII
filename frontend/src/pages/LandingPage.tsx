@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../stores/authStore";
+
 import {
   ShoppingCart,
   Package,
@@ -17,8 +17,6 @@ import {
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
-
   const handleLogin = () => {
     navigate("/login");
   };
