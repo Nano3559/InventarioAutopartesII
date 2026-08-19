@@ -1,0 +1,242 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TIENDA
+  INVENTARIO
+}
+
+enum LocationType {
+  ALMACEN
+  TIENDA
+}
+
+enum SaleType {
+  NORMAL
+  MAYOR
+}
+
+enum PaymentMethod {
+  EFECTIVO
+  QR
+  TRANSFERENCIA
+  CREDITO
+}
+
+enum RequestStatus {
+  PENDIENTE
+  EN_PREPARACION
+  ENVIADO
+  RECIBIDO
+  CANCELADO
+}
+
+model RoleModel {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  permissions String[]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  name       String
+  email      String    @unique
+  password   String
+  roleId     Int
+  role       RoleModel @relation(fields: [roleId], references: [id])
+  locationId Int?
+  location   Location? @relation(fields: [locationId], references: [id])
+  sales      Sale[]
+  movements  Movement[]
+  requests   ProductRequest[] @relation("RequestedBy")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Location {
+  id        Int          @id @default(autoincrement())
+  name      String
+  type      LocationType
+  address   String?
+  users     User[]
+  inventories Inventory[]
+  salesFrom Sale[]       @relation("SaleFromLocation")
+  movementsFrom Movement[] @relation("MovementFrom")
+  movementsTo   Movement[] @relation("MovementTo")
+  requests  ProductRequest[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id            Int       @id @default(autoincrement())
+  itemCode      String    @unique
+  manufacturer  String
+  name          String
+  brand         String
+  model         String
+  year          String
+  detail        String?
+  oemCode       String?
+  factoryCode   String?
+  image         String?
+  price1        Decimal
+  price2        Decimal
+  wholesalePrice Decimal?
+  cost          Decimal?
+  categoryId    Int?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  inventories   Inventory[]
+  saleItems     SaleItem[]
+  movements     Movement[]
+  requests      ProductRequest[]
+  costs         Cost[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Inventory {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id])
+  stock      Int      @default(0)
+  minStock   Int      @default(1)
+
+  @@unique([productId, locationId])
+}
+
+model Customer {
+  id       Int    @id @default(autoincrement())
+  name     String
+  nit      String?
+  phone    String?
+  sales    Sale[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Sale {
+  id           Int         @id @default(autoincrement())
+  saleDate     DateTime    @default(now())
+  total        Decimal
+  type         SaleType
+  userId       Int
+  user         User        @relation(fields: [userId], references: [id])
+  locationId   Int
+  location     Location    @relation("SaleFromLocation", fields: [locationId], references: [id])
+  customerId   Int?
+  customer     Customer?   @relation(fields: [customerId], references: [id])
+  items        SaleItem[]
+  payments     Payment[]
+  returns      Return[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model SaleItem {
+  id        Int     @id @default(autoincrement())
+  saleId    Int
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  unitPrice Decimal
+  subtotal  Decimal
+}
+
+model Payment {
+  id       Int           @id @default(autoincrement())
+  saleId   Int
+  sale     Sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  method   PaymentMethod
+  amount   Decimal
+  date     DateTime      @default(now())
+}
+
+model Return {
+  id        Int      @id @default(autoincrement())
+  saleId    Int
+  sale      Sale     @relation(fields: [saleId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  reason    String
+  quantity  Int
+  amount    Decimal
+  method    PaymentMethod
+  date      DateTime @default(now())
+}
+
+model Movement {
+  id             Int      @id @default(autoincrement())
+  productId      Int
+  product        Product  @relation(fields: [productId], references: [id])
+  fromLocationId Int
+  fromLocation   Location @relation("MovementFrom", fields: [fromLocationId], references: [id])
+  toLocationId   Int
+  toLocation     Location @relation("MovementTo", fields: [toLocationId], references: [id])
+  quantity       Int
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+  date           DateTime @default(now())
+  observation    String?
+}
+
+model ProductRequest {
+  id           Int           @id @default(autoincrement())
+  productId    Int
+  product      Product       @relation(fields: [productId], references: [id])
+  quantity     Int
+  requestedById Int
+  requestedBy  User          @relation("RequestedBy", fields: [requestedById], references: [id])
+  locationId   Int
+  location     Location      @relation(fields: [locationId], references: [id])
+  status       RequestStatus @default(PENDIENTE)
+  date         DateTime      @default(now())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Supplier {
+  id       Int    @id @default(autoincrement())
+  name     String
+  nit      String?
+  phone    String?
+  costs    Cost[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cost {
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id])
+  supplierId   Int
+  supplier     Supplier @relation(fields: [supplierId], references: [id])
+  invoiceUrl   String?
+  exchangeRate Decimal?
+  costPrice    Decimal
+  percentage   Decimal?
+  date         DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
