@@ -1,6 +1,8 @@
-FROM node:20-alpine
+FROM node:20
 
 WORKDIR /app
+
+ARG CACHE_BUST=2026082001
 
 COPY package*.json ./
 RUN npm install
