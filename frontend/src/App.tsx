@@ -5,6 +5,7 @@ import MainLayout from "./components/layout/MainLayout";
 import PublicLayout from "./components/public/PublicLayout";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
+import ContactPage from "./pages/ContactPage";
 import PublicProductsPage from "./pages/PublicProductsPage";
 import PublicProductDetailPage from "./pages/PublicProductDetailPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -42,6 +43,7 @@ export default function App() {
         {/* Public routes with navbar + footer */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/contacto" element={<ContactPage />} />
           <Route path="/productos" element={<PublicProductsPage />} />
           <Route path="/productos/:id" element={<PublicProductDetailPage />} />
         </Route>
