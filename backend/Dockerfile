@@ -2,8 +2,6 @@ FROM node:20
 
 WORKDIR /app
 
-ARG CACHE_BUST=20260820145
-
 COPY package*.json ./
 RUN npm install
 
@@ -11,6 +9,7 @@ COPY prisma ./prisma
 RUN npx prisma generate
 
 COPY . .
+RUN rm -rf dist
 RUN npm run build
 
 EXPOSE 3000
