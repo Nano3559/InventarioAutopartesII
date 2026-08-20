@@ -17,6 +17,7 @@ import requestsRoutes from "./modules/requests/requests.routes";
 import costsRoutes from "./modules/costs/costs.routes";
 import pricesRoutes from "./modules/prices/prices.routes";
 import reportsRoutes from "./modules/reports/reports.routes";
+import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use("/api/requests", requestsRoutes);
 app.use("/api/costs", costsRoutes);
 app.use("/api/prices", pricesRoutes);
 app.use("/api/reports", reportsRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use(errorHandler);
 
