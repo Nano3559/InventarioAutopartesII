@@ -48,9 +48,7 @@ app.use("/api/costs", costsRoutes);
 app.use("/api/prices", pricesRoutes);
 app.use("/api/reports", reportsRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-console.log("[DEBUG] Registering public routes...");
 app.use("/api/public", publicRoutes);
-console.log("[DEBUG] Public routes registered successfully");
 
 app.use(errorHandler);
 
