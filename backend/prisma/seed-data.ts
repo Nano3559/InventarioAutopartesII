@@ -1,9 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
-
-async function main() {
+export async function seedData(prisma: PrismaClient) {
   console.log("=== Sembrando datos completos para dashboard ===");
 
   const admin = await prisma.user.findUnique({ where: { email: "admin@inventario.com" } });
@@ -13,7 +10,7 @@ async function main() {
 
   if (!admin || !tienda1 || !tienda2 || !tienda3) {
     console.error("Faltan usuarios. Ejecuta el seed principal primero.");
-    process.exit(1);
+    return;
   }
 
   const locs = await prisma.location.findMany();
@@ -266,20 +263,47 @@ async function main() {
   const createdCustomers = await prisma.customer.findMany();
   console.log(`${createdCustomers.length} clientes creados`);
 
+  console.log("Creando importadoras...");
+  const importersData = [
+    { name: "Importadora El Sol", phone: "+591 4 4561001", email: "contacto@elsol.com", city: "Cochabamba", description: "Especialistas en repuestos Toyota y Lexus" },
+    { name: "Repuestos del Norte", phone: "+591 4 4561002", email: "ventas@repuestosnorte.com", city: "Cochabamba", description: "Repuestos Nissan y Mitsubishi de origen asiático" },
+    { name: "AutoPartes Premium", phone: "+591 4 4561003", email: "info@autopartespremium.com", city: "Santa Cruz", description: "Piezas premium para vehículos japonenses y europeos" },
+    { name: "Importadora Honda Bolivia", phone: "+591 4 4561004", email: "ventas@hondabolivia.com", city: "La Paz", description: "Representante oficial de repuestos Honda" },
+    { name: "Mazda Parts Bolivia", phone: "+591 4 4561005", email: "contacto@madaparts.bo", city: "Cochabamba", description: "Repuestos originales y alternativos Mazda" },
+    { name: "Repuestos Dongfeng", phone: "+591 4 4561006", email: "ventas@dongfeng.bo", city: "Santa Cruz", description: "Repuestos para vehículos chinos: Changan, BYD, Dongfeng" },
+    { name: "Kia Hyundai Service", phone: "+591 4 4561007", email: "servicio@kiahyundai.bo", city: "La Paz", description: "Repuestos originales Kia e Hyundai coreanos" },
+  ];
+  const createdImporters = [];
+  for (const imp of importersData) {
+    const importer = await prisma.importer.create({ data: imp });
+    createdImporters.push(importer);
+  }
+  console.log(`${createdImporters.length} importadoras creadas`);
+
+  console.log("Asociando productos con importadoras y calidades...");
+  const qualities = ["Taiwanesa", "Tailandesa", "China", "Japonesa", "Coreana", "Estadounidense"];
+  const productImporterData: Array<{ productId: number; importerId: number }> = [];
+
+  for (const product of createdProducts) {
+    const qualityIdx = Math.floor(Math.random() * qualities.length);
+    await prisma.product.update({
+      where: { id: product.id },
+      data: { quality: qualities[qualityIdx] },
+    });
+
+    const numImporters = Math.floor(Math.random() * 3) + 1;
+    const shuffled = [...createdImporters].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < numImporters; i++) {
+      productImporterData.push({ productId: product.id, importerId: shuffled[i].id });
+    }
+  }
+  await prisma.productImporter.createMany({ data: productImporterData, skipDuplicates: true });
+  console.log("Productos asociados con importadoras y calidades");
+
   console.log("\n=== Datos sembrados correctamente ===");
-  console.log("Dashboard ahora debería mostrar:");
   console.log(`  - ${createdProducts.length} productos`);
   console.log(`  - ${saleRecords.length}+ ventas normales`);
   console.log(`  - ${movementCount} movimientos`);
   console.log(`  - 12 solicitudes`);
   console.log(`  - ${createdCustomers.length} clientes`);
 }
-
-main()
-  .catch((e) => {
-    console.error("Error al sembrar datos:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

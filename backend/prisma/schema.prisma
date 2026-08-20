@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -103,6 +102,7 @@ model Product {
   price2        Decimal
   wholesalePrice Decimal?
   cost          Decimal?
+  quality       String?
   categoryId    Int?
   category      Category? @relation(fields: [categoryId], references: [id])
   inventories   Inventory[]
@@ -111,6 +111,7 @@ model Product {
   requests      ProductRequest[]
   costs         Cost[]
   returns       Return[]
+  importers     ProductImporter[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -241,4 +242,28 @@ model Cost {
   date         DateTime @default(now())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Importer {
+  id          Int               @id @default(autoincrement())
+  name        String
+  phone       String?
+  email       String?
+  address     String?
+  city        String?
+  logo        String?
+  description String?
+  products    ProductImporter[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model ProductImporter {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  importerId Int
+  importer   Importer @relation(fields: [importerId], references: [id])
+
+  @@unique([productId, importerId])
 }

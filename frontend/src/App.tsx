@@ -2,8 +2,11 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./stores/authStore";
 import MainLayout from "./components/layout/MainLayout";
+import PublicLayout from "./components/public/PublicLayout";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
+import PublicProductsPage from "./pages/PublicProductsPage";
+import PublicProductDetailPage from "./pages/PublicProductDetailPage";
 import DashboardPage from "./pages/DashboardPage";
 import InventoryPage from "./pages/InventoryPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
@@ -36,8 +39,17 @@ export default function App() {
         }}
       />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* Public routes with navbar + footer */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/productos" element={<PublicProductsPage />} />
+          <Route path="/productos/:id" element={<PublicProductDetailPage />} />
+        </Route>
+
+        {/* Login */}
         <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected admin routes */}
         <Route
           path="/panel"
           element={

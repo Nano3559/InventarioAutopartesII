@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { seedData } from "./seed-data";
 
 const prisma = new PrismaClient();
 
@@ -117,6 +118,8 @@ async function main() {
   });
 
   console.log("Usuario de inventario creado");
+
+  await seedData(prisma);
 
   console.log("\n=== Datos iniciales sembrados correctamente ===");
   console.log("Credenciales de acceso:");
