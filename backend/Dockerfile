@@ -2,7 +2,7 @@ FROM node:20
 
 WORKDIR /app
 
-ARG CACHE_BUST=2026082001
+ARG CACHE_BUST=20260820145
 
 COPY package*.json ./
 RUN npm install
