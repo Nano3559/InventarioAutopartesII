@@ -12,144 +12,259 @@
 
 ---
 
+## ESTADO ACTUAL - LO QUE YA ESTA HECHO
+
+### Completado por ambos
+- [x] Base de datos: 17 modelos Prisma, 5 enums, 2 migraciones
+- [x] Seed de datos: 18 productos, 7 ubicaciones, 5 usuarios, ventas, movimientos, solicitudes, importadoras
+- [x] Despliegue: Vercel (frontend), Railway (backend), Neon (BD)
+- [x] Auth: login, registro, JWT, middleware de proteccion
+- [x] Dashboard: estadisticas reales, graficas Recharts, stock critico
+- [x] Layout admin: sidebar, header, rutas protegidas
+- [x] Layout publico: navbar, footer responsivo
+- [x] Ruta / y /contacto funcionales
+
+### Completado por Erika
+- [x] Pagina de productos publicos (filtros, busqueda, paginacion)
+- [x] Detalle de producto publico
+- [x] Navbar publico responsivo con hamburger menu
+- [x] Footer publico (4 columnas)
+- [x] Componente ProductImage con fallback
+- [x] Seccion de importadoras
+
+### Completado por Ross
+- [x] Landing Page (Hero, Beneficios, Productos destacados, Busqueda, Mayorista/Minorista, CTA)
+- [x] Pagina de Contacto (formulario, info, importadoras, WhatsApp)
+- [x] Boton WhatsApp responsivo
+- [x] API publica: 6 endpoints funcionando (products, products/:id, filters, filters/models, filters/years, importers)
+- [x] Fix Docker cache en Railway (.dockerignore, rm -rf dist)
+- [x] .env.production para Vercel
+- [x] prisma migrate deploy en Dockerfile
+
+---
+
 ## TAREAS DE ERIKA (FRONTEND)
 
-### Sprint 1 - Prioridad ALTA
-- [ ] Dashboard conectado a APIs reales (estadisticas, graficos con Recharts)
-- [ ] Pagina de Inventario: tabla completa con columnas del enunciado
-  - ID | Fabricante | Producto | Marca | Modelo | Ano | Codigo OEM | Codigo Fabrica | Imagen | Precio 1 | Precio 2 | Stock
-- [ ] Buscador de productos en inventario
-- [ ] Filtros: Marca, Fabricante, Producto, Modelo, Ano, Codigo OEM, Codigo Fabrica
-- [ ] Boton "Nuevo Producto" con modal/formulario
-- [ ] Acciones por fila: Ver, Editar, Eliminar, Ver stock por ubicacion
-
-### Sprint 2 - Prioridad MEDIA
-- [ ] Detalle de Producto (pagina /inventario/:id)
+### Sprint 1 - Prioridad ALTA - Ejercicio 1: Inventario
+- [x] Dashboard conectado a APIs reales
+- [ ] **Pagina Inventario** (`/panel/inventario`):
+  - Tabla completa con columnas: ID | Fabricante | Producto | Marca | Modelo | Ano | Codigo OEM | Codigo Fabrica | Imagen | Precio 1 | Precio 2 | Stock
+  - Buscador de productos
+  - Filtros: Marca, Fabricante, Producto, Modelo, Ano, Codigo OEM, Codigo Fabrica
+  - Boton "Nuevo Producto" con modal/formulario completo
+  - Acciones por fila: Ver, Editar, Eliminar, Ver stock por ubicacion
+  - Paginacion de tabla
+  - Mensajes de confirmacion/error
+- [ ] **Detalle de Producto** (`/panel/inventario/:id`):
   - Informacion completa del producto
-  - Stock por cada ubicacion (4 almacenes + 3 tiendas)
-  - Boton "Solicitar a almacen"
-- [ ] Pagina de Ventas
+  - Stock por cada ubicacion (4 almacenes + 3 tiendas) en tabla
+  - Formulario de edicion
+  - Boton "Solicitar a almacen" cuando stock = 0
+
+### Sprint 2 - Prioridad ALTA - Ejercicio 2: Ventas
+- [ ] **Pagina Ventas** (`/panel/ventas`):
   - Buscar producto por codigo, nombre, marca, modelo, codigo OEM
-  - Agregar productos al carrito (cantidad, precio)
+  - Lista de resultados con imagen, nombre, precio, stock disponible
+  - Carrito de venta: agregar productos con cantidad y precio
   - Calculo automatico de subtotales y total
-  - Resumen de venta antes de confirmar
-- [ ] Registro de pago (multiples metodos: Efectivo, QR, Credito, Transferencia)
-- [ ] Pregunta "Requiere factura?" con formulario CI/NIT, nombre, celular
+  - Resumen de venta antes de confirmar (tabla con Producto | Cantidad | Precio | Subtotal | TOTAL)
+  - Boton "Confirmar venta"
+- [ ] **Registro de pago** (modal o paso adicional):
+  - Multiples metodos: Efectivo, QR, Credito, Transferencia
+  - Suma de pagos vs total (validar que sea igual)
+  - Permitir combinar metodos (ej: Efectivo Bs.1000 + QR Bs.500)
+- [ ] **Facturacion** (pregunta "Requiere factura?"):
+  - Si/No
+  - Si: formulario CI/NIT, Nombre, Celular
+- [ ] **Historial de ventas** (tabla con filtros por fecha, tienda, tipo)
 
-### Sprint 3 - Prioridad MEDIA
-- [ ] Pagina de Devoluciones
-  - Seleccionar producto
-  - Motivo de devolucion
-  - Cantidad y monto
-  - Metodo de devolucion
-- [ ] Pagina de Solicitudes a almacen
-  - Formulario: producto, cantidad, tienda solicitante
-  - Estados: Pendiente, En preparacion, Enviado, Recibido, Cancelado
+### Sprint 3 - Prioridad MEDIA - Ejercicios 3 y 4
+- [ ] **Pagina Devoluciones** (`/panel/devoluciones`):
+  - Buscar venta original
+  - Seleccionar producto de la venta
+  - Formulario: motivo, cantidad, monto a devolver, metodo de devolucion
+  - Confirmar devolucion
+  - Tabla historial de devoluciones
+- [ ] **Pagina Solicitudes** (`/panel/solicitudes`):
+  - Formulario nueva solicitud: producto, cantidad, tienda solicitante
   - Lista de solicitudes con filtros por estado
+  - Estados visibles: Pendiente, En preparacion, Enviado, Recibido, Cancelado
+  - Boton "Solicitar a almacen" desde detalle de producto (stock = 0)
+  - Cambio de estado desde la lista (para encargado de inventario)
 
-### Sprint 4 - Prioridad BAJA
-- [ ] Pagina de Movimientos
-  - Formulario: producto, cantidad, origen, destino, observacion
-  - Historial de movimientos
-- [ ] Pagina de Costos
-  - Subir facturas
-  - Registrar proveedor, tipo de cambio, porcentaje
-- [ ] Pagina de Precios
-  - Tabla con costos + porcentajes (+20%, +30%, +40%, +50%, +60%, +70%, +80%)
-  - Precio por mayor (edicion manual)
-  - Boton exportar a Excel
+### Sprint 4 - Prioridad MEDIA - Ejercicios 5 y 9
+- [ ] **Pagina Movimientos** (`/panel/movimientos`):
+  - Formulario: producto, cantidad, origen (almacen/tienda), destino (almacen/tienda), observacion
+  - Historial de movimientos en tabla
+  - Filtros por fecha, producto, ubicacion origen, ubicacion destino
+- [ ] **Pagina Pagos** (integrada en Ventas):
+  - Registro de pagos multiples por venta
+  - Historial de pagos con filtros
+  - Resumen: total pagado vs total venta
 
-### Sprint 5 - Prioridad BAJA
-- [ ] Venta por mayor
-  - Formulario manual + importar Excel
-  - Datos del cliente (nombre, para quien, lugar de entrega, factura, forma de pago)
-  - Generar nota de venta
-- [ ] Reportes con filtros (marca, modelo, mes, tienda, proveedor, producto)
-- [ ] Configuracion
+### Sprint 5 - Prioridad BAJA - Ejercicios 6, 7, 8
+- [ ] **Pagina Costos** (`/panel/costos`):
+  - Formulario: subir factura (upload), proveedor, tipo de cambio, porcentaje, producto, costo
+  - Lista de costos registrados
+  - CRUD de proveedores (nombre, NIT, telefono)
+- [ ] **Pagina Precios** (`/panel/precios`):
+  - Tabla de precios calculados desde costo: Costo | +20% | +30% | +40% | +50% | +60% | +70% | +80% | Precio Mayor
+  - Edicion manual de precio por mayor
+  - Boton "Exportar a Excel" (Codigo fabrica, Producto, Marca, Modelo, Anos, Detalle, Precio mayor)
+- [ ] **Pagina Venta por Mayor** (`/panel/ventas-mayor`):
+  - Formulario manual de productos
+  - Boton "Importar Excel" (columnas: Codigo fabrica, Descripcion, Producto, Marca, Modelo, Anos, Detalle, Precio mayor)
+  - Datos del cliente: nombre, para quien es el pedido, lugar de entrega, datos para factura, forma de pago
+  - Entrega: Cochabamba / Otra ubicacion
+  - Generar nota de venta (PDF o formato printable)
+- [ ] **Pagina Reportes** (`/panel/reportes`):
+  - Filtros: Marca, Auto/modelo, Mes, Tienda, Proveedor, Producto
+  - Tablas de resultados: ventas, inventario, costos
+  - Reporte mensual por tienda
+- [ ] **Pagina Configuracion** (`/panel/configuracion`):
+  - Gestionar usuarios
+  - Gestionar roles/permisos
+
+### Tareas adicionales Erika
+- [ ] Responsive completo del admin (sidebar colapsa en celular)
+- [ ] Modales consistentes en todos los CRUD
+- [ ] Mensajes de confirmacion/error en todas las acciones
+- [ ] Estados de carga (spinners/skeletons) en todas las paginas
 
 ---
 
 ## TAREAS DE ROSS (BACKEND)
 
-### Sprint 1 - Prioridad ALTA
-- [ ] API de Productos (CRUD completo)
-  - GET /api/products (listar con filtros y busqueda)
-  - GET /api/products/:id (detalle con stock por ubicacion)
-  - POST /api/products (crear)
-  - PUT /api/products/:id (editar)
-  - DELETE /api/products/:id (eliminar)
-- [ ] API de Inventarios
-  - GET /api/inventory (listar todo)
-  - GET /api/inventory/:productId (stock por ubicacion)
-  - PUT /api/inventory/:id (actualizar stock)
-- [ ] API de Ubicaciones
-  - GET /api/locations (listar almacenes y tiendas)
-- [ ] Seed data completo
-  - Productos de ejemplo (repuestos automotrices reales)
-  - Stock inicial en cada ubicacion
-  - Categorias de productos
+### Sprint 1 - Prioridad ALTA - Ejercicio 1: Productos e Inventario
+- [x] API Productos: stub registrado en app.ts
+- [ ] **API Productos CRUD** (`/api/products`):
+  - GET / — listar con filtros (marca, fabricante, modelo, ano, OEM, fabrica) y busqueda
+  - GET /:id — detalle con stock por ubicacion
+  - POST — crear producto (validar campos obligatorios)
+  - PUT /:id — editar producto
+  - DELETE /:id — eliminar (con validacion de ventas asociadas)
+- [ ] **API Inventario** (`/api/inventory`):
+  - GET / — listar todo el inventario
+  - GET /:productId — stock por ubicacion de un producto
+  - PUT /:id — actualizar stock manualmente
+- [ ] **API Ubicaciones** (`/api/locations`):
+  - GET / — listar almacenes y tiendas
 
-### Sprint 2 - Prioridad MEDIA
-- [ ] API de Ventas
-  - POST /api/sales (crear venta con items y pagos)
-  - GET /api/sales (listar ventas)
-  - GET /api/sales/:id (detalle de venta)
-  - Validar stock antes de confirmar
-  - Descontar stock automaticamente
-- [ ] API de Pagos
-  - POST /api/payments (registrar pago)
-  - Soporte para multiples metodos en una venta
-- [ ] API de Clientes
-  - POST /api/customers (crear/registro)
-  - GET /api/customers (listar)
+### Sprint 2 - Prioridad ALTA - Ejercicio 2: Ventas
+- [ ] **API Ventas** (`/api/sales`):
+  - POST — crear venta normal
+    - Recibe: items[], pagos[], customerId?, requiereFactura, datosFactura?
+    - Valida stock suficiente de cada item
+    - Descuenta stock automaticamente
+    - Crea pagos asociados
+    - Si stock llega a 0, genera solicitud automatica a almacen (ejercicio 12)
+  - GET / — listar ventas (filtros: fecha, tienda, tipo)
+  - GET /:id — detalle de venta con items y pagos
+- [ ] **API Pagos** (`/api/payments`):
+  - POST — registrar pago adicional a una venta
+  - GET — listar pagos
+- [ ] **API Clientes** (`/api/customers`):
+  - POST — crear/registro
+  - GET — listar
+  - GET /:id — detalle
 
-### Sprint 3 - Prioridad MEDIA
-- [ ] API de Devoluciones
-  - POST /api/returns (registrar devolucion)
-  - Devolver stock automaticamente
-  - GET /api/returns (listar devoluciones)
-- [ ] API de Solicitudes
-  - POST /api/requests (crear solicitud)
-  - PUT /api/requests/:id (cambiar estado)
-  - GET /api/requests (listar con filtros)
-- [ ] API de Movimientos
-  - POST /api/movements (registrar movimiento)
-  - Validar stock en origen
-  - Descontar origen, sumar destino
-  - GET /api/movements (historial)
+### Sprint 3 - Prioridad MEDIA - Ejercicios 3 y 4
+- [ ] **API Devoluciones** (`/api/returns`):
+  - POST — registrar devolucion
+    - Valida que la venta exista
+    - Devuelve stock automaticamente
+    - Registra motivo, cantidad, monto, metodo
+  - GET / — listar devoluciones
+- [ ] **API Solicitudes** (`/api/requests`):
+  - POST — crear solicitud (tienda pide a almacen)
+  - PUT /:id — cambiar estado (PENDIENTE -> EN_PREPARACION -> ENVIADO -> RECIBIDO)
+  - GET / — listar con filtros por estado y tienda
+  - DELETE /:id — cancelar solicitud
 
-### Sprint 4 - Prioridad BAJA
-- [ ] API de Costos
-  - POST /api/costs (registrar costo con factura)
-  - GET /api/costs (listar)
-- [ ] API de Proveedores
-  - CRUD de proveedores
-- [ ] API de Precios
-  - GET /api/prices (calcular precios desde costo con porcentajes)
-  - PUT /api/prices/:productId (editar precio por mayor)
+### Sprint 4 - Prioridad MEDIA - Ejercicio 5: Movimientos
+- [ ] **API Movimientos** (`/api/movements`):
+  - POST — registrar movimiento
+    - Valida stock suficiente en origen
+    - Descuenta stock origen
+    - Suma stock destino
+    - Registra usuario, fecha, observacion
+  - GET / — historial con filtros (fecha, producto, ubicacion)
 
-### Sprint 5 - Prioridad BAJA
-- [ ] API de Reportes
-  - GET /api/reports/sales (filtrar por marca, modelo, mes, tienda)
-  - GET /api/reports/inventory (stock por ubicacion)
-  - GET /api/reports/suppliers (ventas por proveedor)
-- [ ] Importar Excel (POST /api/products/import)
-- [ ] Exportar Excel (GET /api/products/export)
-- [ ] Reposicion automatica (cuando stock = 0, crear solicitud)
+### Sprint 5 - Prioridad MEDIA - Ejercicios 6 y 7
+- [ ] **API Costos** (`/api/costs`):
+  - POST — registrar costo con factura (upload multer)
+  - GET / — listar costos
+  - PUT /:id — editar costo
+- [ ] **API Proveedores** (`/api/suppliers`):
+  - POST — crear proveedor
+  - GET / — listar
+  - PUT /:id — editar
+  - DELETE /:id — eliminar
+- [ ] **API Precios** (`/api/prices`):
+  - GET / — calcular precios desde costo con todos los porcentajes
+  - PUT /:productId — actualizar precio por mayor
+  - GET /export — exportar a Excel (xlsx)
+
+### Sprint 6 - Prioridad BAJA - Ejercicios 8, 10, 11, 12, 13
+- [ ] **API Venta por Mayor** (`/api/wholesale`):
+  - POST — crear venta mayorista (misma logica que venta normal pero con validaciones de mayorista)
+  - POST /import — importar desde Excel
+- [ ] **API Nota de Venta**:
+  - GET /api/sales/:id/nota — generar nota de venta (PDF o HTML)
+- [ ] **API Reportes** (`/api/reports`):
+  - GET /sales — ventas filtradas (marca, modelo, mes, tienda, proveedor)
+  - GET /inventory — stock por ubicacion
+  - GET /suppliers — reporte por proveedor
+  - GET /monthly — reporte mensual por tienda con costos
+- [ ] **Reposicion automatica** (logica interna):
+  - Cuando stock de un producto llega a 0 en cualquier tienda
+  - Generar automaticamente una ProductRequest al almacen correspondiente
+  - Implementar como middleware o trigger en el POST de ventas
+- [ ] **Busqueda por imagen** (funcionalidad adicional):
+  - POST /api/products/search-image — recibe imagen, busca coincidencias
+  - Utilizar descripcion del producto para matching
+
+### Tareas adicionales Ross
+- [ ] Crear modulo `customers` en backend/src/modules/ (falta completamente)
+- [ ] Crear modulo `suppliers` en backend/src/modules/ (falta completamente)
+- [ ] Actualizar seed con: pagos en ventas, devoluciones, costos con facturas, precios calculados
+- [ ] Validaciones robustas en todos los endpoints (campos obligatorios, tipos de dato)
+- [ ] Manejo de errores consistente (mensajes claros al frontend)
 
 ---
 
-## FLUJO PRINCIPAL A IMPLEMENTAR
+## FLUJO PRINCIPAL A IMPLEMENTAR (CRITERIO DE EVALUACION)
 
 ```
-Venta en Tienda 1
-  → Buscar producto
-  → Seleccionar cantidad y precio
-  → Confirmar venta
-  → Registrar pago
-  → DESCONTAR stock de Tienda 1
-  → Si stock = 0, GENERAR solicitud a almacen
-  → Aparecer en REPORTES
+1. INVENTARIO
+   → Tabla de productos con filtros
+   → CRUD completo
+   → Stock por ubicacion (4 almacenes + 3 tiendas)
+
+2. VENTA (ejercicio clave)
+   → Buscar producto
+   → Seleccionar cantidad y precio
+   → Confirmar venta
+   → Registrar pago (multiples metodos)
+   → Facturacion (CI/NIT)
+   → DESCONTAR stock de Tienda
+   → Si stock = 0, GENERAR solicitud automatica a almacen
+   → Generar nota de venta
+
+3. MOVIMIENTOS
+   → Encargado recibe solicitud
+   → Registra movimiento: Almacen X → Tienda Y
+   → Actualiza stock en ambas ubicaciones
+
+4. PRECIOS Y COSTOS
+   → Admin registra costo + factura
+   → Sistema calcula precios con porcentajes
+   → Exportar a Excel
+
+5. REPORTES
+   → Filtrar por marca, modelo, mes, tienda
+   → Reporte mensual por tienda con costos
+   → Todo lo anterior aparece aqui
 ```
 
 ---
@@ -158,9 +273,10 @@ Venta en Tienda 1
 
 1. Erika trabaja en su rama `erika`
 2. Ross trabaja en su rama `ross`
-3. Cuando ambos tengan avance significativo, hacer Pull Request a `main`
-4. Revisar que no haya conflictos
-5. Merge a `main`
+3. Prioridad: primero Sprint 1 y 2 (Inventario + Ventas = lo mas visible)
+4. Cuando ambos tengan avance, hacer Pull Request a `main`
+5. Revisar que no haya conflictos
+6. Merge a `main`
 
 ---
 
@@ -168,7 +284,9 @@ Venta en Tienda 1
 
 - Cada uno NUNCA hace push directo a `main`
 - Siempre trabajar en la rama propia
-- Comunicarse antes de modificar archivos compartidos (package.json, schema.prisma)
-- El backend debe estar corriendo en puerto 3000
-- El frontend debe estar corriendo en puerto 5173
-- Las credenciales de prueba estan en seed.ts
+- Comunicarse antes de modificar archivos compartidos (schema.prisma, package.json, app.ts)
+- Backend en Railway: https://inventarioautopartesii-production-cacf.up.railway.app
+- Frontend en Vercel: https://inventario-autopartes-ii.vercel.app
+- Credenciales de prueba: admin@inventario.com / admin123, tienda1@inventario.com / tienda123
+- Las rutas backend actuales son STUBS (solo devuelven mensaje) — hay que implementar la logica real
+- Las paginas frontend actuales son PLACEHOLDERS — hay que implementar los formularios y tablas
