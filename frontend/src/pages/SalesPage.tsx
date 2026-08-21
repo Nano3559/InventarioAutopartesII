@@ -1,16 +1,707 @@
-import { ShoppingCart } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Search, ShoppingCart, Plus, Minus, Trash2, X, CreditCard,
+  FileText, RefreshCw, ChevronDown, ChevronLeft, ChevronRight,
+  Check, Clock, MapPin,
+} from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../services/api";
+
+interface Product {
+  id: number; itemCode: string; manufacturer: string; name: string;
+  brand: string; model: string; year: string; price1: string; price2: string;
+  wholesalePrice: string | null; stock: number; category: string | null;
+  image: string | null;
+}
+
+interface CartItem {
+  productId: number; itemCode: string; name: string; brand: string;
+  unitPrice: number; quantity: number; availableStock: number;
+}
+
+interface PaymentEntry {
+  method: "EFECTIVO" | "QR" | "TRANSFERENCIA" | "CREDITO"; amount: string;
+}
+
+interface CustomerData { name: string; nit: string; phone: string; }
+
+interface SaleRecord {
+  id: number; saleDate: string; total: number; type: string;
+  location: { id: number; name: string }; user: { id: number; name: string };
+  customer: { id: number; name: string; nit: string | null } | null;
+  items: { id: number; quantity: number; unitPrice: number; subtotal: number;
+    product: { id: number; name: string; itemCode: string } }[];
+  payments: { id: number; method: string; amount: number }[];
+}
+
+const PAGE_SIZE = 15;
 
 export default function SalesPage() {
+  // --- Search ---
+  const [search, setSearch] = useState("");
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [searching, setSearching] = useState(false);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // --- Cart ---
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  // --- Payment modal ---
+  const [showPayment, setShowPayment] = useState(false);
+  const [payments, setPayments] = useState<PaymentEntry[]>([]);
+  const [requiereFactura, setRequiereFactura] = useState(false);
+  const [customerData, setCustomerData] = useState<CustomerData>({ name: "", nit: "", phone: "" });
+  const [processing, setProcessing] = useState(false);
+
+  // --- History ---
+  const [showHistory, setShowHistory] = useState(false);
+  const [sales, setSales] = useState<SaleRecord[]>([]);
+  const [histLoading, setHistLoading] = useState(false);
+  const [histPage, setHistPage] = useState(1);
+  const [histPages, setHistPages] = useState(1);
+  const [histTotal, setHistTotal] = useState(0);
+  const [histDateFrom, setHistDateFrom] = useState("");
+  const [histDateTo, setHistDateTo] = useState("");
+
+  // --- Confirmation ---
+  const [showConfirmed, setShowConfirmed] = useState(false);
+  const [lastSale, setLastSale] = useState<SaleRecord | null>(null);
+
+  const formatBs = (v: number) =>
+    `Bs. ${v.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // ==================== SEARCH ====================
+  const doSearch = useCallback(async (q: string) => {
+    if (!q || q.trim().length < 2) { setSearchResults([]); return; }
+    try {
+      setSearching(true);
+      const res = await api.get(`/products?search=${encodeURIComponent(q.trim())}&limit=10`);
+      setSearchResults(res.data.products.filter((p: Product) => p.stock > 0));
+    } catch { toast.error("Error al buscar productos"); }
+    finally { setSearching(false); }
+  }, []);
+
+  const handleSearchChange = (v: string) => {
+    setSearch(v);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => doSearch(v), 300);
+  };
+
+  // ==================== CART ====================
+  const addToCart = (p: Product) => {
+    const price = Number(p.price1);
+    setCart((prev) => {
+      const existing = prev.find((c) => c.productId === p.id);
+      if (existing) {
+        if (existing.quantity >= p.stock) {
+          toast.error(`Stock insuficiente (disponible: ${p.stock})`);
+          return prev;
+        }
+        return prev.map((c) =>
+          c.productId === p.id ? { ...c, quantity: c.quantity + 1 } : c
+        );
+      }
+      return [...prev, {
+        productId: p.id, itemCode: p.itemCode, name: p.name, brand: p.brand,
+        unitPrice: price, quantity: 1, availableStock: p.stock,
+      }];
+    });
+    setSearch("");
+    setSearchResults([]);
+    searchInputRef.current?.focus();
+  };
+
+  const updateQuantity = (productId: number, newQty: number) => {
+    if (newQty < 1) return;
+    setCart((prev) => prev.map((c) => {
+      if (c.productId !== productId) return c;
+      if (newQty > c.availableStock) {
+        toast.error(`Stock máximo: ${c.availableStock}`);
+        return { ...c, quantity: c.availableStock };
+      }
+      return { ...c, quantity: newQty };
+    }));
+  };
+
+  const removeItem = (productId: number) =>
+    setCart((prev) => prev.filter((c) => c.productId !== productId));
+
+  const clearCart = () => setCart([]);
+
+  const cartTotal = cart.reduce((sum, c) => sum + c.unitPrice * c.quantity, 0);
+  const cartItemCount = cart.reduce((sum, c) => sum + c.quantity, 0);
+
+  // ==================== PAYMENTS ====================
+  const openPayment = () => {
+    if (cart.length === 0) { toast.error("Agrega productos al carrito primero"); return; }
+    setPayments([{ method: "EFECTIVO", amount: String(cartTotal.toFixed(2)) }]);
+    setRequiereFactura(false);
+    setCustomerData({ name: "", nit: "", phone: "" });
+    setShowPayment(true);
+  };
+
+  const addPaymentMethod = () =>
+    setPayments((prev) => [...prev, { method: "EFECTIVO", amount: "0" }]);
+
+  const updatePayment = (i: number, field: keyof PaymentEntry, val: string) =>
+    setPayments((prev) => prev.map((p, idx) => idx === i ? { ...p, [field]: val } : p));
+
+  const removePayment = (i: number) =>
+    setPayments((prev) => (prev.length > 1 ? prev.filter((_, idx) => idx !== i) : prev));
+
+  const totalPaid = payments.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+  const pending = cartTotal - totalPaid;
+
+  // ==================== CONFIRM SALE ====================
+  const confirmSale = async () => {
+    if (cart.length === 0) return;
+
+    if (Math.abs(totalPaid - cartTotal) > 0.01) {
+      toast.error(`El total pagado (${formatBs(totalPaid)}) no coincide con el total (${formatBs(cartTotal)})`);
+      return;
+    }
+
+    if (requiereFactura && !customerData.name.trim()) {
+      toast.error("Ingresa el nombre del cliente para la factura");
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      const payload: any = {
+        items: cart.map((c) => ({
+          productId: c.productId,
+          quantity: c.quantity,
+          unitPrice: c.unitPrice,
+        })),
+        payments: payments.map((p) => ({
+          method: p.method,
+          amount: parseFloat(p.amount),
+        })),
+      };
+
+      if (requiereFactura && customerData.name.trim()) {
+        payload.customerData = {
+          name: customerData.name.trim(),
+          nit: customerData.nit.trim() || null,
+          phone: customerData.phone.trim() || null,
+        };
+      }
+
+      const res = await api.post("/sales", payload);
+      setLastSale(res.data);
+      setShowPayment(false);
+      setShowConfirmed(true);
+      setCart([]);
+      toast.success("¡Venta registrada exitosamente!");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Error al registrar la venta");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // ==================== HISTORY ====================
+  const fetchHistory = useCallback(async () => {
+    try {
+      setHistLoading(true);
+      const params = new URLSearchParams({ page: String(histPage), limit: String(PAGE_SIZE) });
+      if (histDateFrom) params.set("startDate", histDateFrom);
+      if (histDateTo) params.set("endDate", histDateTo);
+
+      const res = await api.get(`/sales?${params.toString()}`);
+      setSales(res.data.sales);
+      setHistTotal(res.data.pagination.total);
+      setHistPages(res.data.pagination.pages);
+    } catch { toast.error("Error al cargar historial"); }
+    finally { setHistLoading(false); }
+  }, [histPage, histDateFrom, histDateTo]);
+
+  useEffect(() => {
+    if (showHistory) fetchHistory();
+  }, [showHistory, fetchHistory]);
+
+  useEffect(() => { if (showHistory) setHistPage(1); }, [histDateFrom, histDateTo, showHistory]);
+
+  // ==================== RENDER ====================
+  const pmLabel: Record<string, string> = { EFECTIVO: "Efectivo", QR: "QR", TRANSFERENCIA: "Transferencia", CREDITO: "Crédito" };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Ventas</h1>
-        <p className="text-gray-400 text-sm mt-1">Registro y gestión de ventas</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Ventas</h1>
+          <p className="text-gray-400 text-sm mt-1">
+            {showHistory ? `${histTotal} ventas registradas` : `${cart.length} producto(s) en carrito`}
+          </p>
+        </div>
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border ${
+            showHistory
+              ? "bg-primary-600/10 border-primary-600/20 text-primary-400"
+              : "bg-dark-800/50 border-dark-700/50 text-gray-400 hover:text-white"
+          }`}
+        >
+          {showHistory ? <><ShoppingCart size={16} /> Nueva Venta</> : <><Clock size={16} /> Historial</>}
+        </button>
       </div>
-      <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-8 text-center">
-        <ShoppingCart size={48} className="text-gray-600 mx-auto mb-4" />
-        <p className="text-gray-400">Módulo de ventas por implementar</p>
-      </div>
+
+      {/* ============ NEW SALE ============ */}
+      {!showHistory && (
+        <>
+          {/* Search */}
+          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4">
+            <div className="relative">
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+              <input
+                ref={searchInputRef}
+                type="text" value={search} onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Buscar producto por código, nombre, marca, modelo..."
+                className="w-full pl-10 pr-4 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+              />
+              {search && (
+                <button onClick={() => { setSearch(""); setSearchResults([]); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            {searchResults.length > 0 && (
+              <div className="mt-3 space-y-1.5 max-h-72 overflow-y-auto">
+                {searchResults.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => addToCart(p)}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-dark-900/50 border border-dark-700/30 rounded-xl hover:border-primary-500/30 hover:bg-dark-800/50 transition-all text-left"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm text-white font-medium truncate">{p.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{p.brand} · {p.model} · {p.itemCode}</p>
+                    </div>
+                    <div className="text-right ml-4 shrink-0">
+                      <p className="text-sm text-green-400 font-medium">{formatBs(Number(p.price1))}</p>
+                      <p className={`text-xs font-medium ${p.stock <= 3 ? "text-yellow-400" : "text-gray-500"}`}>
+                        Stock: {p.stock}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            {search.length >= 2 && searchResults.length === 0 && !searching && (
+              <p className="text-center text-gray-500 text-sm py-4">No se encontraron productos con stock</p>
+            )}
+          </div>
+
+          {/* Cart */}
+          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-dark-700/50">
+              <h2 className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                <ShoppingCart size={16} className="text-primary-400" /> Carrito de Venta
+              </h2>
+              {cart.length > 0 && (
+                <button onClick={clearCart} className="text-xs text-red-400 hover:text-red-300">Vaciar</button>
+              )}
+            </div>
+
+            {cart.length === 0 ? (
+              <div className="p-10 text-center">
+                <ShoppingCart size={48} className="text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400 text-sm">Busca un producto arriba para agregarlo al carrito</p>
+              </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-gray-500 border-b border-dark-700/50">
+                        <th className="text-left px-5 py-2.5 font-medium">Producto</th>
+                        <th className="text-right px-4 py-2.5 font-medium">Precio</th>
+                        <th className="text-center px-4 py-2.5 font-medium">Cantidad</th>
+                        <th className="text-right px-4 py-2.5 font-medium">Subtotal</th>
+                        <th className="px-5 py-2.5"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cart.map((c) => (
+                        <tr key={c.productId} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
+                          <td className="px-5 py-3">
+                            <p className="text-white font-medium text-sm">{c.name}</p>
+                            <p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p>
+                          </td>
+                          <td className="px-4 py-3 text-right text-gray-300">{formatBs(c.unitPrice)}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button onClick={() => updateQuantity(c.productId, c.quantity - 1)}
+                                className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white hover:border-primary-500/50 transition-all">
+                                <Minus size={14} />
+                              </button>
+                              <span className="w-10 text-center text-white text-sm font-medium">{c.quantity}</span>
+                              <button onClick={() => updateQuantity(c.productId, c.quantity + 1)}
+                                className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white hover:border-primary-500/50 transition-all">
+                                <Plus size={14} />
+                              </button>
+                            </div>
+                            <p className="text-center text-xs text-gray-600 mt-0.5">disp: {c.availableStock}</p>
+                          </td>
+                          <td className="px-4 py-3 text-right text-green-400 font-medium">
+                            {formatBs(c.unitPrice * c.quantity)}
+                          </td>
+                          <td className="px-5 py-3">
+                            <button onClick={() => removeItem(c.productId)}
+                              className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="px-5 py-4 border-t border-dark-700/50 bg-dark-900/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-gray-400 text-sm">{cartItemCount} unidad(es)</span>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">Total</p>
+                      <p className="text-xl font-bold text-green-400">{formatBs(cartTotal)}</p>
+                    </div>
+                  </div>
+                  <button onClick={openPayment}
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary-600/20">
+                    <CreditCard size={18} /> Cobrar · {formatBs(cartTotal)}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* ============ HISTORY ============ */}
+      {showHistory && (
+        <div className="space-y-4">
+          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4">
+            <div className="flex flex-col sm:flex-row gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-xs text-gray-500 mb-1">Desde</label>
+                <input type="date" value={histDateFrom} onChange={(e) => setHistDateFrom(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              </div>
+              <div className="flex-1">
+                <label className="block text-xs text-gray-500 mb-1">Hasta</label>
+                <input type="date" value={histDateTo} onChange={(e) => setHistDateTo(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              </div>
+              {(histDateFrom || histDateTo) && (
+                <button onClick={() => { setHistDateFrom(""); setHistDateTo(""); }}
+                  className="px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl border border-dark-600/50 transition-all">
+                  Limpiar
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
+            {histLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <RefreshCw size={32} className="text-primary-400 animate-spin" />
+              </div>
+            ) : sales.length === 0 ? (
+              <div className="p-10 text-center">
+                <Clock size={48} className="text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">No se encontraron ventas</p>
+              </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-gray-500 border-b border-dark-700/50">
+                        <th className="text-left px-4 py-3 font-medium">#</th>
+                        <th className="text-left px-4 py-3 font-medium">Fecha</th>
+                        <th className="text-left px-4 py-3 font-medium">Cliente</th>
+                        <th className="text-left px-4 py-3 font-medium">Vendedor</th>
+                        <th className="text-left px-4 py-3 font-medium">Ubicación</th>
+                        <th className="text-center px-4 py-3 font-medium">Tipo</th>
+                        <th className="text-right px-4 py-3 font-medium">Total</th>
+                        <th className="text-left px-4 py-3 font-medium">Pagos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sales.map((s) => (
+                        <tr key={s.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
+                          <td className="px-4 py-3 text-gray-400">{s.id}</td>
+                          <td className="px-4 py-3 text-gray-300 text-xs">
+                            {new Date(s.saleDate).toLocaleDateString("es-BO")}{" "}
+                            <span className="text-gray-500">
+                              {new Date(s.saleDate).toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            {s.customer ? (
+                              <div>
+                                <p className="text-gray-200 text-sm">{s.customer.name}</p>
+                                {s.customer.nit && <p className="text-xs text-gray-500">NIT: {s.customer.nit}</p>}
+                              </div>
+                            ) : (
+                              <span className="text-gray-600 text-xs">Consumidor final</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-300 text-xs">{s.user.name}</td>
+                          <td className="px-4 py-3 text-gray-400 text-xs flex items-center gap-1">
+                            <MapPin size={12} /> {s.location.name}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                              s.type === "MAYOR" ? "bg-blue-500/10 text-blue-400" : "bg-green-500/10 text-green-400"
+                            }`}>
+                              {s.type === "MAYOR" ? "Mayor" : "Normal"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right text-green-400 font-medium text-sm">
+                            {formatBs(s.total)}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-1">
+                              {s.payments.map((pay) => (
+                                <span key={pay.id}
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-dark-900/50 border border-dark-700/30 rounded-full text-xs text-gray-400">
+                                  {pmLabel[pay.method] || pay.method} · {formatBs(pay.amount)}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {histPages > 1 && (
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-dark-700/50">
+                    <p className="text-gray-400 text-sm">Página {histPage} de {histPages}</p>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setHistPage((p) => Math.max(1, p - 1))} disabled={histPage === 1}
+                        className="p-2 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white disabled:opacity-30 transition-all">
+                        <ChevronLeft size={16} />
+                      </button>
+                      {Array.from({ length: Math.min(5, histPages) }, (_, i) => {
+                        const start = Math.max(1, Math.min(histPage - 2, histPages - 4));
+                        const pg = start + i;
+                        if (pg > histPages) return null;
+                        return (
+                          <button key={pg} onClick={() => setHistPage(pg)}
+                            className={`w-8 h-8 rounded-lg text-sm font-medium transition-all ${
+                              pg === histPage ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"
+                            }`}>
+                            {pg}
+                          </button>
+                        );
+                      })}
+                      <button onClick={() => setHistPage((p) => Math.min(histPages, p + 1))} disabled={histPage === histPages}
+                        className="p-2 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white disabled:opacity-30 transition-all">
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ============ PAYMENT MODAL ============ */}
+      {showPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-5 border-b border-dark-700/50">
+              <h2 className="text-lg font-bold text-white">Registrar Pago</h2>
+              <button onClick={() => !processing && setShowPayment(false)}
+                className="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-5">
+              {/* Resumen */}
+              <div className="bg-dark-900/50 border border-dark-700/30 rounded-xl p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-sm">Total a cobrar</span>
+                  <span className="text-xl font-bold text-green-400">{formatBs(cartTotal)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-xs">Pagado</span>
+                  <span className={`text-sm font-medium ${totalPaid >= cartTotal ? "text-green-400" : "text-yellow-400"}`}>
+                    {formatBs(totalPaid)}
+                  </span>
+                </div>
+                {pending > 0.01 && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 text-xs">Pendiente</span>
+                    <span className="text-sm font-medium text-red-400">{formatBs(pending)}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Métodos de pago */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider">Métodos de Pago</p>
+                  <button onClick={addPaymentMethod}
+                    className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1">
+                    <Plus size={12} /> Agregar método
+                  </button>
+                </div>
+
+                <div className="space-y-2.5">
+                  {payments.map((p, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <select value={p.method}
+                          onChange={(e) => updatePayment(i, "method", e.target.value)}
+                          className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
+                          <option value="EFECTIVO">Efectivo</option>
+                          <option value="QR">QR</option>
+                          <option value="TRANSFERENCIA">Transferencia</option>
+                          <option value="CREDITO">Crédito</option>
+                        </select>
+                        <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                      </div>
+                      <input type="number" value={p.amount}
+                        onChange={(e) => updatePayment(i, "amount", e.target.value)}
+                        placeholder="Monto" min="0" step="0.01"
+                        className="w-32 px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                      {payments.length > 1 && (
+                        <button onClick={() => removePayment(i)}
+                          className="p-2 text-gray-500 hover:text-red-400 transition-all">
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Facturación */}
+              <div className="border-t border-dark-700/50 pt-5">
+                <button onClick={() => setRequiereFactura(!requiereFactura)}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
+                    requiereFactura
+                      ? "bg-primary-600/10 border-primary-600/30 text-primary-300"
+                      : "bg-dark-900/50 border-dark-700/30 text-gray-400 hover:border-primary-500/30"
+                  }`}>
+                  <div className="flex items-center gap-2">
+                    <FileText size={16} />
+                    <span className="text-sm font-medium">Requiere Factura</span>
+                  </div>
+                  <ChevronDown size={16} className={`transition-transform ${requiereFactura ? "rotate-180" : ""}`} />
+                </button>
+
+                {requiereFactura && (
+                  <div className="mt-3 space-y-3 pl-1">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Nombre / Razón Social *</label>
+                      <input type="text" value={customerData.name}
+                        onChange={(e) => setCustomerData((prev) => ({ ...prev, name: e.target.value }))}
+                        placeholder="Nombre del cliente"
+                        className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none placeholder-gray-600" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">CI / NIT</label>
+                        <input type="text" value={customerData.nit}
+                          onChange={(e) => setCustomerData((prev) => ({ ...prev, nit: e.target.value }))}
+                          placeholder="CI o NIT"
+                          className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none placeholder-gray-600" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Celular</label>
+                        <input type="text" value={customerData.phone}
+                          onChange={(e) => setCustomerData((prev) => ({ ...prev, phone: e.target.value }))}
+                          placeholder="Celular"
+                          className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none placeholder-gray-600" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 p-5 border-t border-dark-700/50">
+              <button onClick={() => setShowPayment(false)} disabled={processing}
+                className="px-4 py-2.5 text-sm text-gray-400 hover:text-white disabled:opacity-50">
+                Cancelar
+              </button>
+              <button onClick={confirmSale} disabled={processing || Math.abs(totalPaid - cartTotal) > 0.01}
+                className={`px-6 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  Math.abs(totalPaid - cartTotal) <= 0.01
+                    ? "bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20"
+                    : "bg-dark-700 text-gray-500"
+                }`}>
+                {processing ? <><RefreshCw size={16} className="animate-spin" /> Procesando...</> : <><Check size={16} /> Confirmar Venta</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============ CONFIRMATION MODAL ============ */}
+      {showConfirmed && lastSale && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-md p-6 text-center">
+            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check size={32} className="text-green-400" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-1">¡Venta Registrada!</h3>
+            <p className="text-gray-400 text-sm mb-2">
+              Venta #{lastSale.id} · {new Date(lastSale.saleDate).toLocaleString("es-BO")}
+            </p>
+            <p className="text-2xl font-bold text-green-400 mb-4">{formatBs(lastSale.total)}</p>
+
+            {lastSale.customer && (
+              <div className="bg-dark-900/50 border border-dark-700/30 rounded-xl p-3 mb-4 text-left">
+                <p className="text-xs text-gray-500 mb-1">Cliente (Factura)</p>
+                <p className="text-sm text-white">{lastSale.customer.name}</p>
+                {lastSale.customer.nit && <p className="text-xs text-gray-400">NIT: {lastSale.customer.nit}</p>}
+              </div>
+            )}
+
+            <div className="bg-dark-900/50 border border-dark-700/30 rounded-xl p-3 mb-5 text-left">
+              <p className="text-xs text-gray-500 mb-2">Productos</p>
+              <div className="space-y-1.5">
+                {lastSale.items.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-300 truncate flex-1 mr-2">{item.product.name}</span>
+                    <span className="text-gray-500 shrink-0">x{item.quantity} · {formatBs(item.subtotal)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-dark-900/50 border border-dark-700/30 rounded-xl p-3 mb-5 text-left">
+              <p className="text-xs text-gray-500 mb-2">Pagos</p>
+              <div className="flex flex-wrap gap-2">
+                {lastSale.payments.map((pay) => (
+                  <span key={pay.id}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-dark-800 border border-dark-700/50 rounded-lg text-xs text-gray-300">
+                    {pmLabel[pay.method] || pay.method}: {formatBs(pay.amount)}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <button onClick={() => { setShowConfirmed(false); setLastSale(null); }}
+              className="w-full bg-dark-700 hover:bg-dark-600 text-white py-3 rounded-xl text-sm font-medium transition-all">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
