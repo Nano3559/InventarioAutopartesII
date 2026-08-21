@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./stores/authStore";
 import MainLayout from "./components/layout/MainLayout";
 import PublicLayout from "./components/public/PublicLayout";
+import RoleRoute from "./components/RoleRoute";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import ContactPage from "./pages/ContactPage";
@@ -20,6 +21,8 @@ import CostsPage from "./pages/CostsPage";
 import PricesPage from "./pages/PricesPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
+
+const ALL = ["ADMIN", "INVENTARIO", "TIENDA"];
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -40,7 +43,7 @@ export default function App() {
         }}
       />
       <Routes>
-        {/* Public routes with navbar + footer */}
+        {/* Public routes */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/contacto" element={<ContactPage />} />
@@ -48,10 +51,9 @@ export default function App() {
           <Route path="/productos/:id" element={<PublicProductDetailPage />} />
         </Route>
 
-        {/* Login */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Protected admin routes */}
+        {/* Protected admin panel */}
         <Route
           path="/panel"
           element={
@@ -60,18 +62,83 @@ export default function App() {
             </ProtectedRoute>
           }
         >
+          {/* Dashboard — todos los roles */}
           <Route index element={<DashboardPage />} />
-          <Route path="inventario" element={<InventoryPage />} />
-          <Route path="inventario/:id" element={<ProductDetailPage />} />
-          <Route path="ventas" element={<SalesPage />} />
-          <Route path="ventas-mayor" element={<WholesalePage />} />
-          <Route path="devoluciones" element={<ReturnsPage />} />
-          <Route path="solicitudes" element={<RequestsPage />} />
-          <Route path="movimientos" element={<MovementsPage />} />
-          <Route path="costos" element={<CostsPage />} />
-          <Route path="precios" element={<PricesPage />} />
-          <Route path="reportes" element={<ReportsPage />} />
-          <Route path="configuracion" element={<SettingsPage />} />
+
+          {/* Inventario — ADMIN + INVENTARIO */}
+          <Route path="inventario" element={
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+              <InventoryPage />
+            </RoleRoute>
+          } />
+          <Route path="inventario/:id" element={
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+              <ProductDetailPage />
+            </RoleRoute>
+          } />
+
+          {/* Ventas — ADMIN + TIENDA */}
+          <Route path="ventas" element={
+            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]}>
+              <SalesPage />
+            </RoleRoute>
+          } />
+
+          {/* Ventas por Mayor — ADMIN + TIENDA */}
+          <Route path="ventas-mayor" element={
+            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]}>
+              <WholesalePage />
+            </RoleRoute>
+          } />
+
+          {/* Devoluciones — ADMIN + TIENDA */}
+          <Route path="devoluciones" element={
+            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]}>
+              <ReturnsPage />
+            </RoleRoute>
+          } />
+
+          {/* Solicitudes — todos */}
+          <Route path="solicitudes" element={
+            <RoleRoute allowedRoles={ALL}>
+              <RequestsPage />
+            </RoleRoute>
+          } />
+
+          {/* Movimientos — ADMIN + INVENTARIO */}
+          <Route path="movimientos" element={
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+              <MovementsPage />
+            </RoleRoute>
+          } />
+
+          {/* Costos — ADMIN + INVENTARIO */}
+          <Route path="costos" element={
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+              <CostsPage />
+            </RoleRoute>
+          } />
+
+          {/* Precios — ADMIN + INVENTARIO */}
+          <Route path="precios" element={
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+              <PricesPage />
+            </RoleRoute>
+          } />
+
+          {/* Reportes — ADMIN + TIENDA */}
+          <Route path="reportes" element={
+            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]}>
+              <ReportsPage />
+            </RoleRoute>
+          } />
+
+          {/* Configuración — solo ADMIN */}
+          <Route path="configuracion" element={
+            <RoleRoute allowedRoles={["ADMIN"]}>
+              <SettingsPage />
+            </RoleRoute>
+          } />
         </Route>
       </Routes>
     </>
