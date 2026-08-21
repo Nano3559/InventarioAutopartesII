@@ -62,21 +62,21 @@
   - Boton "Solicitar a almacen" cuando stock = 0
 
 ### Sprint 2 - Prioridad ALTA - Ejercicio 2: Ventas
-- [ ] **Pagina Ventas** (`/panel/ventas`):
+- [x] **Pagina Ventas** (`/panel/ventas`):
   - Buscar producto por codigo, nombre, marca, modelo, codigo OEM
   - Lista de resultados con imagen, nombre, precio, stock disponible
   - Carrito de venta: agregar productos con cantidad y precio
   - Calculo automatico de subtotales y total
   - Resumen de venta antes de confirmar (tabla con Producto | Cantidad | Precio | Subtotal | TOTAL)
   - Boton "Confirmar venta"
-- [ ] **Registro de pago** (modal o paso adicional):
+- [x] **Registro de pago** (modal o paso adicional):
   - Multiples metodos: Efectivo, QR, Credito, Transferencia
   - Suma de pagos vs total (validar que sea igual)
   - Permitir combinar metodos (ej: Efectivo Bs.1000 + QR Bs.500)
-- [ ] **Facturacion** (pregunta "Requiere factura?"):
+- [x] **Facturacion** (pregunta "Requiere factura?"):
   - Si/No
   - Si: formulario CI/NIT, Nombre, Celular
-- [ ] **Historial de ventas** (tabla con filtros por fecha, tienda, tipo)
+- [x] **Historial de ventas** (tabla con filtros por fecha, tienda, tipo)
 
 ### Sprint 3 - Prioridad MEDIA - Ejercicios 3 y 4
 - [ ] **Pagina Devoluciones** (`/panel/devoluciones`):
@@ -151,7 +151,7 @@
   - GET / — listar almacenes y tiendas
 
 ### Sprint 2 - Prioridad ALTA - Ejercicio 2: Ventas
-- [ ] **API Ventas** (`/api/sales`):
+- [x] **API Ventas** (`/api/sales`):
   - POST — crear venta normal
     - Recibe: items[], pagos[], customerId?, requiereFactura, datosFactura?
     - Valida stock suficiente de cada item
@@ -160,10 +160,10 @@
     - Si stock llega a 0, genera solicitud automatica a almacen (ejercicio 12)
   - GET / — listar ventas (filtros: fecha, tienda, tipo)
   - GET /:id — detalle de venta con items y pagos
-- [ ] **API Pagos** (`/api/payments`):
+- [x] **API Pagos** (`/api/payments`):
   - POST — registrar pago adicional a una venta
   - GET — listar pagos
-- [ ] **API Clientes** (`/api/customers`):
+- [x] **API Clientes** (`/api/customers`):
   - POST — crear/registro
   - GET — listar
   - GET /:id — detalle
@@ -225,7 +225,7 @@
   - Utilizar descripcion del producto para matching
 
 ### Tareas adicionales Ross
-- [ ] Crear modulo `customers` en backend/src/modules/ (falta completamente)
+- [x] Crear modulo `customers` en backend/src/modules/ (falta completamente)
 - [ ] Crear modulo `suppliers` en backend/src/modules/ (falta completamente)
 - [ ] Actualizar seed con: pagos en ventas, devoluciones, costos con facturas, precios calculados
 - [ ] Validaciones robustas en todos los endpoints (campos obligatorios, tipos de dato)
