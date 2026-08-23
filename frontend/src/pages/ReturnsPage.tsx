@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Search, RotateCcw, RefreshCw, ChevronDown,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Info, X,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
@@ -44,6 +44,7 @@ export default function ReturnsPage() {
   const [retPage, setRetPage] = useState(1);
   const [retPages, setRetPages] = useState(1);
   const [retTotal, setRetTotal] = useState(0);
+  const [showInfo, setShowInfo] = useState(false);
 
   const formatBs = (v: number) =>
     `Bs. ${v.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -141,9 +142,14 @@ export default function ReturnsPage() {
           <h1 className="text-2xl font-bold text-white">Devoluciones</h1>
           <p className="text-gray-400 text-sm mt-1">{retTotal} devoluciones registradas</p>
         </div>
-        <button onClick={fetchReturns} className="p-2.5 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-white hover:border-primary-600/50 transition-all self-start" title="Actualizar">
-          <RefreshCw size={18} />
-        </button>
+        <div className="flex items-center gap-3 self-start">
+          <button onClick={() => setShowInfo(true)} className="p-2.5 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-blue-400 hover:border-blue-500/30 transition-all" title="¿Cómo funciona?">
+            <Info size={18} />
+          </button>
+          <button onClick={fetchReturns} className="p-2.5 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-white hover:border-primary-600/50 transition-all" title="Actualizar">
+            <RefreshCw size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Buscar venta */}
@@ -320,6 +326,42 @@ export default function ReturnsPage() {
           </div>
         )}
       </div>
+
+      {/* Modal: Info */}
+      {showInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-5 border-b border-dark-700/50">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2"><Info size={20} className="text-blue-400" /> ¿Cómo funciona?</h2>
+              <button onClick={() => setShowInfo(false)} className="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all"><X size={18} /></button>
+            </div>
+            <div className="p-5 space-y-4 text-sm text-gray-300">
+              <div>
+                <h4 className="text-white font-semibold mb-1">¿Para qué sirve?</h4>
+                <p>Cuando un cliente devuelve un producto, desde aquí se registra para que el stock se actualice automáticamente.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-1">¿Cómo registrar una devolución?</h4>
+                <ol className="list-decimal list-inside space-y-1 ml-1">
+                  <li>Busca la venta original por su <strong>número de ID</strong>.</li>
+                  <li>Selecciona el producto que el cliente devuelve.</li>
+                  <li>Indica la <strong>cantidad</strong>, el <strong>monto</strong> a devolver y el <strong>método</strong> de devolución (efectivo, QR, etc.).</li>
+                  <li>Escribe el <strong>motivo</strong> de la devolución.</li>
+                  <li>Presiona <strong>"Devolver"</strong> y listo.</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-1">¿Qué pasa después?</h4>
+                <p>El producto vuelve al stock de la tienda automáticamente. En el historial de abajo puedes ver todas las devoluciones registradas.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-1">¿Puedo devolver todo?</h4>
+                <p>Solo se puede devolver lo que aún no fue devuelto. Si un producto ya fue devuelto completamente, aparece marcado y no se puede seleccionar de nuevo.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

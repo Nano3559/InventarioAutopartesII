@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Send, Plus, X, RefreshCw, ChevronDown, ChevronLeft, ChevronRight,
-  Search, Clock, Package, Truck, CheckCircle, Ban,
+  Search, Clock, Package, Truck, CheckCircle, Ban, Info,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
@@ -72,6 +72,7 @@ export default function RequestsPage() {
   const [quantity, setQuantity] = useState("");
   const [locations, setLocations] = useState<Location[]>([]);
   const [saving, setSaving] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   const fetchRequests = useCallback(async () => {
     try {
@@ -188,6 +189,9 @@ export default function RequestsPage() {
           <p className="text-gray-400 text-sm mt-1">{total} solicitudes</p>
         </div>
         <div className="flex items-center gap-3">
+          <button onClick={() => setShowInfo(true)} className="p-2.5 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-blue-400 hover:border-blue-500/30 transition-all" title="¿Cómo funciona?">
+            <Info size={18} />
+          </button>
           <button onClick={fetchRequests} className="p-2.5 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-white hover:border-primary-600/50 transition-all" title="Actualizar">
             <RefreshCw size={18} />
           </button>
@@ -279,18 +283,6 @@ export default function RequestsPage() {
                               </div>
                             );
                           })}
-                          {r.status === "PENDIENTE" && isAdmin && (
-                            <div className="relative group">
-                              <button onClick={() => changeStatus(r.id, "CANCELADO")}
-                                className="p-2 rounded-xl border text-red-400 bg-red-500/10 border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 hover:shadow-red-500/10 hover:shadow-lg transition-all duration-200 active:scale-95">
-                                <Ban size={15} />
-                              </button>
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 bg-dark-950 border border-dark-700 rounded-lg text-xs text-white whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-xl z-10">
-                                Cancelar
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-dark-950" />
-                              </div>
-                            </div>
-                          )}
                         </div>
                       </td>
                     </tr>
@@ -435,6 +427,42 @@ export default function RequestsPage() {
                 className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                 <Send size={16} /> {saving ? "Creando..." : "Crear Solicitud"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Info */}
+      {showInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-5 border-b border-dark-700/50">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2"><Info size={20} className="text-blue-400" /> ¿Cómo funciona?</h2>
+              <button onClick={() => setShowInfo(false)} className="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all"><X size={18} /></button>
+            </div>
+            <div className="p-5 space-y-4 text-sm text-gray-300">
+              <div>
+                <h4 className="text-white font-semibold mb-1">¿Para qué sirve?</h4>
+                <p>Cuando una tienda se queda sin stock de un producto, desde aquí se pide al almacén que lo envíe.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-1">¿Cómo pedir un producto?</h4>
+                <p>Dale click a <strong>"Nueva Solicitud"</strong>, busca el producto por nombre o código, elige la tienda que lo necesita y la cantidad. Listo, se envía al almacén.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-1">¿Qué significa cada estado?</h4>
+                <div className="space-y-1.5 ml-1">
+                  <p className="flex items-center gap-2"><Clock size={14} className="text-yellow-400" /> <strong className="text-yellow-400">Pendiente</strong> — Se creó la solicitud, esperando que el almacén la revise.</p>
+                  <p className="flex items-center gap-2"><Package size={14} className="text-blue-400" /> <strong className="text-blue-400">En Preparación</strong> — El almacén está armando el pedido.</p>
+                  <p className="flex items-center gap-2"><Truck size={14} className="text-purple-400" /> <strong className="text-purple-400">Enviado</strong> — El pedido salió del almacén camino a la tienda.</p>
+                  <p className="flex items-center gap-2"><CheckCircle size={14} className="text-green-400" /> <strong className="text-green-400">Recibido</strong> — La tienda ya recibió el producto.</p>
+                  <p className="flex items-center gap-2"><Ban size={14} className="text-red-400" /> <strong className="text-red-400">Cancelado</strong> — Se canceló la solicitud.</p>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-1">¿Quién puede cambiar el estado?</h4>
+                <p>Solo el administrador puede avanzar o cancelar una solicitud. Los demás usuarios solo pueden ver el seguimiento.</p>
+              </div>
             </div>
           </div>
         </div>
