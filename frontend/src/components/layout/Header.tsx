@@ -1,12 +1,23 @@
-import { User, Bell } from "lucide-react";
+import { User, Bell, Menu } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 
-export default function Header() {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+export default function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuthStore();
 
   return (
-    <header className="h-16 bg-dark-900/50 border-b border-dark-700/50 flex items-center justify-between px-6 backdrop-blur-sm">
-      <div />
+    <header className="h-16 bg-dark-900/50 border-b border-dark-700/50 flex items-center justify-between px-4 md:px-6 backdrop-blur-sm">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuClick}
+          className="p-2 text-gray-400 hover:text-white hover:bg-dark-800 rounded-xl transition-all md:hidden"
+        >
+          <Menu size={20} />
+        </button>
+      </div>
       <div className="flex items-center gap-4">
         <button className="relative p-2 text-gray-400 hover:text-white hover:bg-dark-800 rounded-xl transition-all">
           <Bell size={20} />
