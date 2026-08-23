@@ -79,13 +79,13 @@
 - [x] **Historial de ventas** (tabla con filtros por fecha, tienda, tipo)
 
 ### Sprint 3 - Prioridad MEDIA - Ejercicios 3 y 4
-- [ ] **Pagina Devoluciones** (`/panel/devoluciones`):
+- [x] **Pagina Devoluciones** (`/panel/devoluciones`):
   - Buscar venta original
   - Seleccionar producto de la venta
   - Formulario: motivo, cantidad, monto a devolver, metodo de devolucion
   - Confirmar devolucion
   - Tabla historial de devoluciones
-- [ ] **Pagina Solicitudes** (`/panel/solicitudes`):
+- [x] **Pagina Solicitudes** (`/panel/solicitudes`):
   - Formulario nueva solicitud: producto, cantidad, tienda solicitante
   - Lista de solicitudes con filtros por estado
   - Estados visibles: Pendiente, En preparacion, Enviado, Recibido, Cancelado
@@ -169,13 +169,13 @@
   - GET /:id — detalle
 
 ### Sprint 3 - Prioridad MEDIA - Ejercicios 3 y 4
-- [ ] **API Devoluciones** (`/api/returns`):
+- [x] **API Devoluciones** (`/api/returns`):
   - POST — registrar devolucion
     - Valida que la venta exista
     - Devuelve stock automaticamente
     - Registra motivo, cantidad, monto, metodo
   - GET / — listar devoluciones
-- [ ] **API Solicitudes** (`/api/requests`):
+- [x] **API Solicitudes** (`/api/requests`):
   - POST — crear solicitud (tienda pide a almacen)
   - PUT /:id — cambiar estado (PENDIENTE -> EN_PREPARACION -> ENVIADO -> RECIBIDO)
   - GET / — listar con filtros por estado y tienda
