@@ -254,69 +254,110 @@ export default function InventoryPage() {
             <p className="text-gray-400">Sin productos registrados</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-gray-500 border-b border-dark-700/50">
-                  <th className="text-left px-4 py-3 font-medium">ID</th>
-                  <th className="text-left px-4 py-3 font-medium">Fabricante</th>
-                  <th className="text-left px-4 py-3 font-medium">Producto</th>
-                  <th className="text-left px-4 py-3 font-medium">Marca</th>
-                  <th className="text-left px-4 py-3 font-medium">Modelo</th>
-                  <th className="text-left px-4 py-3 font-medium">Año</th>
-                  <th className="text-left px-4 py-3 font-medium">Cód. OEM</th>
-                  <th className="text-left px-4 py-3 font-medium">Cód. Fábrica</th>
-                  <th className="text-center px-4 py-3 font-medium">Imagen</th>
-                  <th className="text-right px-4 py-3 font-medium">Precio 1</th>
-                  <th className="text-right px-4 py-3 font-medium">Precio 2</th>
-                  <th className="text-center px-4 py-3 font-medium">Stock</th>
-                  <th className="text-center px-4 py-3 font-medium">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((p) => (
-                  <tr key={p.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30 transition-colors">
-                    <td className="px-4 py-3 text-gray-400">{p.id}</td>
-                    <td className="px-4 py-3 text-gray-300">{p.manufacturer}</td>
-                    <td className="px-4 py-3 text-white font-medium max-w-[200px] truncate">{p.name}</td>
-                    <td className="px-4 py-3 text-gray-300">{p.brand}</td>
-                    <td className="px-4 py-3 text-gray-300">{p.model}</td>
-                    <td className="px-4 py-3 text-gray-400">{p.year}</td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>
-                    <td className="px-4 py-3">
-                      <div className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden">
-                        <ProductImage image={p.image} category={p.category} name={p.name} />
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>
-                    <td className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>
-                        {p.stock}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-1">
-                        <button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all" title="Ver detalle">
-                          <Eye size={16} />
-                        </button>
-                        <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar">
-                          <Pencil size={16} />
-                        </button>
-                        <button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all" title="Ver stock por ubicación">
-                          <Package size={16} />
-                        </button>
-                        <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-gray-500 border-b border-dark-700/50">
+                    <th className="text-left px-4 py-3 font-medium">ID</th>
+                    <th className="text-left px-4 py-3 font-medium">Fabricante</th>
+                    <th className="text-left px-4 py-3 font-medium">Producto</th>
+                    <th className="text-left px-4 py-3 font-medium">Marca</th>
+                    <th className="text-left px-4 py-3 font-medium">Modelo</th>
+                    <th className="text-left px-4 py-3 font-medium">Año</th>
+                    <th className="text-left px-4 py-3 font-medium">Cód. OEM</th>
+                    <th className="text-left px-4 py-3 font-medium">Cód. Fábrica</th>
+                    <th className="text-center px-4 py-3 font-medium">Imagen</th>
+                    <th className="text-right px-4 py-3 font-medium">Precio 1</th>
+                    <th className="text-right px-4 py-3 font-medium">Precio 2</th>
+                    <th className="text-center px-4 py-3 font-medium">Stock</th>
+                    <th className="text-center px-4 py-3 font-medium">Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {products.map((p) => (
+                    <tr key={p.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30 transition-colors">
+                      <td className="px-4 py-3 text-gray-400">{p.id}</td>
+                      <td className="px-4 py-3 text-gray-300">{p.manufacturer}</td>
+                      <td className="px-4 py-3 text-white font-medium max-w-[200px] truncate">{p.name}</td>
+                      <td className="px-4 py-3 text-gray-300">{p.brand}</td>
+                      <td className="px-4 py-3 text-gray-300">{p.model}</td>
+                      <td className="px-4 py-3 text-gray-400">{p.year}</td>
+                      <td className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>
+                      <td className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>
+                      <td className="px-4 py-3">
+                        <div className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden">
+                          <ProductImage image={p.image} category={p.category} name={p.name} />
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>
+                      <td className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>
+                          {p.stock}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-1">
+                          <button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all" title="Ver detalle">
+                            <Eye size={16} />
+                          </button>
+                          <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar">
+                            <Pencil size={16} />
+                          </button>
+                          <button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all" title="Ver stock por ubicación">
+                            <Package size={16} />
+                          </button>
+                          <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-dark-700/30">
+              {products.map((p) => (
+                <div key={p.id} className="p-4 space-y-2">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 bg-dark-900/50 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                      <ProductImage image={p.image} category={p.category} name={p.name} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-medium text-sm truncate">{p.name}</p>
+                      <p className="text-xs text-gray-500">{p.brand} · {p.model} · {p.year}</p>
+                      <p className="text-xs text-gray-600">{p.manufacturer}</p>
+                    </div>
+                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full shrink-0 ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>
+                      {p.stock}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-green-400 font-medium">{formatCurrency(p.price1)}</span>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 active:bg-blue-500/10 transition-all">
+                        <Eye size={16} />
+                      </button>
+                      <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 active:bg-amber-500/10 transition-all">
+                        <Pencil size={16} />
+                      </button>
+                      <button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 active:bg-purple-500/10 transition-all">
+                        <Package size={16} />
+                      </button>
+                      <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 active:bg-red-500/10 transition-all">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Pagination */}
@@ -348,7 +389,7 @@ export default function InventoryPage() {
       {/* Modal: Crear / Editar Producto */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-dark-700/50">
               <h2 className="text-lg font-bold text-white">{editingId ? "Editar Producto" : "Nuevo Producto"}</h2>
               <button onClick={() => setShowModal(false)} className="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all">

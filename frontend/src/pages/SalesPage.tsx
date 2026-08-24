@@ -14,6 +14,10 @@ interface Product {
   image: string | null;
 }
 
+interface Location {
+  id: number; name: string; type: string;
+}
+
 interface CartItem {
   productId: number; itemCode: string; name: string; brand: string;
   unitPrice: number; quantity: number; availableStock: number;
@@ -37,6 +41,14 @@ interface SaleRecord {
 const PAGE_SIZE = 15;
 
 export default function SalesPage() {
+  // --- Locations ---
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [selectedLocationId, setSelectedLocationId] = useState<number | "">("");
+
+  useEffect(() => {
+    api.get("/locations").then((r) => setLocations(r.data)).catch(() => {});
+  }, []);
+
   // --- Search ---
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
@@ -189,6 +201,10 @@ export default function SalesPage() {
         };
       }
 
+      if (selectedLocationId) {
+        payload.locationId = selectedLocationId;
+      }
+
       const res = await api.post("/sales", payload);
       setLastSale(res.data);
       setShowPayment(false);
@@ -251,6 +267,24 @@ export default function SalesPage() {
       {/* ============ NEW SALE ============ */}
       {!showHistory && (
         <>
+          {/* Location selector */}
+          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <MapPin size={16} className="text-primary-400" />
+              <span>Tienda:</span>
+            </div>
+            <div className="relative flex-1 sm:max-w-xs">
+              <select value={selectedLocationId} onChange={(e) => setSelectedLocationId(Number(e.target.value) || "")}
+                className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
+                <option value="">Seleccionar tienda</option>
+                {locations.filter((l) => l.type === "TIENDA").map((l) => (
+                  <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            </div>
+          </div>
+
           {/* Search */}
           <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4">
             <div className="relative">
@@ -314,7 +348,8 @@ export default function SalesPage() {
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                {/* Desktop table */}
+                <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-gray-500 border-b border-dark-700/50">
@@ -360,6 +395,39 @@ export default function SalesPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile cards */}
+                <div className="md:hidden divide-y divide-dark-700/30">
+                  {cart.map((c) => (
+                    <div key={c.productId} className="p-4 space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-white font-medium text-sm truncate">{c.name}</p>
+                          <p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p>
+                        </div>
+                        <button onClick={() => removeItem(c.productId)}
+                          className="p-1.5 text-gray-500 hover:text-red-400 shrink-0">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <button onClick={() => updateQuantity(c.productId, c.quantity - 1)}
+                            className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 active:text-white transition-all">
+                            <Minus size={14} />
+                          </button>
+                          <span className="w-10 text-center text-white text-sm font-medium">{c.quantity}</span>
+                          <button onClick={() => updateQuantity(c.productId, c.quantity + 1)}
+                            className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 active:text-white transition-all">
+                            <Plus size={14} />
+                          </button>
+                          <span className="text-xs text-gray-600 ml-1">máx: {c.availableStock}</span>
+                        </div>
+                        <p className="text-green-400 font-medium text-sm">{formatBs(c.unitPrice * c.quantity)}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 <div className="px-5 py-4 border-t border-dark-700/50 bg-dark-900/20">
