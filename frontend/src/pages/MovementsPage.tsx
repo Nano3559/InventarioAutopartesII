@@ -227,7 +227,8 @@ export default function MovementsPage() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-gray-500 border-b border-dark-700/50">
@@ -274,18 +275,53 @@ export default function MovementsPage() {
                         <p className="text-xs text-gray-600 ml-4">{m.toLocation.type}</p>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className="px-2.5 py-0.5 bg-primary-600/10 text-primary-400 font-medium rounded-full text-sm">
+                        <span className="px-2.5 py-0.5 bg-primary-600/10 border border-primary-600/20 text-primary-400 text-xs font-medium rounded-full">
                           {m.quantity}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-400 text-xs">{m.user.name}</td>
-                      <td className="px-4 py-3 text-gray-500 text-xs max-w-[150px] truncate">
-                        {m.observation || "—"}
-                      </td>
+                      <td className="px-4 py-3 text-gray-300 text-xs">{m.user.name}</td>
+                      <td className="px-4 py-3 text-gray-500 text-xs max-w-[200px] truncate">{m.observation || "—"}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-dark-700/30">
+              {movements.map((m) => (
+                <div key={m.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span className="font-mono">#{m.id}</span>
+                      <span>·</span>
+                      <span>{new Date(m.date).toLocaleDateString("es-BO")}</span>
+                    </div>
+                    <span className="px-2.5 py-0.5 bg-primary-600/10 border border-primary-600/20 text-primary-400 text-xs font-medium rounded-full">
+                      x{m.quantity}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">{m.product.name}</p>
+                    <p className="text-xs text-gray-500">{m.product.itemCode} · {m.product.brand}</p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center gap-1 text-gray-300">
+                      <MapPin size={12} className="text-gray-500" />
+                      {m.fromLocation.name}
+                    </div>
+                    <ArrowLeftRight size={12} className="text-primary-400" />
+                    <div className="flex items-center gap-1 text-gray-300">
+                      <MapPin size={12} className="text-gray-500" />
+                      {m.toLocation.name}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>{m.user.name}</span>
+                    {m.observation && <span className="truncate max-w-[200px]">{m.observation}</span>}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {pages > 1 && (
@@ -323,7 +359,7 @@ export default function MovementsPage() {
       {/* ============ MODAL: Nuevo Movimiento ============ */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-dark-700/50">
               <h2 className="text-lg font-bold text-white">Nuevo Movimiento</h2>
               <button onClick={() => setShowForm(false)}

@@ -348,7 +348,8 @@ export default function SalesPage() {
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                {/* Desktop table */}
+                <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-gray-500 border-b border-dark-700/50">
@@ -394,6 +395,39 @@ export default function SalesPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile cards */}
+                <div className="md:hidden divide-y divide-dark-700/30">
+                  {cart.map((c) => (
+                    <div key={c.productId} className="p-4 space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-white font-medium text-sm truncate">{c.name}</p>
+                          <p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p>
+                        </div>
+                        <button onClick={() => removeItem(c.productId)}
+                          className="p-1.5 text-gray-500 hover:text-red-400 shrink-0">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <button onClick={() => updateQuantity(c.productId, c.quantity - 1)}
+                            className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 active:text-white transition-all">
+                            <Minus size={14} />
+                          </button>
+                          <span className="w-10 text-center text-white text-sm font-medium">{c.quantity}</span>
+                          <button onClick={() => updateQuantity(c.productId, c.quantity + 1)}
+                            className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 active:text-white transition-all">
+                            <Plus size={14} />
+                          </button>
+                          <span className="text-xs text-gray-600 ml-1">máx: {c.availableStock}</span>
+                        </div>
+                        <p className="text-green-400 font-medium text-sm">{formatBs(c.unitPrice * c.quantity)}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 <div className="px-5 py-4 border-t border-dark-700/50 bg-dark-900/20">
