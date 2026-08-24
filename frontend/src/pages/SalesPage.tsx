@@ -14,6 +14,10 @@ interface Product {
   image: string | null;
 }
 
+interface Location {
+  id: number; name: string; type: string;
+}
+
 interface CartItem {
   productId: number; itemCode: string; name: string; brand: string;
   unitPrice: number; quantity: number; availableStock: number;
@@ -37,6 +41,14 @@ interface SaleRecord {
 const PAGE_SIZE = 15;
 
 export default function SalesPage() {
+  // --- Locations ---
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [selectedLocationId, setSelectedLocationId] = useState<number | "">("");
+
+  useEffect(() => {
+    api.get("/locations").then((r) => setLocations(r.data)).catch(() => {});
+  }, []);
+
   // --- Search ---
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
@@ -189,6 +201,10 @@ export default function SalesPage() {
         };
       }
 
+      if (selectedLocationId) {
+        payload.locationId = selectedLocationId;
+      }
+
       const res = await api.post("/sales", payload);
       setLastSale(res.data);
       setShowPayment(false);
@@ -251,6 +267,24 @@ export default function SalesPage() {
       {/* ============ NEW SALE ============ */}
       {!showHistory && (
         <>
+          {/* Location selector */}
+          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <MapPin size={16} className="text-primary-400" />
+              <span>Tienda:</span>
+            </div>
+            <div className="relative flex-1 sm:max-w-xs">
+              <select value={selectedLocationId} onChange={(e) => setSelectedLocationId(Number(e.target.value) || "")}
+                className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
+                <option value="">Seleccionar tienda</option>
+                {locations.filter((l) => l.type === "TIENDA").map((l) => (
+                  <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            </div>
+          </div>
+
           {/* Search */}
           <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4">
             <div className="relative">

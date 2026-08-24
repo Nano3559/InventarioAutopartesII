@@ -107,9 +107,11 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     }
 
     const user = req.user!;
-    const userLocationId = user.locationId || locationId;
+    let userLocationId = user.locationId || locationId ? Number(locationId) : null;
+
     if (!userLocationId) {
-      return res.status(400).json({ message: "No se pudo determinar la ubicación de la venta" });
+      const tienda = await prisma.location.findFirst({ where: { type: "TIENDA" } });
+      userLocationId = tienda?.id || 5;
     }
 
     const validMethods = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];
