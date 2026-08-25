@@ -1,9 +1,10 @@
 import { useState, useRef } from "react";
 import {
   TrendingUp, Plus, Minus, Trash2, X, Search, FileText,
-  Check,
+  Check, Upload, RefreshCw, FileSpreadsheet,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import api from "../services/api";
 
 interface WholesaleItem {
   id: number; itemCode: string; productName: string; brand: string;
@@ -39,6 +40,11 @@ export default function WholesalePage() {
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<any>(null);
 
   // Form state
   const [items, setItems] = useState<WholesaleItem[]>([]);
@@ -114,6 +120,25 @@ export default function WholesalePage() {
     setPaymentMethod("Transferencia"); setFacturaNIT("");
   };
 
+  const handleImportExcel = async () => {
+    if (!importFile) return;
+    try {
+      setImporting(true);
+      setImportResult(null);
+      const formData = new FormData();
+      formData.append("file", importFile);
+      const res = await api.post("/wholesale/import", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setImportResult(res.data);
+      toast.success(`Importación completada: ${res.data.created} ventas creadas`);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Error al importar archivo");
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const printNota = (sale: WholesaleSale) => {
     const win = window.open("", "_blank");
     if (!win) return;
@@ -139,7 +164,11 @@ export default function WholesalePage() {
           <h1 className="text-2xl font-bold text-white">Ventas por Mayor</h1>
           <p className="text-gray-400 text-sm mt-1">Gestión de ventas al por mayor</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <button onClick={() => { setShowImportModal(true); setImportFile(null); setImportResult(null); }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-green-600/20">
+            <Upload size={16} /> Importar Excel
+          </button>
           <button onClick={() => setShowHistory(!showHistory)}
             className="flex items-center gap-2 px-4 py-2.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-xl text-sm transition-all border border-dark-600">
             <FileText size={16} /> Historial
@@ -374,6 +403,80 @@ export default function WholesalePage() {
             className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-all">
             Crear nueva venta mayorista
           </button>
+        </div>
+      )}
+
+      {/* Modal: Importar Excel */}
+      {showImportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-5 border-b border-dark-700/50">
+              <h2 className="text-lg font-bold text-white">Importar Productos Mayoristas</h2>
+              <button onClick={() => { setShowImportModal(false); setImportResult(null); }} className="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
+                <p className="text-blue-400 text-xs font-medium mb-1">El Excel debe contener columnas con: código, producto, marca, modelo, año, detalle, precio mayorista, cantidad</p>
+              </div>
+              {!importResult ? (
+                <div className="space-y-3">
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-dark-600/50 rounded-xl cursor-pointer hover:border-primary-500/50 transition-colors bg-dark-900/30">
+                    <div className="flex flex-col items-center gap-2">
+                      {importFile ? (
+                        <>
+                          <FileSpreadsheet size={32} className="text-green-400" />
+                          <span className="text-sm text-white">{importFile.name}</span>
+                          <span className="text-xs text-gray-500">{(importFile.size / 1024).toFixed(1)} KB</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload size={32} className="text-gray-500" />
+                          <span className="text-sm text-gray-400">Seleccionar archivo .xlsx o .xls</span>
+                        </>
+                      )}
+                    </div>
+                    <input type="file" className="hidden" accept=".xlsx,.xls" onChange={(e) => setImportFile(e.target.files?.[0] || null)} />
+                  </label>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3">
+                      <p className="text-2xl font-bold text-green-400">{importResult.created || importResult.imported || 0}</p>
+                      <p className="text-xs text-gray-400">Creados</p>
+                    </div>
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
+                      <p className="text-2xl font-bold text-blue-400">{importResult.updated || 0}</p>
+                      <p className="text-xs text-gray-400">Actualizados</p>
+                    </div>
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+                      <p className="text-2xl font-bold text-red-400">{importResult.errors?.length || 0}</p>
+                      <p className="text-xs text-gray-400">Errores</p>
+                    </div>
+                  </div>
+                  {importResult.errors?.length > 0 && (
+                    <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-3 max-h-32 overflow-y-auto">
+                      {importResult.errors.map((e: string, i: number) => (
+                        <p key={i} className="text-xs text-red-400">{e}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-end gap-3 p-5 border-t border-dark-700/50">
+              <button onClick={() => { setShowImportModal(false); setImportResult(null); }} className="px-4 py-2.5 text-sm text-gray-400 hover:text-white transition-colors">
+                {importResult ? "Cerrar" : "Cancelar"}
+              </button>
+              {!importResult && (
+                <button onClick={handleImportExcel} disabled={!importFile || importing} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 flex items-center gap-2">
+                  {importing ? <><RefreshCw size={16} className="animate-spin" /> Importando...</> : <><Upload size={16} /> Importar</>}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
