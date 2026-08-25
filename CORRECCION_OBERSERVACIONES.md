@@ -9,13 +9,13 @@
 ## 1. Inventario
 
 ### Estructura de datos
-- [ ] Agregar el campo `detalles` al inventario.
-- [ ] Reemplazar la columna visible `calidad` por `detalles`.
-- [ ] Revisar los cambios necesarios en base de datos, backend y frontend.
-- [ ] Permitir múltiples valores separados por `/` en:
-  - [ ] Marca.
-  - [ ] Modelo.
-  - [ ] Año.
+- [x] Agregar el campo `detalles` al inventario.
+- [x] Reemplazar la columna visible `calidad` por `detalles`.
+- [x] Revisar los cambios necesarios en base de datos, backend y frontend.
+- [x] Permitir múltiples valores separados por `/` en:
+  - [x] Marca.
+  - [x] Modelo.
+  - [x] Año.
 
 Ejemplo:
 
@@ -26,44 +26,44 @@ Año: 05-08/12-16
 ```
 
 ### Lógica de rangos de años
-- [ ] Implementar la interpretación de rangos de años.
+- [x] Implementar la interpretación de rangos de años.
 
 Casos:
 
 - `13-15` → incluye 2013, 2014 y 2015.
 - `13` → corresponde únicamente a 2013.
 - `13-` → corresponde a 2013 en adelante.
-- [ ] Permitir múltiples rangos separados por `/`.
-- [ ] Validar rangos incorrectos.
-- [ ] Definir mensaje de validación para valores como `15-13`.
+- [x] Permitir múltiples rangos separados por `/`.
+- [x] Validar rangos incorrectos.
+- [x] Definir mensaje de validación para valores como `15-13`.
 
 ### Permisos en Inventario
-- [ ] Las tiendas pueden visualizar inventario.
-- [ ] Las tiendas no pueden editar inventario.
-- [ ] Los encargados de inventario pueden visualizar inventario.
-- [ ] Los encargados de inventario no pueden editar inventario.
-- [ ] Confirmar si el administrador puede editar inventario libremente.
+- [x] Las tiendas pueden visualizar inventario.
+- [x] Las tiendas no pueden editar inventario.
+- [x] Los encargados de inventario pueden visualizar inventario.
+- [x] Los encargados de inventario no pueden editar inventario.
+- [x] Confirmar si el administrador puede editar inventario libremente.
 
 ---
 
 ## 2. Búsqueda de Inventario
 
 ### Autocompletado
-- [ ] Implementar sugerencias mientras el usuario escribe.
-- [ ] Autocompletado para Marca.
-- [ ] Autocompletado para Modelo.
-- [ ] Autocompletado para Año.
-- [ ] Evaluar otras columnas donde corresponda aplicar sugerencias.
+- [x] Implementar sugerencias mientras el usuario escribe.
+- [x] Autocompletado para Marca.
+- [x] Autocompletado para Modelo.
+- [x] Autocompletado para Año.
+- [x] Evaluar otras columnas donde corresponda aplicar sugerencias.
 
 Ejemplo:
 
 `Toy` → sugerir `Toyota`.
 
 ### Búsqueda exacta por columna
-- [ ] Permitir búsqueda específica por Marca.
-- [ ] Permitir búsqueda específica por Modelo.
-- [ ] Permitir búsqueda específica por Año.
-- [ ] Considerar correctamente valores múltiples separados por `/`.
+- [x] Permitir búsqueda específica por Marca.
+- [x] Permitir búsqueda específica por Modelo.
+- [x] Permitir búsqueda específica por Año.
+- [x] Considerar correctamente valores múltiples separados por `/`.
 
 Ejemplo:
 
@@ -78,8 +78,8 @@ una búsqueda por:
 debe encontrar el producto.
 
 ### Búsqueda por rangos de años
-- [ ] Aplicar la misma lógica de rangos utilizada en Inventario.
-- [ ] Permitir buscar años incluidos dentro de un rango.
+- [x] Aplicar la misma lógica de rangos utilizada en Inventario.
+- [x] Permitir buscar años incluidos dentro de un rango.
 
 Ejemplo:
 
@@ -95,50 +95,50 @@ Resultado:
 
 Debe encontrar el producto.
 
-- [ ] Preparar esta lógica para que pueda reutilizarse posteriormente en Ventas.
+- [x] Preparar esta lógica para que pueda reutilizarse posteriormente en Ventas.
 
 ---
 
 ## 3. Solicitudes
 
 ### Nota opcional
-- [ ] Agregar campo de nota al crear una solicitud.
-- [ ] La nota debe ser opcional.
-- [ ] Mostrar la nota en el detalle de la solicitud cuando exista.
+- [x] Agregar campo de nota al crear una solicitud.
+- [x] La nota debe ser opcional.
+- [x] Mostrar la nota en el detalle de la solicitud cuando exista.
 
 ### Flujo de estados
 Implementar los siguientes estados:
 
-- [ ] Solicitud creada.
-- [ ] Recibido por Inventario.
-- [ ] Preparando.
-- [ ] Entregado.
-- [ ] Recibido por Tienda o Administrador.
+- [x] Solicitud creada.
+- [x] Recibido por Inventario.
+- [x] Preparando.
+- [x] Entregado.
+- [x] Recibido por Tienda o Administrador.
 
 ### Permisos para cambio de estado
 
 #### Encargado de Inventario
-- [ ] Puede marcar como Recibido.
-- [ ] Puede cambiar a Preparando.
-- [ ] Puede cambiar a Entregado.
+- [x] Puede marcar como Recibido.
+- [x] Puede cambiar a Preparando.
+- [x] Puede cambiar a Entregado.
 
 #### Tienda / Administrador
-- [ ] Puede confirmar la recepción final.
+- [x] Puede confirmar la recepción final.
 
 ### Historial de estados
 Registrar:
 
-- [ ] Estado anterior.
-- [ ] Estado nuevo.
-- [ ] Usuario que realizó el cambio.
-- [ ] Rol del usuario.
-- [ ] Fecha.
-- [ ] Hora.
+- [x] Estado anterior.
+- [x] Estado nuevo.
+- [x] Usuario que realizó el cambio.
+- [x] Rol del usuario.
+- [x] Fecha.
+- [x] Hora.
 
 ### Notificaciones
-- [ ] Notificar a la tienda cuando cambie el estado de su solicitud.
-- [ ] Mostrar claramente el nuevo estado.
-- [ ] Verificar que la notificación corresponda a la tienda que realizó la solicitud.
+- [x] Notificar a la tienda cuando cambie el estado de su solicitud.
+- [x] Mostrar claramente el nuevo estado.
+- [x] Verificar que la notificación corresponda a la tienda que realizó la solicitud.
 
 ---
 
@@ -206,39 +206,39 @@ Cada tienda debe manejar tres vendedores internos.
 ## 6. Gestión de Roles y Permisos
 
 ### Panel centralizado
-- [ ] Crear un módulo o panel llamado `Gestión de Roles y Permisos`.
-- [ ] Permitir configurar módulos visibles por rol.
-- [ ] Permitir configurar columnas visibles por rol.
-- [ ] Guardar estas configuraciones sin necesidad de modificar código.
+- [x] Crear un módulo o panel llamado `Gestión de Roles y Permisos`.
+- [x] Permitir configurar módulos visibles por rol.
+- [x] Permitir configurar columnas visibles por rol.
+- [x] Guardar estas configuraciones sin necesidad de modificar código.
 
 ### Módulos visibles por rol
-- [ ] Configurar Inventario.
-- [ ] Configurar Ventas.
-- [ ] Configurar Solicitudes.
-- [ ] Configurar Devoluciones.
-- [ ] Permitir agregar nuevos módulos en el futuro.
+- [x] Configurar Inventario.
+- [x] Configurar Ventas.
+- [x] Configurar Solicitudes.
+- [x] Configurar Devoluciones.
+- [x] Permitir agregar nuevos módulos en el futuro.
 
 Ejemplo:
 
 Para Tienda:
 
-- [ ] Inventario.
-- [ ] Ventas.
-- [ ] Solicitudes.
-- [ ] Devoluciones.
-- [ ] Otros módulos según configuración del administrador.
+- [x] Inventario.
+- [x] Ventas.
+- [x] Solicitudes.
+- [x] Devoluciones.
+- [x] Otros módulos según configuración del administrador.
 
 ### Restricción de acceso
-- [ ] Un módulo oculto no debe aparecer en el menú.
-- [ ] Un módulo oculto tampoco debe ser accesible mediante URL directa.
-- [ ] Validar permisos desde backend.
-- [ ] Validar permisos desde frontend.
+- [x] Un módulo oculto no debe aparecer en el menú.
+- [x] Un módulo oculto tampoco debe ser accesible mediante URL directa.
+- [x] Validar permisos desde backend.
+- [x] Validar permisos desde frontend.
 
 ### Columnas visibles por rol
-- [ ] Configurar columnas visibles de Inventario.
-- [ ] Configurar columnas visibles de Ventas.
-- [ ] Mostrar solamente las columnas permitidas para cada rol.
-- [ ] Impedir que el usuario habilite columnas restringidas por el administrador.
+- [x] Configurar columnas visibles de Inventario.
+- [x] Configurar columnas visibles de Ventas.
+- [x] Mostrar solamente las columnas permitidas para cada rol.
+- [x] Impedir que el usuario habilite columnas restringidas por el administrador.
 
 ### Preferencias personales
 Dentro de las columnas permitidas por el administrador:
@@ -251,38 +251,38 @@ Dentro de las columnas permitidas por el administrador:
 ### Auditoría de permisos
 Registrar:
 
-- [ ] Administrador que realizó el cambio.
-- [ ] Rol modificado.
-- [ ] Permiso modificado.
-- [ ] Valor anterior.
-- [ ] Valor nuevo.
-- [ ] Fecha.
-- [ ] Hora.
+- [x] Administrador que realizó el cambio.
+- [x] Rol modificado.
+- [x] Permiso modificado.
+- [x] Valor anterior.
+- [x] Valor nuevo.
+- [x] Fecha.
+- [x] Hora.
 
 ---
 
 # Tareas compartidas / coordinación
 
 ## Búsqueda
-- [ ] Erika desarrolla la lógica base de búsqueda en Inventario.
+- [x] Erika desarrolla la lógica base de búsqueda en Inventario.
 - [ ] Ross reutiliza esa lógica en Ventas.
-- [ ] Mantener el mismo comportamiento de búsqueda en ambos módulos.
+- [x] Mantener el mismo comportamiento de búsqueda en ambos módulos.
 
 ## Roles y permisos
-- [ ] Ross desarrolla la configuración general de roles y permisos.
-- [ ] Erika aplica las restricciones correspondientes en Inventario y Solicitudes.
+- [x] Ross desarrolla la configuración general de roles y permisos.
+- [x] Erika aplica las restricciones correspondientes en Inventario y Solicitudes.
 - [ ] Ross aplica las restricciones correspondientes en Ventas y Devoluciones.
 
 ## Pruebas integrales
-- [ ] Verificar que Tienda no pueda editar Inventario.
-- [ ] Verificar que Encargado de Inventario no pueda editar Inventario.
+- [x] Verificar que Tienda no pueda editar Inventario.
+- [x] Verificar que Encargado de Inventario no pueda editar Inventario.
 - [ ] Verificar que Tienda solo pueda vender productos de su tienda.
-- [ ] Verificar que el Administrador pueda operar según sus permisos.
-- [ ] Verificar el flujo completo de Solicitudes.
-- [ ] Verificar las restricciones de acceso por módulo.
+- [x] Verificar que el Administrador pueda operar según sus permisos.
+- [x] Verificar el flujo completo de Solicitudes.
+- [x] Verificar las restricciones de acceso por módulo.
 - [ ] Verificar las restricciones de columnas.
-- [ ] Verificar búsquedas por marca, modelo y año.
-- [ ] Verificar rangos de año.
+- [x] Verificar búsquedas por marca, modelo y año.
+- [x] Verificar rangos de año.
 - [ ] Verificar Devoluciones.
 
 ---

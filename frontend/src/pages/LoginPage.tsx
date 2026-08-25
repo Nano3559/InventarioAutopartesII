@@ -19,7 +19,7 @@ export default function LoginPage() {
 
     try {
       const { data } = await api.post("/auth/login", { email, password });
-      login(data.user, data.token);
+      await login(data.user, data.token);
       toast.success(`Bienvenido, ${data.user.name}`);
       navigate("/panel");
     } catch (err: any) {

@@ -4,6 +4,7 @@ export interface User {
   email: string;
   role: string;
   locationId: number | null;
+  permissions?: string[];
 }
 
 export interface Product {

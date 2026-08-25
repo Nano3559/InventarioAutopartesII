@@ -9,17 +9,17 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 const allLinks = [
-  { to: "/panel", label: "Dashboard", icon: LayoutDashboard, roles: ["ADMIN", "INVENTARIO", "TIENDA"] },
-  { to: "/panel/inventario", label: "Inventario", icon: Package, roles: ["ADMIN", "INVENTARIO"] },
-  { to: "/panel/ventas", label: "Ventas", icon: ShoppingCart, roles: ["ADMIN", "TIENDA"] },
-  { to: "/panel/ventas-mayor", label: "Ventas por Mayor", icon: TrendingUp, roles: ["ADMIN", "TIENDA"] },
-  { to: "/panel/devoluciones", label: "Devoluciones", icon: RotateCcw, roles: ["ADMIN", "TIENDA"] },
-  { to: "/panel/solicitudes", label: "Solicitudes", icon: Send, roles: ["ADMIN", "INVENTARIO", "TIENDA"] },
-  { to: "/panel/movimientos", label: "Movimientos", icon: ArrowLeftRight, roles: ["ADMIN", "INVENTARIO"] },
-  { to: "/panel/costos", label: "Costos", icon: DollarSign, roles: ["ADMIN", "INVENTARIO"] },
-  { to: "/panel/precios", label: "Precios", icon: Tags, roles: ["ADMIN", "INVENTARIO"] },
-  { to: "/panel/reportes", label: "Reportes", icon: BarChart3, roles: ["ADMIN", "TIENDA"] },
-  { to: "/panel/configuracion", label: "Configuración", icon: Settings, roles: ["ADMIN"] },
+  { to: "/panel", label: "Dashboard", icon: LayoutDashboard, module: "" },
+  { to: "/panel/inventario", label: "Inventario", icon: Package, module: "inventario" },
+  { to: "/panel/ventas", label: "Ventas", icon: ShoppingCart, module: "ventas" },
+  { to: "/panel/ventas-mayor", label: "Ventas por Mayor", icon: TrendingUp, module: "ventas-mayor" },
+  { to: "/panel/devoluciones", label: "Devoluciones", icon: RotateCcw, module: "devoluciones" },
+  { to: "/panel/solicitudes", label: "Solicitudes", icon: Send, module: "solicitudes" },
+  { to: "/panel/movimientos", label: "Movimientos", icon: ArrowLeftRight, module: "movimientos" },
+  { to: "/panel/costos", label: "Costos", icon: DollarSign, module: "costos" },
+  { to: "/panel/precios", label: "Precios", icon: Tags, module: "precios" },
+  { to: "/panel/reportes", label: "Reportes", icon: BarChart3, module: "reportes" },
+  { to: "/panel/configuracion", label: "Configuración", icon: Settings, module: "configuracion" },
 ];
 
 interface SidebarProps {
@@ -28,26 +28,29 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
-  const { user, logout } = useAuthStore();
+  const { user, logout, permissions } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const role = user?.role || "";
+  const isAdmin = role === "ADMIN";
 
-  const links = allLinks.filter((l) => l.roles.includes(role));
+  const links = allLinks.filter((l) => {
+    if (!l.module) return true; // Dashboard always visible
+    if (isAdmin) return true; // ADMIN sees everything
+    return permissions.includes(l.module);
+  });
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  // Cerrar sidebar al navegar en móvil
   useEffect(() => {
     onClose();
   }, [location.pathname]);
 
   return (
     <>
-      {/* Backdrop móvil */}
       {open && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
@@ -55,14 +58,12 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar */}
       <aside className={`
         fixed inset-y-0 left-0 z-50 w-64 bg-dark-900 border-r border-dark-700/50 flex flex-col
         transform transition-transform duration-300 ease-in-out
         md:relative md:translate-x-0 md:z-auto
         ${open ? "translate-x-0" : "-translate-x-full"}
       `}>
-        {/* Logo + botón cerrar */}
         <div className="p-5 border-b border-dark-700/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

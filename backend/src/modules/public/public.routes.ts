@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { yearMatchesRanges } from "../../utils/yearRanges";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -7,7 +8,7 @@ const prisma = new PrismaClient();
 // GET /api/public/products - Catálogo público con filtros
 router.get("/products", async (req: Request, res: Response) => {
   try {
-    const { search, brand, model, year, category, quality, page = "1", limit = "12" } = req.query;
+    const { search, brand, model, year, category, detalles, page = "1", limit = "12" } = req.query;
 
     const where: any = {};
     const AND: any[] = [];
@@ -24,43 +25,52 @@ router.get("/products", async (req: Request, res: Response) => {
     }
 
     if (brand && typeof brand === "string") {
-      AND.push({ brand: { equals: brand, mode: "insensitive" } });
+      AND.push({ brand: { contains: brand, mode: "insensitive" } });
     }
 
     if (model && typeof model === "string") {
-      AND.push({ model: { equals: model, mode: "insensitive" } });
+      AND.push({ model: { contains: model, mode: "insensitive" } });
     }
 
     if (year && typeof year === "string") {
-      AND.push({ year: { contains: year } });
+      const searchYear = parseInt(year, 10);
+      if (!isNaN(searchYear)) {
+        AND.push({ id: { gt: 0 } });
+      }
     }
 
     if (category && typeof category === "string") {
       AND.push({ category: { name: { equals: category, mode: "insensitive" } } });
     }
 
-    if (quality && typeof quality === "string") {
-      AND.push({ quality: { equals: quality, mode: "insensitive" } });
+    if (detalles && typeof detalles === "string") {
+      AND.push({ detalles: { equals: detalles, mode: "insensitive" } });
     }
 
     if (AND.length > 0) where.AND = AND;
 
     const skip = (Number(page) - 1) * Number(limit);
+    const hasYearFilter = year && typeof year === "string";
 
-    const [products, total] = await Promise.all([
-      prisma.product.findMany({
-        where,
-        include: {
-          category: true,
-          inventories: true,
-          importers: { include: { importer: true } },
-        },
-        skip,
-        take: Number(limit),
-        orderBy: { name: "asc" },
-      }),
-      prisma.product.count({ where }),
-    ]);
+    let allProducts = await prisma.product.findMany({
+      where,
+      include: {
+        category: true,
+        inventories: true,
+        importers: { include: { importer: true } },
+      },
+      orderBy: { name: "asc" },
+    });
+
+    if (hasYearFilter) {
+      const searchYear = parseInt(year as string, 10);
+      if (!isNaN(searchYear)) {
+        allProducts = allProducts.filter((p) => yearMatchesRanges(searchYear, p.year));
+      }
+    }
+
+    const total = allProducts.length;
+    const products = allProducts.slice(skip, skip + Number(limit));
 
     const productsWithStock = products.map((p) => {
       const stockTotal = p.inventories.reduce((sum, inv) => sum + inv.stock, 0);
@@ -76,7 +86,7 @@ router.get("/products", async (req: Request, res: Response) => {
         model: p.model,
         year: p.year,
         detail: p.detail,
-        quality: p.quality,
+        detalles: p.detalles,
         image: p.image,
         oemCode: p.oemCode,
         factoryCode: p.factoryCode,
@@ -138,7 +148,7 @@ router.get("/products/:id", async (req: Request, res: Response) => {
       model: product.model,
       year: product.year,
       detail: product.detail,
-      quality: product.quality,
+      detalles: product.detalles,
       image: product.image,
       oemCode: product.oemCode,
       factoryCode: product.factoryCode,
@@ -165,9 +175,8 @@ router.get("/products/:id", async (req: Request, res: Response) => {
 // GET /api/public/filters - Filtros progresivos
 router.get("/filters", async (_req: Request, res: Response) => {
   try {
-    const brands = await prisma.product.findMany({
+    const brandsRaw = await prisma.product.findMany({
       select: { brand: true },
-      distinct: ["brand"],
       orderBy: { brand: "asc" },
     });
 
@@ -177,16 +186,18 @@ router.get("/filters", async (_req: Request, res: Response) => {
     });
 
     const qualities = await prisma.product.findMany({
-      where: { quality: { not: null } },
-      select: { quality: true },
-      distinct: ["quality"],
-      orderBy: { quality: "asc" },
+      where: { detalles: { not: null } },
+      select: { detalles: true },
+      distinct: ["detalles"],
+      orderBy: { detalles: "asc" },
     });
 
+    const brands = [...new Set(brandsRaw.flatMap((b) => b.brand.split("/").map((v) => v.trim())).filter(Boolean))].sort();
+
     res.json({
-      brands: brands.map((b) => b.brand),
+      brands,
       categories: categories.map((c) => c.name),
-      qualities: qualities.map((q) => q.quality).filter(Boolean),
+      qualities: qualities.map((q) => q.detalles).filter(Boolean),
     });
   } catch (error) {
     console.error("Error en filtros:", error);
@@ -200,17 +211,17 @@ router.get("/filters/models", async (req: Request, res: Response) => {
     const { brand } = req.query;
     const where: any = {};
     if (brand && typeof brand === "string") {
-      where.brand = { equals: brand, mode: "insensitive" };
+      where.brand = { contains: brand, mode: "insensitive" };
     }
 
-    const models = await prisma.product.findMany({
+    const modelsRaw = await prisma.product.findMany({
       where,
       select: { model: true },
-      distinct: ["model"],
       orderBy: { model: "asc" },
     });
 
-    res.json(models.map((m) => m.model));
+    const models = [...new Set(modelsRaw.flatMap((m) => m.model.split("/").map((v) => v.trim())).filter(Boolean))].sort();
+    res.json(models);
   } catch (error) {
     console.error("Error en modelos:", error);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -223,20 +234,20 @@ router.get("/filters/years", async (req: Request, res: Response) => {
     const { brand, model } = req.query;
     const where: any = {};
     if (brand && typeof brand === "string") {
-      where.brand = { equals: brand, mode: "insensitive" };
+      where.brand = { contains: brand, mode: "insensitive" };
     }
     if (model && typeof model === "string") {
-      where.model = { equals: model, mode: "insensitive" };
+      where.model = { contains: model, mode: "insensitive" };
     }
 
-    const years = await prisma.product.findMany({
+    const yearsRaw = await prisma.product.findMany({
       where,
       select: { year: true },
-      distinct: ["year"],
       orderBy: { year: "asc" },
     });
 
-    res.json(years.map((y) => y.year));
+    const years = [...new Set(yearsRaw.flatMap((y) => y.year.split("/").map((v) => v.trim())).filter(Boolean))].sort();
+    res.json(years);
   } catch (error) {
     console.error("Error en años:", error);
     res.status(500).json({ message: "Error interno del servidor" });

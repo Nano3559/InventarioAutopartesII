@@ -7,11 +7,12 @@ import {
 import toast from "react-hot-toast";
 import api from "../services/api";
 import ProductImage from "../components/public/ProductImage";
+import { useAuthStore } from "../stores/authStore";
 
 interface ProductDetail {
   id: number; itemCode: string; manufacturer: string; name: string;
   brand: string; model: string; year: string; detail: string | null;
-  quality: string | null; image: string | null; oemCode: string | null;
+  detalles: string | null; image: string | null; oemCode: string | null;
   factoryCode: string | null; price1: string; price2: string;
   wholesalePrice: string | null; cost: string | null;
   categoryId: number | null; category: string | null; stock: number;
@@ -32,6 +33,8 @@ interface Filters {
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const canEdit = user?.role === "ADMIN";
 
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -144,9 +147,11 @@ export default function ProductDetailPage() {
               </button>
             </>
           ) : (
-            <button onClick={() => setEditing(true)} className="bg-dark-800 border border-dark-700/50 text-gray-300 hover:text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
-              <Edit3 size={16} /> Editar
-            </button>
+            canEdit && (
+              <button onClick={() => setEditing(true)} className="bg-dark-800 border border-dark-700/50 text-gray-300 hover:text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+                <Edit3 size={16} /> Editar
+              </button>
+            )
           )}
         </div>
       </div>

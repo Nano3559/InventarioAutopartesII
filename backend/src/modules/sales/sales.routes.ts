@@ -338,7 +338,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
               where: {
                 productId: update.productId,
                 locationId: userLocationId,
-                status: { in: ["PENDIENTE", "EN_PREPARACION", "ENVIADO"] },
+                status: { in: ["PENDIENTE", "RECIBIDO_POR_INVENTARIO", "PREPARANDO"] },
               },
             });
             if (!existing) {

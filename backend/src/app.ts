@@ -21,6 +21,8 @@ import reportsRoutes from "./modules/reports/reports.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 import customersRoutes from "./modules/customers/customers.routes";
 import publicRoutes from "./modules/public/public.routes";
+import permissionsRoutes from "./modules/permissions/permissions.routes";
+import notificationsRoutes from "./modules/notifications/notifications.routes";
 
 const app = express();
 
@@ -52,6 +54,8 @@ app.use("/api/prices", pricesRoutes);
 app.use("/api/reports", reportsRoutes);
 app.use("/api/customers", customersRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/permissions", permissionsRoutes);
+app.use("/api/notifications", notificationsRoutes);
 app.use("/api/public", publicRoutes);
 
 app.use(errorHandler);

@@ -2,6 +2,9 @@ import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import * as XLSX from "xlsx";
+import { yearMatchesRanges } from "../../utils/yearRanges";
+import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { AuthRequest } from "../../shared/types";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -32,10 +35,9 @@ router.get("/", async (req: Request, res: Response) => {
       });
     }
 
-    if (brand && typeof brand === "string") AND.push({ brand: { equals: brand, mode: "insensitive" } });
-    if (manufacturer && typeof manufacturer === "string") AND.push({ manufacturer: { equals: manufacturer, mode: "insensitive" } });
-    if (model && typeof model === "string") AND.push({ model: { equals: model, mode: "insensitive" } });
-    if (year && typeof year === "string") AND.push({ year: { contains: year } });
+    if (brand && typeof brand === "string") AND.push({ brand: { contains: brand, mode: "insensitive" } });
+    if (manufacturer && typeof manufacturer === "string") AND.push({ manufacturer: { contains: manufacturer, mode: "insensitive" } });
+    if (model && typeof model === "string") AND.push({ model: { contains: model, mode: "insensitive" } });
     if (oemCode && typeof oemCode === "string") AND.push({ oemCode: { contains: oemCode, mode: "insensitive" } });
     if (factoryCode && typeof factoryCode === "string") AND.push({ factoryCode: { contains: factoryCode, mode: "insensitive" } });
     if (categoryId && typeof categoryId === "string") AND.push({ categoryId: Number(categoryId) });
@@ -45,19 +47,24 @@ router.get("/", async (req: Request, res: Response) => {
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
 
-    const [products, total] = await Promise.all([
-      prisma.product.findMany({
-        where,
-        include: {
-          category: true,
-          inventories: { include: { location: true } },
-        },
-        skip,
-        take,
-        orderBy: { name: "asc" },
-      }),
-      prisma.product.count({ where }),
-    ]);
+    const hasYearFilter = year && typeof year === "string";
+
+    let allProducts = await prisma.product.findMany({
+      where,
+      include: {
+        category: true,
+        inventories: { include: { location: true } },
+      },
+      orderBy: { name: "asc" },
+    });
+
+    if (hasYearFilter) {
+      const searchYear = parseInt(year as string, 10);
+      allProducts = allProducts.filter((p) => yearMatchesRanges(searchYear, p.year));
+    }
+
+    const total = allProducts.length;
+    const products = allProducts.slice(skip, skip + take);
 
     const result = products.map((p) => {
       const stockTotal = p.inventories.reduce((sum, inv) => sum + inv.stock, 0);
@@ -70,7 +77,7 @@ router.get("/", async (req: Request, res: Response) => {
         model: p.model,
         year: p.year,
         detail: p.detail,
-        quality: p.quality,
+        detalles: p.detalles,
         image: p.image,
         oemCode: p.oemCode,
         factoryCode: p.factoryCode,
@@ -94,19 +101,23 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
-// GET /filters — Marcas, fabricantes, categorías disponibles
+// GET /filters — Marcas, fabricantes, modelos, años, categorías disponibles
 router.get("/filters", async (_req: Request, res: Response) => {
   try {
-    const [brands, manufacturers, categories] = await Promise.all([
-      prisma.product.findMany({ select: { brand: true }, distinct: ["brand"], orderBy: { brand: "asc" } }),
-      prisma.product.findMany({ select: { manufacturer: true }, distinct: ["manufacturer"], orderBy: { manufacturer: "asc" } }),
+    const [brandsRaw, manufacturersRaw, modelsRaw, yearsRaw, categories] = await Promise.all([
+      prisma.product.findMany({ select: { brand: true }, orderBy: { brand: "asc" } }),
+      prisma.product.findMany({ select: { manufacturer: true }, orderBy: { manufacturer: "asc" } }),
+      prisma.product.findMany({ select: { model: true }, orderBy: { model: "asc" } }),
+      prisma.product.findMany({ select: { year: true }, orderBy: { year: "asc" } }),
       prisma.category.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
     ]);
-    res.json({
-      brands: brands.map((b) => b.brand),
-      manufacturers: manufacturers.map((m) => m.manufacturer),
-      categories,
-    });
+
+    const brands = [...new Set(brandsRaw.flatMap((b) => b.brand.split("/").map((v) => v.trim())).filter(Boolean))].sort();
+    const manufacturers = [...new Set(manufacturersRaw.map((m) => m.manufacturer).filter(Boolean))].sort();
+    const models = [...new Set(modelsRaw.flatMap((m) => m.model.split("/").map((v) => v.trim())).filter(Boolean))].sort();
+    const years = [...new Set(yearsRaw.flatMap((y) => y.year.split("/").map((v) => v.trim())).filter(Boolean))].sort();
+
+    res.json({ brands, manufacturers, models, categories, years });
   } catch (error) {
     console.error("Error al obtener filtros:", error);
     res.status(500).json({ message: "Error interno del servidor" });
@@ -140,7 +151,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       model: product.model,
       year: product.year,
       detail: product.detail,
-      quality: product.quality,
+      detalles: product.detalles,
       image: product.image,
       oemCode: product.oemCode,
       factoryCode: product.factoryCode,
@@ -171,8 +182,8 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// POST — Crear producto
-router.post("/", async (req: Request, res: Response) => {
+// POST — Crear producto (solo ADMIN)
+router.post("/", authenticate, authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const { itemCode, manufacturer, name, brand, model, year, detail, oemCode, factoryCode, price1, price2, wholesalePrice, cost, categoryId, image } = req.body;
 
@@ -212,8 +223,8 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// PUT /:id — Editar producto
-router.put("/:id", async (req: Request, res: Response) => {
+// PUT /:id — Editar producto (solo ADMIN)
+router.put("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     const existing = await prisma.product.findUnique({ where: { id } });
@@ -258,8 +269,8 @@ router.put("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// DELETE /:id — Eliminar producto
-router.delete("/:id", async (req: Request, res: Response) => {
+// DELETE /:id — Eliminar producto (solo ADMIN)
+router.delete("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     const existing = await prisma.product.findUnique({
@@ -354,8 +365,8 @@ router.post("/search-image", upload.single("image"), async (req: Request, res: R
   }
 });
 
-// POST /import — Importar productos masivamente desde Excel
-router.post("/import", upload.single("file"), async (req: Request, res: Response) => {
+// POST /import — Importar productos masivamente desde Excel (solo ADMIN)
+router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), async (req: AuthRequest, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "Debe subir un archivo Excel (.xlsx o .xls)" });
@@ -395,7 +406,7 @@ router.post("/import", upload.single("file"), async (req: Request, res: Response
       const price2 = parseFloat(row["Precio 2"] || row["precio2"] || row["Precio mayoreo"] || row["price2"] || "0") || 0;
       const wholesalePrice = parseFloat(row["Precio mayor"] || row["precio mayor"] || row["wholesalePrice"] || "0") || 0;
       const cost = parseFloat(row["Costo"] || row["costo"] || row["cost"] || "0") || 0;
-      const quality = (row["Calidad"] || row["calidad"] || row["quality"] || "").toString().trim();
+      const calidad = (row["Calidad"] || row["calidad"] || row["quality"] || row["Detalles"] || row["detalles"] || row["detalles"] || "").toString().trim();
 
       if (!itemCode || !name) {
         errors.push(`Fila ${i + 2}: Código y nombre son obligatorios`);
@@ -425,7 +436,7 @@ router.post("/import", upload.single("file"), async (req: Request, res: Response
           if (wholesalePrice > 0) updateData.wholesalePrice = wholesalePrice;
           if (cost > 0) updateData.cost = cost;
           if (categoryId) updateData.categoryId = categoryId;
-          if (quality) updateData.quality = quality;
+          if (calidad) updateData.detalles = calidad;
 
           if (Object.keys(updateData).length > 0) {
             await prisma.product.update({ where: { id: existing.id }, data: updateData });
@@ -448,7 +459,7 @@ router.post("/import", upload.single("file"), async (req: Request, res: Response
               wholesalePrice: wholesalePrice || null,
               cost: cost || null,
               categoryId,
-              quality: quality || null,
+              detalles: calidad || null,
             },
           });
 

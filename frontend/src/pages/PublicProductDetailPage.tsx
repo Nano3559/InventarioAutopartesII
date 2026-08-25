@@ -13,7 +13,7 @@ interface ProductDetail {
   model: string;
   year: string;
   detail: string | null;
-  quality: string | null;
+  detalles: string | null;
   image: string | null;
   oemCode: string | null;
   factoryCode: string | null;
@@ -94,9 +94,9 @@ export default function PublicProductDetailPage() {
               <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg border uppercase tracking-wider ${availabilityColor(product.availability)}`}>
                 {product.availability}
               </span>
-              {product.quality && (
+              {product.detalles && (
                 <span className="text-xs font-semibold px-2.5 py-1 rounded-lg border text-blue-400 bg-blue-500/10 border-blue-500/20 uppercase tracking-wider">
-                  {product.quality}
+                  {product.detalles}
                 </span>
               )}
             </div>
