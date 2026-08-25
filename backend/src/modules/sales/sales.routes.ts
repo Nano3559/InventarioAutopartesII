@@ -61,6 +61,132 @@ router.get("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
+// GET /:id/nota — Generar nota de venta (HTML imprimible)
+router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
+  try {
+    const sale = await prisma.sale.findUnique({
+      where: { id: Number(req.params.id) },
+      include: {
+        user: { select: { id: true, name: true } },
+        location: { select: { id: true, name: true, address: true } },
+        customer: true,
+        items: { include: { product: true } },
+        payments: true,
+        returns: true,
+      },
+    });
+
+    if (!sale) {
+      return res.status(404).json({ message: "Venta no encontrada" });
+    }
+
+    const totalReturned = sale.returns.reduce((sum, r) => sum + Number(r.amount), 0);
+    const totalPaid = sale.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+
+    const paymentMethods = sale.payments.map((p) => `${p.method}: Bs. ${Number(p.amount).toFixed(2)}`).join(" | ");
+
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nota de Venta #${sale.id}</title>
+  <style>
+    @page { size: A5; margin: 10mm; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Courier New', monospace; font-size: 11px; color: #333; padding: 15px; max-width: 148mm; margin: 0 auto; }
+    .header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 8px; margin-bottom: 8px; }
+    .header h2 { font-size: 14px; margin-bottom: 2px; }
+    .header p { font-size: 10px; color: #666; }
+    .info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 10px; }
+    .info div { flex: 1; }
+    .customer { background: #f5f5f5; padding: 6px 8px; border-radius: 4px; margin-bottom: 8px; font-size: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    th, td { padding: 3px 5px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; }
+    th { background: #f0f0f0; font-weight: bold; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .totals { margin-top: 5px; }
+    .totals .row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 10px; }
+    .totals .total-final { font-weight: bold; font-size: 12px; border-top: 2px solid #333; padding-top: 4px; margin-top: 4px; }
+    .payments { background: #f5f5f5; padding: 6px 8px; border-radius: 4px; margin-top: 8px; font-size: 10px; }
+    .footer { margin-top: 12px; text-align: center; border-top: 2px dashed #333; padding-top: 8px; font-size: 9px; color: #666; }
+    .stamp { display: inline-block; border: 1px solid #999; padding: 4px 15px; margin-top: 10px; color: #999; font-size: 9px; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>RepuestoPro</h2>
+    <p>Sistema de Inventario y Ventas</p>
+    <p>${sale.location?.name || "Tienda"}</p>
+  </div>
+
+  <div class="info">
+    <div><strong>NOTA DE VENTA #${sale.id}</strong></div>
+    <div class="text-right">${new Date(sale.saleDate).toLocaleDateString("es-BO")} ${new Date(sale.saleDate).toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" })}</div>
+  </div>
+  <div class="info">
+    <div>Tipo: <strong>${sale.type === "MAYOR" ? "VENTA POR MAYOR" : "VENTA NORMAL"}</strong></div>
+    <div class="text-right">Atendido por: ${sale.user.name}</div>
+  </div>
+
+  ${sale.customer ? `
+  <div class="customer">
+    <strong>Cliente:</strong> ${sale.customer.name}
+    ${sale.customer.nit ? ` | NIT/CI: ${sale.customer.nit}` : ""}
+    ${sale.customer.phone ? ` | Tel: ${sale.customer.phone}` : ""}
+  </div>
+  ` : ""}
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cant.</th>
+        <th>Descripción</th>
+        <th class="text-right">P. Unit.</th>
+        <th class="text-right">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${sale.items.map((item) => `
+      <tr>
+        <td class="text-center">${item.quantity}</td>
+        <td>${item.product.name}<br><small style="color:#999">${item.product.brand} · ${item.product.itemCode}</small></td>
+        <td class="text-right">Bs. ${Number(item.unitPrice).toFixed(2)}</td>
+        <td class="text-right">Bs. ${Number(item.subtotal).toFixed(2)}</td>
+      </tr>
+      `).join("")}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div class="row"><span>Subtotal:</span><span>Bs. ${Number(sale.total).toFixed(2)}</span></div>
+    ${totalReturned > 0 ? `<div class="row" style="color:#dc2626"><span>Devoluciones:</span><span>- Bs. ${totalReturned.toFixed(2)}</span></div>` : ""}
+    <div class="row total-final"><span>TOTAL:</span><span>Bs. ${(Number(sale.total) - totalReturned).toFixed(2)}</span></div>
+    <div class="row"><span>Pagado:</span><span>Bs. ${totalPaid.toFixed(2)}</span></div>
+    ${totalPaid < (Number(sale.total) - totalReturned) ? `<div class="row" style="color:#dc2626"><span>Pendiente:</span><span>Bs. ${((Number(sale.total) - totalReturned) - totalPaid).toFixed(2)}</span></div>` : ""}
+  </div>
+
+  <div class="payments">
+    <strong>Métodos de pago:</strong> ${paymentMethods || "Sin pagos registrados"}
+  </div>
+
+  <div class="footer">
+    <p>¡Gracias por su compra!</p>
+    <p>RepuestoPro — Repuestos de calidad para tu vehículo</p>
+    <div class="stamp">SOLD</div>
+  </div>
+</body>
+</html>`;
+
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(html);
+  } catch (error) {
+    console.error("Error al generar nota de venta:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
 // GET /:id — Detalle de venta
 router.get("/:id", async (req: AuthRequest, res: Response) => {
   try {
@@ -208,17 +334,32 @@ router.post("/", async (req: AuthRequest, res: Response) => {
           });
 
           if (newStock === 0) {
-            const almacenId = userLocationId <= 4 ? null : 1;
-            if (almacenId) {
-              await tx.productRequest.create({
-                data: {
-                  productId: update.productId,
-                  quantity: Math.max(update.quantity, 5),
-                  requestedById: user.userId,
-                  locationId: userLocationId,
-                  status: "PENDIENTE",
-                },
-              });
+            const existing = await tx.productRequest.findFirst({
+              where: {
+                productId: update.productId,
+                locationId: userLocationId,
+                status: { in: ["PENDIENTE", "EN_PREPARACION", "ENVIADO"] },
+              },
+            });
+            if (!existing) {
+              const almacen = await tx.location.findFirst({ where: { type: "ALMACEN" } });
+              if (almacen) {
+                const almacenInv = await tx.inventory.findUnique({
+                  where: { productId_locationId: { productId: update.productId, locationId: almacen.id } },
+                });
+                const requestQty = Math.max(update.quantity, 5);
+                if (almacenInv && almacenInv.stock >= requestQty) {
+                  await tx.productRequest.create({
+                    data: {
+                      productId: update.productId,
+                      quantity: requestQty,
+                      requestedById: user.userId,
+                      locationId: userLocationId,
+                      status: "PENDIENTE",
+                    },
+                  });
+                }
+              }
             }
           }
         }

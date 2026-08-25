@@ -1,8 +1,11 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import multer from "multer";
+import * as XLSX from "xlsx";
 
 const router = Router();
 const prisma = new PrismaClient();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 // GET / — Listar productos con filtros, búsqueda y paginación
 router.get("/", async (req: Request, res: Response) => {
@@ -280,6 +283,201 @@ router.delete("/:id", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error al eliminar producto:", error);
     res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
+// POST /search-image — Buscar productos por imagen
+router.post("/search-image", upload.single("image"), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Debe subir una imagen" });
+    }
+
+    const filename = req.file.originalname.toLowerCase().replace(/\.[^.]+$/, "");
+    const keywords = filename
+      .replace(/[_\-\.]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .split(" ")
+      .filter((w) => w.length > 2);
+
+    if (keywords.length === 0) {
+      return res.json({ products: [], message: "No se pudieron extraer palabras clave del nombre del archivo" });
+    }
+
+    const orConditions = keywords.flatMap((kw) => [
+      { name: { contains: kw, mode: "insensitive" as const } },
+      { brand: { contains: kw, mode: "insensitive" as const } },
+      { model: { contains: kw, mode: "insensitive" as const } },
+      { itemCode: { contains: kw, mode: "insensitive" as const } },
+      { detail: { contains: kw, mode: "insensitive" as const } },
+      { manufacturer: { contains: kw, mode: "insensitive" as const } },
+    ]);
+
+    const products = await prisma.product.findMany({
+      where: { OR: orConditions },
+      include: {
+        inventories: {
+          include: { location: { select: { id: true, name: true, type: true } } },
+        },
+      },
+      take: 20,
+      orderBy: { name: "asc" },
+    });
+
+    const results = products.map((p) => ({
+      id: p.id,
+      itemCode: p.itemCode,
+      name: p.name,
+      brand: p.brand,
+      model: p.model,
+      year: p.year,
+      price1: Number(p.price1),
+      price2: Number(p.price2),
+      image: p.image,
+      totalStock: p.inventories.reduce((sum, i) => sum + i.stock, 0),
+      locations: p.inventories.map((i) => ({
+        name: i.location.name,
+        type: i.location.type,
+        stock: i.stock,
+      })),
+    }));
+
+    res.json({
+      query: keywords.join(" "),
+      count: results.length,
+      products: results,
+    });
+  } catch (error) {
+    console.error("Error en búsqueda por imagen:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
+// POST /import — Importar productos masivamente desde Excel
+router.post("/import", upload.single("file"), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Debe subir un archivo Excel (.xlsx o .xls)" });
+    }
+
+    const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+
+    if (rows.length === 0) {
+      return res.status(400).json({ message: "El archivo está vacío" });
+    }
+
+    const categories = await prisma.category.findMany();
+    const catMap: Record<string, number> = {};
+    categories.forEach((c) => { catMap[c.name.toLowerCase()] = c.id; });
+
+    const imported: any[] = [];
+    const updated: any[] = [];
+    const errors: string[] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i] as any;
+
+      const itemCode = (row["Codigo fabrica"] || row["codigo fabrica"] || row["Código Fábrica"] || row["itemCode"] || row["Código"] || "").toString().trim();
+      const name = (row["Descripcion"] || row["descripcion"] || row["Producto"] || row["producto"] || row["Nombre"] || "").toString().trim();
+      const manufacturer = (row["Fabricante"] || row["fabricante"] || row["Manufacturer"] || "Sin especificar").toString().trim();
+      const brand = (row["Marca"] || row["marca"] || row["Brand"] || "").toString().trim();
+      const model = (row["Modelo"] || row["modelo"] || row["Model"] || "").toString().trim();
+      const year = (row["Anos"] || row["anos"] || row["Años"] || row["años"] || row["Año"] || "").toString().trim();
+      const detail = (row["Detalle"] || row["detalle"] || row["Detail"] || "").toString().trim();
+      const oemCode = (row["Código OEM"] || row["codigo oem"] || row["oemCode"] || row["Cód. OEM"] || "").toString().trim();
+      const factoryCode = (row["Código fábrica"] || row["codigo fabrica"] || row["factoryCode"] || row["Cód. Fábrica"] || "").toString().trim();
+      const category = (row["Categoría"] || row["categoría"] || row["Categoria"] || row["categoria"] || row["Category"] || "").toString().trim();
+      const price1 = parseFloat(row["Precio 1"] || row["precio1"] || row["Precio minorista"] || row["price1"] || "0") || 0;
+      const price2 = parseFloat(row["Precio 2"] || row["precio2"] || row["Precio mayoreo"] || row["price2"] || "0") || 0;
+      const wholesalePrice = parseFloat(row["Precio mayor"] || row["precio mayor"] || row["wholesalePrice"] || "0") || 0;
+      const cost = parseFloat(row["Costo"] || row["costo"] || row["cost"] || "0") || 0;
+      const quality = (row["Calidad"] || row["calidad"] || row["quality"] || "").toString().trim();
+
+      if (!itemCode || !name) {
+        errors.push(`Fila ${i + 2}: Código y nombre son obligatorios`);
+        continue;
+      }
+
+      try {
+        let categoryId: number | null = null;
+        if (category && catMap[category.toLowerCase()]) {
+          categoryId = catMap[category.toLowerCase()];
+        }
+
+        const existing = await prisma.product.findUnique({ where: { itemCode } });
+
+        if (existing) {
+          const updateData: any = {};
+          if (name) updateData.name = name;
+          if (brand) updateData.brand = brand;
+          if (model) updateData.model = model;
+          if (year) updateData.year = year;
+          if (detail) updateData.detail = detail;
+          if (manufacturer && manufacturer !== "Sin especificar") updateData.manufacturer = manufacturer;
+          if (oemCode) updateData.oemCode = oemCode;
+          if (factoryCode) updateData.factoryCode = factoryCode;
+          if (price1 > 0) updateData.price1 = price1;
+          if (price2 > 0) updateData.price2 = price2;
+          if (wholesalePrice > 0) updateData.wholesalePrice = wholesalePrice;
+          if (cost > 0) updateData.cost = cost;
+          if (categoryId) updateData.categoryId = categoryId;
+          if (quality) updateData.quality = quality;
+
+          if (Object.keys(updateData).length > 0) {
+            await prisma.product.update({ where: { id: existing.id }, data: updateData });
+          }
+          updated.push({ id: existing.id, itemCode, name, action: "actualizado" });
+        } else {
+          const product = await prisma.product.create({
+            data: {
+              itemCode,
+              name,
+              manufacturer,
+              brand: brand || "Sin marca",
+              model: model || "Sin modelo",
+              year,
+              detail,
+              oemCode: oemCode || null,
+              factoryCode: factoryCode || null,
+              price1: price1 || 0,
+              price2: price2 || 0,
+              wholesalePrice: wholesalePrice || null,
+              cost: cost || null,
+              categoryId,
+              quality: quality || null,
+            },
+          });
+
+          for (const loc of await prisma.location.findMany()) {
+            await prisma.inventory.create({
+              data: { productId: product.id, locationId: loc.id, stock: 0, minStock: 1 },
+            });
+          }
+
+          imported.push({ id: product.id, itemCode, name, action: "creado" });
+        }
+      } catch (err: any) {
+        errors.push(`Fila ${i + 2}: ${err.message}`);
+      }
+    }
+
+    res.json({
+      total: rows.length,
+      imported: imported.length,
+      updated: updated.length,
+      errors: errors.length,
+      details: { imported, updated, errors },
+    });
+  } catch (error: any) {
+    console.error("Error al importar productos:", error);
+    if (error.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
+    }
+    res.status(500).json({ message: error.message || "Error al procesar el archivo" });
   }
 });
 

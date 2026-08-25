@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { parseId, parseString } from "../../shared/middlewares/validate";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -22,8 +23,9 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       ];
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const pg = Math.max(1, Number(page) || 1);
+    const take = Math.min(100, Math.max(1, Number(limit) || 50));
+    const skip = (pg - 1) * take;
 
     const [suppliers, total] = await Promise.all([
       prisma.supplier.findMany({
@@ -45,7 +47,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         costsCount: s._count.costs,
         createdAt: s.createdAt,
       })),
-      pagination: { total, page: Number(page), limit: take, pages: Math.ceil(total / take) },
+      pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
     console.error("Error al listar proveedores:", error);
@@ -56,8 +58,9 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 // GET /:id — Detalle de proveedor
 router.get("/:id", async (req: AuthRequest, res: Response) => {
   try {
+    const id = parseId(req.params.id);
     const supplier = await prisma.supplier.findUnique({
-      where: { id: Number(req.params.id) },
+      where: { id },
       include: {
         costs: {
           include: { product: { select: { name: true, itemCode: true } } },
@@ -67,9 +70,7 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
         _count: { select: { costs: true } },
       },
     });
-
     if (!supplier) return res.status(404).json({ message: "Proveedor no encontrado" });
-
     res.json({
       id: supplier.id,
       name: supplier.name,
@@ -84,7 +85,8 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
         date: c.date,
       })),
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
     console.error("Error al obtener proveedor:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -93,9 +95,9 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
 // POST — Crear proveedor
 router.post("/", async (req: AuthRequest, res: Response) => {
   try {
-    const { name, nit, phone } = req.body;
-
-    if (!name) return res.status(400).json({ message: "El nombre es obligatorio" });
+    const name = parseString(req.body.name, "Nombre", { required: true, max: 255 });
+    const nit = parseString(req.body.nit, "NIT", { max: 20 });
+    const phone = parseString(req.body.phone, "Teléfono", { max: 20 });
 
     if (nit) {
       const existing = await prisma.supplier.findFirst({ where: { nit } });
@@ -103,11 +105,13 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     }
 
     const supplier = await prisma.supplier.create({
-      data: { name, nit: nit || null, phone: phone || null },
+      data: { name: name!, nit, phone },
     });
-
     res.status(201).json(supplier);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message && !error.message.includes("Prisma")) {
+      return res.status(400).json({ message: error.message });
+    }
     console.error("Error al crear proveedor:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -116,28 +120,36 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 // PUT /:id — Editar proveedor
 router.put("/:id", async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
-    const { name, nit, phone } = req.body;
-
-    const existing = await prisma.supplier.findUnique({ where: { id: Number(id) } });
+    const id = parseId(req.params.id);
+    const existing = await prisma.supplier.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Proveedor no encontrado" });
 
-    if (nit && nit !== existing.nit) {
-      const dup = await prisma.supplier.findFirst({ where: { nit, id: { not: Number(id) } } });
+    const name = parseString(req.body.name, "Nombre", { max: 255 });
+    const nit = parseString(req.body.nit, "NIT", { max: 20 });
+    const phone = parseString(req.body.phone, "Teléfono", { max: 20 });
+
+    if (name !== null && name!.trim().length === 0) {
+      return res.status(400).json({ message: "El nombre no puede estar vacío" });
+    }
+
+    if (nit !== null && nit !== existing.nit) {
+      const dup = await prisma.supplier.findFirst({ where: { nit, id: { not: id } } });
       if (dup) return res.status(400).json({ message: "Ya existe otro proveedor con ese NIT" });
     }
 
     const supplier = await prisma.supplier.update({
-      where: { id: Number(id) },
+      where: { id },
       data: {
-        ...(name && { name }),
-        ...(nit !== undefined && { nit: nit || null }),
-        ...(phone !== undefined && { phone: phone || null }),
+        ...(name !== null && name !== undefined && { name: name! }),
+        ...(req.body.nit !== undefined && { nit }),
+        ...(req.body.phone !== undefined && { phone }),
       },
     });
-
     res.json(supplier);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message && !error.message.includes("Prisma")) {
+      return res.status(400).json({ message: error.message });
+    }
     console.error("Error al editar proveedor:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -146,19 +158,19 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
 // DELETE /:id — Eliminar proveedor
 router.delete("/:id", async (req: AuthRequest, res: Response) => {
   try {
+    const id = parseId(req.params.id);
     const existing = await prisma.supplier.findUnique({
-      where: { id: Number(req.params.id) },
+      where: { id },
       include: { _count: { select: { costs: true } } },
     });
     if (!existing) return res.status(404).json({ message: "Proveedor no encontrado" });
-
     if (existing._count.costs > 0) {
       return res.status(400).json({ message: "No se puede eliminar: tiene costos asociados" });
     }
-
-    await prisma.supplier.delete({ where: { id: Number(req.params.id) } });
+    await prisma.supplier.delete({ where: { id } });
     res.json({ message: "Proveedor eliminado" });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
     console.error("Error al eliminar proveedor:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }

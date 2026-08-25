@@ -206,30 +206,30 @@
   - GET /export — exportar a Excel (xlsx)
 
 ### Sprint 6 - Prioridad BAJA - Ejercicios 8, 10, 11, 12, 13
-- [ ] **API Venta por Mayor** (`/api/wholesale`):
+- [x] **API Venta por Mayor** (`/api/wholesale`):
   - POST — crear venta mayorista (misma logica que venta normal pero con validaciones de mayorista)
   - POST /import — importar desde Excel
-- [ ] **API Nota de Venta**:
+- [x] **API Nota de Venta**:
   - GET /api/sales/:id/nota — generar nota de venta (PDF o HTML)
-- [ ] **API Reportes** (`/api/reports`):
+- [x] **API Reportes** (`/api/reports`):
   - GET /sales — ventas filtradas (marca, modelo, mes, tienda, proveedor)
   - GET /inventory — stock por ubicacion
   - GET /suppliers — reporte por proveedor
   - GET /monthly — reporte mensual por tienda con costos
-- [ ] **Reposicion automatica** (logica interna):
+- [x] **Reposicion automatica** (logica interna):
   - Cuando stock de un producto llega a 0 en cualquier tienda
   - Generar automaticamente una ProductRequest al almacen correspondiente
   - Implementar como middleware o trigger en el POST de ventas
-- [ ] **Busqueda por imagen** (funcionalidad adicional):
+- [x] **Busqueda por imagen** (funcionalidad adicional):
   - POST /api/products/search-image — recibe imagen, busca coincidencias
   - Utilizar descripcion del producto para matching
 
 ### Tareas adicionales Ross
 - [x] Crear modulo `customers` en backend/src/modules/ (falta completamente)
 - [x] Crear modulo `suppliers` en backend/src/modules/ (falta completamente)
-- [ ] Actualizar seed con: pagos en ventas, devoluciones, costos con facturas, precios calculados
-- [ ] Validaciones robustas en todos los endpoints (campos obligatorios, tipos de dato)
-- [ ] Manejo de errores consistente (mensajes claros al frontend)
+- [x] Actualizar seed con: pagos en ventas, devoluciones, costos con facturas, precios calculados
+- [x] Validaciones robustas en todos los endpoints (campos obligatorios, tipos de dato)
+- [x] Manejo de errores consistente (mensajes claros al frontend)
 
 ---
 

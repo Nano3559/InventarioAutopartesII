@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { parseId, parsePositiveDecimal, parsePositiveInt } from "../../shared/middlewares/validate";
 import multer from "multer";
 import path from "path";
 
@@ -45,8 +46,9 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       ];
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const pg = Math.max(1, Number(page) || 1);
+    const take = Math.min(100, Math.max(1, Number(limit) || 20));
+    const skip = (pg - 1) * take;
 
     const [costs, total] = await Promise.all([
       prisma.cost.findMany({
@@ -78,7 +80,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         percentage: c.percentage ? Number(c.percentage) : null,
         date: c.date,
       })),
-      pagination: { total, page: Number(page), limit: take, pages: Math.ceil(total / take) },
+      pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
     console.error("Error al listar costos:", error);
@@ -89,27 +91,26 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 // POST — Registrar costo con factura
 router.post("/", upload.single("invoice"), async (req: AuthRequest, res: Response) => {
   try {
-    const { productId, supplierId, exchangeRate, percentage, costPrice } = req.body;
+    const productId = parsePositiveInt(req.body.productId, "Producto");
+    const supplierId = parsePositiveInt(req.body.supplierId, "Proveedor");
+    const costPrice = parsePositiveDecimal(req.body.costPrice, "Costo");
+    if (costPrice <= 0) return res.status(400).json({ message: "El costo debe ser mayor a 0" });
 
-    if (!productId || !supplierId || !costPrice) {
-      return res.status(400).json({ message: "Campos obligatorios: productId, supplierId, costPrice" });
+    const exchangeRate = req.body.exchangeRate ? parsePositiveDecimal(req.body.exchangeRate, "Tipo de cambio") : null;
+    const percentage = req.body.percentage !== undefined && req.body.percentage !== "" ? parsePositiveDecimal(req.body.percentage, "Porcentaje") : null;
+    if (percentage !== null && (percentage < 0 || percentage > 100)) {
+      return res.status(400).json({ message: "El porcentaje debe estar entre 0 y 100" });
     }
 
-    const product = await prisma.product.findUnique({ where: { id: Number(productId) } });
+    const [product, supplier] = await Promise.all([
+      prisma.product.findUnique({ where: { id: productId } }),
+      prisma.supplier.findUnique({ where: { id: supplierId } }),
+    ]);
     if (!product) return res.status(404).json({ message: "Producto no encontrado" });
-
-    const supplier = await prisma.supplier.findUnique({ where: { id: Number(supplierId) } });
     if (!supplier) return res.status(404).json({ message: "Proveedor no encontrado" });
 
     const cost = await prisma.cost.create({
-      data: {
-        productId: Number(productId),
-        supplierId: Number(supplierId),
-        costPrice: Number(costPrice),
-        exchangeRate: exchangeRate ? Number(exchangeRate) : null,
-        percentage: percentage ? Number(percentage) : null,
-        invoiceUrl: req.file ? req.file.filename : null,
-      },
+      data: { productId, supplierId, costPrice, exchangeRate, percentage, invoiceUrl: req.file?.filename || null },
       include: {
         product: { select: { name: true, itemCode: true } },
         supplier: { select: { name: true } },
@@ -127,7 +128,13 @@ router.post("/", upload.single("invoice"), async (req: AuthRequest, res: Respons
       invoiceUrl: cost.invoiceUrl,
       date: cost.date,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message && !error.message.includes("Prisma") && !error.code) {
+      return res.status(400).json({ message: error.message });
+    }
+    if (error.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
+    }
     console.error("Error al registrar costo:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -136,22 +143,39 @@ router.post("/", upload.single("invoice"), async (req: AuthRequest, res: Respons
 // PUT /:id — Editar costo
 router.put("/:id", upload.single("invoice"), async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
-    const { productId, supplierId, exchangeRate, percentage, costPrice } = req.body;
-
-    const existing = await prisma.cost.findUnique({ where: { id: Number(id) } });
+    const id = parseId(req.params.id);
+    const existing = await prisma.cost.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Costo no encontrado" });
 
+    const data: any = {};
+    if (req.body.productId !== undefined) {
+      data.productId = parsePositiveInt(req.body.productId, "Producto");
+      const p = await prisma.product.findUnique({ where: { id: data.productId } });
+      if (!p) return res.status(404).json({ message: "Producto no encontrado" });
+    }
+    if (req.body.supplierId !== undefined) {
+      data.supplierId = parsePositiveInt(req.body.supplierId, "Proveedor");
+      const s = await prisma.supplier.findUnique({ where: { id: data.supplierId } });
+      if (!s) return res.status(404).json({ message: "Proveedor no encontrado" });
+    }
+    if (req.body.costPrice !== undefined && req.body.costPrice !== "") {
+      data.costPrice = parsePositiveDecimal(req.body.costPrice, "Costo");
+      if (data.costPrice <= 0) return res.status(400).json({ message: "El costo debe ser mayor a 0" });
+    }
+    if (req.body.exchangeRate !== undefined) {
+      data.exchangeRate = req.body.exchangeRate !== "" ? parsePositiveDecimal(req.body.exchangeRate, "Tipo de cambio") : null;
+    }
+    if (req.body.percentage !== undefined) {
+      data.percentage = req.body.percentage !== "" ? parsePositiveDecimal(req.body.percentage, "Porcentaje") : null;
+      if (data.percentage !== null && (data.percentage < 0 || data.percentage > 100)) {
+        return res.status(400).json({ message: "El porcentaje debe estar entre 0 y 100" });
+      }
+    }
+    if (req.file) data.invoiceUrl = req.file.filename;
+
     const cost = await prisma.cost.update({
-      where: { id: Number(id) },
-      data: {
-        ...(productId && { productId: Number(productId) }),
-        ...(supplierId && { supplierId: Number(supplierId) }),
-        ...(costPrice && { costPrice: Number(costPrice) }),
-        ...(exchangeRate !== undefined && { exchangeRate: exchangeRate ? Number(exchangeRate) : null }),
-        ...(percentage !== undefined && { percentage: percentage ? Number(percentage) : null }),
-        ...(req.file && { invoiceUrl: req.file.filename }),
-      },
+      where: { id },
+      data,
       include: {
         product: { select: { name: true, itemCode: true } },
         supplier: { select: { name: true } },
@@ -169,7 +193,13 @@ router.put("/:id", upload.single("invoice"), async (req: AuthRequest, res: Respo
       invoiceUrl: cost.invoiceUrl,
       date: cost.date,
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
+    }
+    if (error.message && !error.message.includes("Prisma")) {
+      return res.status(400).json({ message: error.message });
+    }
     console.error("Error al editar costo:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -178,12 +208,13 @@ router.put("/:id", upload.single("invoice"), async (req: AuthRequest, res: Respo
 // DELETE /:id — Eliminar costo
 router.delete("/:id", async (req: AuthRequest, res: Response) => {
   try {
-    const existing = await prisma.cost.findUnique({ where: { id: Number(req.params.id) } });
+    const id = parseId(req.params.id);
+    const existing = await prisma.cost.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Costo no encontrado" });
-
-    await prisma.cost.delete({ where: { id: Number(req.params.id) } });
+    await prisma.cost.delete({ where: { id } });
     res.json({ message: "Costo eliminado" });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
     console.error("Error al eliminar costo:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
