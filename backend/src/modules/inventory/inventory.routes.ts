@@ -1,8 +1,11 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { authenticate, authorize } from "../../shared/middlewares/auth";
 
 const router = Router();
 const prisma = new PrismaClient();
+
+router.use(authenticate);
 
 // GET / — Listar todo el inventario con información de producto y ubicación
 router.get("/", async (req: Request, res: Response) => {
@@ -75,8 +78,8 @@ router.get("/product/:productId", async (req: Request, res: Response) => {
   }
 });
 
-// PUT /:id — Actualizar stock manualmente
-router.put("/:id", async (req: Request, res: Response) => {
+// PUT /:id — Actualizar stock manualmente (solo ADMIN)
+router.put("/:id", authorize("ADMIN"), async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
     const { stock, minStock } = req.body;

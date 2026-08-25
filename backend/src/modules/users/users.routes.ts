@@ -161,6 +161,42 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
   }
 });
 
+// GET /me/preferences — Obtener preferencias de columnas del usuario actual
+router.get("/me/preferences", async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: "No autenticado" });
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: { columnPrefs: true },
+    });
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    res.json({ columnPrefs: user.columnPrefs || {} });
+  } catch (error) {
+    console.error("Error al obtener preferencias:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
+// PUT /me/preferences — Guardar preferencias de columnas del usuario actual
+router.put("/me/preferences", async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: "No autenticado" });
+    const { columnPrefs } = req.body;
+    if (!columnPrefs || typeof columnPrefs !== "object") {
+      return res.status(400).json({ message: "columnPrefs debe ser un objeto" });
+    }
+    const user = await prisma.user.update({
+      where: { id: req.user.userId },
+      data: { columnPrefs },
+      select: { columnPrefs: true },
+    });
+    res.json({ columnPrefs: user.columnPrefs });
+  } catch (error) {
+    console.error("Error al guardar preferencias:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
 // DELETE /:id — Eliminar usuario
 router.delete("/:id", async (req: AuthRequest, res: Response) => {
   try {

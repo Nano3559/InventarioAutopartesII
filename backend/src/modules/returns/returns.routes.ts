@@ -14,11 +14,25 @@ const VALID_METHODS: PaymentMethod[] = ["EFECTIVO", "QR", "TRANSFERENCIA", "CRED
 // GET / — Listar devoluciones con filtros
 router.get("/", async (req: AuthRequest, res: Response) => {
   try {
-    const { saleId, productId, page = "1", limit = "20" } = req.query;
+    const { saleId, productId, locationId, seller, page = "1", limit = "20" } = req.query;
 
     const where: any = {};
     if (saleId && typeof saleId === "string") where.saleId = Number(saleId);
     if (productId && typeof productId === "string") where.productId = Number(productId);
+
+    const user = req.user!;
+    const saleFilters: any = {};
+    if (user.role === "TIENDA" && user.locationId) {
+      saleFilters.locationId = user.locationId;
+    } else if (locationId && typeof locationId === "string") {
+      saleFilters.locationId = Number(locationId);
+    }
+    if (seller && typeof seller === "string") {
+      saleFilters.seller = seller;
+    }
+    if (Object.keys(saleFilters).length > 0) {
+      where.sale = saleFilters;
+    }
 
     const pg = Math.max(1, Number(page) || 1);
     const take = Math.min(100, Math.max(1, Number(limit) || 20));
@@ -29,7 +43,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         where,
         include: {
           product: { select: { id: true, name: true, itemCode: true, brand: true } },
-          sale: { select: { id: true, saleDate: true, total: true, type: true } },
+          sale: { select: { id: true, saleDate: true, total: true, type: true, locationId: true, seller: true } },
         },
         skip,
         take,
@@ -44,6 +58,34 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error("Error al listar devoluciones:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
+// GET /recent-sales — Ventas recientes filtradas por ubicación/rol
+router.get("/recent-sales", async (req: AuthRequest, res: Response) => {
+  try {
+    const user = req.user!;
+    const where: any = {};
+    if (user.role === "TIENDA" && user.locationId) {
+      where.locationId = user.locationId;
+    }
+
+    const sales = await prisma.sale.findMany({
+      where,
+      include: {
+        location: { select: { id: true, name: true } },
+        customer: { select: { id: true, name: true, nit: true } },
+        items: { include: { product: { select: { id: true, name: true, itemCode: true } } } },
+        returns: true,
+      },
+      orderBy: { saleDate: "desc" },
+      take: 20,
+    });
+
+    res.json({ sales });
+  } catch (error) {
+    console.error("Error al obtener ventas recientes:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
