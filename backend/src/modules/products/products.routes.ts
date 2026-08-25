@@ -15,7 +15,7 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const {
       search, brand, manufacturer, model, year, oemCode, factoryCode,
-      categoryId, page = "1", limit = "20",
+      categoryId, locationId: queryLocationId, page = "1", limit = "20",
     } = req.query;
 
     const where: any = {};
@@ -42,12 +42,17 @@ router.get("/", async (req: Request, res: Response) => {
     if (factoryCode && typeof factoryCode === "string") AND.push({ factoryCode: { contains: factoryCode, mode: "insensitive" } });
     if (categoryId && typeof categoryId === "string") AND.push({ categoryId: Number(categoryId) });
 
+    if (queryLocationId && typeof queryLocationId === "string") {
+      AND.push({ inventories: { some: { locationId: Number(queryLocationId), stock: { gt: 0 } } } });
+    }
+
     if (AND.length > 0) where.AND = AND;
 
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
 
     const hasYearFilter = year && typeof year === "string";
+    const filterLocationId = queryLocationId && typeof queryLocationId === "string" ? Number(queryLocationId) : null;
 
     let allProducts = await prisma.product.findMany({
       where,
@@ -67,7 +72,9 @@ router.get("/", async (req: Request, res: Response) => {
     const products = allProducts.slice(skip, skip + take);
 
     const result = products.map((p) => {
-      const stockTotal = p.inventories.reduce((sum, inv) => sum + inv.stock, 0);
+      const stock = filterLocationId
+        ? (p.inventories.find((inv) => inv.locationId === filterLocationId)?.stock || 0)
+        : p.inventories.reduce((sum, inv) => sum + inv.stock, 0);
       return {
         id: p.id,
         itemCode: p.itemCode,
@@ -87,7 +94,7 @@ router.get("/", async (req: Request, res: Response) => {
         cost: p.cost,
         categoryId: p.categoryId,
         category: p.category?.name || null,
-        stock: stockTotal,
+        stock,
       };
     });
 

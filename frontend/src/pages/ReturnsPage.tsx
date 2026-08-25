@@ -10,6 +10,7 @@ interface Sale {
   id: number; saleDate: string; total: number; type: string;
   location: { id: number; name: string };
   customer: { id: number; name: string; nit: string | null } | null;
+  seller: string | null;
   items: {
     id: number; productId: number; quantity: number; unitPrice: number; subtotal: number;
     product: { id: number; name: string; itemCode: string; brand: string; price1: string };
@@ -22,7 +23,18 @@ interface ReturnRecord {
   id: number; saleId: number; productId: number; reason: string;
   quantity: number; amount: number; method: string; date: string;
   product: { id: number; name: string; itemCode: string; brand: string };
-  sale: { id: number; saleDate: string; total: number; type: string };
+  sale: { id: number; saleDate: string; total: number; type: string; locationId: number; seller: string | null };
+}
+
+interface RecentSale {
+  id: number; saleDate: string; total: number; type: string;
+  location: { id: number; name: string };
+  customer: { id: number; name: string; nit: string | null } | null;
+  items: { id: number; productId: number; quantity: number; unitPrice: number; subtotal: number;
+    product: { id: number; name: string; itemCode: string; brand: string; price1: string } }[];
+  payments: { id: number; method: string; amount: number }[];
+  returns: { id: number; quantity: number; productId: number }[];
+  seller: string | null;
 }
 
 const PAGE_SIZE = 15;
@@ -46,13 +58,20 @@ export default function ReturnsPage() {
   const [retTotal, setRetTotal] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
 
+  const [recentSales, setRecentSales] = useState<RecentSale[]>([]);
+  const [loadingRecent, setLoadingRecent] = useState(false);
+  const [showRecentSales, setShowRecentSales] = useState(true);
+  const [retSeller, setRetSeller] = useState("");
+
   const formatBs = (v: number) =>
     `Bs. ${v.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const fetchReturns = useCallback(async () => {
     try {
       setLoadingReturns(true);
-      const res = await api.get(`/returns?page=${retPage}&limit=${PAGE_SIZE}`);
+      const params = new URLSearchParams({ page: String(retPage), limit: String(PAGE_SIZE) });
+      if (retSeller) params.set("seller", retSeller);
+      const res = await api.get(`/returns?${params.toString()}`);
       setReturns(res.data.returns);
       setRetTotal(res.data.pagination.total);
       setRetPages(res.data.pagination.pages);
@@ -61,17 +80,31 @@ export default function ReturnsPage() {
     } finally {
       setLoadingReturns(false);
     }
-  }, [retPage]);
+  }, [retPage, retSeller]);
+
+  const fetchRecentSales = useCallback(async () => {
+    try {
+      setLoadingRecent(true);
+      const res = await api.get("/returns/recent-sales");
+      setRecentSales(res.data.sales);
+    } catch {
+      toast.error("Error al cargar ventas recientes");
+    } finally {
+      setLoadingRecent(false);
+    }
+  }, []);
 
   useEffect(() => { fetchReturns(); }, [fetchReturns]);
+  useEffect(() => { fetchRecentSales(); }, [fetchRecentSales]);
 
-  const searchSale = async () => {
-    if (!searchId.trim()) { toast.error("Ingresa un ID de venta"); return; }
+  const searchSaleById = async (id?: string) => {
+    const searchIdVal = id || searchId;
+    if (!searchIdVal.trim()) { toast.error("Ingresa un ID de venta"); return; }
     try {
       setSearching(true);
       setSelectedItem(null);
       setReason(""); setQuantity(""); setAmount(""); setMethod("EFECTIVO");
-      const res = await api.get(`/returns/sale/${searchId.trim()}`);
+      const res = await api.get(`/returns/sale/${searchIdVal.trim()}`);
       setSale(res.data);
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Venta no encontrada");
@@ -117,10 +150,10 @@ export default function ReturnsPage() {
       toast.success("Devolución registrada");
       setSelectedItem(null);
       setReason(""); setQuantity(""); setAmount(""); setMethod("EFECTIVO");
-      // Recargar la venta
       const res = await api.get(`/returns/sale/${sale.id}`);
       setSale(res.data);
       fetchReturns();
+      fetchRecentSales();
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Error al registrar devolución");
     } finally {
@@ -152,6 +185,45 @@ export default function ReturnsPage() {
         </div>
       </div>
 
+      {/* Recent sales for quick selection */}
+      {!sale && showRecentSales && recentSales.length > 0 && (
+        <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm text-gray-400">Ventas recientes (selecciona una para devolución rápida)</p>
+            <button onClick={() => setShowRecentSales(false)} className="text-xs text-gray-500 hover:text-gray-300">
+              <X size={14} />
+            </button>
+          </div>
+          {loadingRecent ? (
+            <div className="flex items-center justify-center h-16">
+              <RefreshCw size={16} className="text-primary-400 animate-spin" />
+            </div>
+          ) : (
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {recentSales.map((rs) => (
+                <button
+                  key={rs.id}
+                  onClick={() => { setSearchId(String(rs.id)); searchSaleById(String(rs.id)); setShowRecentSales(false); }}
+                  className="w-full flex items-center justify-between px-3 py-2.5 bg-dark-900/50 border border-dark-700/30 rounded-xl hover:border-primary-500/30 hover:bg-dark-800/50 transition-all text-left"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-white font-medium">Venta #{rs.id}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(rs.saleDate).toLocaleDateString("es-BO")} · {rs.location.name}
+                      {rs.seller && <span className="ml-1 text-primary-400">· {rs.seller}</span>}
+                    </p>
+                  </div>
+                  <div className="text-right ml-3 shrink-0">
+                    <p className="text-sm text-green-400 font-medium">Bs. {Number(rs.total).toFixed(2)}</p>
+                    <p className="text-xs text-gray-500">{rs.items.length} producto(s)</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Buscar venta */}
       <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4">
         <p className="text-sm text-gray-400 mb-3">Buscar venta por ID</p>
@@ -160,12 +232,12 @@ export default function ReturnsPage() {
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="number" value={searchId} onChange={(e) => setSearchId(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && searchSale()}
+              onKeyDown={(e) => e.key === "Enter" && searchSaleById()}
               placeholder="ID de la venta..."
               className="w-full pl-10 pr-4 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
             />
           </div>
-          <button onClick={searchSale} disabled={searching}
+          <button onClick={() => searchSaleById()} disabled={searching}
             className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50">
             {searching ? <RefreshCw size={16} className="animate-spin" /> : <Search size={16} />}
             Buscar
@@ -254,8 +326,18 @@ export default function ReturnsPage() {
 
       {/* Historial de devoluciones */}
       <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-dark-700/50">
+        <div className="px-4 py-3 border-b border-dark-700/50 flex items-center justify-between">
           <h3 className="text-white font-semibold">Historial de Devoluciones</h3>
+          <div className="relative">
+            <select value={retSeller} onChange={(e) => setRetSeller(e.target.value)}
+              className="appearance-none px-3 py-1.5 bg-dark-900/50 border border-dark-600/50 rounded-lg text-white text-xs focus:ring-2 focus:ring-primary-500 outline-none pr-6">
+              <option value="">Todos los vendedores</option>
+              <option value="Vendedor 1">Vendedor 1</option>
+              <option value="Vendedor 2">Vendedor 2</option>
+              <option value="Vendedor 3">Vendedor 3</option>
+            </select>
+            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+          </div>
         </div>
         {loadingReturns ? (
           <div className="flex items-center justify-center h-48">
@@ -275,6 +357,7 @@ export default function ReturnsPage() {
                   <th className="text-left px-4 py-3 font-medium">Fecha</th>
                   <th className="text-left px-4 py-3 font-medium">Producto</th>
                   <th className="text-left px-4 py-3 font-medium">Venta</th>
+                  <th className="text-left px-4 py-3 font-medium">Vendedor</th>
                   <th className="text-center px-4 py-3 font-medium">Cantidad</th>
                   <th className="text-right px-4 py-3 font-medium">Monto</th>
                   <th className="text-left px-4 py-3 font-medium">Método</th>
@@ -288,6 +371,7 @@ export default function ReturnsPage() {
                     <td className="px-4 py-3 text-gray-300">{new Date(r.date).toLocaleDateString("es-BO")}</td>
                     <td className="px-4 py-3 text-white">{r.product.name}</td>
                     <td className="px-4 py-3 text-gray-400">#{r.saleId}</td>
+                    <td className="px-4 py-3 text-gray-400 text-xs">{r.sale?.seller || "—"}</td>
                     <td className="px-4 py-3 text-center text-yellow-400 font-medium">{r.quantity}</td>
                     <td className="px-4 py-3 text-right text-red-400 font-medium">{formatBs(Number(r.amount))}</td>
                     <td className="px-4 py-3 text-gray-300">{r.method}</td>

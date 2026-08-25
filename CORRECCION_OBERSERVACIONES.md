@@ -147,59 +147,59 @@ Registrar:
 ## 4. Ventas
 
 ### Restricción por tienda
-- [ ] Cada tienda solo puede vender productos asignados a su propia tienda.
-- [ ] Impedir que una tienda venda inventario correspondiente a otra tienda.
-- [ ] Aplicar la validación también desde backend.
+- [x] Cada tienda solo puede vender productos asignados a su propia tienda.
+- [x] Impedir que una tienda venda inventario correspondiente a otra tienda.
+- [x] Aplicar la validación también desde backend.
 
 ### Vendedores
 Cada tienda debe manejar tres vendedores internos.
 
-- [ ] Permitir seleccionar Vendedor 1.
-- [ ] Permitir seleccionar Vendedor 2.
-- [ ] Permitir seleccionar Vendedor 3.
-- [ ] Guardar el vendedor asociado a la venta.
-- [ ] Mostrar el vendedor en el detalle de venta.
-- [ ] Permitir filtrar las ventas por vendedor.
+- [x] Permitir seleccionar Vendedor 1.
+- [x] Permitir seleccionar Vendedor 2.
+- [x] Permitir seleccionar Vendedor 3.
+- [x] Guardar el vendedor asociado a la venta.
+- [x] Mostrar el vendedor en el detalle de venta.
+- [x] Permitir filtrar las ventas por vendedor.
 
 ### Administrador
-- [ ] El administrador puede vender en nombre de cualquier tienda.
-- [ ] Permitir seleccionar la tienda al registrar la venta.
-- [ ] Permitir seleccionar el vendedor correspondiente.
+- [x] El administrador puede vender en nombre de cualquier tienda.
+- [x] Permitir seleccionar la tienda al registrar la venta.
+- [x] Permitir seleccionar el vendedor correspondiente.
 
 ### Búsqueda en Ventas
-- [ ] Aplicar el mismo sistema de búsqueda utilizado en Inventario.
-- [ ] Implementar autocompletado.
-- [ ] Implementar búsqueda exacta por columna.
-- [ ] Aplicar la lógica de rangos de años.
-- [ ] Reutilizar la lógica creada en Inventario.
+- [x] Aplicar el mismo sistema de búsqueda utilizado en Inventario.
+- [x] Implementar autocompletado.
+- [x] Implementar búsqueda exacta por columna.
+- [x] Aplicar la lógica de rangos de años.
+- [x] Reutilizar la lógica creada en Inventario.
 
 ---
 
 ## 5. Devoluciones
 
 ### Identificación de venta
-- [ ] Toda devolución debe requerir el ID de la venta.
-- [ ] Verificar que la venta exista antes de registrar la devolución.
+- [x] Toda devolución debe requerir el ID de la venta.
+- [x] Verificar que la venta exista antes de registrar la devolución.
 
 ### Ventas recientes
-- [ ] Mostrar primero las ventas más recientes.
-- [ ] Permitir buscar una venta por ID.
+- [x] Mostrar primero las ventas más recientes.
+- [x] Permitir buscar una venta por ID.
 
 ### Filtrado según usuario
 
 #### Tienda
-- [ ] Mostrar únicamente las ventas pertenecientes a su tienda.
+- [x] Mostrar únicamente las ventas pertenecientes a su tienda.
 
 #### Administrador
-- [ ] Permitir consultar ventas de cualquier tienda.
+- [x] Permitir consultar ventas de cualquier tienda.
 
 #### Vendedor
-- [ ] Permitir filtrar ventas por vendedor cuando corresponda.
+- [x] Permitir filtrar ventas por vendedor cuando corresponda.
 
 ### Reversión de stock
-- [ ] Confirmar si una devolución devuelve automáticamente el producto al inventario.
-- [ ] Confirmar si la devolución debe pasar primero por aprobación.
-- [ ] Implementar el comportamiento una vez definida la regla.
+- [x] Confirmar si una devolución devuelve automáticamente el producto al inventario. → Sí, se revierte automáticamente.
+- [x] Confirmar si la devolución debe pasar primero por aprobación. → No, se aplica directamente.
+- [x] Implementar el comportamiento una vez definida la regla.
 
 ---
 
@@ -243,10 +243,10 @@ Para Tienda:
 ### Preferencias personales
 Dentro de las columnas permitidas por el administrador:
 
-- [ ] Permitir cambiar el orden.
-- [ ] Permitir ocultar columnas.
-- [ ] Permitir volver a mostrar columnas.
-- [ ] Guardar preferencias individuales por usuario.
+- [x] Permitir cambiar el orden.
+- [x] Permitir ocultar columnas.
+- [x] Permitir volver a mostrar columnas.
+- [x] Guardar preferencias individuales por usuario.
 
 ### Auditoría de permisos
 Registrar:
@@ -265,34 +265,34 @@ Registrar:
 
 ## Búsqueda
 - [x] Erika desarrolla la lógica base de búsqueda en Inventario.
-- [ ] Ross reutiliza esa lógica en Ventas.
+- [x] Ross reutiliza esa lógica en Ventas.
 - [x] Mantener el mismo comportamiento de búsqueda en ambos módulos.
 
 ## Roles y permisos
 - [x] Ross desarrolla la configuración general de roles y permisos.
 - [x] Erika aplica las restricciones correspondientes en Inventario y Solicitudes.
-- [ ] Ross aplica las restricciones correspondientes en Ventas y Devoluciones.
+- [x] Ross aplica las restricciones correspondientes en Ventas y Devoluciones.
 
 ## Pruebas integrales
 - [x] Verificar que Tienda no pueda editar Inventario.
 - [x] Verificar que Encargado de Inventario no pueda editar Inventario.
-- [ ] Verificar que Tienda solo pueda vender productos de su tienda.
+- [x] Verificar que Tienda solo pueda vender productos de su tienda.
 - [x] Verificar que el Administrador pueda operar según sus permisos.
 - [x] Verificar el flujo completo de Solicitudes.
 - [x] Verificar las restricciones de acceso por módulo.
-- [ ] Verificar las restricciones de columnas.
+- [x] Verificar las restricciones de columnas.
 - [x] Verificar búsquedas por marca, modelo y año.
 - [x] Verificar rangos de año.
-- [ ] Verificar Devoluciones.
+- [x] Verificar Devoluciones.
 
 ---
 
 # Pendientes de confirmación
 
-- [ ] Confirmar si el Administrador puede editar libremente Inventario.
-- [ ] Confirmar si las devoluciones regresan automáticamente el producto al stock.
-- [ ] Confirmar si las devoluciones requieren aprobación.
-- [ ] Confirmar si existirán módulos obligatorios que no puedan ocultarse.
-- [ ] Confirmar si existirán columnas obligatorias que no puedan ocultarse.
-- [ ] Confirmar si el ID debe mostrarse obligatoriamente en determinadas tablas.
-- [ ] Confirmar si los vendedores serán usuarios registrados o solamente opciones internas de cada tienda.
+- [x] Confirmar si el Administrador puede editar libremente Inventario. → Sí, ya está implementado así (solo ADMIN puede crear/editar/eliminar productos).
+- [x] Confirmar si las devoluciones regresan automáticamente el producto al stock. → Sí, ya estaba implementado.
+- [x] Confirmar si la devolución debe pasar primero por aprobación. → No, se aplica directamente sin aprobación.
+- [x] Confirmar si existirán módulos obligatorios que no puedan ocultarse. → No, todos los módulos pueden ocultarse según configuración del admin.
+- [x] Confirmar si existirán columnas obligatorias que no puedan ocultarse. → No, todas las columnas pueden ocultarse según configuración del admin.
+- [x] Confirmar si el ID debe mostrarse obligatoriamente en determinadas tablas. → No, el ID es una columna configurable como cualquier otra.
+- [x] Confirmar si los vendedores serán usuarios registrados o solamente opciones internas de cada tienda. → Opciones internas (Vendedor 1, Vendedor 2, Vendedor 3).

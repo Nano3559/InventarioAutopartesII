@@ -24,6 +24,7 @@ model User {
   password     String
   roleId       Int
   locationId   Int?
+  columnPrefs  Json?
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   movements    Movement[]
@@ -118,6 +119,7 @@ model Sale {
   userId     Int
   locationId Int
   customerId Int?
+  seller     String?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   payments   Payment[]

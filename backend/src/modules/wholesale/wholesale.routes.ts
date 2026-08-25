@@ -29,7 +29,10 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 
     if (!userLocationId) {
       const tienda = await prisma.location.findFirst({ where: { type: "TIENDA" } });
-      userLocationId = tienda?.id || 5;
+      if (!tienda) {
+        return res.status(400).json({ message: "No hay tiendas configuradas en el sistema" });
+      }
+      userLocationId = tienda.id;
     }
 
     const validMethods = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];

@@ -1,8 +1,11 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { authenticate } from "../../shared/middlewares/auth";
 
 const router = Router();
 const prisma = new PrismaClient();
+
+router.use(authenticate);
 
 // GET / — Listar ubicaciones
 router.get("/", async (_req: Request, res: Response) => {

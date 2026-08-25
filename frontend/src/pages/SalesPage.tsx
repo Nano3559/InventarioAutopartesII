@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Search, ShoppingCart, Plus, Minus, Trash2, X, CreditCard,
   FileText, RefreshCw, ChevronDown, ChevronLeft, ChevronRight,
-  Check, Clock, MapPin,
+  Check, Clock, MapPin, User,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import { useAuthStore } from "../stores/authStore";
 
 interface Product {
   id: number; itemCode: string; manufacturer: string; name: string;
@@ -32,6 +33,7 @@ interface CustomerData { name: string; nit: string; phone: string; }
 interface SaleRecord {
   id: number; saleDate: string; total: number; type: string;
   location: { id: number; name: string }; user: { id: number; name: string };
+  seller: string | null;
   customer: { id: number; name: string; nit: string | null } | null;
   items: { id: number; quantity: number; unitPrice: number; subtotal: number;
     product: { id: number; name: string; itemCode: string } }[];
@@ -41,13 +43,25 @@ interface SaleRecord {
 const PAGE_SIZE = 15;
 
 export default function SalesPage() {
+  const { user } = useAuthStore();
+  const isAdmin = user?.role === "ADMIN";
+  const isTienda = user?.role === "TIENDA";
+
   // --- Locations ---
   const [locations, setLocations] = useState<Location[]>([]);
   const [selectedLocationId, setSelectedLocationId] = useState<number | "">("");
 
   useEffect(() => {
-    api.get("/locations").then((r) => setLocations(r.data)).catch(() => {});
-  }, []);
+    api.get("/locations").then((r) => {
+      setLocations(r.data);
+      if (isTienda && user?.locationId) {
+        setSelectedLocationId(user.locationId);
+      }
+    }).catch(() => {});
+  }, [isTienda, user?.locationId]);
+
+  // --- Seller ---
+  const [selectedSeller, setSelectedSeller] = useState<string>("");
 
   // --- Search ---
   const [search, setSearch] = useState("");
@@ -88,11 +102,13 @@ export default function SalesPage() {
     if (!q || q.trim().length < 2) { setSearchResults([]); return; }
     try {
       setSearching(true);
-      const res = await api.get(`/products?search=${encodeURIComponent(q.trim())}&limit=10`);
+      const params = new URLSearchParams({ search: q.trim(), limit: "10" });
+      if (selectedLocationId) params.set("locationId", String(selectedLocationId));
+      const res = await api.get(`/products?${params.toString()}`);
       setSearchResults(res.data.products.filter((p: Product) => p.stock > 0));
     } catch { toast.error("Error al buscar productos"); }
     finally { setSearching(false); }
-  }, []);
+  }, [selectedLocationId]);
 
   const handleSearchChange = (v: string) => {
     setSearch(v);
@@ -204,12 +220,16 @@ export default function SalesPage() {
       if (selectedLocationId) {
         payload.locationId = selectedLocationId;
       }
+      if (selectedSeller) {
+        payload.seller = selectedSeller;
+      }
 
       const res = await api.post("/sales", payload);
       setLastSale(res.data);
       setShowPayment(false);
       setShowConfirmed(true);
       setCart([]);
+      setSelectedSeller("");
       toast.success("¡Venta registrada exitosamente!");
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Error al registrar la venta");
@@ -219,12 +239,16 @@ export default function SalesPage() {
   };
 
   // ==================== HISTORY ====================
+  const [histSeller, setHistSeller] = useState("");
+
   const fetchHistory = useCallback(async () => {
     try {
       setHistLoading(true);
       const params = new URLSearchParams({ page: String(histPage), limit: String(PAGE_SIZE) });
       if (histDateFrom) params.set("startDate", histDateFrom);
       if (histDateTo) params.set("endDate", histDateTo);
+      if (histSeller) params.set("seller", histSeller);
+      if (isTienda && user?.locationId) params.set("locationId", String(user.locationId));
 
       const res = await api.get(`/sales?${params.toString()}`);
       setSales(res.data.sales);
@@ -232,13 +256,13 @@ export default function SalesPage() {
       setHistPages(res.data.pagination.pages);
     } catch { toast.error("Error al cargar historial"); }
     finally { setHistLoading(false); }
-  }, [histPage, histDateFrom, histDateTo]);
+  }, [histPage, histDateFrom, histDateTo, histSeller, isTienda, user?.locationId]);
 
   useEffect(() => {
     if (showHistory) fetchHistory();
   }, [showHistory, fetchHistory]);
 
-  useEffect(() => { if (showHistory) setHistPage(1); }, [histDateFrom, histDateTo, showHistory]);
+  useEffect(() => { if (showHistory) setHistPage(1); }, [histDateFrom, histDateTo, histSeller, showHistory]);
 
   // ==================== RENDER ====================
   const pmLabel: Record<string, string> = { EFECTIVO: "Efectivo", QR: "QR", TRANSFERENCIA: "Transferencia", CREDITO: "Crédito" };
@@ -273,13 +297,37 @@ export default function SalesPage() {
               <MapPin size={16} className="text-primary-400" />
               <span>Tienda:</span>
             </div>
+            {isAdmin ? (
+              <div className="relative flex-1 sm:max-w-xs">
+                <select value={selectedLocationId} onChange={(e) => setSelectedLocationId(Number(e.target.value) || "")}
+                  className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
+                  <option value="">Seleccionar tienda</option>
+                  {locations.filter((l) => l.type === "TIENDA").map((l) => (
+                    <option key={l.id} value={l.id}>{l.name}</option>
+                  ))}
+                </select>
+                <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+              </div>
+            ) : (
+              <span className="text-white text-sm font-medium">
+                {locations.find((l) => l.id === selectedLocationId)?.name || "Cargando..."}
+              </span>
+            )}
+          </div>
+
+          {/* Seller selector */}
+          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <User size={16} className="text-primary-400" />
+              <span>Vendedor:</span>
+            </div>
             <div className="relative flex-1 sm:max-w-xs">
-              <select value={selectedLocationId} onChange={(e) => setSelectedLocationId(Number(e.target.value) || "")}
+              <select value={selectedSeller} onChange={(e) => setSelectedSeller(e.target.value)}
                 className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
-                <option value="">Seleccionar tienda</option>
-                {locations.filter((l) => l.type === "TIENDA").map((l) => (
-                  <option key={l.id} value={l.id}>{l.name}</option>
-                ))}
+                <option value="">Seleccionar vendedor</option>
+                <option value="Vendedor 1">Vendedor 1</option>
+                <option value="Vendedor 2">Vendedor 2</option>
+                <option value="Vendedor 3">Vendedor 3</option>
               </select>
               <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
             </div>
@@ -464,8 +512,21 @@ export default function SalesPage() {
                 <input type="date" value={histDateTo} onChange={(e) => setHistDateTo(e.target.value)}
                   className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
               </div>
-              {(histDateFrom || histDateTo) && (
-                <button onClick={() => { setHistDateFrom(""); setHistDateTo(""); }}
+              <div className="flex-1">
+                <label className="block text-xs text-gray-500 mb-1">Vendedor</label>
+                <div className="relative">
+                  <select value={histSeller} onChange={(e) => setHistSeller(e.target.value)}
+                    className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
+                    <option value="">Todos</option>
+                    <option value="Vendedor 1">Vendedor 1</option>
+                    <option value="Vendedor 2">Vendedor 2</option>
+                    <option value="Vendedor 3">Vendedor 3</option>
+                  </select>
+                  <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                </div>
+              </div>
+              {(histDateFrom || histDateTo || histSeller) && (
+                <button onClick={() => { setHistDateFrom(""); setHistDateTo(""); setHistSeller(""); }}
                   className="px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl border border-dark-600/50 transition-all">
                   Limpiar
                 </button>
@@ -494,6 +555,7 @@ export default function SalesPage() {
                         <th className="text-left px-4 py-3 font-medium">Cliente</th>
                         <th className="text-left px-4 py-3 font-medium">Vendedor</th>
                         <th className="text-left px-4 py-3 font-medium">Ubicación</th>
+                        <th className="text-left px-4 py-3 font-medium">Vendedor</th>
                         <th className="text-center px-4 py-3 font-medium">Tipo</th>
                         <th className="text-right px-4 py-3 font-medium">Total</th>
                         <th className="text-left px-4 py-3 font-medium">Pagos</th>
@@ -523,6 +585,7 @@ export default function SalesPage() {
                           <td className="px-4 py-3 text-gray-400 text-xs flex items-center gap-1">
                             <MapPin size={12} /> {s.location.name}
                           </td>
+                          <td className="px-4 py-3 text-gray-300 text-xs">{s.seller || "—"}</td>
                           <td className="px-4 py-3 text-center">
                             <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
                               s.type === "MAYOR" ? "bg-blue-500/10 text-blue-400" : "bg-green-500/10 text-green-400"
@@ -728,6 +791,7 @@ export default function SalesPage() {
             <h3 className="text-xl font-bold text-white mb-1">¡Venta Registrada!</h3>
             <p className="text-gray-400 text-sm mb-2">
               Venta #{lastSale.id} · {new Date(lastSale.saleDate).toLocaleString("es-BO")}
+              {lastSale.seller && <span className="ml-2 text-primary-400">· {lastSale.seller}</span>}
             </p>
             <p className="text-2xl font-bold text-green-400 mb-4">{formatBs(lastSale.total)}</p>
 

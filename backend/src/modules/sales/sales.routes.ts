@@ -11,11 +11,11 @@ router.use(authenticate);
 // GET / — Listar ventas con filtros
 router.get("/", async (req: AuthRequest, res: Response) => {
   try {
-    const { type, locationId, startDate, endDate, page = "1", limit = "20" } = req.query;
+    const { type, locationId, seller, startDate, endDate, page = "1", limit = "20" } = req.query;
 
     const where: any = {};
     if (type && typeof type === "string") where.type = type;
-    if (locationId && typeof locationId === "string") where.locationId = Number(locationId);
+    if (seller && typeof seller === "string") where.seller = seller;
     if (startDate || endDate) {
       where.saleDate = {};
       if (startDate && typeof startDate === "string") where.saleDate.gte = new Date(startDate);
@@ -24,6 +24,13 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         end.setHours(23, 59, 59, 999);
         where.saleDate.lte = end;
       }
+    }
+
+    const user = req.user!;
+    if (user.role === "TIENDA" && user.locationId) {
+      where.locationId = user.locationId;
+    } else if (locationId && typeof locationId === "string") {
+      where.locationId = Number(locationId);
     }
 
     const skip = (Number(page) - 1) * Number(limit);
@@ -127,7 +134,7 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
   </div>
   <div class="info">
     <div>Tipo: <strong>${sale.type === "MAYOR" ? "VENTA POR MAYOR" : "VENTA NORMAL"}</strong></div>
-    <div class="text-right">Atendido por: ${sale.user.name}</div>
+    <div class="text-right">Atendido por: ${sale.user.name}${(sale as any).seller ? ` (${(sale as any).seller})` : ""}</div>
   </div>
 
   ${sale.customer ? `
@@ -222,7 +229,7 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
 // POST — Crear venta con items, pagos y facturación
 router.post("/", async (req: AuthRequest, res: Response) => {
   try {
-    const { items, payments, customerId, customerData, requiereFactura, locationId } = req.body;
+    const { items, payments, customerId, customerData, requiereFactura, locationId, seller } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "Debe agregar al menos un producto" });
@@ -232,12 +239,30 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "Debe registrar al menos un pago" });
     }
 
-    const user = req.user!;
-    let userLocationId = user.locationId || locationId ? Number(locationId) : null;
+    if (seller && typeof seller === "string" && !["Vendedor 1", "Vendedor 2", "Vendedor 3"].includes(seller)) {
+      return res.status(400).json({ message: "Vendedor inválido. Use: Vendedor 1, Vendedor 2 o Vendedor 3" });
+    }
 
-    if (!userLocationId) {
-      const tienda = await prisma.location.findFirst({ where: { type: "TIENDA" } });
-      userLocationId = tienda?.id || 5;
+    const user = req.user!;
+    let userLocationId: number;
+
+    if (user.role === "TIENDA") {
+      userLocationId = user.locationId!;
+      if (!userLocationId) {
+        return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
+      }
+      if (locationId && Number(locationId) !== userLocationId) {
+        return res.status(403).json({ message: "No puede vender productos de otra tienda" });
+      }
+    } else {
+      userLocationId = locationId ? Number(locationId) : user.locationId!;
+      if (!userLocationId) {
+        const tienda = await prisma.location.findFirst({ where: { type: "TIENDA" } });
+        if (!tienda) {
+          return res.status(400).json({ message: "No hay tiendas configuradas en el sistema" });
+        }
+        userLocationId = tienda.id;
+      }
     }
 
     const validMethods = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];
@@ -310,6 +335,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
           userId: user.userId,
           locationId: userLocationId,
           customerId: finalCustomerId,
+          seller: seller || null,
           items: { create: saleItemsData },
           payments: {
             create: payments.map((p: any) => ({
