@@ -1,54 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   BarChart3, Search, Download,
-  TrendingUp, Package,
+  TrendingUp, Package, RefreshCw,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import api from "../services/api";
 
 interface SalesReport {
-  id: number; date: string; productName: string; brand: string; model: string;
-  quantity: number; unitPrice: number; subtotal: number; tienda: string;
-  customer: string | null;
+  id: number; date: string; type: string; total: number;
+  location: { name: string } | null;
+  customer: { name: string } | null;
+  user: { name: string } | null;
+  itemCount: number;
+  payments: { method: string; amount: number }[];
 }
 
-interface InventoryReport {
-  id: number; itemCode: string; productName: string; brand: string;
-  model: string; tienda: string; stock: number; minStock: number;
+interface InventoryItem {
+  id: number; stock: number; minStock: number;
+  product: { id: number; name: string; itemCode: string; brand: string; model: string; manufacturer: string };
+  location: { id: number; name: string; type: string };
+  status: string;
 }
 
 interface MonthlyReport {
-  month: string; tienda: string; totalVentas: number; totalCostos: number;
-  utilidad: number; cantidadVentas: number;
+  location: { id: number; name: string; type: string };
+  summary: { totalSales: number; totalReturns: number; netSales: number; saleCount: number; averagePerSale: number };
+  topProducts: { product: { name: string; brand: string }; quantitySold: number; totalRevenue: number }[];
 }
 
-const MOCK_SALES: SalesReport[] = [
-  { id: 1, date: "2026-08-25", productName: "Filtro de Aceite", brand: "Bosch", model: "FIL-200", quantity: 3, unitPrice: 65.00, subtotal: 195.00, tienda: "Tienda Centro", customer: "Juan Pérez" },
-  { id: 2, date: "2026-08-25", productName: "Pastillas de Freno", brand: "TRW", model: "DB-1200", quantity: 1, unitPrice: 180.00, subtotal: 180.00, tienda: "Tienda Centro", customer: null },
-  { id: 3, date: "2026-08-24", productName: "Amortiguador Delantero", brand: "Monroe", model: "Matic-60", quantity: 2, unitPrice: 525.00, subtotal: 1050.00, tienda: "Tienda Norte", customer: "Taller Los Andes" },
-  { id: 4, date: "2026-08-24", productName: "Correa de Distribución", brand: "Gates", model: "T-890", quantity: 5, unitPrice: 133.50, subtotal: 667.50, tienda: "Tienda Sur", customer: "María López" },
-  { id: 5, date: "2026-08-23", productName: "Bujía Iridium", brand: "NGK", model: "IR-7", quantity: 8, unitPrice: 52.50, subtotal: 420.00, tienda: "Tienda Centro", customer: null },
-  { id: 6, date: "2026-08-23", productName: "Radiador", brand: "Nissens", model: "RD-500", quantity: 1, unitPrice: 870.00, subtotal: 870.00, tienda: "Tienda Norte", customer: "Auto Service" },
-  { id: 7, date: "2026-08-22", productName: "Filtro de Aceite", brand: "Bosch", model: "FIL-200", quantity: 10, unitPrice: 65.00, subtotal: 650.00, tienda: "Tienda Sur", customer: "Taller Mecánico" },
-];
-
-const MOCK_INVENTORY: InventoryReport[] = [
-  { id: 1, itemCode: "FA-001", productName: "Filtro de Aceite", brand: "Bosch", model: "FIL-200", tienda: "Tienda Centro", stock: 45, minStock: 10 },
-  { id: 2, itemCode: "FA-001", productName: "Filtro de Aceite", brand: "Bosch", model: "FIL-200", tienda: "Tienda Norte", stock: 0, minStock: 10 },
-  { id: 3, itemCode: "PF-023", productName: "Pastillas de Freno", brand: "TRW", model: "DB-1200", tienda: "Tienda Centro", stock: 12, minStock: 5 },
-  { id: 4, itemCode: "AD-105", productName: "Amortiguador Delantero", brand: "Monroe", model: "Matic-60", tienda: "Tienda Norte", stock: 8, minStock: 3 },
-  { id: 5, itemCode: "CD-078", productName: "Correa de Distribución", brand: "Gates", model: "T-890", tienda: "Tienda Sur", stock: 0, minStock: 5 },
-  { id: 6, itemCode: "BI-044", productName: "Bujía Iridium", brand: "NGK", model: "IR-7", tienda: "Tienda Centro", stock: 30, minStock: 10 },
-  { id: 7, itemCode: "RA-012", productName: "Radiador", brand: "Nissens", model: "RD-500", tienda: "Tienda Norte", stock: 2, minStock: 2 },
-];
-
-const MOCK_MONTHLY: MonthlyReport[] = [
-  { month: "Agosto 2026", tienda: "Tienda Centro", totalVentas: 1295.00, totalCostos: 780.00, utilidad: 515.00, cantidadVentas: 3 },
-  { month: "Agosto 2026", tienda: "Tienda Norte", totalVentas: 1920.00, totalCostos: 1150.00, utilidad: 770.00, cantidadVentas: 2 },
-  { month: "Agosto 2026", tienda: "Tienda Sur", totalVentas: 1317.50, totalCostos: 890.00, utilidad: 427.50, cantidadVentas: 2 },
-  { month: "Julio 2026", tienda: "Tienda Centro", totalVentas: 8500.00, totalCostos: 5200.00, utilidad: 3300.00, cantidadVentas: 15 },
-  { month: "Julio 2026", tienda: "Tienda Norte", totalVentas: 6200.00, totalCostos: 3800.00, utilidad: 2400.00, cantidadVentas: 11 },
-  { month: "Julio 2026", tienda: "Tienda Sur", totalVentas: 4800.00, totalCostos: 3100.00, utilidad: 1700.00, cantidadVentas: 8 },
-];
+interface Location {
+  id: number; name: string;
+}
 
 const TABS = [
   { key: "ventas", label: "Ventas", icon: TrendingUp },
@@ -61,34 +43,80 @@ const formatBs = (v: number) =>
 
 export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("ventas");
-  const [filterBrand, setFilterBrand] = useState("");
-  const [filterTienda, setFilterTienda] = useState("");
+  const [locations, setLocations] = useState<Location[]>([]);
+
+  const [salesData, setSalesData] = useState<SalesReport[]>([]);
+  const [salesSummary, setSalesSummary] = useState({ totalSales: 0, count: 0, average: 0 });
+  const [salesLoading, setSalesLoading] = useState(false);
+
+  const [inventoryData, setInventoryData] = useState<{ locations: any[]; totalProducts: number; totalStock: number; lowStockCount: number } | null>(null);
+  const [inventoryLoading, setInventoryLoading] = useState(false);
+
+  const [monthlyData, setMonthlyData] = useState<{ period: any; locations: MonthlyReport[]; summary: any } | null>(null);
+  const [monthlyLoading, setMonthlyLoading] = useState(false);
+
+  const [filterLocation, setFilterLocation] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
   const [filterSearch, setFilterSearch] = useState("");
 
-  const tiendas = ["Tienda Centro", "Tienda Norte", "Tienda Sur"];
+  useEffect(() => {
+    api.get("/locations").then((res) => setLocations(res.data.locations || res.data)).catch(() => {});
+  }, []);
 
-  const filteredSales = MOCK_SALES.filter((s) =>
-    (!filterBrand || s.brand === filterBrand) &&
-    (!filterTienda || s.tienda === filterTienda) &&
-    (!filterMonth || s.date.startsWith(filterMonth)) &&
-    (!filterSearch || s.productName.toLowerCase().includes(filterSearch.toLowerCase()) || s.brand.toLowerCase().includes(filterSearch.toLowerCase()))
-  );
+  const fetchSales = useCallback(async () => {
+    try {
+      setSalesLoading(true);
+      const params = new URLSearchParams();
+      if (filterLocation) params.set("locationId", filterLocation);
+      if (filterMonth) params.set("month", filterMonth);
+      const res = await api.get(`/reports/sales?${params.toString()}`);
+      setSalesData(res.data.sales);
+      setSalesSummary(res.data.summary);
+    } catch {
+      toast.error("Error al cargar reporte de ventas");
+    } finally {
+      setSalesLoading(false);
+    }
+  }, [filterLocation, filterMonth]);
 
-  const filteredInventory = MOCK_INVENTORY.filter((i) =>
-    (!filterBrand || i.brand === filterBrand) &&
-    (!filterTienda || i.tienda === filterTienda) &&
-    (!filterSearch || i.productName.toLowerCase().includes(filterSearch.toLowerCase()))
-  );
+  const fetchInventory = useCallback(async () => {
+    try {
+      setInventoryLoading(true);
+      const params = new URLSearchParams();
+      if (filterLocation) params.set("locationId", filterLocation);
+      if (filterSearch) params.set("brand", filterSearch);
+      const res = await api.get(`/reports/inventory?${params.toString()}`);
+      setInventoryData(res.data);
+    } catch {
+      toast.error("Error al cargar reporte de inventario");
+    } finally {
+      setInventoryLoading(false);
+    }
+  }, [filterLocation, filterSearch]);
 
-  const filteredMonthly = MOCK_MONTHLY.filter((m) =>
-    (!filterTienda || m.tienda === filterTienda) &&
-    (!filterMonth || m.month.toLowerCase().includes(filterMonth.toLowerCase()))
-  );
+  const fetchMonthly = useCallback(async () => {
+    try {
+      setMonthlyLoading(true);
+      const params = new URLSearchParams();
+      if (filterMonth) {
+        const [year, month] = filterMonth.split("-");
+        if (year) params.set("year", year);
+        if (month) params.set("month", month);
+      }
+      const res = await api.get(`/reports/monthly?${params.toString()}`);
+      setMonthlyData(res.data);
+    } catch {
+      toast.error("Error al cargar reporte mensual");
+    } finally {
+      setMonthlyLoading(false);
+    }
+  }, [filterMonth]);
 
-  const totalVentas = filteredSales.reduce((sum, s) => sum + s.subtotal, 0);
-  const totalInventory = filteredInventory.reduce((sum, i) => sum + i.stock, 0);
-  const stockCritico = filteredInventory.filter((i) => i.stock <= i.minStock).length;
+  useEffect(() => {
+    if (activeTab === "ventas") fetchSales();
+    if (activeTab === "inventario") fetchInventory();
+    if (activeTab === "mensual") fetchMonthly();
+  }, [activeTab, fetchSales, fetchInventory, fetchMonthly]);
 
   const exportCSV = (data: Record<string, any>[], filename: string) => {
     if (!data.length) { toast.error("No hay datos para exportar"); return; }
@@ -103,15 +131,29 @@ export default function ReportsPage() {
     toast.success("Exportado correctamente");
   };
 
+  const formatDate = (d: string) => new Date(d).toLocaleDateString("es-BO", { day: "2-digit", month: "short", year: "numeric" });
+
+  const filteredSales = salesData.filter((s) =>
+    !filterSearch || (s.customer?.name || "").toLowerCase().includes(filterSearch.toLowerCase()) || String(s.id).includes(filterSearch)
+  );
+
+  const inventoryItems: InventoryItem[] = inventoryData?.locations?.flatMap((loc: any) => loc.items) || [];
+  const filteredInventory = inventoryItems.filter((i) =>
+    !filterSearch || i.product.name.toLowerCase().includes(filterSearch.toLowerCase()) || i.product.brand.toLowerCase().includes(filterSearch.toLowerCase())
+  );
+
+  const monthlyLocations: MonthlyReport[] = monthlyData?.locations || [];
+  const filteredMonthly = monthlyLocations.filter((m) =>
+    !filterLocation || String(m.location.id) === filterLocation
+  );
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Reportes</h1>
         <p className="text-gray-400 text-sm mt-1">Informes y estadísticas del sistema</p>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-2 bg-dark-800/50 border border-dark-700/50 rounded-xl p-1">
         {TABS.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
@@ -125,206 +167,229 @@ export default function ReportsPage() {
         ))}
       </div>
 
-      {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
           <p className="text-gray-400 text-xs mb-1">Total Ventas</p>
-          <p className="text-2xl font-bold text-amber-400">{formatBs(totalVentas)}</p>
-          <p className="text-xs text-gray-500 mt-1">{filteredSales.length} registros</p>
+          <p className="text-2xl font-bold text-amber-400">{formatBs(salesSummary.totalSales || inventoryData?.totalStock || monthlyData?.summary?.totalSales || 0)}</p>
+          <p className="text-xs text-gray-500 mt-1">{activeTab === "ventas" ? `${salesSummary.count} registros` : activeTab === "inventario" ? `${inventoryData?.totalProducts || 0} productos` : `${monthlyData?.summary?.totalLocations || 0} ubicaciones`}</p>
         </div>
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
-          <p className="text-gray-400 text-xs mb-1">Stock Total</p>
-          <p className="text-2xl font-bold text-blue-400">{totalInventory} unidades</p>
-          <p className="text-xs text-gray-500 mt-1">{filteredInventory.length} ubicaciones</p>
+          <p className="text-gray-400 text-xs mb-1">{activeTab === "inventario" ? "Stock Total" : activeTab === "mensual" ? "Ventas Netas" : "Promedio/Venta"}</p>
+          <p className="text-2xl font-bold text-blue-400">{activeTab === "ventas" ? formatBs(salesSummary.average) : activeTab === "inventario" ? `${inventoryData?.totalStock || 0} uds` : formatBs(monthlyData?.summary?.netSales || 0)}</p>
+          <p className="text-xs text-gray-500 mt-1">{activeTab === "inventario" ? `${inventoryData?.lowStockCount || 0} bajo stock` : activeTab === "mensual" ? `${monthlyData?.summary?.activeLocations || 0} activas` : ""}</p>
         </div>
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
           <p className="text-gray-400 text-xs mb-1">Stock Crítico</p>
-          <p className={`text-2xl font-bold ${stockCritico > 0 ? "text-red-400" : "text-green-400"}`}>{stockCritico}</p>
-          <p className="text-xs text-gray-500 mt-1">{stockCritico > 0 ? "Requiere atención" : "Todo en orden"}</p>
+          <p className={`text-2xl font-bold ${(inventoryData?.lowStockCount || 0) > 0 ? "text-red-400" : "text-green-400"}`}>{inventoryData?.lowStockCount || 0}</p>
+          <p className="text-xs text-gray-500 mt-1">{(inventoryData?.lowStockCount || 0) > 0 ? "Requiere atención" : "Todo en orden"}</p>
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input value={filterSearch} onChange={(e) => setFilterSearch(e.target.value)} placeholder="Buscar..."
             className="pl-9 pr-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 w-48" />
         </div>
-        <select value={filterBrand} onChange={(e) => setFilterBrand(e.target.value)}
+        <select value={filterLocation} onChange={(e) => setFilterLocation(e.target.value)}
           className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500">
-          <option value="">Todas las marcas</option>
-          <option value="Bosch">Bosch</option>
-          <option value="TRW">TRW</option>
-          <option value="Monroe">Monroe</option>
-          <option value="Gates">Gates</option>
-          <option value="NGK">NGK</option>
-          <option value="Nissens">Nissens</option>
-        </select>
-        <select value={filterTienda} onChange={(e) => setFilterTienda(e.target.value)}
-          className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500">
-          <option value="">Todas las tiendas</option>
-          {tiendas.map((t) => <option key={t} value={t}>{t}</option>)}
+          <option value="">Todas las ubicaciones</option>
+          {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
         </select>
         <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}
           className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
       </div>
 
-      {/* Sales report */}
       {activeTab === "ventas" && (
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
           <div className="px-4 py-3 border-b border-dark-700/50 flex items-center justify-between">
             <h3 className="text-white font-medium">Reporte de Ventas</h3>
-            <button onClick={() => exportCSV(filteredSales.map((s) => ({
-              Fecha: s.date, Producto: s.productName, Marca: s.brand, Modelo: s.model,
-              Cantidad: s.quantity, "Precio Unit.": s.unitPrice, Subtotal: s.subtotal,
-              Tienda: s.tienda, Cliente: s.customer || "N/A",
-            })), "reporte_ventas")}
-              className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-              <Download size={14} /> Exportar
-            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={fetchSales} className="p-1.5 text-gray-400 hover:text-white rounded-lg transition-all"><RefreshCw size={14} /></button>
+              <button onClick={() => exportCSV(filteredSales.map((s) => ({
+                ID: s.id, Fecha: formatDate(s.date), Tipo: s.type, Total: s.total,
+                Ubicacion: s.location?.name || "N/A", Cliente: s.customer?.name || "N/A", Vendedor: s.user?.name || "N/A",
+              })), "reporte_ventas")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
+                <Download size={14} /> Exportar
+              </button>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-dark-700/50">
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Fecha</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Producto</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Marca</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Modelo</th>
-                  <th className="text-center px-4 py-3 text-gray-400 font-medium">Cant.</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">P. Unit.</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Subtotal</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Tienda</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Cliente</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredSales.length === 0 ? (
-                  <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-500">No hay ventas para los filtros seleccionados</td></tr>
-                ) : filteredSales.map((s) => (
-                  <tr key={s.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
-                    <td className="px-4 py-3 text-gray-300">{s.date}</td>
-                    <td className="px-4 py-3 text-white font-medium">{s.productName}</td>
-                    <td className="px-4 py-3 text-gray-300">{s.brand}</td>
-                    <td className="px-4 py-3 text-gray-300">{s.model}</td>
-                    <td className="px-4 py-3 text-gray-300 text-center">{s.quantity}</td>
-                    <td className="px-4 py-3 text-gray-300 text-right">{formatBs(s.unitPrice)}</td>
-                    <td className="px-4 py-3 text-amber-400 font-medium text-right">{formatBs(s.subtotal)}</td>
-                    <td className="px-4 py-3 text-gray-300">{s.tienda}</td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{s.customer || "N/A"}</td>
+          {salesLoading ? (
+            <div className="flex items-center justify-center h-32"><RefreshCw size={24} className="text-primary-400 animate-spin" /></div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-dark-700/50">
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">ID</th>
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Fecha</th>
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Tipo</th>
+                    <th className="text-right px-4 py-3 text-gray-400 font-medium">Total</th>
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Ubicación</th>
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Cliente</th>
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Vendedor</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredSales.length === 0 ? (
+                    <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-500">No hay ventas para los filtros seleccionados</td></tr>
+                  ) : filteredSales.map((s) => (
+                    <tr key={s.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
+                      <td className="px-4 py-3 text-gray-300 font-mono text-xs">#{s.id}</td>
+                      <td className="px-4 py-3 text-gray-300">{formatDate(s.date)}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${s.type === "MAYOR" ? "bg-amber-500/10 text-amber-400" : "bg-blue-500/10 text-blue-400"}`}>
+                          {s.type === "MAYOR" ? "Mayor" : "Normal"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-amber-400 font-medium text-right">{formatBs(s.total)}</td>
+                      <td className="px-4 py-3 text-gray-300">{s.location?.name || "N/A"}</td>
+                      <td className="px-4 py-3 text-gray-400 text-xs">{s.customer?.name || "N/A"}</td>
+                      <td className="px-4 py-3 text-gray-400 text-xs">{s.user?.name || "N/A"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Inventory report */}
       {activeTab === "inventario" && (
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
           <div className="px-4 py-3 border-b border-dark-700/50 flex items-center justify-between">
             <h3 className="text-white font-medium">Reporte de Inventario</h3>
-            <button onClick={() => exportCSV(filteredInventory.map((i) => ({
-              Código: i.itemCode, Producto: i.productName, Marca: i.brand, Modelo: i.model,
-              Tienda: i.tienda, Stock: i.stock, "Mínimo": i.minStock,
-              Estado: i.stock === 0 ? "SIN STOCK" : i.stock <= i.minStock ? "CRÍTICO" : "OK",
-            })), "reporte_inventario")}
-              className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-              <Download size={14} /> Exportar
-            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={fetchInventory} className="p-1.5 text-gray-400 hover:text-white rounded-lg transition-all"><RefreshCw size={14} /></button>
+              <button onClick={() => exportCSV(filteredInventory.map((i) => ({
+                Codigo: i.product.itemCode, Producto: i.product.name, Marca: i.product.brand, Modelo: i.product.model,
+                Ubicacion: i.location.name, Stock: i.stock, Minimo: i.minStock, Estado: i.status,
+              })), "reporte_inventario")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
+                <Download size={14} /> Exportar
+              </button>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-dark-700/50">
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Código</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Producto</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Marca</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Modelo</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Tienda</th>
-                  <th className="text-center px-4 py-3 text-gray-400 font-medium">Stock</th>
-                  <th className="text-center px-4 py-3 text-gray-400 font-medium">Mínimo</th>
-                  <th className="text-center px-4 py-3 text-gray-400 font-medium">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredInventory.length === 0 ? (
-                  <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-500">No hay datos para los filtros seleccionados</td></tr>
-                ) : filteredInventory.map((i) => (
-                  <tr key={i.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
-                    <td className="px-4 py-3 text-gray-300 font-mono text-xs">{i.itemCode}</td>
-                    <td className="px-4 py-3 text-white font-medium">{i.productName}</td>
-                    <td className="px-4 py-3 text-gray-300">{i.brand}</td>
-                    <td className="px-4 py-3 text-gray-300">{i.model}</td>
-                    <td className="px-4 py-3 text-gray-300">{i.tienda}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        i.stock === 0 ? "bg-red-500/20 text-red-400" :
-                        i.stock <= i.minStock ? "bg-yellow-500/20 text-yellow-400" :
-                        "bg-green-500/20 text-green-400"
-                      }`}>{i.stock}</span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-400 text-center text-xs">{i.minStock}</td>
-                    <td className="px-4 py-3 text-center">
-                      {i.stock === 0 ? (
-                        <span className="text-red-400 text-xs font-medium">SIN STOCK</span>
-                      ) : i.stock <= i.minStock ? (
-                        <span className="text-yellow-400 text-xs font-medium">CRÍTICO</span>
-                      ) : (
-                        <span className="text-green-400 text-xs font-medium">OK</span>
-                      )}
-                    </td>
+          {inventoryLoading ? (
+            <div className="flex items-center justify-center h-32"><RefreshCw size={24} className="text-primary-400 animate-spin" /></div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-dark-700/50">
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Código</th>
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Producto</th>
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Marca</th>
+                    <th className="text-left px-4 py-3 text-gray-400 font-medium">Ubicación</th>
+                    <th className="text-center px-4 py-3 text-gray-400 font-medium">Stock</th>
+                    <th className="text-center px-4 py-3 text-gray-400 font-medium">Mínimo</th>
+                    <th className="text-center px-4 py-3 text-gray-400 font-medium">Estado</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredInventory.length === 0 ? (
+                    <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-500">No hay datos para los filtros seleccionados</td></tr>
+                  ) : filteredInventory.map((i) => (
+                    <tr key={i.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
+                      <td className="px-4 py-3 text-gray-300 font-mono text-xs">{i.product.itemCode}</td>
+                      <td className="px-4 py-3 text-white font-medium">{i.product.name}</td>
+                      <td className="px-4 py-3 text-gray-300">{i.product.brand}</td>
+                      <td className="px-4 py-3 text-gray-300">{i.location.name}</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                          i.stock === 0 ? "bg-red-500/20 text-red-400" :
+                          i.stock <= i.minStock ? "bg-yellow-500/20 text-yellow-400" :
+                          "bg-green-500/20 text-green-400"
+                        }`}>{i.stock}</span>
+                      </td>
+                      <td className="px-4 py-3 text-gray-400 text-center text-xs">{i.minStock}</td>
+                      <td className="px-4 py-3 text-center">
+                        {i.status === "AGOTADO" ? (
+                          <span className="text-red-400 text-xs font-medium">SIN STOCK</span>
+                        ) : i.status === "BAJO" ? (
+                          <span className="text-yellow-400 text-xs font-medium">CRÍTICO</span>
+                        ) : (
+                          <span className="text-green-400 text-xs font-medium">OK</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Monthly report */}
       {activeTab === "mensual" && (
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
           <div className="px-4 py-3 border-b border-dark-700/50 flex items-center justify-between">
             <h3 className="text-white font-medium">Reporte Mensual por Tienda</h3>
-            <button onClick={() => exportCSV(filteredMonthly.map((m) => ({
-              Mes: m.month, Tienda: m.tienda, "Ventas": m.totalVentas,
-              Costos: m.totalCostos, Utilidad: m.utilidad, "N° Ventas": m.cantidadVentas,
-            })), "reporte_mensual")}
-              className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-              <Download size={14} /> Exportar
-            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={fetchMonthly} className="p-1.5 text-gray-400 hover:text-white rounded-lg transition-all"><RefreshCw size={14} /></button>
+              <button onClick={() => exportCSV(filteredMonthly.map((m) => ({
+                Tienda: m.location.name, Ventas: m.summary.totalSales, Devoluciones: m.summary.totalReturns,
+                Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
+              })), "reporte_mensual")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
+                <Download size={14} /> Exportar
+              </button>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-dark-700/50">
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Mes</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Tienda</th>
-                  <th className="text-center px-4 py-3 text-gray-400 font-medium">N° Ventas</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Total Ventas</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Total Costos</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Utilidad</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredMonthly.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">No hay datos para los filtros seleccionados</td></tr>
-                ) : filteredMonthly.map((m, idx) => (
-                  <tr key={idx} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
-                    <td className="px-4 py-3 text-gray-300">{m.month}</td>
-                    <td className="px-4 py-3 text-white font-medium">{m.tienda}</td>
-                    <td className="px-4 py-3 text-gray-300 text-center">{m.cantidadVentas}</td>
-                    <td className="px-4 py-3 text-amber-400 font-medium text-right">{formatBs(m.totalVentas)}</td>
-                    <td className="px-4 py-3 text-gray-300 text-right">{formatBs(m.totalCostos)}</td>
-                    <td className="px-4 py-3 text-green-400 font-medium text-right">{formatBs(m.utilidad)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {monthlyLoading ? (
+            <div className="flex items-center justify-center h-32"><RefreshCw size={24} className="text-primary-400 animate-spin" /></div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-dark-700/50">
+                      <th className="text-left px-4 py-3 text-gray-400 font-medium">Tienda</th>
+                      <th className="text-center px-4 py-3 text-gray-400 font-medium">N° Ventas</th>
+                      <th className="text-right px-4 py-3 text-gray-400 font-medium">Total Ventas</th>
+                      <th className="text-right px-4 py-3 text-gray-400 font-medium">Devoluciones</th>
+                      <th className="text-right px-4 py-3 text-gray-400 font-medium">Neto</th>
+                      <th className="text-right px-4 py-3 text-gray-400 font-medium">Promedio</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredMonthly.length === 0 ? (
+                      <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">No hay datos para los filtros seleccionados</td></tr>
+                    ) : filteredMonthly.map((m, idx) => (
+                      <tr key={idx} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
+                        <td className="px-4 py-3 text-white font-medium">{m.location.name}</td>
+                        <td className="px-4 py-3 text-gray-300 text-center">{m.summary.saleCount}</td>
+                        <td className="px-4 py-3 text-amber-400 font-medium text-right">{formatBs(m.summary.totalSales)}</td>
+                        <td className="px-4 py-3 text-red-400 text-right">{formatBs(m.summary.totalReturns)}</td>
+                        <td className="px-4 py-3 text-green-400 font-medium text-right">{formatBs(m.summary.netSales)}</td>
+                        <td className="px-4 py-3 text-gray-300 text-right">{formatBs(m.summary.averagePerSale)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {filteredMonthly.length > 0 && filteredMonthly[0]?.topProducts?.length > 0 && (
+                <div className="p-4 border-t border-dark-700/50">
+                  <h4 className="text-white font-medium text-sm mb-3">Productos Más Vendidos</h4>
+                  <div className="space-y-2">
+                    {filteredMonthly[0].topProducts.slice(0, 5).map((tp, i) => (
+                      <div key={i} className="flex items-center justify-between p-2 bg-dark-900/30 rounded-lg">
+                        <div>
+                          <span className="text-white text-sm">{tp.product.name}</span>
+                          <span className="text-gray-500 text-xs ml-2">{tp.product.brand}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-amber-400 text-sm font-medium">{formatBs(tp.totalRevenue)}</span>
+                          <span className="text-gray-500 text-xs ml-2">{tp.quantitySold} uds</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
     </div>

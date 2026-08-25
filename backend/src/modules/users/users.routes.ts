@@ -1,9 +1,185 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { AuthRequest } from "../../shared/types";
 
 const router = Router();
+const prisma = new PrismaClient();
 
-router.get("/", (_req, res) => {
-  res.json({ message: "Users routes" });
+router.use(authenticate);
+
+// GET / — Listar usuarios
+router.get("/", async (req: AuthRequest, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      include: {
+        role: { select: { id: true, name: true } },
+        location: { select: { id: true, name: true } },
+      },
+      orderBy: { name: "asc" },
+    });
+
+    res.json({
+      users: users.map((u) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        roleId: u.roleId,
+        role: u.role.name,
+        locationId: u.locationId,
+        locationName: u.location?.name || "N/A",
+        createdAt: u.createdAt,
+      })),
+    });
+  } catch (error) {
+    console.error("Error al listar usuarios:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
+// GET /roles — Listar roles disponibles
+router.get("/roles", async (req: AuthRequest, res: Response) => {
+  try {
+    const roles = await prisma.roleModel.findMany({
+      select: { id: true, name: true, permissions: true },
+      orderBy: { name: "asc" },
+    });
+    res.json({ roles });
+  } catch (error) {
+    console.error("Error al listar roles:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
+// POST / — Crear usuario
+router.post("/", async (req: AuthRequest, res: Response) => {
+  try {
+    const { name, email, password, role, roleId, locationId } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Nombre, email y contraseña son obligatorios" });
+    }
+
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return res.status(400).json({ message: "Ya existe un usuario con ese email" });
+    }
+
+    let finalRoleId = roleId;
+    if (!finalRoleId && role) {
+      const roleRecord = await prisma.roleModel.findFirst({ where: { name: role } });
+      if (!roleRecord) {
+        return res.status(400).json({ message: `Rol "${role}" no encontrado` });
+      }
+      finalRoleId = roleRecord.id;
+    }
+    if (!finalRoleId) {
+      return res.status(400).json({ message: "Debe especificar un rol (role o roleId)" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        roleId: finalRoleId,
+        locationId: locationId ? Number(locationId) : null,
+      },
+      include: {
+        role: { select: { id: true, name: true } },
+        location: { select: { id: true, name: true } },
+      },
+    });
+
+    res.status(201).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roleId: user.roleId,
+      role: user.role.name,
+      locationId: user.locationId,
+      locationName: user.location?.name || "N/A",
+    });
+  } catch (error: any) {
+    console.error("Error al crear usuario:", error);
+    res.status(500).json({ message: error.message || "Error interno del servidor" });
+  }
+});
+
+// PUT /:id — Actualizar usuario
+router.put("/:id", async (req: AuthRequest, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: "ID inválido" });
+
+    const existing = await prisma.user.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    const { name, email, password, role, roleId, locationId } = req.body;
+
+    let finalRoleId = roleId;
+    if (!finalRoleId && role) {
+      const roleRecord = await prisma.roleModel.findFirst({ where: { name: role } });
+      if (roleRecord) finalRoleId = roleRecord.id;
+    }
+
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (password) updateData.password = await bcrypt.hash(password, 10);
+    if (finalRoleId) updateData.roleId = finalRoleId;
+    if (locationId !== undefined) updateData.locationId = locationId ? Number(locationId) : null;
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No hay datos para actualizar" });
+    }
+
+    const user = await prisma.user.update({
+      where: { id },
+      data: updateData,
+      include: {
+        role: { select: { id: true, name: true } },
+        location: { select: { id: true, name: true } },
+      },
+    });
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roleId: user.roleId,
+      role: user.role.name,
+      locationId: user.locationId,
+      locationName: user.location?.name || "N/A",
+    });
+  } catch (error: any) {
+    console.error("Error al actualizar usuario:", error);
+    res.status(500).json({ message: error.message || "Error interno del servidor" });
+  }
+});
+
+// DELETE /:id — Eliminar usuario
+router.delete("/:id", async (req: AuthRequest, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: "ID inválido" });
+
+    const existing = await prisma.user.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    if (req.user?.userId === id) {
+      return res.status(400).json({ message: "No puedes eliminar tu propia cuenta" });
+    }
+
+    await prisma.user.delete({ where: { id } });
+    res.json({ message: "Usuario eliminado" });
+  } catch (error: any) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ message: error.message || "Error interno del servidor" });
+  }
 });
 
 export default router;
