@@ -4,13 +4,20 @@ import { useAuthStore } from "../stores/authStore";
 interface RoleRouteProps {
   children: React.ReactNode;
   allowedRoles: string[];
+  module?: string;
 }
 
-export default function RoleRoute({ children, allowedRoles }: RoleRouteProps) {
-  const { user, isAuthenticated } = useAuthStore();
+export default function RoleRoute({ children, allowedRoles, module }: RoleRouteProps) {
+  const { user, isAuthenticated, permissions } = useAuthStore();
 
   if (!isAuthenticated) return <Navigate to="/login" />;
   if (!user || !allowedRoles.includes(user.role)) return <Navigate to="/panel" />;
+
+  // ADMIN always has access to everything
+  if (user.role === "ADMIN") return <>{children}</>;
+
+  // Check module permission if specified
+  if (module && !permissions.includes(module)) return <Navigate to="/panel" />;
 
   return <>{children}</>;
 }

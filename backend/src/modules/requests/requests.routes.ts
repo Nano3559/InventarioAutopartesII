@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient, RequestStatus } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt } from "../../shared/middlewares/validate";
 
@@ -9,9 +9,23 @@ const prisma = new PrismaClient();
 
 router.use(authenticate);
 
-const VALID_STATUSES: RequestStatus[] = ["PENDIENTE", "EN_PREPARACION", "ENVIADO", "RECIBIDO", "CANCELADO"];
+const VALID_STATUSES: RequestStatus[] = [
+  "PENDIENTE", "RECIBIDO_POR_INVENTARIO", "PREPARANDO",
+  "ENTREGADO", "RECIBIDO_POR_TIENDA", "CANCELADO",
+];
 
-// GET / — Listar solicitudes con filtros
+const VALID_TRANSITIONS: Record<string, RequestStatus[]> = {
+  PENDIENTE: ["RECIBIDO_POR_INVENTARIO", "CANCELADO"],
+  RECIBIDO_POR_INVENTARIO: ["PREPARANDO", "CANCELADO"],
+  PREPARANDO: ["ENTREGADO", "CANCELADO"],
+  ENTREGADO: ["RECIBIDO_POR_TIENDA"],
+  RECIBIDO_POR_TIENDA: [],
+  CANCELADO: [],
+};
+
+const INVENTARIO_STATUSES: RequestStatus[] = ["RECIBIDO_POR_INVENTARIO", "PREPARANDO", "ENTREGADO"];
+
+// GET / — Listar solicitudes con filtros + historial
 router.get("/", async (req: AuthRequest, res: Response) => {
   try {
     const { status, locationId, page = "1", limit = "20" } = req.query;
@@ -19,6 +33,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     const where: any = {};
     if (status && typeof status === "string") where.status = status as RequestStatus;
     if (locationId && typeof locationId === "string") where.locationId = Number(locationId);
+
+    if (req.user?.role === "TIENDA") {
+      where.locationId = req.user.locationId;
+    }
 
     const pg = Math.max(1, Number(page) || 1);
     const take = Math.min(100, Math.max(1, Number(limit) || 20));
@@ -31,6 +49,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
           product: { select: { id: true, name: true, itemCode: true, brand: true, model: true } },
           location: { select: { id: true, name: true, type: true } },
           requestedBy: { select: { id: true, name: true, email: true } },
+          history: { orderBy: { createdAt: "asc" } },
         },
         skip,
         take,
@@ -49,6 +68,32 @@ router.get("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
+// GET /:id — Detalle de solicitud con historial
+router.get("/:id", async (req: AuthRequest, res: Response) => {
+  try {
+    const id = parseId(req.params.id);
+    const request = await prisma.productRequest.findUnique({
+      where: { id },
+      include: {
+        product: { select: { id: true, name: true, itemCode: true, brand: true, model: true } },
+        location: { select: { id: true, name: true, type: true } },
+        requestedBy: { select: { id: true, name: true, email: true } },
+        history: {
+          include: { request: false },
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    });
+
+    if (!request) return res.status(404).json({ message: "Solicitud no encontrada" });
+    res.json(request);
+  } catch (error: any) {
+    if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
+    console.error("Error al obtener solicitud:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
 // POST — Crear solicitud (tienda pide a almacén)
 router.post("/", async (req: AuthRequest, res: Response) => {
   try {
@@ -56,6 +101,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     const quantity = parsePositiveInt(req.body.quantity, "Cantidad");
     const locationId = parsePositiveInt(req.body.locationId, "Ubicación");
     const requestedById = parsePositiveInt(req.body.requestedById, "Usuario solicitante");
+    const note = req.body.note || null;
 
     if (quantity <= 0) return res.status(400).json({ message: "La cantidad debe ser mayor a 0" });
 
@@ -70,10 +116,24 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
     const request = await prisma.productRequest.create({
-      data: { productId, quantity, locationId, requestedById },
+      data: {
+        productId,
+        quantity,
+        locationId,
+        requestedById,
+        note,
+        history: {
+          create: {
+            newStatus: "PENDIENTE",
+            userId: requestedById,
+            userRole: req.user?.role || "TIENDA",
+          },
+        },
+      },
       include: {
         product: { select: { name: true, itemCode: true } },
         location: { select: { name: true } },
+        history: true,
       },
     });
 
@@ -87,7 +147,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// PUT /:id — Cambiar estado de solicitud
+// PUT /:id — Cambiar estado de solicitud con historial
 router.put("/:id", async (req: AuthRequest, res: Response) => {
   try {
     const id = parseId(req.params.id);
@@ -101,15 +161,63 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
     const existing = await prisma.productRequest.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Solicitud no encontrada" });
 
-    const updated = await prisma.productRequest.update({
-      where: { id },
-      data: { status },
-      include: {
-        product: { select: { name: true, itemCode: true } },
-        location: { select: { name: true } },
-        requestedBy: { select: { name: true } },
-      },
-    });
+    const allowedTransitions = VALID_TRANSITIONS[existing.status] || [];
+    if (!allowedTransitions.includes(status)) {
+      return res.status(400).json({
+        message: `No se puede cambiar de "${existing.status}" a "${status}"`,
+      });
+    }
+
+    const role = req.user?.role || "";
+    if (INVENTARIO_STATUSES.includes(status) && role !== "ADMIN" && role !== "INVENTARIO") {
+      return res.status(403).json({ message: "Solo INVENTARIO o ADMIN pueden realizar esta acción" });
+    }
+    if (status === "RECIBIDO_POR_TIENDA" && role !== "ADMIN" && role !== "TIENDA") {
+      return res.status(403).json({ message: "Solo TIENDA o ADMIN pueden confirmar recepción" });
+    }
+
+    const STATUS_LABELS: Record<string, string> = {
+      PENDIENTE: "Pendiente",
+      RECIBIDO_POR_INVENTARIO: "Recibido por Inventario",
+      PREPARANDO: "Preparando",
+      ENTREGADO: "Entregado",
+      RECIBIDO_POR_TIENDA: "Recibido por Tienda",
+      CANCELADO: "Cancelado",
+    };
+
+    const [updated] = await prisma.$transaction([
+      prisma.productRequest.update({
+        where: { id },
+        data: { status },
+        include: {
+          product: { select: { name: true, itemCode: true } },
+          location: { select: { name: true } },
+          requestedBy: { select: { name: true } },
+        },
+      }),
+      prisma.requestHistory.create({
+        data: {
+          requestId: id,
+          previousStatus: existing.status,
+          newStatus: status,
+          userId: req.user?.userId || 0,
+          userRole: role,
+        },
+      }),
+    ]);
+
+    // Notify the requester about status change
+    if (existing.requestedById) {
+      await prisma.notification.create({
+        data: {
+          userId: existing.requestedById,
+          title: `Solicitud #${id} - ${STATUS_LABELS[status] || status}`,
+          message: `La solicitud del producto "${updated.product?.name}" fue cambiada a "${STATUS_LABELS[status] || status}" por ${updated.requestedBy?.name || "Sistema"}.`,
+          type: status === "CANCELADO" ? "WARNING" : "INFO",
+          linkUrl: "/panel/solicitudes",
+        },
+      });
+    }
 
     res.json(updated);
   } catch (error: any) {
@@ -126,11 +234,36 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
     const existing = await prisma.productRequest.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Solicitud no encontrada" });
 
-    if (existing.status === "RECIBIDO" || existing.status === "CANCELADO") {
+    if (existing.status === "RECIBIDO_POR_TIENDA" || existing.status === "CANCELADO") {
       return res.status(400).json({ message: "No se puede cancelar una solicitud ya recibida o cancelada" });
     }
 
-    await prisma.productRequest.update({ where: { id }, data: { status: "CANCELADO" } });
+    await prisma.$transaction([
+      prisma.productRequest.update({ where: { id }, data: { status: "CANCELADO" } }),
+      prisma.requestHistory.create({
+        data: {
+          requestId: id,
+          previousStatus: existing.status,
+          newStatus: "CANCELADO",
+          userId: req.user?.userId || 0,
+          userRole: req.user?.role || "ADMIN",
+        },
+      }),
+    ]);
+
+    // Notify the requester about cancellation
+    if (existing.requestedById) {
+      await prisma.notification.create({
+        data: {
+          userId: existing.requestedById,
+          title: `Solicitud #${id} - Cancelada`,
+          message: `La solicitud fue cancelada por ${req.user?.role || "Sistema"}.`,
+          type: "WARNING",
+          linkUrl: "/panel/solicitudes",
+        },
+      });
+    }
+
     res.json({ message: "Solicitud cancelada" });
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });

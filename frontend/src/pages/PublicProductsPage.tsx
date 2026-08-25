@@ -22,7 +22,7 @@ interface ProductCard {
   brand: string;
   model: string;
   year: string;
-  quality: string | null;
+  detalles: string | null;
   image: string | null;
   category: string | null;
   availability: string;
@@ -74,7 +74,7 @@ export default function PublicProductsPage() {
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
   const [category, setCategory] = useState("");
-  const [quality, setQuality] = useState("");
+  const [detalles, setDetalles] = useState("");
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -118,7 +118,7 @@ export default function PublicProductsPage() {
     if (model) params.set("model", model);
     if (year) params.set("year", year);
     if (category) params.set("category", category);
-    if (quality) params.set("quality", quality);
+    if (detalles) params.set("detalles", detalles);
 
     api
       .get(`/public/products?${params.toString()}`)
@@ -127,7 +127,7 @@ export default function PublicProductsPage() {
         setTotal(res.data.pagination.total);
       })
       .finally(() => setLoading(false));
-  }, [search, brand, model, year, category, quality]);
+  }, [search, brand, model, year, category, detalles]);
 
   const clearFilters = () => {
     setSearch("");
@@ -135,10 +135,10 @@ export default function PublicProductsPage() {
     setModel("");
     setYear("");
     setCategory("");
-    setQuality("");
+    setDetalles("");
   };
 
-  const hasFilters = search || brand || model || year || category || quality;
+  const hasFilters = search || brand || model || year || category || detalles;
 
   const availabilityColor = (status: string) => {
     if (status === "Disponible") return "text-green-400 bg-green-500/10 border-green-500/20";
@@ -349,11 +349,11 @@ export default function PublicProductsPage() {
 
             <div className="relative">
               <select
-                value={quality}
-                onChange={(e) => setQuality(e.target.value)}
+                value={detalles}
+                onChange={(e) => setDetalles(e.target.value)}
                 className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-white/[0.06] rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8"
               >
-                <option value="">Calidad</option>
+                <option value="">Detalles</option>
                 {filters.qualities.map((q) => <option key={q} value={q}>{q}</option>)}
               </select>
               <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
@@ -418,9 +418,9 @@ export default function PublicProductsPage() {
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider ${availabilityColor(product.availability)}`}>
                       {product.availability}
                     </span>
-                    {product.quality && (
+                    {product.detalles && (
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md border text-blue-400 bg-blue-500/10 border-blue-500/20 uppercase tracking-wider">
-                        {product.quality}
+                        {product.detalles}
                       </span>
                     )}
                   </div>

@@ -1,7 +1,10 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
 import { config } from "../../config";
 import { AuthRequest, AuthPayload } from "../types";
+
+const prisma = new PrismaClient();
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -32,5 +35,34 @@ export const authorize = (...roles: string[]) => {
     }
 
     next();
+  };
+};
+
+export const authorizeModule = (module: string) => {
+  return async (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "No autenticado" });
+    }
+
+    // ADMIN always has access
+    if (req.user.role === "ADMIN") return next();
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.userId },
+        include: { role: true },
+      });
+
+      if (!user) return res.status(401).json({ message: "Usuario no encontrado" });
+
+      const permissions = user.role.permissions || [];
+      if (!permissions.includes(module)) {
+        return res.status(403).json({ message: `No tiene acceso al módulo: ${module}` });
+      }
+
+      next();
+    } catch {
+      return res.status(500).json({ message: "Error al verificar permisos" });
+    }
   };
 };

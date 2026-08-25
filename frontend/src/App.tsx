@@ -67,75 +67,75 @@ export default function App() {
 
           {/* Inventario — ADMIN + INVENTARIO */}
           <Route path="inventario" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="inventario">
               <InventoryPage />
             </RoleRoute>
           } />
           <Route path="inventario/:id" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="inventario">
               <ProductDetailPage />
             </RoleRoute>
           } />
 
           {/* Ventas — ADMIN + TIENDA */}
           <Route path="ventas" element={
-            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]}>
+            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]} module="ventas">
               <SalesPage />
             </RoleRoute>
           } />
 
           {/* Ventas por Mayor — ADMIN + TIENDA */}
           <Route path="ventas-mayor" element={
-            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]}>
+            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]} module="ventas-mayor">
               <WholesalePage />
             </RoleRoute>
           } />
 
           {/* Devoluciones — ADMIN + TIENDA */}
           <Route path="devoluciones" element={
-            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]}>
+            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]} module="devoluciones">
               <ReturnsPage />
             </RoleRoute>
           } />
 
           {/* Solicitudes — todos */}
           <Route path="solicitudes" element={
-            <RoleRoute allowedRoles={ALL}>
+            <RoleRoute allowedRoles={ALL} module="solicitudes">
               <RequestsPage />
             </RoleRoute>
           } />
 
           {/* Movimientos — ADMIN + INVENTARIO */}
           <Route path="movimientos" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="movimientos">
               <MovementsPage />
             </RoleRoute>
           } />
 
           {/* Costos — ADMIN + INVENTARIO */}
           <Route path="costos" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="costos">
               <CostsPage />
             </RoleRoute>
           } />
 
           {/* Precios — ADMIN + INVENTARIO */}
           <Route path="precios" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]}>
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="precios">
               <PricesPage />
             </RoleRoute>
           } />
 
           {/* Reportes — ADMIN + TIENDA */}
           <Route path="reportes" element={
-            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]}>
+            <RoleRoute allowedRoles={["ADMIN", "TIENDA"]} module="reportes">
               <ReportsPage />
             </RoleRoute>
           } />
 
           {/* Configuración — solo ADMIN */}
           <Route path="configuracion" element={
-            <RoleRoute allowedRoles={["ADMIN"]}>
+            <RoleRoute allowedRoles={["ADMIN"]} module="configuracion">
               <SettingsPage />
             </RoleRoute>
           } />

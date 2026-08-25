@@ -7,11 +7,14 @@ import {
 import toast from "react-hot-toast";
 import api from "../services/api";
 import ProductImage from "../components/public/ProductImage";
+import { validateYearRanges } from "../utils/yearRanges";
+import Autocomplete from "../components/ui/Autocomplete";
+import { useAuthStore } from "../stores/authStore";
 
 interface Product {
   id: number; itemCode: string; manufacturer: string; name: string;
   brand: string; model: string; year: string; detail: string | null;
-  quality: string | null; image: string | null; oemCode: string | null;
+  detalles: string | null; image: string | null; oemCode: string | null;
   factoryCode: string | null; price1: string; price2: string;
   wholesalePrice: string | null; cost: string | null;
   categoryId: number | null; category: string | null; stock: number;
@@ -21,6 +24,8 @@ interface Filters {
   brands: string[];
   manufacturers: string[];
   categories: { id: number; name: string }[];
+  models?: string[];
+  years?: string[];
 }
 
 interface FormData {
@@ -38,6 +43,8 @@ const emptyForm: FormData = {
 
 export default function InventoryPage() {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const canEdit = user?.role === "ADMIN";
   const [products, setProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<Filters>({ brands: [], manufacturers: [], categories: [] });
   const [loading, setLoading] = useState(true);
@@ -122,6 +129,12 @@ export default function InventoryPage() {
   const handleSave = async () => {
     if (!form.itemCode || !form.manufacturer || !form.name || !form.brand || !form.model || !form.year || !form.price1) {
       toast.error("Completa los campos obligatorios");
+      return;
+    }
+
+    const yearError = validateYearRanges(form.year);
+    if (yearError) {
+      toast.error(yearError);
       return;
     }
     try {
@@ -213,14 +226,18 @@ export default function InventoryPage() {
           <button onClick={fetchProducts} className="p-2.5 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-white hover:border-primary-600/50 transition-all" title="Actualizar">
             <RefreshCw size={18} />
           </button>
-          <button onClick={() => { setShowImportModal(true); setImportFile(null); setImportResult(null); }} className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-green-600/20">
-            <Upload size={18} />
-            <span className="hidden sm:inline">Importar Excel</span>
-          </button>
-          <button onClick={openCreate} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-lg shadow-primary-600/20">
-            <Plus size={18} />
-            Nuevo Producto
-          </button>
+          {canEdit && (
+            <>
+              <button onClick={() => { setShowImportModal(true); setImportFile(null); setImportResult(null); }} className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-green-600/20">
+                <Upload size={18} />
+                <span className="hidden sm:inline">Importar Excel</span>
+              </button>
+              <button onClick={openCreate} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-lg shadow-primary-600/20">
+                <Plus size={18} />
+                Nuevo Producto
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -248,25 +265,27 @@ export default function InventoryPage() {
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4 pt-4 border-t border-dark-700/50">
-            <div className="relative">
-              <select value={brand} onChange={(e) => setBrand(e.target.value)} className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
-                <option value="">Todas las marcas</option>
-                {filters.brands.map((b) => <option key={b} value={b}>{b}</option>)}
-              </select>
-              <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-            </div>
-            <div className="relative">
-              <select value={manufacturer} onChange={(e) => setManufacturer(e.target.value)} className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
-                <option value="">Todos los fabricantes</option>
-                {filters.manufacturers.map((m) => <option key={m} value={m}>{m}</option>)}
-              </select>
-              <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 pt-4 border-t border-dark-700/50">
+            <Autocomplete
+              value={brand}
+              onChange={setBrand}
+              suggestions={filters.brands}
+              placeholder="Todas las marcas"
+              label="Marca"
+            />
+            <Autocomplete
+              value={manufacturer}
+              onChange={setManufacturer}
+              suggestions={filters.manufacturers}
+              placeholder="Todos los fabricantes"
+              label="Fabricante"
+            />
             {(brand || manufacturer) && (
-              <button onClick={() => { setBrand(""); setManufacturer(""); }} className="px-3 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/20 transition-colors">
-                Limpiar filtros
-              </button>
+              <div className="flex items-end">
+                <button onClick={() => { setBrand(""); setManufacturer(""); }} className="px-3 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/20 transition-colors">
+                  Limpiar filtros
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -333,14 +352,18 @@ export default function InventoryPage() {
                           <button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all" title="Ver detalle">
                             <Eye size={16} />
                           </button>
-                          <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar">
-                            <Pencil size={16} />
-                          </button>
+                          {canEdit && (
+                            <>
+                              <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar">
+                                <Pencil size={16} />
+                              </button>
+                              <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar">
+                                <Trash2 size={16} />
+                              </button>
+                            </>
+                          )}
                           <button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all" title="Ver stock por ubicación">
                             <Package size={16} />
-                          </button>
-                          <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar">
-                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
@@ -373,14 +396,18 @@ export default function InventoryPage() {
                       <button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 active:bg-blue-500/10 transition-all">
                         <Eye size={16} />
                       </button>
-                      <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 active:bg-amber-500/10 transition-all">
-                        <Pencil size={16} />
-                      </button>
+                      {canEdit && (
+                        <>
+                          <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 active:bg-amber-500/10 transition-all">
+                            <Pencil size={16} />
+                          </button>
+                          <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 active:bg-red-500/10 transition-all">
+                            <Trash2 size={16} />
+                          </button>
+                        </>
+                      )}
                       <button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 active:bg-purple-500/10 transition-all">
                         <Package size={16} />
-                      </button>
-                      <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 active:bg-red-500/10 transition-all">
-                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -434,7 +461,7 @@ export default function InventoryPage() {
                 <Field label="Marca *" value={form.brand} onChange={(v) => setField("brand", v)} />
                 <Field label="Modelo *" value={form.model} onChange={(v) => setField("model", v)} />
                 <Field label="Año *" value={form.year} onChange={(v) => setField("year", v)} placeholder="ej: 2020-2024" />
-                <Field label="Calidad" value={form.detail} onChange={(v) => setField("detail", v)} placeholder="Detalle opcional" />
+                <Field label="Detalles" value={form.detail} onChange={(v) => setField("detail", v)} placeholder="Detalle opcional" />
                 <Field label="Código OEM" value={form.oemCode} onChange={(v) => setField("oemCode", v)} />
                 <Field label="Código Fábrica" value={form.factoryCode} onChange={(v) => setField("factoryCode", v)} />
               </div>
@@ -535,7 +562,7 @@ export default function InventoryPage() {
             <div className="p-5 space-y-4">
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
                 <p className="text-blue-400 text-xs font-medium mb-1">Columnas aceptadas:</p>
-                <p className="text-gray-400 text-xs">Codigo fabrica, Descripcion, Fabricante, Marca, Modelo, Años, Detalle, Codigo OEM, Codigo fabrica, Categoría, Precio 1, Precio 2, Precio mayor, Costo, Calidad</p>
+                <p className="text-gray-400 text-xs">Codigo fabrica, Descripcion, Fabricante, Marca, Modelo, Años, Detalle, Codigo OEM, Codigo fabrica, Categoría, Precio 1, Precio 2, Precio mayor, Costo, Detalles</p>
               </div>
               {!importResult ? (
                 <div className="space-y-3">

@@ -19,7 +19,7 @@ interface FeaturedProduct {
   brand: string;
   model: string;
   year: string;
-  quality: string | null;
+  detalles: string | null;
   image: string | null;
   category: string | null;
   availability: string;
@@ -44,7 +44,7 @@ const benefits = [
   },
   {
     icon: Tag,
-    title: "Diferentes calidades",
+    title: "Diferentes detalles",
     desc: "Alternativas para diferentes necesidades y presupuestos.",
   },
 ];
