@@ -1,0 +1,35 @@
+CREATE TABLE IF NOT EXISTS "AuditLog" (
+  "id" SERIAL PRIMARY KEY,
+  "userId" INTEGER,
+  "action" TEXT NOT NULL,
+  "targetType" TEXT,
+  "targetId" INTEGER,
+  "oldValue" JSONB,
+  "newValue" JSONB,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "AuditLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "Notification" (
+  "id" SERIAL PRIMARY KEY,
+  "userId" INTEGER NOT NULL,
+  "title" TEXT NOT NULL,
+  "message" TEXT NOT NULL,
+  "type" TEXT NOT NULL DEFAULT 'info',
+  "read" BOOLEAN NOT NULL DEFAULT false,
+  "linkUrl" TEXT,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "RequestHistory" (
+  "id" SERIAL PRIMARY KEY,
+  "requestId" INTEGER NOT NULL,
+  "previousStatus" TEXT,
+  "newStatus" TEXT NOT NULL,
+  "userId" INTEGER NOT NULL,
+  "userRole" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "RequestHistory_requestId_fkey" FOREIGN KEY ("requestId") REFERENCES "ProductRequest"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT "RequestHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
