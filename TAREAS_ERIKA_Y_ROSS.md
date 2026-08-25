@@ -93,40 +93,40 @@
   - Cambio de estado desde la lista (para encargado de inventario)
 
 ### Sprint 4 - Prioridad MEDIA - Ejercicios 5 y 9
-- [ ] **Pagina Movimientos** (`/panel/movimientos`):
+- [x] **Pagina Movimientos** (`/panel/movimientos`):
   - Formulario: producto, cantidad, origen (almacen/tienda), destino (almacen/tienda), observacion
   - Historial de movimientos en tabla
   - Filtros por fecha, producto, ubicacion origen, ubicacion destino
-- [ ] **Pagina Pagos** (integrada en Ventas):
+- [x] **Pagina Pagos** (integrada en Ventas):
   - Registro de pagos multiples por venta
   - Historial de pagos con filtros
   - Resumen: total pagado vs total venta
 
 ### Sprint 5 - Prioridad BAJA - Ejercicios 6, 7, 8
-- [ ] **Pagina Costos** (`/panel/costos`):
+- [x] **Pagina Costos** (`/panel/costos`):
   - Formulario: subir factura (upload), proveedor, tipo de cambio, porcentaje, producto, costo
   - Lista de costos registrados
   - CRUD de proveedores (nombre, NIT, telefono)
-- [ ] **Pagina Precios** (`/panel/precios`):
+- [x] **Pagina Precios** (`/panel/precios`):
   - Tabla de precios calculados desde costo: Costo | +20% | +30% | +40% | +50% | +60% | +70% | +80% | Precio Mayor
   - Edicion manual de precio por mayor
   - Boton "Exportar a Excel" (Codigo fabrica, Producto, Marca, Modelo, Anos, Detalle, Precio mayor)
-- [ ] **Pagina Venta por Mayor** (`/panel/ventas-mayor`):
+- [x] **Pagina Venta por Mayor** (`/panel/ventas-mayor`):
   - Formulario manual de productos
   - Boton "Importar Excel" (columnas: Codigo fabrica, Descripcion, Producto, Marca, Modelo, Anos, Detalle, Precio mayor)
   - Datos del cliente: nombre, para quien es el pedido, lugar de entrega, datos para factura, forma de pago
   - Entrega: Cochabamba / Otra ubicacion
   - Generar nota de venta (PDF o formato printable)
-- [ ] **Pagina Reportes** (`/panel/reportes`):
+- [x] **Pagina Reportes** (`/panel/reportes`):
   - Filtros: Marca, Auto/modelo, Mes, Tienda, Proveedor, Producto
   - Tablas de resultados: ventas, inventario, costos
   - Reporte mensual por tienda
-- [ ] **Pagina Configuracion** (`/panel/configuracion`):
+- [x] **Pagina Configuracion** (`/panel/configuracion`):
   - Gestionar usuarios
   - Gestionar roles/permisos
 
 ### Tareas adicionales Erika
-- [ ] Responsive completo del admin (sidebar colapsa en celular)
+- [x] Responsive completo del admin (sidebar colapsa en celular)
 - [ ] Modales consistentes en todos los CRUD
 - [ ] Mensajes de confirmacion/error en todas las acciones
 - [ ] Estados de carga (spinners/skeletons) en todas las paginas
@@ -182,7 +182,7 @@
   - DELETE /:id — cancelar solicitud
 
 ### Sprint 4 - Prioridad MEDIA - Ejercicio 5: Movimientos
-- [ ] **API Movimientos** (`/api/movements`):
+- [x] **API Movimientos** (`/api/movements`):
   - POST — registrar movimiento
     - Valida stock suficiente en origen
     - Descuenta stock origen
@@ -191,16 +191,16 @@
   - GET / — historial con filtros (fecha, producto, ubicacion)
 
 ### Sprint 5 - Prioridad MEDIA - Ejercicios 6 y 7
-- [ ] **API Costos** (`/api/costs`):
+- [x] **API Costos** (`/api/costs`):
   - POST — registrar costo con factura (upload multer)
   - GET / — listar costos
   - PUT /:id — editar costo
-- [ ] **API Proveedores** (`/api/suppliers`):
+- [x] **API Proveedores** (`/api/suppliers`):
   - POST — crear proveedor
   - GET / — listar
   - PUT /:id — editar
   - DELETE /:id — eliminar
-- [ ] **API Precios** (`/api/prices`):
+- [x] **API Precios** (`/api/prices`):
   - GET / — calcular precios desde costo con todos los porcentajes
   - PUT /:productId — actualizar precio por mayor
   - GET /export — exportar a Excel (xlsx)
@@ -226,7 +226,7 @@
 
 ### Tareas adicionales Ross
 - [x] Crear modulo `customers` en backend/src/modules/ (falta completamente)
-- [ ] Crear modulo `suppliers` en backend/src/modules/ (falta completamente)
+- [x] Crear modulo `suppliers` en backend/src/modules/ (falta completamente)
 - [ ] Actualizar seed con: pagos en ventas, devoluciones, costos con facturas, precios calculados
 - [ ] Validaciones robustas en todos los endpoints (campos obligatorios, tipos de dato)
 - [ ] Manejo de errores consistente (mensajes claros al frontend)

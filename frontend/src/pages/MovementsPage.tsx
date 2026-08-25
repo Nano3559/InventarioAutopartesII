@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   ArrowLeftRight, Search, Plus, X, ChevronDown, ChevronLeft, ChevronRight,
-  RefreshCw, MapPin, Calendar,
+  RefreshCw, MapPin, Calendar, Eye,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
@@ -35,6 +35,7 @@ export default function MovementsPage() {
   const [quantity, setQuantity] = useState("");
   const [observation, setObservation] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [productStock, setProductStock] = useState<{ total: number; byLocation: { location: string; stock: number }[] } | null>(null);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -50,6 +51,9 @@ export default function MovementsPage() {
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Observation modal
+  const [obsModal, setObsModal] = useState<{ open: boolean; observation: string; movementId: number }>({ open: false, observation: "", movementId: 0 });
 
   const fetchLocations = useCallback(async () => {
     try {
@@ -75,10 +79,22 @@ export default function MovementsPage() {
     searchTimer.current = setTimeout(() => searchProducts(v), 300);
   };
 
-  const selectProduct = (p: Product) => {
+  const selectProduct = async (p: Product) => {
     setSelectedProduct(p);
     setProductSearch(p.name);
     setProductResults([]);
+    setProductStock(null);
+    try {
+      const res = await api.get(`/products/${p.id}`);
+      const d = res.data;
+      const byLocation: { location: string; stock: number }[] = [];
+      if (d.inventory) {
+        for (const inv of d.inventory) {
+          byLocation.push({ location: inv.location?.name || `Ubicación ${inv.locationId}`, stock: inv.stock });
+        }
+      }
+      setProductStock({ total: d.stockTotal ?? p.stock, byLocation });
+    } catch { /* ignore */ }
   };
 
   // ==================== FETCH HISTORY ====================
@@ -280,7 +296,14 @@ export default function MovementsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-300 text-xs">{m.user.name}</td>
-                      <td className="px-4 py-3 text-gray-500 text-xs max-w-[200px] truncate">{m.observation || "—"}</td>
+                      <td className="px-4 py-3 text-gray-500 text-xs">
+                        {m.observation ? (
+                          <button onClick={() => setObsModal({ open: true, observation: m.observation || "", movementId: m.id })}
+                            className="flex items-center gap-1 text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 px-2 py-1 rounded-lg transition-all" title="Ver observación">
+                            <Eye size={14} /> Detalles
+                          </button>
+                        ) : "—"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -318,7 +341,12 @@ export default function MovementsPage() {
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>{m.user.name}</span>
-                    {m.observation && <span className="truncate max-w-[200px]">{m.observation}</span>}
+                    {m.observation && (
+                      <button onClick={() => setObsModal({ open: true, observation: m.observation || "", movementId: m.id })}
+                        className="flex items-center gap-1 text-primary-400 hover:text-primary-300 truncate max-w-[200px]">
+                        <Eye size={12} /> Detalles
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -373,15 +401,37 @@ export default function MovementsPage() {
               <div>
                 <label className="block text-xs text-gray-400 mb-1.5">Producto *</label>
                 {selectedProduct ? (
-                  <div className="flex items-center justify-between p-3 bg-dark-900/50 border border-primary-600/20 rounded-xl">
-                    <div>
-                      <p className="text-sm text-white font-medium">{selectedProduct.name}</p>
-                      <p className="text-xs text-gray-500">{selectedProduct.brand} · {selectedProduct.itemCode}</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-dark-900/50 border border-primary-600/20 rounded-xl">
+                      <div>
+                        <p className="text-sm text-white font-medium">{selectedProduct.name}</p>
+                        <p className="text-xs text-gray-500">{selectedProduct.brand} · {selectedProduct.itemCode}</p>
+                      </div>
+                      <button onClick={() => { setSelectedProduct(null); setProductSearch(""); setProductStock(null); }}
+                        className="p-1.5 text-gray-400 hover:text-red-400 transition-all">
+                        <X size={16} />
+                      </button>
                     </div>
-                    <button onClick={() => { setSelectedProduct(null); setProductSearch(""); }}
-                      className="p-1.5 text-gray-400 hover:text-red-400 transition-all">
-                      <X size={16} />
-                    </button>
+                    {productStock && (
+                      <div className="p-3 bg-dark-900/30 border border-dark-700/30 rounded-xl">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs text-gray-400">Stock total</span>
+                          <span className={`text-sm font-bold ${productStock.total === 0 ? "text-red-400" : productStock.total <= 5 ? "text-yellow-400" : "text-green-400"}`}>
+                            {productStock.total} unidades
+                          </span>
+                        </div>
+                        {productStock.byLocation.length > 0 && (
+                          <div className="space-y-1 pt-2 border-t border-dark-700/30">
+                            {productStock.byLocation.map((loc, i) => (
+                              <div key={i} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-400 flex items-center gap-1"><MapPin size={10} /> {loc.location}</span>
+                                <span className={loc.stock === 0 ? "text-red-400" : "text-gray-300"}>{loc.stock}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="relative">
@@ -455,6 +505,33 @@ export default function MovementsPage() {
               <button onClick={handleSubmit} disabled={submitting}
                 className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50">
                 {submitting ? <><RefreshCw size={16} className="animate-spin" /> Registrando...</> : <><Plus size={16} /> Registrar Movimiento</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============ MODAL: Observación ============ */}
+      {obsModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-md">
+            <div className="flex items-center justify-between p-5 border-b border-dark-700/50">
+              <h2 className="text-lg font-bold text-white">Observación</h2>
+              <button onClick={() => setObsModal({ open: false, observation: "", movementId: 0 })}
+                className="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5">
+              <p className="text-xs text-gray-500 mb-2">Movimiento #{obsModal.movementId}</p>
+              <div className="p-4 bg-dark-900/50 border border-dark-700/30 rounded-xl">
+                <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">{obsModal.observation}</p>
+              </div>
+            </div>
+            <div className="flex justify-end p-5 border-t border-dark-700/50">
+              <button onClick={() => setObsModal({ open: false, observation: "", movementId: 0 })}
+                className="px-4 py-2.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-xl text-sm transition-all">
+                Cerrar
               </button>
             </div>
           </div>
