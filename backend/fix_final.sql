@@ -1,0 +1,2 @@
+ALTER TABLE "RoleModel" ADD COLUMN IF NOT EXISTS "columnConfig" JSONB;
+ALTER TABLE "ProductRequest" ADD COLUMN IF NOT EXISTS "note" TEXT;
