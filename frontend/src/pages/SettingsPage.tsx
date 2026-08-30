@@ -28,18 +28,21 @@ const ROLE_COLORS: Record<string, string> = {
   ADMIN: "bg-red-500/10 text-red-400 border-red-500/20",
   INVENTARIO: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   TIENDA: "bg-green-500/10 text-green-400 border-green-500/20",
+  VENDEDOR: "bg-amber-500/10 text-amber-400 border-amber-500/20",
 };
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: "Administrador",
   INVENTARIO: "Inventario",
   TIENDA: "Tienda",
+  VENDEDOR: "Vendedor",
 };
 
 const ROLE_DESCRIPTIONS: Record<string, string> = {
   ADMIN: "Acceso total al sistema",
   INVENTARIO: "Gestión de productos, stock, movimientos, costos, precios",
   TIENDA: "Ventas, devoluciones, solicitudes, reportes",
+  VENDEDOR: "Ventas y consulta limitada por categorías asignadas",
 };
 
 const MODULE_LABELS: Record<string, string> = {
@@ -53,6 +56,7 @@ export default function SettingsPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [auditPage, setAuditPage] = useState(1);
   const [auditTotal, setAuditTotal] = useState(0);
@@ -76,6 +80,10 @@ export default function SettingsPage() {
       setUsers(usersRes.data.users);
       setRoles(rolesRes.data.roles);
       setLocations(locsRes.data.locations || locsRes.data);
+      try {
+        const catRes = await api.get("/products/filters");
+        setCategories(catRes.data.categories || []);
+      } catch { /* categorías opcionales */ }
     } catch {
       toast.error("Error al cargar datos");
     } finally {
@@ -170,6 +178,26 @@ export default function SettingsPage() {
   };
 
   const allModules = Object.keys(MODULE_LABELS);
+
+  const getRoleCategories = (role: Role): string[] => {
+    const raw = role.columnConfig?.__categorias;
+    return Array.isArray(raw) ? (raw as string[]) : [];
+  };
+
+  const toggleCategory = async (role: Role, catName: string) => {
+    const current = getRoleCategories(role);
+    const next = current.includes(catName)
+      ? current.filter((c) => c !== catName)
+      : [...current, catName];
+    const columnConfig = { ...(role.columnConfig || {}), __categorias: next };
+    try {
+      await api.put(`/permissions/roles/${role.id}/columns`, { columnConfig });
+      setRoles((prev) => prev.map((r) => r.id === role.id ? { ...r, columnConfig } : r));
+      toast.success("Categorías actualizadas");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Error al actualizar categorías");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -308,7 +336,7 @@ export default function SettingsPage() {
                 <div className="mt-3">
                   <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Columnas configuradas</p>
                   <div className="flex flex-wrap gap-1">
-                    {Object.entries(role.columnConfig).map(([module, cols]) => (
+                    {Object.entries(role.columnConfig).filter(([k]) => k !== "__categorias").map(([module, cols]) => (
                       <span key={module} className="px-2 py-0.5 bg-dark-700 text-gray-400 rounded text-xs">
                         {MODULE_LABELS[module] || module}: {(cols as string[]).length} cols
                       </span>
@@ -316,6 +344,38 @@ export default function SettingsPage() {
                   </div>
                 </div>
               )}
+
+              <div className="mt-4 pt-4 border-t border-dark-700/50">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Categorías visibles</p>
+                {categories.length === 0 ? (
+                  <p className="text-xs text-gray-600">No hay categorías registradas</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((cat) => {
+                      const hasCat = getRoleCategories(role).includes(cat.name);
+                      const isAdmin = role.name === "ADMIN";
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => !isAdmin && toggleCategory(role, cat.name)}
+                          disabled={isAdmin}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 ${
+                            hasCat || isAdmin
+                              ? "bg-amber-600/10 border-amber-600/30 text-amber-400"
+                              : "bg-dark-900/50 border-dark-700/50 text-gray-500 hover:text-gray-400"
+                          } ${isAdmin ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-amber-500/40"}`}
+                        >
+                          {(hasCat || isAdmin) && <Check size={12} />}
+                          {cat.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                {role.name === "ADMIN" && (
+                  <p className="text-[11px] text-gray-600 mt-2">El administrador ve todas las categorías.</p>
+                )}
+              </div>
             </div>
           ))}
         </div>

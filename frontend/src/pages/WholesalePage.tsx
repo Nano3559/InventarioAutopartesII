@@ -5,6 +5,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 interface WholesaleItem {
   productId: number; itemCode: string; name: string; brand: string;
@@ -187,6 +189,24 @@ export default function WholesalePage() {
   };
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString("es-BO", { day: "2-digit", month: "short", year: "numeric" });
+
+  const downloadPDF = async () => {
+    const el = document.getElementById("wholesale-confirm-modal");
+    if (!el) return;
+    toast.loading("Generando PDF...", { id: "wpdf" });
+    try {
+      const canvas = await html2canvas(el, { scale: 2, backgroundColor: "#151a22" });
+      const img = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * pageWidth) / canvas.width;
+      pdf.addImage(img, "PNG", 0, 0, pageWidth, imgHeight);
+      pdf.save(`venta-mayorista.pdf`);
+      toast.success("PDF descargado", { id: "wpdf" });
+    } catch {
+      toast.error("Error al generar PDF", { id: "wpdf" });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -403,7 +423,7 @@ export default function WholesalePage() {
       {/* Confirm modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-dark-900 border border-dark-700/50 rounded-2xl w-full max-w-lg shadow-2xl">
+          <div id="wholesale-confirm-modal" className="bg-dark-900 border border-dark-700/50 rounded-2xl w-full max-w-lg shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-dark-700/50">
               <h3 className="text-lg font-bold text-white">Confirmar Venta Mayorista</h3>
               <button onClick={() => setShowConfirm(false)} className="p-1.5 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-all">
@@ -424,6 +444,10 @@ export default function WholesalePage() {
               <button onClick={() => setShowConfirm(false)}
                 className="px-4 py-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl text-sm transition-all">
                 Cancelar
+              </button>
+              <button onClick={downloadPDF}
+                className="px-4 py-2 flex items-center gap-2 bg-dark-700 hover:bg-dark-600 text-gray-200 rounded-xl text-sm transition-all">
+                <FileText size={14} /> PDF
               </button>
               <button onClick={confirmSale}
                 className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-600/20">
