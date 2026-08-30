@@ -109,24 +109,24 @@
 > Erika construye la interfaz y la conecta.
 
 ### Componente de columnas
-- [ ] Crear componente genérico de selección de columnas (`frontend/src/components/ColumnManager.tsx`).
-- [ ] Modal con checkboxes para mostrar/ocultar cada columna.
-- [ ] Permitir reordenar columnas (subir/bajar o drag).
-- [ ] Guardar las columnas elegidas (estado/localStorage) para no perderlas al recargar.
+- [x] Crear componente genérico de selección de columnas (`frontend/src/components/ColumnManager.tsx`).
+- [x] Modal con checkboxes para mostrar/ocultar cada columna.
+- [x] Permitir reordenar columnas (subir/bajar o drag).
+- [x] Guardar las columnas elegidas (estado/localStorage) para no perderlas al recargar.
 
 ### Aplicar en las tablas
-- [ ] Aplicar el componente en la tabla de Inventario (`InventoryPage.tsx`, columnas fijas en `:312-324`).
-- [ ] Aplicar el componente en la tabla de Ventas — carrito (`SalesPage.tsx:403-409`).
-- [ ] Aplicar el componente en la tabla de Ventas — historial (`SalesPage.tsx:552-562`).
+- [x] Aplicar el componente en la tabla de Inventario (`InventoryPage.tsx`, columnas fijas en `:312-324`).
+- [x] Aplicar el componente en la tabla de Ventas — carrito (`SalesPage.tsx:403-409`).
+- [x] Aplicar el componente en la tabla de Ventas — historial (`SalesPage.tsx:552-562`).
 
 ### Conectar con backend (lo que expone Ross)
-- [ ] Consumir `GET/PUT /users/me/preferences` para guardar/recuperar columnas por usuario.
-- [ ] Consumir `GET /permissions/roles/modules` y el `columnConfig` del rol para saber qué columnas se permiten.
-- [ ] Respetar el `columnConfig` del rol: el usuario solo modifica las columnas permitidas por el admin.
-- [ ] Exponer el `columnConfig` del rol desde `authStore` (hoy se ignora en `authStore.ts:26,56`).
+- [x] Consumir `GET/PUT /users/me/preferences` para guardar/recuperar columnas por usuario.
+- [x] Consumir `GET /permissions/roles/modules` y el `columnConfig` del rol para saber qué columnas se permiten.
+- [x] Respetar el `columnConfig` del rol: el usuario solo modifica las columnas permitidas por el admin.
+- [x] Exponer el `columnConfig` del rol desde `authStore` (hoy se ignora en `authStore.ts:26,56`).
 
 ### Verificación
-- [ ] Una columna oculta desaparece de la tabla y la reordenación funciona correctamente.
+- [x] Una columna oculta desaparece de la tabla y la reordenación funciona correctamente.
 
 ---
 
@@ -137,10 +137,10 @@
 > (`SalesPage.tsx:784-836`), falta que se exporte.
 
 ### Generación de PDF
-- [ ] Instalar librería PDF en frontend (`jspdf` + `html2canvas` o `pdfmake`).
-- [ ] Agregar botón "Exportar PDF" en la nota de venta normal (modal de confirmación de `SalesPage.tsx`).
-- [ ] Agregar botón "Exportar PDF" en la nota de venta mayorista (`WholesalePage.tsx`).
-- [ ] Generar el PDF con: título "RepuestoPro", cliente, tabla de productos, cantidades, precios, subtotal, total, pagos, pie.
+- [x] Instalar librería PDF en frontend (`jspdf` + `html2canvas` o `pdfmake`).
+- [x] Agregar botón "Exportar PDF" en la nota de venta normal (modal de confirmación de `SalesPage.tsx`).
+- [x] Agregar botón "Exportar PDF" en la nota de venta mayorista (`WholesalePage.tsx`).
+- [x] Generar el PDF con: título "RepuestoPro", cliente, tabla de productos, cantidades, precios, subtotal, total, pagos, pie.
 
 ### Datos de entrega en la nota
 - [ ] Mostrar en la nota/PDF los campos de entrega (lugar, para quién, factura) que Ross guarda en BD (tarea Ross-2).
@@ -154,14 +154,14 @@
 > Erika hace la UI flexible.
 
 ### Filtro flexible de fechas
-- [ ] En `ReportsPage.tsx`, reemplazar el filtro de mes por dos inputs de fecha (desde → hasta).
-- [ ] Usar `startDate`/`endDate` en `fetchSales()` (hoy `:71` solo envía `month`).
-- [ ] Permitir elegir cualquier rango: día, semana, mes, trimestre, año.
+- [x] En `ReportsPage.tsx`, reemplazar el filtro de mes por dos inputs de fecha (desde → hasta).
+- [x] Usar `startDate`/`endDate` en `fetchSales()` (hoy `:71` solo envía `month`).
+- [x] Permitir elegir cualquier rango: día, semana, mes, trimestre, año.
 
 ### Nuevo reporte diario detallado por tienda
-- [ ] Crear tab "Diario por Tienda" que agrupe ventas por día.
-- [ ] Mostrar por tienda: total del día, n° de ventas, productos vendidos (nombre, cantidad, subtotal), devoluciones.
-- [ ] Exportar el reporte diario a CSV/Excel.
+- [x] Crear tab "Diario por Tienda" que agrupe ventas por día.
+- [x] Mostrar por tienda: total del día, n° de ventas, productos vendidos (nombre, cantidad, subtotal), devoluciones.
+- [x] Exportar el reporte diario a CSV/Excel.
 
 ---
 
@@ -171,14 +171,14 @@
 > Erika construye la interfaz para asignar categorías y módulos.
 
 ### Configuración de rol en SettingsPage
-- [ ] En `SettingsPage.tsx`, mostrar el nuevo rol VENDEDOR.
-- [ ] Permitir al admin asignar módulos visibles al rol VENDEDOR (y a los existentes).
-- [ ] Permitir al admin asignar **categorías visibles** al rol VENDEDOR (y a los existentes).
-- [ ] Guardar esos cambios consumiendo los endpoints que expone Ross.
+- [x] En `SettingsPage.tsx`, mostrar el nuevo rol VENDEDOR.
+- [x] Permitir al admin asignar módulos visibles al rol VENDEDOR (y a los existentes).
+- [x] Permitir al admin asignar **categorías visibles** al rol VENDEDOR (y a los existentes).
+- [x] Guardar esos cambios consumiendo los endpoints que expone Ross.
 
 ### Aplicar el filtro de categorías en el frontend
-- [ ] Filtrar Inventario / búsqueda / productos por las categorías permitidas cuando el usuario es VENDEDOR.
-- [ ] Verificar que Fernando al loguearse solo vea sus categorías y módulos en el menú y en las páginas.
+- [x] Filtrar Inventario / búsqueda / productos por las categorías permitidas cuando el usuario es VENDEDOR.
+- [x] Verificar que Fernando al loguearse solo vea sus categorías y módulos en el menú y en las páginas.
 
 ---
 
@@ -220,10 +220,10 @@
 
 # Verificación final (antes de subir)
 
-- [ ] Tablas de Inventario y Ventas permiten ocultar/mostrar/reordenar columnas según rol y preferencias del usuario.
-- [ ] La nota de venta (normal y mayorista) se descarga como PDF real con cliente, productos, total y pagos.
-- [ ] Los reportes aceptan fecha desde → hasta y hay vista diaria por tienda con detalle.
-- [ ] El rol VENDEDOR (Fernando) existe y solo ve las categorías/módulos asignados.
+- [x] Tablas de Inventario y Ventas permiten ocultar/mostrar/reordenar columnas según rol y preferencias del usuario.
+- [x] La nota de venta (normal y mayorista) se descarga como PDF real con cliente, productos, total y pagos.
+- [x] Los reportes aceptan fecha desde → hasta y hay vista diaria por tienda con detalle.
+- [x] El rol VENDEDOR (Fernando) existe y solo ve las categorías/módulos asignados.
 - [ ] La venta mayor guarda lugar de entrega, para quién y datos de factura.
 - [ ] La BD tiene cantidad considerable de productos, costos, importadores y ventas en varias fechas.
 - [ ] La reposición automática se programa para el día siguiente.

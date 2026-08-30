@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Settings2, GripVertical, Eye, EyeOff, Check, X, ChevronUp, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../services/api";
@@ -28,8 +28,6 @@ export default function ColumnManager({ module, columns, onVisibleChange }: Colu
       setVisible(merged.length ? merged : columns);
     }
   }, [open, module, columnConfig, columns]);
-
-  const hidden = useMemo(() => columns.filter((c) => !visible.includes(c)), [columns, visible]);
 
   const move = (idx: number, dir: -1 | 1) => {
     const target = idx + dir;

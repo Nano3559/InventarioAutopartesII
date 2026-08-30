@@ -12,6 +12,7 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
 const HISTORY_COLUMNS = ["#", "Fecha", "Cliente", "Usuario", "Ubicación", "Vendedor", "Tipo", "Total", "Pagos"];
+const CART_COLUMNS = ["Producto", "Precio", "Cantidad", "Subtotal", "Eliminar"];
 
 interface Product {
   id: number; itemCode: string; manufacturer: string; name: string;
@@ -48,9 +49,10 @@ interface SaleRecord {
 const PAGE_SIZE = 15;
 
 export default function SalesPage() {
-  const { user } = useAuthStore();
+  const { user, allowedCategories } = useAuthStore();
   const isAdmin = user?.role === "ADMIN";
   const isTienda = user?.role === "TIENDA";
+  const isVendedor = user?.role === "VENDEDOR";
 
   // --- Locations ---
   const [locations, setLocations] = useState<Location[]>([]);
@@ -109,6 +111,19 @@ export default function SalesPage() {
   });
   const isHistCol = (col: string) => histColumns.includes(col);
 
+  const [cartColumns, setCartColumns] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("columns_carrito");
+      const stored = raw ? JSON.parse(raw) : null;
+      const base = stored?.length ? stored : CART_COLUMNS;
+      const merged = CART_COLUMNS.filter((c) => base.includes(c));
+      return merged.length ? merged : CART_COLUMNS;
+    } catch {
+      return CART_COLUMNS;
+    }
+  });
+  const isCartCol = (col: string) => cartColumns.includes(col);
+
   // --- Confirmation ---
   const [showConfirmed, setShowConfirmed] = useState(false);
   const [lastSale, setLastSale] = useState<SaleRecord | null>(null);
@@ -124,10 +139,10 @@ export default function SalesPage() {
       const params = new URLSearchParams({ search: q.trim(), limit: "10" });
       if (selectedLocationId) params.set("locationId", String(selectedLocationId));
       const res = await api.get(`/products?${params.toString()}`);
-      setSearchResults(res.data.products.filter((p: Product) => p.stock > 0));
+      setSearchResults(res.data.products.filter((p: Product) => p.stock > 0 && (!isVendedor || allowedCategories.length === 0 || allowedCategories.includes(p.category || ""))));
     } catch { toast.error("Error al buscar productos"); }
     finally { setSearching(false); }
-  }, [selectedLocationId]);
+  }, [selectedLocationId, isVendedor, allowedCategories]);
 
   const handleSearchChange = (v: string) => {
     setSearch(v);
@@ -422,9 +437,12 @@ export default function SalesPage() {
               <h2 className="text-sm font-medium text-gray-300 flex items-center gap-2">
                 <ShoppingCart size={16} className="text-primary-400" /> Carrito de Venta
               </h2>
-              {cart.length > 0 && (
-                <button onClick={clearCart} className="text-xs text-red-400 hover:text-red-300">Vaciar</button>
-              )}
+              <div className="flex items-center gap-2">
+                <ColumnManager module="carrito" columns={CART_COLUMNS} onVisibleChange={setCartColumns} />
+                {cart.length > 0 && (
+                  <button onClick={clearCart} className="text-xs text-red-400 hover:text-red-300">Vaciar</button>
+                )}
+              </div>
             </div>
 
             {cart.length === 0 ? (
@@ -439,44 +457,51 @@ export default function SalesPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-gray-500 border-b border-dark-700/50">
-                        <th className="text-left px-5 py-2.5 font-medium">Producto</th>
-                        <th className="text-right px-4 py-2.5 font-medium">Precio</th>
-                        <th className="text-center px-4 py-2.5 font-medium">Cantidad</th>
-                        <th className="text-right px-4 py-2.5 font-medium">Subtotal</th>
-                        <th className="px-5 py-2.5"></th>
+                        {cartColumns.map((col) => {
+                          const align = ["Precio", "Subtotal"].includes(col) ? "text-right" : ["Cantidad", "Eliminar"].includes(col) ? "text-center" : "text-left";
+                          return <th key={col} className={`${align} px-4 py-2.5 font-medium`}>{col}</th>;
+                        })}
                       </tr>
                     </thead>
                     <tbody>
                       {cart.map((c) => (
                         <tr key={c.productId} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
-                          <td className="px-5 py-3">
-                            <p className="text-white font-medium text-sm">{c.name}</p>
-                            <p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p>
-                          </td>
-                          <td className="px-4 py-3 text-right text-gray-300">{formatBs(c.unitPrice)}</td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center justify-center gap-1.5">
-                              <button onClick={() => updateQuantity(c.productId, c.quantity - 1)}
-                                className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white hover:border-primary-500/50 transition-all">
-                                <Minus size={14} />
+                          {isCartCol("Producto") && (
+                            <td className="px-5 py-3">
+                              <p className="text-white font-medium text-sm">{c.name}</p>
+                              <p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p>
+                            </td>
+                          )}
+                          {isCartCol("Precio") && <td className="px-4 py-3 text-right text-gray-300">{formatBs(c.unitPrice)}</td>}
+                          {isCartCol("Cantidad") && (
+                            <td className="px-4 py-3">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button onClick={() => updateQuantity(c.productId, c.quantity - 1)}
+                                  className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white hover:border-primary-500/50 transition-all">
+                                  <Minus size={14} />
+                                </button>
+                                <span className="w-10 text-center text-white text-sm font-medium">{c.quantity}</span>
+                                <button onClick={() => updateQuantity(c.productId, c.quantity + 1)}
+                                  className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white hover:border-primary-500/50 transition-all">
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                              <p className="text-center text-xs text-gray-600 mt-0.5">disp: {c.availableStock}</p>
+                            </td>
+                          )}
+                          {isCartCol("Subtotal") && (
+                            <td className="px-4 py-3 text-right text-green-400 font-medium">
+                              {formatBs(c.unitPrice * c.quantity)}
+                            </td>
+                          )}
+                          {isCartCol("Eliminar") && (
+                            <td className="px-5 py-3 text-center">
+                              <button onClick={() => removeItem(c.productId)}
+                                className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                                <Trash2 size={14} />
                               </button>
-                              <span className="w-10 text-center text-white text-sm font-medium">{c.quantity}</span>
-                              <button onClick={() => updateQuantity(c.productId, c.quantity + 1)}
-                                className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white hover:border-primary-500/50 transition-all">
-                                <Plus size={14} />
-                              </button>
-                            </div>
-                            <p className="text-center text-xs text-gray-600 mt-0.5">disp: {c.availableStock}</p>
-                          </td>
-                          <td className="px-4 py-3 text-right text-green-400 font-medium">
-                            {formatBs(c.unitPrice * c.quantity)}
-                          </td>
-                          <td className="px-5 py-3">
-                            <button onClick={() => removeItem(c.productId)}
-                              className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all">
-                              <Trash2 size={14} />
-                            </button>
-                          </td>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>

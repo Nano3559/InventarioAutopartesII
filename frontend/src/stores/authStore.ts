@@ -8,10 +8,16 @@ interface AuthState {
   isAuthenticated: boolean;
   permissions: string[];
   columnConfig: Record<string, string[]>;
+  allowedCategories: string[];
   login: (user: User, token: string) => Promise<void>;
   logout: () => void;
   loadFromStorage: () => void;
 }
+
+const getCategoriesFromConfig = (cc: Record<string, string[]> | Record<string, unknown>): string[] => {
+  const cats = (cc as any)?.__categorias;
+  return Array.isArray(cats) ? (cats as string[]) : [];
+};
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
@@ -19,6 +25,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: !!localStorage.getItem("token"),
   permissions: [],
   columnConfig: {},
+  allowedCategories: [],
   login: async (user, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
@@ -27,7 +34,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const res = await api.get("/permissions/permissions/me");
       const perms = res.data.permissions || [];
-      set({ permissions: perms, columnConfig: res.data.columnConfig || {} });
+      const cc = res.data.columnConfig || {};
+      set({ permissions: perms, columnConfig: cc, allowedCategories: getCategoriesFromConfig(cc) });
     } catch {
       // Si falla, ADMIN tiene todos los permisos
       if (user.role === "ADMIN") {
@@ -43,7 +51,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    set({ user, token, isAuthenticated: false, permissions: [], columnConfig: {} });
+    set({ user: null, token: null, isAuthenticated: false, permissions: [], columnConfig: {}, allowedCategories: [] });
   },
   loadFromStorage: () => {
     const token = localStorage.getItem("token");
@@ -57,7 +65,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         api
           .get("/permissions/permissions/me")
           .then((res) => {
-            set({ permissions: res.data.permissions || [], columnConfig: res.data.columnConfig || {} });
+            const cc = res.data.columnConfig || {};
+            set({ permissions: res.data.permissions || [], columnConfig: cc, allowedCategories: getCategoriesFromConfig(cc) });
           })
           .catch(() => {
             if (user.role === "ADMIN") {

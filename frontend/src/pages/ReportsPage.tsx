@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   BarChart3, Search, Download,
-  TrendingUp, Package, RefreshCw,
+  TrendingUp, Package, RefreshCw, CalendarDays,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
@@ -32,8 +32,23 @@ interface Location {
   id: number; name: string;
 }
 
+interface DailyStore {
+  locationName: string;
+  total: number;
+  saleCount: number;
+  products: { name: string; quantity: number; subtotal: number }[];
+}
+
+interface DailyGroup {
+  date: string;
+  stores: DailyStore[];
+  total: number;
+  saleCount: number;
+}
+
 const TABS = [
   { key: "ventas", label: "Ventas", icon: TrendingUp },
+  { key: "diario", label: "Diario por Tienda", icon: CalendarDays },
   { key: "inventario", label: "Inventario", icon: Package },
   { key: "mensual", label: "Mensual por Tienda", icon: BarChart3 },
 ];
@@ -57,7 +72,12 @@ export default function ReportsPage() {
 
   const [filterLocation, setFilterLocation] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
+  const [filterFrom, setFilterFrom] = useState("");
+  const [filterTo, setFilterTo] = useState("");
   const [filterSearch, setFilterSearch] = useState("");
+
+  const [dailyData, setDailyData] = useState<DailyGroup[]>([]);
+  const [dailyLoading, setDailyLoading] = useState(false);
 
   useEffect(() => {
     api.get("/locations").then((res) => setLocations(res.data.locations || res.data)).catch(() => {});
@@ -68,7 +88,8 @@ export default function ReportsPage() {
       setSalesLoading(true);
       const params = new URLSearchParams();
       if (filterLocation) params.set("locationId", filterLocation);
-      if (filterMonth) params.set("month", filterMonth);
+      if (filterFrom) params.set("startDate", filterFrom);
+      if (filterTo) params.set("endDate", filterTo);
       const res = await api.get(`/reports/sales?${params.toString()}`);
       setSalesData(res.data.sales);
       setSalesSummary(res.data.summary);
@@ -77,7 +98,54 @@ export default function ReportsPage() {
     } finally {
       setSalesLoading(false);
     }
-  }, [filterLocation, filterMonth]);
+  }, [filterLocation, filterFrom, filterTo]);
+
+  const fetchDaily = useCallback(async () => {
+    try {
+      setDailyLoading(true);
+      const params = new URLSearchParams({ limit: "1000" });
+      if (filterFrom) params.set("startDate", filterFrom);
+      if (filterTo) params.set("endDate", filterTo);
+      const res = await api.get(`/sales?${params.toString()}`);
+      groupDaily(res.data.sales);
+    } catch {
+      toast.error("Error al cargar reporte diario");
+      setDailyData([]);
+    } finally {
+      setDailyLoading(false);
+    }
+  }, [filterFrom, filterTo]);
+
+  const groupDaily = (sales: any[]) => {
+    const byDate: Record<string, DailyGroup> = {};
+    for (const s of sales) {
+      const day = s.saleDate ? new Date(s.saleDate).toDateString() : "Sin fecha";
+      if (!byDate[day]) byDate[day] = { date: day, stores: [], total: 0, saleCount: 0 };
+      const group = byDate[day];
+      group.total += Number(s.total) || 0;
+      group.saleCount += 1;
+      const locName = s.location?.name || "Sin tienda";
+      let store = group.stores.find((st) => st.locationName === locName);
+      if (!store) {
+        store = { locationName: locName, total: 0, saleCount: 0, products: [] };
+        group.stores.push(store);
+      }
+      store.total += Number(s.total) || 0;
+      store.saleCount += 1;
+      for (const item of s.items || []) {
+        const pName = item.product?.name || item.productId || "Producto";
+        let p = store.products.find((pr) => pr.name === pName);
+        if (!p) {
+          p = { name: pName, quantity: 0, subtotal: 0 };
+          store.products.push(p);
+        }
+        p.quantity += item.quantity || 0;
+        p.subtotal += Number(item.subtotal) || 0;
+      }
+    }
+    const sorted = Object.values(byDate).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    setDailyData(sorted);
+  };
 
   const fetchInventory = useCallback(async () => {
     try {
@@ -114,9 +182,10 @@ export default function ReportsPage() {
 
   useEffect(() => {
     if (activeTab === "ventas") fetchSales();
+    if (activeTab === "diario") fetchDaily();
     if (activeTab === "inventario") fetchInventory();
     if (activeTab === "mensual") fetchMonthly();
-  }, [activeTab, fetchSales, fetchInventory, fetchMonthly]);
+  }, [activeTab, fetchSales, fetchDaily, fetchInventory, fetchMonthly]);
 
   const exportCSV = (data: Record<string, any>[], filename: string) => {
     if (!data.length) { toast.error("No hay datos para exportar"); return; }
@@ -136,6 +205,9 @@ export default function ReportsPage() {
   const filteredSales = salesData.filter((s) =>
     !filterSearch || (s.customer?.name || "").toLowerCase().includes(filterSearch.toLowerCase()) || String(s.id).includes(filterSearch)
   );
+
+  const dailyTotal = dailyData.reduce((sum, g) => sum + g.total, 0);
+  const dailyCount = dailyData.reduce((sum, g) => sum + g.saleCount, 0);
 
   const inventoryItems: InventoryItem[] = inventoryData?.locations?.flatMap((loc: any) => loc.items) || [];
   const filteredInventory = inventoryItems.filter((i) =>
@@ -170,12 +242,12 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
           <p className="text-gray-400 text-xs mb-1">Total Ventas</p>
-          <p className="text-2xl font-bold text-amber-400">{formatBs(salesSummary.totalSales || inventoryData?.totalStock || monthlyData?.summary?.totalSales || 0)}</p>
-          <p className="text-xs text-gray-500 mt-1">{activeTab === "ventas" ? `${salesSummary.count} registros` : activeTab === "inventario" ? `${inventoryData?.totalProducts || 0} productos` : `${monthlyData?.summary?.totalLocations || 0} ubicaciones`}</p>
+          <p className="text-2xl font-bold text-amber-400">{formatBs(activeTab === "diario" ? dailyTotal : salesSummary.totalSales || inventoryData?.totalStock || monthlyData?.summary?.totalSales || 0)}</p>
+          <p className="text-xs text-gray-500 mt-1">{activeTab === "ventas" ? `${salesSummary.count} registros` : activeTab === "diario" ? `${dailyCount} ventas` : activeTab === "inventario" ? `${inventoryData?.totalProducts || 0} productos` : `${monthlyData?.summary?.totalLocations || 0} ubicaciones`}</p>
         </div>
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
           <p className="text-gray-400 text-xs mb-1">{activeTab === "inventario" ? "Stock Total" : activeTab === "mensual" ? "Ventas Netas" : "Promedio/Venta"}</p>
-          <p className="text-2xl font-bold text-blue-400">{activeTab === "ventas" ? formatBs(salesSummary.average) : activeTab === "inventario" ? `${inventoryData?.totalStock || 0} uds` : formatBs(monthlyData?.summary?.netSales || 0)}</p>
+          <p className="text-2xl font-bold text-blue-400">{activeTab === "ventas" ? formatBs(salesSummary.average) : activeTab === "diario" ? formatBs(dailyCount > 0 ? dailyTotal / dailyCount : 0) : activeTab === "inventario" ? `${inventoryData?.totalStock || 0} uds` : formatBs(monthlyData?.summary?.netSales || 0)}</p>
           <p className="text-xs text-gray-500 mt-1">{activeTab === "inventario" ? `${inventoryData?.lowStockCount || 0} bajo stock` : activeTab === "mensual" ? `${monthlyData?.summary?.activeLocations || 0} activas` : ""}</p>
         </div>
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
@@ -196,8 +268,18 @@ export default function ReportsPage() {
           <option value="">Todas las ubicaciones</option>
           {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
         </select>
-        <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}
-          className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+        {activeTab !== "mensual" ? (
+          <>
+            <input type="date" value={filterFrom} onChange={(e) => setFilterFrom(e.target.value)}
+              className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+            <span className="text-gray-500 text-sm">→</span>
+            <input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)}
+              className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+          </>
+        ) : (
+          <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}
+            className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+        )}
       </div>
 
       {activeTab === "ventas" && (
@@ -251,6 +333,78 @@ export default function ReportsPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === "diario" && (
+        <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-dark-700/50 flex items-center justify-between">
+            <h3 className="text-white font-medium">Reporte Diario por Tienda</h3>
+            <div className="flex items-center gap-2">
+              <button onClick={fetchDaily} className="p-1.5 text-gray-400 hover:text-white rounded-lg transition-all"><RefreshCw size={14} /></button>
+              <button onClick={() => exportCSV(dailyData.flatMap((g) => g.stores.map((st) => ({
+                Fecha: formatDate(g.date), Tienda: st.locationName,
+                "N° Ventas": st.saleCount, Total: st.total,
+              }))), "reporte_diario")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
+                <Download size={14} /> Exportar
+              </button>
+            </div>
+          </div>
+          {dailyLoading ? (
+            <div className="flex items-center justify-center h-32"><RefreshCw size={24} className="text-primary-400 animate-spin" /></div>
+          ) : dailyData.length === 0 ? (
+            <div className="p-10 text-center text-gray-500">No hay ventas en el rango seleccionado</div>
+          ) : (
+            <div className="p-4 space-y-4">
+              {dailyData.map((g) => (
+                <div key={g.date} className="border border-dark-700/50 rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-2 bg-dark-900/40 border-b border-dark-700/50">
+                    <span className="text-white font-medium text-sm">{formatDate(g.date)}</span>
+                    <span className="text-xs text-gray-400">{g.saleCount} ventas · <span className="text-amber-400 font-medium">{formatBs(g.total)}</span></span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-dark-700/50">
+                          <th className="text-left px-4 py-2 text-gray-400 font-medium">Tienda</th>
+                          <th className="text-center px-4 py-2 text-gray-400 font-medium">N° Ventas</th>
+                          <th className="text-right px-4 py-2 text-gray-400 font-medium">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {g.stores.map((st) => (
+                          <tr key={st.locationName} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
+                            <td className="px-4 py-2 text-white font-medium">{st.locationName}</td>
+                            <td className="px-4 py-2 text-gray-300 text-center">{st.saleCount}</td>
+                            <td className="px-4 py-2 text-amber-400 font-medium text-right">{formatBs(st.total)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {g.stores.some((st) => st.products.length > 0) && (
+                    <div className="p-3 border-t border-dark-700/50">
+                      <p className="text-xs text-gray-400 mb-2">Productos vendidos del día</p>
+                      <div className="flex flex-wrap gap-2">
+                        {Array.from(new Set(g.stores.flatMap((st) => st.products.map((p) => p.name)))).slice(0, 10).map((name) => {
+                          const totalQty = g.stores.reduce((sum, st) => sum + (st.products.find((p) => p.name === name)?.quantity || 0), 0);
+                          const totalSub = g.stores.reduce((sum, st) => sum + (st.products.find((p) => p.name === name)?.subtotal || 0), 0);
+                          return (
+                            <span key={name} className="inline-flex items-center gap-2 px-3 py-1 bg-dark-900/30 border border-dark-700/30 rounded-lg text-xs">
+                              <span className="text-gray-200">{name}</span>
+                              <span className="text-gray-500">x{totalQty}</span>
+                              <span className="text-amber-400 font-medium">{formatBs(totalSub)}</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>

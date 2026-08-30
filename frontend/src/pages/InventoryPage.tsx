@@ -58,8 +58,9 @@ function getStoredColumns(): string[] | null {
 
 export default function InventoryPage() {
   const navigate = useNavigate();
-  const { user, columnConfig } = useAuthStore();
+  const { user, columnConfig, allowedCategories } = useAuthStore();
   const canEdit = user?.role === "ADMIN";
+  const hasCategoryRestriction = user?.role === "VENDEDOR" && allowedCategories.length > 0;
   const [products, setProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<Filters>({ brands: [], manufacturers: [], categories: [] });
   const [loading, setLoading] = useState(true);
@@ -238,13 +239,19 @@ export default function InventoryPage() {
 
   const setField = (field: keyof FormData, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
+  const visibleProducts = hasCategoryRestriction
+    ? products.filter((p) => allowedCategories.includes(p.category || "") || !p.category)
+    : products;
+
+  const allVisibleCount = hasCategoryRestriction ? visibleProducts.length : total;
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Inventario</h1>
-          <p className="text-gray-400 text-sm mt-1">{total} productos registrados</p>
+          <p className="text-gray-400 text-sm mt-1">{allVisibleCount} productos registrados</p>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={fetchProducts} className="p-2.5 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-white hover:border-primary-600/50 transition-all" title="Actualizar">
@@ -322,7 +329,7 @@ export default function InventoryPage() {
           <div className="flex items-center justify-center h-64">
             <RefreshCw size={32} className="text-primary-400 animate-spin" />
           </div>
-        ) : products.length === 0 ? (
+        ) : visibleProducts.length === 0 ? (
           <div className="p-6 text-center">
             <Package size={48} className="text-gray-600 mx-auto mb-4" />
             <p className="text-gray-400">Sin productos registrados</p>
@@ -343,7 +350,7 @@ export default function InventoryPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((p) => (
+                  {visibleProducts.map((p) => (
                     <tr key={p.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30 transition-colors">
                       {isColVisible("ID") && <td className="px-4 py-3 text-gray-400">{p.id}</td>}
                       {isColVisible("Fabricante") && <td className="px-4 py-3 text-gray-300">{p.manufacturer}</td>}
@@ -351,7 +358,7 @@ export default function InventoryPage() {
                       {isColVisible("Marca") && <td className="px-4 py-3 text-gray-300">{p.brand}</td>}
                       {isColVisible("Modelo") && <td className="px-4 py-3 text-gray-300">{p.model}</td>}
                       {isColVisible("Año") && <td className="px-4 py-3 text-gray-400">{p.year}</td>}
-                      {isColVisible("Detalles") && <td className="px-4 py-3 text-gray-400 text-xs">{p.detalle || p.detalles || "—"}</td>}
+                      {isColVisible("Detalles") && <td className="px-4 py-3 text-gray-400 text-xs">{p.detalles || p.detail || "—"}</td>}
                       {isColVisible("Cód. OEM") && <td className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>}
                       {isColVisible("Cód. Fábrica") && <td className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>}
                       {isColVisible("Imagen") && (
@@ -400,7 +407,7 @@ export default function InventoryPage() {
 
             {/* Mobile cards */}
             <div className="md:hidden divide-y divide-dark-700/30">
-              {products.map((p) => (
+              {visibleProducts.map((p) => (
                 <div key={p.id} className="p-4 space-y-2">
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 bg-dark-900/50 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
