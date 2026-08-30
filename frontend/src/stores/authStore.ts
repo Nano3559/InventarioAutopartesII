@@ -7,6 +7,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   permissions: string[];
+  columnConfig: Record<string, string[]>;
   login: (user: User, token: string) => Promise<void>;
   logout: () => void;
   loadFromStorage: () => void;
@@ -17,6 +18,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: localStorage.getItem("token"),
   isAuthenticated: !!localStorage.getItem("token"),
   permissions: [],
+  columnConfig: {},
   login: async (user, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
@@ -25,7 +27,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const res = await api.get("/permissions/permissions/me");
       const perms = res.data.permissions || [];
-      set({ permissions: perms });
+      set({ permissions: perms, columnConfig: res.data.columnConfig || {} });
     } catch {
       // Si falla, ADMIN tiene todos los permisos
       if (user.role === "ADMIN") {
@@ -41,7 +43,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    set({ user: null, token: null, isAuthenticated: false, permissions: [] });
+    set({ user, token, isAuthenticated: false, permissions: [], columnConfig: {} });
   },
   loadFromStorage: () => {
     const token = localStorage.getItem("token");
@@ -55,7 +57,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         api
           .get("/permissions/permissions/me")
           .then((res) => {
-            set({ permissions: res.data.permissions || [] });
+            set({ permissions: res.data.permissions || [], columnConfig: res.data.columnConfig || {} });
           })
           .catch(() => {
             if (user.role === "ADMIN") {

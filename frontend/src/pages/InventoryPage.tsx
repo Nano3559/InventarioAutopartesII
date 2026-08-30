@@ -9,6 +9,7 @@ import api from "../services/api";
 import ProductImage from "../components/public/ProductImage";
 import { validateYearRanges } from "../utils/yearRanges";
 import Autocomplete from "../components/ui/Autocomplete";
+import ColumnManager from "../components/ui/ColumnManager";
 import { useAuthStore } from "../stores/authStore";
 
 interface Product {
@@ -41,9 +42,23 @@ const emptyForm: FormData = {
   wholesalePrice: "", cost: "", categoryId: "",
 };
 
+const ALL_COLUMNS = [
+  "ID", "Fabricante", "Producto", "Marca", "Modelo", "Año", "Detalles",
+  "Cód. OEM", "Cód. Fábrica", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones",
+];
+
+function getStoredColumns(): string[] | null {
+  try {
+    const raw = localStorage.getItem("columns_inventario");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function InventoryPage() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, columnConfig } = useAuthStore();
   const canEdit = user?.role === "ADMIN";
   const [products, setProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<Filters>({ brands: [], manufacturers: [], categories: [] });
@@ -56,6 +71,15 @@ export default function InventoryPage() {
   const [brand, setBrand] = useState("");
   const [manufacturer, setManufacturer] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
+    const stored = getStoredColumns();
+    const roleCols = columnConfig?.inventario;
+    const base = stored && stored.length ? stored : roleCols && roleCols.length ? roleCols : ALL_COLUMNS;
+    const merged = ALL_COLUMNS.filter((c) => base.includes(c));
+    return merged.length ? merged : ALL_COLUMNS;
+  });
+  const isColVisible = (col: string) => visibleColumns.includes(col);
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -226,6 +250,7 @@ export default function InventoryPage() {
           <button onClick={fetchProducts} className="p-2.5 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-white hover:border-primary-600/50 transition-all" title="Actualizar">
             <RefreshCw size={18} />
           </button>
+          <ColumnManager module="inventario" columns={ALL_COLUMNS} onVisibleChange={setVisibleColumns} />
           {canEdit && (
             <>
               <button onClick={() => { setShowImportModal(true); setImportFile(null); setImportResult(null); }} className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-green-600/20">
@@ -309,64 +334,64 @@ export default function InventoryPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-gray-500 border-b border-dark-700/50">
-                    <th className="text-left px-4 py-3 font-medium">ID</th>
-                    <th className="text-left px-4 py-3 font-medium">Fabricante</th>
-                    <th className="text-left px-4 py-3 font-medium">Producto</th>
-                    <th className="text-left px-4 py-3 font-medium">Marca</th>
-                    <th className="text-left px-4 py-3 font-medium">Modelo</th>
-                    <th className="text-left px-4 py-3 font-medium">Año</th>
-                    <th className="text-left px-4 py-3 font-medium">Cód. OEM</th>
-                    <th className="text-left px-4 py-3 font-medium">Cód. Fábrica</th>
-                    <th className="text-center px-4 py-3 font-medium">Imagen</th>
-                    <th className="text-right px-4 py-3 font-medium">Precio 1</th>
-                    <th className="text-right px-4 py-3 font-medium">Precio 2</th>
-                    <th className="text-center px-4 py-3 font-medium">Stock</th>
-                    <th className="text-center px-4 py-3 font-medium">Acciones</th>
+                    {visibleColumns.map((col) => {
+                      const align = ["Precio 1", "Precio 2"].includes(col) ? "text-right" : ["Imagen", "Stock", "Acciones"].includes(col) ? "text-center" : "text-left";
+                      return (
+                        <th key={col} className={`${align} px-4 py-3 font-medium`}>{col}</th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody>
                   {products.map((p) => (
                     <tr key={p.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30 transition-colors">
-                      <td className="px-4 py-3 text-gray-400">{p.id}</td>
-                      <td className="px-4 py-3 text-gray-300">{p.manufacturer}</td>
-                      <td className="px-4 py-3 text-white font-medium max-w-[200px] truncate">{p.name}</td>
-                      <td className="px-4 py-3 text-gray-300">{p.brand}</td>
-                      <td className="px-4 py-3 text-gray-300">{p.model}</td>
-                      <td className="px-4 py-3 text-gray-400">{p.year}</td>
-                      <td className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>
-                      <td className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>
-                      <td className="px-4 py-3">
-                        <div className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden">
-                          <ProductImage image={p.image} category={p.category} name={p.name} />
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>
-                      <td className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>
-                      <td className="px-4 py-3 text-center">
-                        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>
-                          {p.stock}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-1">
-                          <button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all" title="Ver detalle">
-                            <Eye size={16} />
-                          </button>
-                          {canEdit && (
-                            <>
-                              <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar">
-                                <Pencil size={16} />
-                              </button>
-                              <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar">
-                                <Trash2 size={16} />
-                              </button>
-                            </>
-                          )}
-                          <button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all" title="Ver stock por ubicación">
-                            <Package size={16} />
-                          </button>
-                        </div>
-                      </td>
+                      {isColVisible("ID") && <td className="px-4 py-3 text-gray-400">{p.id}</td>}
+                      {isColVisible("Fabricante") && <td className="px-4 py-3 text-gray-300">{p.manufacturer}</td>}
+                      {isColVisible("Producto") && <td className="px-4 py-3 text-white font-medium max-w-[200px] truncate">{p.name}</td>}
+                      {isColVisible("Marca") && <td className="px-4 py-3 text-gray-300">{p.brand}</td>}
+                      {isColVisible("Modelo") && <td className="px-4 py-3 text-gray-300">{p.model}</td>}
+                      {isColVisible("Año") && <td className="px-4 py-3 text-gray-400">{p.year}</td>}
+                      {isColVisible("Detalles") && <td className="px-4 py-3 text-gray-400 text-xs">{p.detalle || p.detalles || "—"}</td>}
+                      {isColVisible("Cód. OEM") && <td className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>}
+                      {isColVisible("Cód. Fábrica") && <td className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>}
+                      {isColVisible("Imagen") && (
+                        <td className="px-4 py-3">
+                          <div className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden">
+                            <ProductImage image={p.image} category={p.category} name={p.name} />
+                          </div>
+                        </td>
+                      )}
+                      {isColVisible("Precio 1") && <td className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>}
+                      {isColVisible("Precio 2") && <td className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>}
+                      {isColVisible("Stock") && (
+                        <td className="px-4 py-3 text-center">
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>
+                            {p.stock}
+                          </span>
+                        </td>
+                      )}
+                      {isColVisible("Acciones") && (
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-center gap-1">
+                            <button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all" title="Ver detalle">
+                              <Eye size={16} />
+                            </button>
+                            {canEdit && (
+                              <>
+                                <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar">
+                                  <Pencil size={16} />
+                                </button>
+                                <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar">
+                                  <Trash2 size={16} />
+                                </button>
+                              </>
+                            )}
+                            <button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all" title="Ver stock por ubicación">
+                              <Package size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

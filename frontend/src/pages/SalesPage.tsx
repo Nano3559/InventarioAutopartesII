@@ -7,6 +7,11 @@ import {
 import toast from "react-hot-toast";
 import api from "../services/api";
 import { useAuthStore } from "../stores/authStore";
+import ColumnManager from "../components/ui/ColumnManager";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
+
+const HISTORY_COLUMNS = ["#", "Fecha", "Cliente", "Usuario", "Ubicación", "Vendedor", "Tipo", "Total", "Pagos"];
 
 interface Product {
   id: number; itemCode: string; manufacturer: string; name: string;
@@ -89,6 +94,20 @@ export default function SalesPage() {
   const [histTotal, setHistTotal] = useState(0);
   const [histDateFrom, setHistDateFrom] = useState("");
   const [histDateTo, setHistDateTo] = useState("");
+
+  const [histColumns, setHistColumns] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("columns_ventas");
+      const stored = raw ? JSON.parse(raw) : null;
+      const roleCols = useAuthStore.getState().columnConfig?.ventas;
+      const base = stored?.length ? stored : roleCols?.length ? roleCols : HISTORY_COLUMNS;
+      const merged = HISTORY_COLUMNS.filter((c) => base.includes(c));
+      return merged.length ? merged : HISTORY_COLUMNS;
+    } catch {
+      return HISTORY_COLUMNS;
+    }
+  });
+  const isHistCol = (col: string) => histColumns.includes(col);
 
   // --- Confirmation ---
   const [showConfirmed, setShowConfirmed] = useState(false);
@@ -235,6 +254,25 @@ export default function SalesPage() {
       toast.error(err.response?.data?.message || "Error al registrar la venta");
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const downloadSalePDF = async () => {
+    if (!lastSale) return;
+    const modalRef = document.getElementById("sale-confirm-modal");
+    if (!modalRef) return;
+    toast.loading("Generando PDF...", { id: "pdf" });
+    try {
+      const canvas = await html2canvas(modalRef, { scale: 2, backgroundColor: "#1d232e" });
+      const img = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * pageWidth) / canvas.width;
+      pdf.addImage(img, "PNG", 0, 0, pageWidth, imgHeight);
+      pdf.save(`venta-${lastSale.id}.pdf`);
+      toast.success("PDF descargado", { id: "pdf" });
+    } catch {
+      toast.error("Error al generar PDF", { id: "pdf" });
     }
   };
 
@@ -535,6 +573,10 @@ export default function SalesPage() {
           </div>
 
           <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-dark-700/50">
+              <p className="text-sm text-gray-400">Historial de ventas</p>
+              <ColumnManager module="ventas" columns={HISTORY_COLUMNS} onVisibleChange={setHistColumns} />
+            </div>
             {histLoading ? (
               <div className="flex items-center justify-center h-64">
                 <RefreshCw size={32} className="text-primary-400 animate-spin" />
@@ -546,71 +588,79 @@ export default function SalesPage() {
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-gray-500 border-b border-dark-700/50">
-                        <th className="text-left px-4 py-3 font-medium">#</th>
-                        <th className="text-left px-4 py-3 font-medium">Fecha</th>
-                        <th className="text-left px-4 py-3 font-medium">Cliente</th>
-                        <th className="text-left px-4 py-3 font-medium">Vendedor</th>
-                        <th className="text-left px-4 py-3 font-medium">Ubicación</th>
-                        <th className="text-left px-4 py-3 font-medium">Vendedor</th>
-                        <th className="text-center px-4 py-3 font-medium">Tipo</th>
-                        <th className="text-right px-4 py-3 font-medium">Total</th>
-                        <th className="text-left px-4 py-3 font-medium">Pagos</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sales.map((s) => (
-                        <tr key={s.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
-                          <td className="px-4 py-3 text-gray-400">{s.id}</td>
-                          <td className="px-4 py-3 text-gray-300 text-xs">
-                            {new Date(s.saleDate).toLocaleDateString("es-BO")}{" "}
-                            <span className="text-gray-500">
-                              {new Date(s.saleDate).toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" })}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            {s.customer ? (
-                              <div>
-                                <p className="text-gray-200 text-sm">{s.customer.name}</p>
-                                {s.customer.nit && <p className="text-xs text-gray-500">NIT: {s.customer.nit}</p>}
-                              </div>
-                            ) : (
-                              <span className="text-gray-600 text-xs">Consumidor final</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-gray-300 text-xs">{s.user.name}</td>
-                          <td className="px-4 py-3 text-gray-400 text-xs flex items-center gap-1">
-                            <MapPin size={12} /> {s.location.name}
-                          </td>
-                          <td className="px-4 py-3 text-gray-300 text-xs">{s.seller || "—"}</td>
-                          <td className="px-4 py-3 text-center">
-                            <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                              s.type === "MAYOR" ? "bg-blue-500/10 text-blue-400" : "bg-green-500/10 text-green-400"
-                            }`}>
-                              {s.type === "MAYOR" ? "Mayor" : "Normal"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right text-green-400 font-medium text-sm">
-                            {formatBs(s.total)}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex flex-wrap gap-1">
-                              {s.payments.map((pay) => (
-                                <span key={pay.id}
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-dark-900/50 border border-dark-700/30 rounded-full text-xs text-gray-400">
-                                  {pmLabel[pay.method] || pay.method} · {formatBs(pay.amount)}
-                                </span>
-                              ))}
-                            </div>
-                          </td>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-gray-500 border-b border-dark-700/50">
+                          {histColumns.map((col) => {
+                            const cl = col.toLowerCase();
+                            const align = cl === "total" ? "text-right" : cl === "tipo" ? "text-center" : "text-left";
+                            return <th key={col} className={`${align} px-4 py-3 font-medium`}>{col}</th>;
+                          })}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {sales.map((s) => (
+                          <tr key={s.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
+                            {isHistCol("#") && <td className="px-4 py-3 text-gray-400">{s.id}</td>}
+                            {isHistCol("Fecha") && (
+                              <td className="px-4 py-3 text-gray-300 text-xs">
+                                {new Date(s.saleDate).toLocaleDateString("es-BO")}{" "}
+                                <span className="text-gray-500">
+                                  {new Date(s.saleDate).toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" })}
+                                </span>
+                              </td>
+                            )}
+                            {isHistCol("Cliente") && (
+                              <td className="px-4 py-3">
+                                {s.customer ? (
+                                  <div>
+                                    <p className="text-gray-200 text-sm">{s.customer.name}</p>
+                                    {s.customer.nit && <p className="text-xs text-gray-500">NIT: {s.customer.nit}</p>}
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-600 text-xs">Consumidor final</span>
+                                )}
+                              </td>
+                            )}
+                            {isHistCol("Usuario") && <td className="px-4 py-3 text-gray-300 text-xs">{s.user.name}</td>}
+                            {isHistCol("Ubicación") && (
+                              <td className="px-4 py-3 text-gray-400 text-xs flex items-center gap-1">
+                                <MapPin size={12} /> {s.location.name}
+                              </td>
+                            )}
+                            {isHistCol("Vendedor") && <td className="px-4 py-3 text-gray-300 text-xs">{s.seller || "—"}</td>}
+                            {isHistCol("Tipo") && (
+                              <td className="px-4 py-3 text-center">
+                                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                                  s.type === "MAYOR" ? "bg-blue-500/10 text-blue-400" : "bg-green-500/10 text-green-400"
+                                }`}>
+                                  {s.type === "MAYOR" ? "Mayor" : "Normal"}
+                                </span>
+                              </td>
+                            )}
+                            {isHistCol("Total") && (
+                              <td className="px-4 py-3 text-right text-green-400 font-medium text-sm">
+                                {formatBs(s.total)}
+                              </td>
+                            )}
+                            {isHistCol("Pagos") && (
+                              <td className="px-4 py-3">
+                                <div className="flex flex-wrap gap-1">
+                                  {s.payments.map((pay) => (
+                                    <span key={pay.id}
+                                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-dark-900/50 border border-dark-700/30 rounded-full text-xs text-gray-400">
+                                      {pmLabel[pay.method] || pay.method} · {formatBs(pay.amount)}
+                                    </span>
+                                  ))}
+                                </div>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
                 {histPages > 1 && (
                   <div className="flex items-center justify-between px-4 py-3 border-t border-dark-700/50">
@@ -784,7 +834,7 @@ export default function SalesPage() {
       {/* ============ CONFIRMATION MODAL ============ */}
       {showConfirmed && lastSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-md p-6 text-center">
+          <div id="sale-confirm-modal" className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-md p-6 text-center">
             <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Check size={32} className="text-green-400" />
             </div>
@@ -827,10 +877,16 @@ export default function SalesPage() {
               </div>
             </div>
 
-            <button onClick={() => { setShowConfirmed(false); setLastSale(null); }}
-              className="w-full bg-dark-700 hover:bg-dark-600 text-white py-3 rounded-xl text-sm font-medium transition-all">
-              Cerrar
-            </button>
+            <div className="flex gap-3">
+              <button onClick={() => { setShowConfirmed(false); setLastSale(null); }}
+                className="flex-1 bg-dark-700 hover:bg-dark-600 text-white py-3 rounded-xl text-sm font-medium transition-all">
+                Cerrar
+              </button>
+              <button onClick={downloadSalePDF}
+                className="flex-1 bg-primary-600 hover:bg-primary-500 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                <FileText size={16} /> Descargar PDF
+              </button>
+            </div>
           </div>
         </div>
       )}
