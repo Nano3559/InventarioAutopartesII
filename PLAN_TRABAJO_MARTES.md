@@ -1,8 +1,6 @@
 # Plan de Trabajo — RepuestoPro
 
 > Proyecto: Sistema de Inventario y Ventas ("RepuestoPro").
-> Estado general: **todo el backend (Ross) está completo**. El frontend (Erika) está casi completo; quedan detalles menores (ver [Verificación final](#verificación-final-antes-de-subir)).
->
 > **Nota de decisión (roles):** el filtrado por categorías se aplica al rol **TIENDA** (el rol que vende), respetando los 3 roles originales del enunciado (ADMIN, TIENDA, INVENTARIO). Se eliminó el rol VENDEDOR que se había creado como extra y **Fernando** quedó como usuario de prueba con rol **TIENDA** en la Tienda 1.
 
 ## Distribución de tareas
@@ -69,8 +67,6 @@
 ---
 
 ## 3. Categorías visibles por rol (TIENDA) + usuario de prueba Fernando
-
-> **Decisión final (alineada al enunciado):** el filtrado por categorías se aplica al rol **TIENDA** (el rol que vende), respetando los 3 roles originales (ADMIN, TIENDA, INVENTARIO). Se **eliminó** el rol VENDEDOR que se había creado como extra y se **reasignó** a Fernando al rol TIENDA para seguir haciendo pruebas con categorías limitadas.
 
 - Rol `TIENDA` (id 2) con permisos `["ventas", "inventario", "solicitudes", "devoluciones"]`.
 - `columnConfig.__categorias = ["Frenos", "Motor", "Eléctrico"]` (solo el rol que vende ve estas categorías).
@@ -184,8 +180,6 @@
 ---
 
 ## 4. Settings: categorías y módulos por rol
-
-> La UI de Settings permite al admin asignar módulos y **categorías visibles** a cada rol. Con el cambio de decisión, el filtro se aplica al rol **TIENDA** (que vende) y Fernando lo usa para pruebas.
 
 - [x] Mostrar los roles (ADMIN, TIENDA, INVENTARIO) en `SettingsPage.tsx`.
 - [x] Asignar módulos visibles a cada rol.
