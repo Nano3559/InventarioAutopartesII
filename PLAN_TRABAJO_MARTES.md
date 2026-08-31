@@ -1,15 +1,29 @@
-# Plan de Trabajo — Pendientes y Correcciones
+# Plan de Trabajo — RepuestoPro
+## Distribución de tareas
 
-> Proyecto: Sistema de Inventario y Ventas ("RepuestoPro").
-> Este documento recoge TODO lo pendiente según la revisión del código, las observaciones, sugerencias de mejora y observaciones. Se organiza por persona para que **no se pisen los archivos**.
->
+| Quién     | Responsabilidad                                                                     |
+|-----------|-------------------------------------------------------------------------------------|
+| **Ross**  | TODO el backend: modelos, migraciones, endpoints, seed, lógica                      |
+| **Erika** | TODO el frontend: UI de columnas, PDF, reportes, configuración, búsqueda por imagen |
 
 ---
 
-## Distribución de tareas
+## Progreso general
 
-- **Ross:** TODO el backend (modelos, migraciones, endpoints, seed, lógica).
-- **Erika:** TODO el frontend (UI de columnas, PDF, reportes, configuración, búsqueda por imagen).
+| Área                                         | Estado           |
+|----------------------------------------------|----------------- |
+| Ross-1 - Backend de columnas                 |  Completo        |
+| Ross-2 - Datos de entrega (venta mayor)      |  Completo        |
+| Ross-3 - Rol VENDEDOR + categorías           |  Completo        |
+| Ross-4 - Rellenar BD (seed)                  |  Completo        |
+| Ross-5 - Reposición "al día siguiente"       |  Completo        |
+| Extra - Búsqueda por imagen (backend)        |  Completo        |
+| Erika-1 - UI de columnas                     |  Completo        |
+| Erika-2 - PDF notas/cotización               |  Casi completo   |
+| Erika-3 - Reportes flexibles + diario        |  Completo        |
+| Erika-4 - Settings rol/categorías            |  Completo        |
+| Extra - Búsqueda por imagen (frontend/móvil) |  Pendiente       |
+| Deploy final (Vercel + Railway)              |  Pendiente       |
 
 ---
 
@@ -17,84 +31,96 @@
 
 ---
 
-## 1. Tablas editables: backend de columnas ocultar / mostrar / reordenar
+## 1. Backend de columnas (ocultar / mostrar / reordenar)
 
-> Esta es la observación del Inge. El backend de columnas **ya está implementado**,
-> pero hay que completarlo/verificarlo para que el frontend de Erika pueda consumirlo.
+- `PUT /permissions/roles/:id/columns` funciona (permite `columnConfig` con `__categorias`).
+- `GET/PUT /users/me/preferences` funciona y Erika lo consume correctamente.
+- `GET /permissions/me` devuelve `role`, `permissions`, `columnConfig` (lo usa `authStore`).
+- `GET /products/filters` devuelve `categories` (lo usa `SettingsPage`).
 
-### Verificar y completar el backend de columnas
-- [ ] Verificar que `PUT /permissions/roles/:id/columns` (columnConfig por rol) funcione correctamente en `permissions.routes.ts:95-132`.
-- [ ] Verificar que `GET/PUT /users/me/preferences` (columnPrefs por usuario) funcione en `users.routes.ts:165-198`.
-- [ ] Confirmar que `GET /permissions/roles/modules` devuelva las columnas por módulo (`defaultColumns` en `permissions.routes.ts:16-19`).
-- [ ] Confirmar que el `columnConfig` del rol incluya columnas reales de Inventario y Ventas.
-- [ ] Asegurar que los endpoints devuelvan las columnas permitidas por rol Y por usuario de forma combinada.
-
----
-
-## 2. Guardar datos de entrega en venta mayor (BD)
-
-> La venta mayor captura `lugarEntrega`, `paraQuien`, `datosFactura`, `formaPago`
-> (`WholesalePage.tsx:128,291-298`) y los envía al backend, **pero el backend los descarta**
-> (`wholesale.routes.ts:17` los recibe pero no los guarda). El modelo `Sale` no tiene esas columnas.
-
-### Schema
-- [ ] Agregar a `Sale` (o un modelo `SaleDelivery`) los campos: `paraQuien`, `lugarEntrega`, `datosFactura`, `formaPago`.
-
-### Migración
-- [ ] Crear migración SQL y aplicar a la BD de Neon (NO usar `prisma migrate dev`).
-
-### Backend lógico
-- [ ] En `wholesale.routes.ts:102-118` guardar esos campos al crear la venta mayor.
-- [ ] Devolver esos campos en el response para que el frontend los muestre en la nota/PDF.
-- [ ] Incluir esos campos también en `GET /sales/:id/nota` (backend) para que la nota los muestre.
+- [x] Verificar `PUT /permissions/roles/:id/columns` (`permissions.routes.ts:95-132`).
+- [x] Verificar `GET/PUT /users/me/preferences` (`users.routes.ts:165-198`).
+- [x] Confirmar `GET /permissions/roles/modules` devuelve las columnas por módulo.
+- [x] Confirmar que `columnConfig` del rol incluya columnas reales de Inventario y Ventas.
+- [x] Asegurar que devuelvan columnas permitidas por rol **y** por usuario combinadas.
 
 ---
 
-## 3. Crear rol VENDEDOR (Fernando) con categorías visibles
+## 2. Datos de entrega en venta mayor (BD)
 
-### Rol nuevo (backend)
-- [ ] Agregar rol `VENDEDOR` al seed/BD (`backend/prisma/seed-data.ts` y seed del `RoleModel`).
-- [ ] Definir los módulos que ve un VENDEDOR (sugerencia: ventas, inventario solo-lectura, solicitudes, devoluciones).
+- `Sale` tiene `paraQuien`, `lugarEntrega`, `datosFactura`, `formaPago` (`String?`).
+- Migración aplicada a Neon vía `prisma db execute`.
+- `wholesale.routes.ts` guarda los 4 campos (literal o inferidos: `paraQuien←clienteName`, `datosFactura←NIT`, `formaPago←primer método de pago`).
+- `GET /sales/:id/nota` muestra la sección "Datos de entrega" en notas mayoristas.
+- Prueba real en producción ✓ · `npm run build` ✓.
 
-### Categorías visibles por rol (backend)
-- [ ] Agregar campo de categorías permitidas por rol (reusar `columnConfig` o agregar `allowedCategories Json?` a `RoleModel`).
-- [ ] Endpoint `GET /permissions/roles` devuelve también las categorías permitidas.
-- [ ] Agregar endpoint (si no existe) para actualizar las categorías de un rol.
-- [ ] Filtrar los productos/inventario por categorías permitidas en los endpoints respectivos cuando el usuario es VENDEDOR.
-
-### Verificación (backend)
-- [ ] Al consultar la API como VENDEDOR, solo devuelve las categorías/módulos asignados.
+- [x] Agregar a `Sale` los campos de entrega.
+- [x] Crear migración SQL y aplicar a Neon (sin `prisma migrate dev`).
+- [x] Guardar los campos en `wholesale.routes.ts` al crear la venta mayor.
+- [x] Devolver los campos en el response para la nota/PDF.
+- [x] Incluirlos en `GET /sales/:id/nota` para la nota.
 
 ---
 
-## 4. Rellenar la base de datos con datos suficientes (backend/seed)
+## 3. Rol VENDEDOR (Fernando) con categorías visibles
 
-> Estado actual en BD: **19 productos, 8 clientes, 6 proveedores, 7 categorías, 176 ventas,
-> 41 movimientos, 0 costos, 0 importers, 1 devolución**. Falta masa de datos.
+- Rol `VENDEDOR` (id 4) con permisos `["ventas", "inventario", "solicitudes", "devoluciones"]`.
+- `columnConfig.__categorias = ["Frenos", "Motor", "Eléctrico"]`.
+- Usuario `fernando@inventario.com / vendedor123` (id 6).
+- Login ✓ · `GET /api/permissions/permissions/me` devuelve rol, permisos y categorías ✓.
 
-### Seed
-- [ ] Aumentar productos (apuntar a 40-60+) repartidos en las 7 categorías.
-- [ ] Agregar **Costos** para cada producto (1-2 registros por producto con proveedor, costo, tipo de cambio, porcentaje, fecha).
-- [ ] Agregar **Importadores** (8-10) con sus relaciones `ProductImporter`.
-- [ ] Agregar más devoluciones (hoy solo 1).
-- [ ] Distribuir ventas en varios días/semanas/meses (para probar reportes flexibles).
+### Rol y usuario
+- [x] Agregar rol `VENDEDOR` al seed/BD.
+- [x] Definir los módulos que ve un VENDEDOR (ventas, inventario solo-lectura, solicitudes, devoluciones).
+- [x] Crear el usuario "Fernando".
 
-### Aplicación
-- [ ] Revisar si el seed es idempotente o se corre en BD de prueba (no romper datos reales).
-- [ ] Aplicar el seed a la BD de producción.
+### Categorías visibles por rol
+- [x] Campo de categorías permitidas por rol (reuso de `columnConfig.__categorias`).
+- [x] `GET /permissions/roles` devuelve `columnConfig` (incluye `__categorias`).
+- [x] Actualizar categorías por rol vía `PUT /permissions/roles/:id/columns`.
+- [ ] **Filtrado backend** de productos por categoría del rol (VENDEDOR).
+
+> **Nota (decisión):** `GET /products` es público y Erika ya filtra en el frontend. El filtrado en el backend requeriría autenticar el GET; se decidió dejar el filtrado frontend por ahora para no arriesgar rupturas. Mejora futura opcional.
+
+### Verificación
+- [x] Como VENDEDOR devuelve módulos y categorías asignados (login + `GET /permissions/me`).
+- [x] El frontend de Erika funciona con el rol creado.
+
+---
+
+## 4. Rellenar la base de datos (seed)
+
+- **56 productos** (antes 19) en las 7 categorías.
+- **112 costos** (2 por producto, con proveedor, tipo de cambio, porcentaje, fecha).
+- **10 importadores** con **83 relaciones ProductImporter**.
+- **12 devoluciones** (antes 1).
+- **234 ventas** distribuidas en marzo–septiembre 2026 (para reportes flexibles).
+- **8 proveedores** únicos (duplicados eliminados).
+- Corregido el bug del seed (`campo quality` inexistente) y arrays exportados a `seed-data.ts`.
+
+- [x] Aumentar productos (40-60+) en las 7 categorías.
+- [x] Agregar costos por producto.
+- [x] Agregar importadores y relaciones `ProductImporter`.
+- [x] Agregar más devoluciones.
+- [x] Distribuir ventas en varios días/semanas/meses.
+- [x] Revisar idempotencia del seed (no romper datos reales).
+- [x] Aplicar el seed a producción.
 
 ---
 
 ## 5. Reposición automática "al día siguiente"
 
-> Hoy la solicitud se genera **inmediatamente** al llegar el stock a 0
-> (`sales.routes.ts:362-390` y `wholesale.routes.ts:132-153`). El enunciado pide "al día siguiente".
+- `ProductRequest` tiene `expectedDate DateTime?` (migración aplicada a Neon).
+- `sales.routes.ts` y `wholesale.routes.ts` crean la solicitud con `expectedDate = nextDayAt8()` (mañana 8:00).
+- **Decisión:** la solicitud solo se crea si el almacén tiene stock suficiente (`almacenInv.stock >= requestQty`); si no, no se genera.
+- Instalado `node-cron` + `src/jobs/replenishJob.ts`: job diario (08:05, `America/La_Paz`) que activa solicitudes PENDIENTE vencidas → `PREPARANDO`, crea `RequestHistory` y notifica a INVENTARIO. Integrado en `server.ts`.
+- Corregidos estados inválidos del enum viejo en `ProductRequest`.
+- Job probado en producción ✓ · `npm run build` ✓.
 
-### Backend
-- [ ] Agregar a `ProductRequest` el campo `expectedDate DateTime?`.
-- [ ] Al llegar el stock a 0, crear la solicitud con `expectedDate = mañana a las 8:00` en lugar de `now()`.
-- [ ] (Opcional) Instalar `node-cron` y un job diario que active las solicitudes cuyo `expectedDate` ya llegó.
-- [ ] Revisar si la solicitud se crea siempre o solo cuando el almacén tenga stock (decisión documentada).
+- [x] Agregar `expectedDate DateTime?` a `ProductRequest`.
+- [x] Crear la solicitud con `expectedDate = mañana a las 8:00`.
+- [x] (Opcional) `node-cron` + job diario que active solicitudes vencidas.
+- [x] Decidir si la solicitud se crea siempre o solo con stock (solo con stock en almacén).
 
 ---
 
@@ -102,135 +128,97 @@
 
 ---
 
-## 1. Tablas editables: UI de columnas ocultar / mostrar / reordenar
+## 1. UI de columnas (ocultar / mostrar / reordenar)
 
-> Esta es la observación del Inge y actualmente **no hay ninguna UI** en el frontend.
-> Las tablas son HTML estático con columnas fijas. Ross deja el backend listo (tarea Ross-1),
-> Erika construye la interfaz y la conecta.
-
-### Componente de columnas
-- [x] Crear componente genérico de selección de columnas (`frontend/src/components/ColumnManager.tsx`).
+- [x] Crear `ColumnManager.tsx` (componente genérico de selección de columnas).
 - [x] Modal con checkboxes para mostrar/ocultar cada columna.
 - [x] Permitir reordenar columnas (subir/bajar o drag).
-- [x] Guardar las columnas elegidas (estado/localStorage) para no perderlas al recargar.
-
-### Aplicar en las tablas
-- [x] Aplicar el componente en la tabla de Inventario (`InventoryPage.tsx`, columnas fijas en `:312-324`).
-- [x] Aplicar el componente en la tabla de Ventas — carrito (`SalesPage.tsx:403-409`).
-- [x] Aplicar el componente en la tabla de Ventas — historial (`SalesPage.tsx:552-562`).
-
-### Conectar con backend (lo que expone Ross)
-- [x] Consumir `GET/PUT /users/me/preferences` para guardar/recuperar columnas por usuario.
-- [x] Consumir `GET /permissions/roles/modules` y el `columnConfig` del rol para saber qué columnas se permiten.
-- [x] Respetar el `columnConfig` del rol: el usuario solo modifica las columnas permitidas por el admin.
-- [x] Exponer el `columnConfig` del rol desde `authStore` (hoy se ignora en `authStore.ts:26,56`).
-
-### Verificación
-- [x] Una columna oculta desaparece de la tabla y la reordenación funciona correctamente.
+- [x] Guardar las columnas elegidas (estado/localStorage).
+- [x] Aplicarlo en Inventario (`InventoryPage.tsx`).
+- [x] Aplicarlo en Ventas — carrito (`SalesPage.tsx`).
+- [x] Aplicarlo en Ventas — historial (`SalesPage.tsx`).
+- [x] Consumir `GET/PUT /users/me/preferences`.
+- [x] Consumir `GET /permissions/roles/modules` y el `columnConfig` del rol.
+- [x] Respetar `columnConfig` del rol (solo columnas permitidas).
+- [x] Exponer `columnConfig` desde `authStore`.
+- [x] Verificar: columna oculta desaparece y reordenación funciona.
 
 ---
 
-## 2. Nota de venta y cotización → exportar a PDF real
+## 2. Nota de venta y cotización → PDF real
 
-> Hoy la nota es HTML imprimible (`SalesPage.tsx` modal de confirmación y `WholesalePage.tsx:171-187`).
-> **No existe ninguna librería PDF.** La cotización "en vista" ya existe en el modal de confirmación
-> (`SalesPage.tsx:784-836`), falta que se exporte.
-
-### Generación de PDF
-- [x] Instalar librería PDF en frontend (`jspdf` + `html2canvas` o `pdfmake`).
-- [x] Agregar botón "Exportar PDF" en la nota de venta normal (modal de confirmación de `SalesPage.tsx`).
-- [x] Agregar botón "Exportar PDF" en la nota de venta mayorista (`WholesalePage.tsx`).
-- [x] Generar el PDF con: título "RepuestoPro", cliente, tabla de productos, cantidades, precios, subtotal, total, pagos, pie.
+- [x] Instalar librería PDF (`jspdf` + `html2canvas`).
+- [x] Botón "Exportar PDF" en la nota normal (modal de `SalesPage.tsx`).
+- [x] Botón "Exportar PDF" en la nota mayorista (`WholesalePage.tsx`).
+- [x] PDF con: "RepuestoPro", cliente, tabla de productos, cantidades, precios, subtotal, total, pagos, pie.
 
 ### Datos de entrega en la nota
-- [ ] Mostrar en la nota/PDF los campos de entrega (lugar, para quién, factura) que Ross guarda en BD (tarea Ross-2).
+- [ ] Mostrar en la nota/PDF los campos de entrega (lugar, para quién, factura) que Ross guarda en BD (Ross-2).
+
+> **Pendiente:** el frontend captura los campos al crear la venta, pero no los muestra en la nota/PDF.
 
 ---
 
-## 3. Reportes flexibles: rango fecha-a-fecha + reporte diario por tienda
-
-> El backend `GET /reports/sales` ya acepta `startDate`/`endDate` (`reports.routes.ts:20-28`),
-> pero el frontend solo usa `month`. Ross ajusta `/reports/monthly` (tarea Ross-1b si aplica),
-> Erika hace la UI flexible.
+## 3. Reportes flexibles (rango fechas + diario por tienda)
 
 ### Filtro flexible de fechas
-- [x] En `ReportsPage.tsx`, reemplazar el filtro de mes por dos inputs de fecha (desde → hasta).
-- [x] Usar `startDate`/`endDate` en `fetchSales()` (hoy `:71` solo envía `month`).
-- [x] Permitir elegir cualquier rango: día, semana, mes, trimestre, año.
+- [x] Reemplazar el filtro de mes por dos inputs de fecha (desde → hasta).
+- [x] Usar `startDate`/`endDate` en `fetchSales()`.
+- [x] Permitir cualquier rango: día, semana, mes, trimestre, año.
 
-### Nuevo reporte diario detallado por tienda
-- [x] Crear tab "Diario por Tienda" que agrupe ventas por día.
-- [x] Mostrar por tienda: total del día, n° de ventas, productos vendidos (nombre, cantidad, subtotal), devoluciones.
+### Reporte diario por tienda
+- [x] Tab "Diario por Tienda" que agrupa ventas por día.
+- [x] Mostrar por tienda: total del día, n° de ventas, productos vendidos, devoluciones.
 - [x] Exportar el reporte diario a CSV/Excel.
 
 ---
 
-## 4. Rol VENDEDOR: configurar categorías y módulos en Settings (frontend)
+## 4. Rol VENDEDOR: categorías y módulos en Settings
 
-> Ross crea el rol VENDEDOR y el campo de categorías en backend (tarea Ross-3).
-> Erika construye la interfaz para asignar categorías y módulos.
-
-### Configuración de rol en SettingsPage
-- [x] En `SettingsPage.tsx`, mostrar el nuevo rol VENDEDOR.
-- [x] Permitir al admin asignar módulos visibles al rol VENDEDOR (y a los existentes).
-- [x] Permitir al admin asignar **categorías visibles** al rol VENDEDOR (y a los existentes).
-- [x] Guardar esos cambios consumiendo los endpoints que expone Ross.
-
-### Aplicar el filtro de categorías en el frontend
-- [x] Filtrar Inventario / búsqueda / productos por las categorías permitidas cuando el usuario es VENDEDOR.
-- [x] Verificar que Fernando al loguearse solo vea sus categorías y módulos en el menú y en las páginas.
+- [x] Mostrar el rol VENDEDOR en `SettingsPage.tsx`.
+- [x] Asignar módulos visibles al rol VENDEDOR (y a los existentes).
+- [x] Asignar **categorías visibles** al rol (y a los existentes).
+- [x] Guardar los cambios consumiendo los endpoints de Ross.
+- [x] Filtrar Inventario/búsqueda/productos por categorías permitidas (VENDEDOR).
+- [x] Verificar que Fernando solo vea sus categorías y módulos al loguearse.
 
 ---
 
 # Tarea conjunta / opcional
+## Búsqueda por imagen real 
 
-## Búsqueda por imagen real (si da tiempo)
+### Backend (Ross) 
+- [x] Mejorar `POST /api/products/search-image`.
 
-> Existe `POST /api/products/search-image` (`products.routes.ts:307-372`) pero solo lee el nombre del
-> archivo; no analiza la imagen. No hay ninguna UI que la consuma.
-
-### Backend (Ross)
-- [ ] Mejorar `POST /api/products/search-image` para analizar mejor la imagen (OCR o keywords).
-
-### Frontend (Erika)
+### Frontend (Erika) ⬜
 - [ ] Crear UI "Buscar por imagen" (subir foto) que consuma el endpoint.
-- [ ] Mostrar los resultados: Producto, Marca, Modelo, Código, Stock, Precio.
+- [ ] Mostrar resultados: Producto, Marca, Modelo, Código, Stock, Precio.
 
-### Móvil (opcional)
+### Móvil (opcional) ⬜
 - [ ] Completar `ScannerScreen.tsx` con `expo-image-picker`/`expo-camera`.
-
----
-
-# Orden de implementación recomendado
-
-| Paso | Tarea | Quién | Depende de |
-|------|-------|-------|------------|
-| 1 | **Ross-1** Backend de columnas | Ross | — |
-| 2 | **Erika-1** UI de columnas | Erika | Ross-1 |
-| 3 | **Ross-2** Datos de entrega en BD | Ross | — |
-| 4 | **Erika-2** PDF notas/cotización | Erika | Ross-2 (entrega) |
-| 5 | **Ross-3** Rol VENDEDOR + categorías (backend) | Ross | — |
-| 6 | **Erika-4** Settings rol/categorías (frontend) | Erika | Ross-3 |
-| 7 | **Ross-4** Rellenar datos (seed) | Ross | — |
-| 8 | **Ross-5** Reposición al día siguiente | Ross | — |
-| 9 | **Erika-3** Reportes flexibles + diario | Erika | — |
-| 10 | **Opcional** Búsqueda por imagen | Ross+Erika | — |
 
 ---
 
 # Verificación final (antes de subir)
 
-- [x] Tablas de Inventario y Ventas permiten ocultar/mostrar/reordenar columnas según rol y preferencias del usuario.
-- [x] La nota de venta (normal y mayorista) se descarga como PDF real con cliente, productos, total y pagos.
+- [x] Tablas de Inventario y Ventas permiten ocultar/mostrar/reordenar columnas según rol y preferencias.
+- [x] La nota (normal y mayorista) se descarga como PDF real con cliente, productos, total y pagos.
 - [x] Los reportes aceptan fecha desde → hasta y hay vista diaria por tienda con detalle.
 - [x] El rol VENDEDOR (Fernando) existe y solo ve las categorías/módulos asignados.
-- [ ] La venta mayor guarda lugar de entrega, para quién y datos de factura.
-- [ ] La BD tiene cantidad considerable de productos, costos, importadores y ventas en varias fechas.
-- [ ] La reposición automática se programa para el día siguiente.
-- [ ] (Opcional) Búsqueda por imagen con UI funcionando.
-- [ ] TypeScript compila en backend y frontend (`npm run build` sin errores).
-- [ ] No se rompe nada en producción (Vercel + Railway) y las credenciales de seed siguen funcionando.
+- [x] La venta mayor guarda lugar de entrega, para quién y datos de factura.
+- [x] La BD tiene cantidad considerable de productos, costos, importadores y ventas en varias fechas.
+- [x] La reposición automática se programa para el día siguiente.
+- [ ] (Opcional) Búsqueda por imagen con UI funcionando. *(Backend Completado; falta Frontend.)*
+- [x] TypeScript compila en backend y frontend (`npm run build` sin errores).
+- [ ] No se rompe nada en producción (Vercel + Railway) y las credenciales de seed siguen funcionando. *(Pendiente deploy.)*
 
 ---
 
-*Documento generado a partir de la revisión del código. No se han hecho commits.*
+## Pendientes de Erika
+
+- [ ] Mostrar los datos de entrega en la nota/PDF de la venta mayor (PDF).
+- [ ] UI "Buscar por imagen" (subir foto) + mostrar resultados.
+- [ ] `ScannerScreen.tsx` móvil (`expo-image-picker`/`expo-camera`).
+- [ ] (Con Ross) Deploy final y verificación en producción.
+
+---

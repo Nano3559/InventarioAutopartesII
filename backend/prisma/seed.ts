@@ -26,7 +26,21 @@ async function main() {
     create: { name: "INVENTARIO", permissions: ["movimientos", "inventario", "solicitudes"] },
   });
 
-  console.log("Roles creados:", { adminRole: adminRole.id, tiendaRole: tiendaRole.id, inventarioRole: inventarioRole.id });
+  const vendedorRole = await prisma.roleModel.upsert({
+    where: { name: "VENDEDOR" },
+    update: {},
+    create: {
+      name: "VENDEDOR",
+      permissions: ["ventas", "inventario", "solicitudes", "devoluciones"],
+      columnConfig: {
+        inventario: ["ID", "Fabricante", "Producto", "Marca", "Modelo", "Año", "Detalles", "Cód. OEM", "Cód. Fábrica", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones"],
+        ventas: ["ID", "Fecha", "Cliente", "Tienda", "Vendedor", "Total", "Estado", "Acciones"],
+        __categorias: ["Frenos", "Motor", "Eléctrico"],
+      },
+    },
+  });
+
+  console.log("Roles creados:", { adminRole: adminRole.id, tiendaRole: tiendaRole.id, inventarioRole: inventarioRole.id, vendedorRole: vendedorRole.id });
 
   // Ubicaciones: 4 almacenes + 3 tiendas
   const ubicaciones = [
@@ -119,6 +133,22 @@ async function main() {
 
   console.log("Usuario de inventario creado");
 
+  // Usuario VENDEDOR (Fernando)
+  const vendedorPassword = await bcrypt.hash("vendedor123", 10);
+  await prisma.user.upsert({
+    where: { email: "fernando@inventario.com" },
+    update: {},
+    create: {
+      name: "Fernando Vendedor",
+      email: "fernando@inventario.com",
+      password: vendedorPassword,
+      roleId: vendedorRole.id,
+      locationId: null,
+    },
+  });
+
+  console.log("Usuario VENDEDOR (Fernando) creado");
+
   await seedData(prisma);
 
   console.log("\n=== Datos iniciales sembrados correctamente ===");
@@ -128,6 +158,7 @@ async function main() {
   console.log("  Tienda 2:    tienda2@inventario.com / tienda123");
   console.log("  Tienda 3:    tienda3@inventario.com / tienda123");
   console.log("  Inventario:  inventario@inventario.com / inventario123");
+  console.log("  Vendedor:    fernando@inventario.com / vendedor123");
 }
 
 main()

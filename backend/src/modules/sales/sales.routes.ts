@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { nextDayAt8 } from "../../utils/replenish";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -142,6 +143,16 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
     <strong>Cliente:</strong> ${sale.customer.name}
     ${sale.customer.nit ? ` | NIT/CI: ${sale.customer.nit}` : ""}
     ${sale.customer.phone ? ` | Tel: ${sale.customer.phone}` : ""}
+  </div>
+  ` : ""}
+
+  ${(sale.type === "MAYOR" && (sale.paraQuien || sale.lugarEntrega || sale.datosFactura || sale.formaPago)) ? `
+  <div class="customer">
+    <strong>Datos de entrega:</strong><br>
+    ${sale.paraQuien ? `<span>Para: ${sale.paraQuien}</span><br>` : ""}
+    ${sale.lugarEntrega ? `<span>Lugar: ${sale.lugarEntrega}</span><br>` : ""}
+    ${sale.datosFactura ? `<span>Factura: ${sale.datosFactura}</span><br>` : ""}
+    ${sale.formaPago ? `<span>Forma de pago: ${sale.formaPago}</span><br>` : ""}
   </div>
   ` : ""}
 
@@ -382,6 +393,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
                       requestedById: user.userId,
                       locationId: userLocationId,
                       status: "PENDIENTE",
+                      expectedDate: nextDayAt8(),
                     },
                   });
                 }

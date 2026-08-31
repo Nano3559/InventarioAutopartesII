@@ -311,39 +311,60 @@ router.post("/search-image", upload.single("image"), async (req: Request, res: R
       return res.status(400).json({ message: "Debe subir una imagen" });
     }
 
-    const filename = req.file.originalname.toLowerCase().replace(/\.[^.]+$/, "");
-    const keywords = filename
-      .replace(/[_\-\.]/g, " ")
+    // Normalizar el nombre del archivo: quitar extensión, guiones/guiones bajos y tokens genéricos/códigos
+    const raw = req.file.originalname.toLowerCase().replace(/\.[^.]+$/, "");
+    const STOPWORDS = new Set(["img", "imagen", "image", "photo", "foto", "producto", "product", "part", "ref", "cod", "code", "dsc", "dscn", "captura", "nuevo", "venta", "jpeg", "jpg", "png", "webp", "2024", "2023", "2022"]);
+    const keywords = raw
+      .replace(/[_\-\.\+\(\)\[\]]/g, " ")
       .replace(/\s+/g, " ")
       .trim()
       .split(" ")
-      .filter((w) => w.length > 2);
+      .filter((w) => w.length > 2)
+      .filter((w) => !/^\d+$/.test(w))
+      .filter((w) => !STOPWORDS.has(w));
 
     if (keywords.length === 0) {
-      return res.json({ products: [], message: "No se pudieron extraer palabras clave del nombre del archivo" });
+      return res.json({ products: [], message: "No se pudieron extraer palabras clave del nombre o la imagen" });
     }
 
-    const orConditions = keywords.flatMap((kw) => [
-      { name: { contains: kw, mode: "insensitive" as const } },
-      { brand: { contains: kw, mode: "insensitive" as const } },
-      { model: { contains: kw, mode: "insensitive" as const } },
-      { itemCode: { contains: kw, mode: "insensitive" as const } },
-      { detail: { contains: kw, mode: "insensitive" as const } },
-      { manufacturer: { contains: kw, mode: "insensitive" as const } },
-    ]);
-
+    // Buscar por múltiples campos y rankear por cantidad de coincidencias
     const products = await prisma.product.findMany({
-      where: { OR: orConditions },
+      where: {
+        AND: [
+          {
+            OR: keywords.flatMap((kw) => [
+              { name: { contains: kw, mode: "insensitive" as const } },
+              { brand: { contains: kw, mode: "insensitive" as const } },
+              { model: { contains: kw, mode: "insensitive" as const } },
+              { itemCode: { contains: kw, mode: "insensitive" as const } },
+              { oemCode: { contains: kw, mode: "insensitive" as const } },
+              { factoryCode: { contains: kw, mode: "insensitive" as const } },
+              { detail: { contains: kw, mode: "insensitive" as const } },
+              { manufacturer: { contains: kw, mode: "insensitive" as const } },
+            ]),
+          },
+        ],
+      },
       include: {
         inventories: {
           include: { location: { select: { id: true, name: true, type: true } } },
         },
       },
-      take: 20,
-      orderBy: { name: "asc" },
+      take: 50,
     });
 
-    const results = products.map((p) => ({
+    // Rankear: cuantas más keywords coincidan con el nombre/marca/modelo/códigos, mejor
+    const scored = products
+      .map((p) => {
+        const haystack = `${p.name} ${p.brand} ${p.model} ${p.itemCode} ${p.oemCode || ""} ${p.factoryCode || ""} ${p.detail || ""}`.toLowerCase();
+        const matches = keywords.filter((kw) => haystack.includes(kw)).length;
+        return { p, score: matches };
+      })
+      .filter((r) => r.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 20);
+
+    const results = scored.map(({ p }) => ({
       id: p.id,
       itemCode: p.itemCode,
       name: p.name,
@@ -353,6 +374,7 @@ router.post("/search-image", upload.single("image"), async (req: Request, res: R
       price1: Number(p.price1),
       price2: Number(p.price2),
       image: p.image,
+      score: 1,
       totalStock: p.inventories.reduce((sum, i) => sum + i.stock, 0),
       locations: p.inventories.map((i) => ({
         name: i.location.name,

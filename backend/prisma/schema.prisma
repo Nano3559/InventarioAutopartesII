@@ -112,22 +112,26 @@ model Customer {
 }
 
 model Sale {
-  id         Int        @id @default(autoincrement())
-  saleDate   DateTime   @default(now())
-  total      Decimal
-  type       SaleType
-  userId     Int
-  locationId Int
-  customerId Int?
-  seller     String?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  payments   Payment[]
-  returns    Return[]
-  customer   Customer?  @relation(fields: [customerId], references: [id])
-  location   Location   @relation("SaleFromLocation", fields: [locationId], references: [id])
-  user       User       @relation(fields: [userId], references: [id])
-  items      SaleItem[]
+  id           Int        @id @default(autoincrement())
+  saleDate     DateTime   @default(now())
+  total        Decimal
+  type         SaleType
+  userId       Int
+  locationId   Int
+  customerId   Int?
+  seller       String?
+  paraQuien    String?
+  lugarEntrega String?
+  datosFactura String?
+  formaPago    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  payments     Payment[]
+  returns      Return[]
+  customer     Customer?  @relation(fields: [customerId], references: [id])
+  location     Location   @relation("SaleFromLocation", fields: [locationId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+  items        SaleItem[]
 }
 
 model SaleItem {
@@ -186,6 +190,7 @@ model ProductRequest {
   locationId    Int
   status        RequestStatus @default(PENDIENTE)
   note          String?
+  expectedDate  DateTime?
   date          DateTime      @default(now())
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt

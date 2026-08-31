@@ -4,6 +4,7 @@ import multer from "multer";
 import * as XLSX from "xlsx";
 import { authenticate } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { nextDayAt8 } from "../../utils/replenish";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -41,6 +42,12 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         return res.status(400).json({ message: `Método de pago inválido: ${p.method}` });
       }
     }
+
+    // Datos de entrega: usar los enviados explícitamente o inferir del payload
+    const entregaParaQuien = paraQuien || clienteName || null;
+    const entregaLugar = lugarEntrega || null;
+    const entregaFactura = datosFactura || (customerData?.nit ? `NIT/CI: ${customerData.nit}` : null);
+    const entregaFormaPago = formaPago || (payments.length > 0 ? payments[0].method : null);
 
     let finalCustomerId = customerId || null;
 
@@ -106,6 +113,10 @@ router.post("/", async (req: AuthRequest, res: Response) => {
           userId: user.userId,
           locationId: userLocationId,
           customerId: finalCustomerId,
+          paraQuien: entregaParaQuien,
+          lugarEntrega: entregaLugar,
+          datosFactura: entregaFactura,
+          formaPago: entregaFormaPago,
           items: { create: saleItemsData },
           payments: {
             create: payments.map((p: any) => ({
@@ -140,15 +151,22 @@ router.post("/", async (req: AuthRequest, res: Response) => {
                 },
               });
               if (!existing) {
-                await tx.productRequest.create({
-                  data: {
-                    productId: update.productId,
-                    quantity: Math.max(update.quantity, 5),
-                    requestedById: user.userId,
-                    locationId: userLocationId,
-                    status: "PENDIENTE",
-                  },
+                const almacenInv = await tx.inventory.findUnique({
+                  where: { productId_locationId: { productId: update.productId, locationId: almacen.id } },
                 });
+                const requestQty = Math.max(update.quantity, 5);
+                if (almacenInv && almacenInv.stock >= requestQty) {
+                  await tx.productRequest.create({
+                    data: {
+                      productId: update.productId,
+                      quantity: requestQty,
+                      requestedById: user.userId,
+                      locationId: userLocationId,
+                      status: "PENDIENTE",
+                      expectedDate: nextDayAt8(),
+                    },
+                  });
+                }
               }
             }
           }
