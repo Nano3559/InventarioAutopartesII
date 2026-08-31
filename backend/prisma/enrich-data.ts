@@ -181,7 +181,7 @@ async function main() {
   const presentMonths = new Set(existingSalesMonths.map((m) => m.mes));
   console.log(`  - Meses con ventas actuales: ${existingSalesMonths.map((m) => m.mes).join(", ")}`);
 
-  const users = await prisma.user.findMany({ where: { role: { name: { in: ["TIENDA", "VENDEDOR"] } } } });
+  const users = await prisma.user.findMany({ where: { role: { name: "TIENDA" } } });
   const tiendaUsers = await prisma.user.findMany({ where: { role: { name: "TIENDA" } } });
   const customers = await prisma.customer.findMany();
   const tiendaLocs = (await prisma.location.findMany({ where: { type: "TIENDA" } }));

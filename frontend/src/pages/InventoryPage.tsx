@@ -60,7 +60,7 @@ export default function InventoryPage() {
   const navigate = useNavigate();
   const { user, columnConfig, allowedCategories } = useAuthStore();
   const canEdit = user?.role === "ADMIN";
-  const hasCategoryRestriction = user?.role === "VENDEDOR" && allowedCategories.length > 0;
+  const hasCategoryRestriction = user?.role === "TIENDA" && allowedCategories.length > 0;
   const [products, setProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<Filters>({ brands: [], manufacturers: [], categories: [] });
   const [loading, setLoading] = useState(true);

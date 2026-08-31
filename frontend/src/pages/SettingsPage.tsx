@@ -35,14 +35,12 @@ const ROLE_LABELS: Record<string, string> = {
   ADMIN: "Administrador",
   INVENTARIO: "Inventario",
   TIENDA: "Tienda",
-  VENDEDOR: "Vendedor",
 };
 
 const ROLE_DESCRIPTIONS: Record<string, string> = {
   ADMIN: "Acceso total al sistema",
   INVENTARIO: "Gestión de productos, stock, movimientos, costos, precios",
-  TIENDA: "Ventas, devoluciones, solicitudes, reportes",
-  VENDEDOR: "Ventas y consulta limitada por categorías asignadas",
+  TIENDA: "Ventas, devoluciones, solicitudes, reportes (con categorías asignadas)",
 };
 
 const MODULE_LABELS: Record<string, string> = {
