@@ -1,4 +1,10 @@
 # Plan de Trabajo — RepuestoPro
+
+> Proyecto: Sistema de Inventario y Ventas ("RepuestoPro").
+> Estado general: **todo el backend (Ross) está completo**. El frontend (Erika) está casi completo; quedan detalles menores (ver [Verificación final](#verificación-final-antes-de-subir)).
+>
+> **Nota de decisión (roles):** el filtrado por categorías se aplica al rol **TIENDA** (el rol que vende), respetando los 3 roles originales del enunciado (ADMIN, TIENDA, INVENTARIO). Se eliminó el rol VENDEDOR que se había creado como extra y **Fernando** quedó como usuario de prueba con rol **TIENDA** en la Tienda 1.
+
 ## Distribución de tareas
 
 | Quién     | Responsabilidad                                                                     |
@@ -14,7 +20,7 @@
 |----------------------------------------------|----------------- |
 | Ross-1 - Backend de columnas                 |  Completo        |
 | Ross-2 - Datos de entrega (venta mayor)      |  Completo        |
-| Ross-3 - Rol VENDEDOR + categorías           |  Completo        |
+| Ross-3 · Categorías por rol (TIENDA) + Fernando |  Completo        |
 | Ross-4 - Rellenar BD (seed)                  |  Completo        |
 | Ross-5 - Reposición "al día siguiente"       |  Completo        |
 | Extra - Búsqueda por imagen (backend)        |  Completo        |
@@ -62,29 +68,33 @@
 
 ---
 
-## 3. Rol VENDEDOR (Fernando) con categorías visibles
+## 3. Categorías visibles por rol (TIENDA) + usuario de prueba Fernando
 
-- Rol `VENDEDOR` (id 4) con permisos `["ventas", "inventario", "solicitudes", "devoluciones"]`.
-- `columnConfig.__categorias = ["Frenos", "Motor", "Eléctrico"]`.
-- Usuario `fernando@inventario.com / vendedor123` (id 6).
-- Login ✓ · `GET /api/permissions/permissions/me` devuelve rol, permisos y categorías ✓.
+> **Decisión final (alineada al enunciado):** el filtrado por categorías se aplica al rol **TIENDA** (el rol que vende), respetando los 3 roles originales (ADMIN, TIENDA, INVENTARIO). Se **eliminó** el rol VENDEDOR que se había creado como extra y se **reasignó** a Fernando al rol TIENDA para seguir haciendo pruebas con categorías limitadas.
+
+- Rol `TIENDA` (id 2) con permisos `["ventas", "inventario", "solicitudes", "devoluciones"]`.
+- `columnConfig.__categorias = ["Frenos", "Motor", "Eléctrico"]` (solo el rol que vende ve estas categorías).
+- Rol `VENDEDOR` **eliminado** de la BD (ya no existe; se mantienen los 3 roles del enunciado).
+- Fernando `fernando@inventario.com / vendedor123` (id 6) → ahora **rol TIENDA** en **Tienda 1**, para pruebas de categorías limitadas.
+- Login ✓ · `GET /permissions/permissions/me` devuelve rol TIENDA, permisos y categorías ✓ (verificado en producción).
 
 ### Rol y usuario
-- [x] Agregar rol `VENDEDOR` al seed/BD.
-- [x] Definir los módulos que ve un VENDEDOR (ventas, inventario solo-lectura, solicitudes, devoluciones).
-- [x] Crear el usuario "Fernando".
+- [x] Aplicar `__categorias` al rol TIENDA (no crear un rol nuevo).
+- [x] Eliminar el rol VENDEDOR de la BD.
+- [x] Reasignar Fernando al rol TIENDA y a una tienda (Tienda 1).
+- [x] Definir los módulos que ve TIENDA (ventas, inventario solo-lectura, solicitudes, devoluciones).
 
 ### Categorías visibles por rol
 - [x] Campo de categorías permitidas por rol (reuso de `columnConfig.__categorias`).
 - [x] `GET /permissions/roles` devuelve `columnConfig` (incluye `__categorias`).
 - [x] Actualizar categorías por rol vía `PUT /permissions/roles/:id/columns`.
-- [ ] **Filtrado backend** de productos por categoría del rol (VENDEDOR).
+- [ ] **Filtrado backend** de productos por categoría del rol (TIENDA).
 
 > **Nota (decisión):** `GET /products` es público y Erika ya filtra en el frontend. El filtrado en el backend requeriría autenticar el GET; se decidió dejar el filtrado frontend por ahora para no arriesgar rupturas. Mejora futura opcional.
 
 ### Verificación
-- [x] Como VENDEDOR devuelve módulos y categorías asignados (login + `GET /permissions/me`).
-- [x] El frontend de Erika funciona con el rol creado.
+- [x] Como TIENDA devuelve módulos y categorías asignados (login + `GET /permissions/me` verificados con Fernando).
+- [x] El frontend de Erika funciona con el rol TIENDA y las categorías limitadas.
 
 ---
 
@@ -173,13 +183,15 @@
 
 ---
 
-## 4. Rol VENDEDOR: categorías y módulos en Settings
+## 4. Settings: categorías y módulos por rol
 
-- [x] Mostrar el rol VENDEDOR en `SettingsPage.tsx`.
-- [x] Asignar módulos visibles al rol VENDEDOR (y a los existentes).
-- [x] Asignar **categorías visibles** al rol (y a los existentes).
+> La UI de Settings permite al admin asignar módulos y **categorías visibles** a cada rol. Con el cambio de decisión, el filtro se aplica al rol **TIENDA** (que vende) y Fernando lo usa para pruebas.
+
+- [x] Mostrar los roles (ADMIN, TIENDA, INVENTARIO) en `SettingsPage.tsx`.
+- [x] Asignar módulos visibles a cada rol.
+- [x] Asignar **categorías visibles** a cada rol (reuso de `columnConfig.__categorias`).
 - [x] Guardar los cambios consumiendo los endpoints de Ross.
-- [x] Filtrar Inventario/búsqueda/productos por categorías permitidas (VENDEDOR).
+- [x] Filtrar Inventario/búsqueda/productos por categorías permitidas (TIENDA).
 - [x] Verificar que Fernando solo vea sus categorías y módulos al loguearse.
 
 ---
@@ -204,7 +216,7 @@
 - [x] Tablas de Inventario y Ventas permiten ocultar/mostrar/reordenar columnas según rol y preferencias.
 - [x] La nota (normal y mayorista) se descarga como PDF real con cliente, productos, total y pagos.
 - [x] Los reportes aceptan fecha desde → hasta y hay vista diaria por tienda con detalle.
-- [x] El rol VENDEDOR (Fernando) existe y solo ve las categorías/módulos asignados.
+- [x] Las tiendas (rol TIENDA) solo ven las categorías/módulos asignados (Fernando: TIENDA, Frenos/Motor/Eléctrico).
 - [x] La venta mayor guarda lugar de entrega, para quién y datos de factura.
 - [x] La BD tiene cantidad considerable de productos, costos, importadores y ventas en varias fechas.
 - [x] La reposición automática se programa para el día siguiente.

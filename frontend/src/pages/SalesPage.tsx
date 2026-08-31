@@ -52,7 +52,7 @@ export default function SalesPage() {
   const { user, allowedCategories } = useAuthStore();
   const isAdmin = user?.role === "ADMIN";
   const isTienda = user?.role === "TIENDA";
-  const isVendedor = user?.role === "VENDEDOR";
+  const isVendedor = isTienda;
 
   // --- Locations ---
   const [locations, setLocations] = useState<Location[]>([]);

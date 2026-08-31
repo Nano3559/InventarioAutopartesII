@@ -17,20 +17,8 @@ async function main() {
   const tiendaRole = await prisma.roleModel.upsert({
     where: { name: "TIENDA" },
     update: {},
-    create: { name: "TIENDA", permissions: ["ventas", "productos", "solicitudes", "devoluciones"] },
-  });
-
-  const inventarioRole = await prisma.roleModel.upsert({
-    where: { name: "INVENTARIO" },
-    update: {},
-    create: { name: "INVENTARIO", permissions: ["movimientos", "inventario", "solicitudes"] },
-  });
-
-  const vendedorRole = await prisma.roleModel.upsert({
-    where: { name: "VENDEDOR" },
-    update: {},
     create: {
-      name: "VENDEDOR",
+      name: "TIENDA",
       permissions: ["ventas", "inventario", "solicitudes", "devoluciones"],
       columnConfig: {
         inventario: ["ID", "Fabricante", "Producto", "Marca", "Modelo", "Año", "Detalles", "Cód. OEM", "Cód. Fábrica", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones"],
@@ -40,7 +28,13 @@ async function main() {
     },
   });
 
-  console.log("Roles creados:", { adminRole: adminRole.id, tiendaRole: tiendaRole.id, inventarioRole: inventarioRole.id, vendedorRole: vendedorRole.id });
+  const inventarioRole = await prisma.roleModel.upsert({
+    where: { name: "INVENTARIO" },
+    update: {},
+    create: { name: "INVENTARIO", permissions: ["movimientos", "inventario", "solicitudes"] },
+  });
+
+  console.log("Roles creados:", { adminRole: adminRole.id, tiendaRole: tiendaRole.id, inventarioRole: inventarioRole.id });
 
   // Ubicaciones: 4 almacenes + 3 tiendas
   const ubicaciones = [
@@ -133,7 +127,7 @@ async function main() {
 
   console.log("Usuario de inventario creado");
 
-  // Usuario VENDEDOR (Fernando)
+  // Usuario de tienda adicional (Fernando) — rol TIENDA con categorías limitadas
   const vendedorPassword = await bcrypt.hash("vendedor123", 10);
   await prisma.user.upsert({
     where: { email: "fernando@inventario.com" },
@@ -142,12 +136,12 @@ async function main() {
       name: "Fernando Vendedor",
       email: "fernando@inventario.com",
       password: vendedorPassword,
-      roleId: vendedorRole.id,
-      locationId: null,
+      roleId: tiendaRole.id,
+      locationId: ubicacionesCreadas[4].id,
     },
   });
 
-  console.log("Usuario VENDEDOR (Fernando) creado");
+  console.log("Usuario TIENDA (Fernando) creado");
 
   await seedData(prisma);
 
@@ -158,7 +152,7 @@ async function main() {
   console.log("  Tienda 2:    tienda2@inventario.com / tienda123");
   console.log("  Tienda 3:    tienda3@inventario.com / tienda123");
   console.log("  Inventario:  inventario@inventario.com / inventario123");
-  console.log("  Vendedor:    fernando@inventario.com / vendedor123");
+  console.log("  Fernando:    fernando@inventario.com / vendedor123 (rol TIENDA, Tienda 1)");
 }
 
 main()
