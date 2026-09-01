@@ -16,7 +16,14 @@ async function main() {
 
   const tiendaRole = await prisma.roleModel.upsert({
     where: { name: "TIENDA" },
-    update: {},
+    update: {
+      permissions: ["ventas", "inventario", "solicitudes", "devoluciones"],
+      columnConfig: {
+        inventario: ["ID", "Fabricante", "Producto", "Marca", "Modelo", "Año", "Detalles", "Cód. OEM", "Cód. Fábrica", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones"],
+        ventas: ["ID", "Fecha", "Cliente", "Tienda", "Vendedor", "Total", "Estado", "Acciones"],
+        __categorias: ["Frenos", "Motor", "Eléctrico"],
+      },
+    },
     create: {
       name: "TIENDA",
       permissions: ["ventas", "inventario", "solicitudes", "devoluciones"],
@@ -131,7 +138,7 @@ async function main() {
   const vendedorPassword = await bcrypt.hash("vendedor123", 10);
   await prisma.user.upsert({
     where: { email: "fernando@inventario.com" },
-    update: {},
+    update: { roleId: tiendaRole.id, locationId: ubicacionesCreadas[4].id, password: vendedorPassword },
     create: {
       name: "Fernando Vendedor",
       email: "fernando@inventario.com",

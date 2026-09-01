@@ -17,7 +17,8 @@ export default function RoleRoute({ children, allowedRoles, module }: RoleRouteP
   if (user.role === "ADMIN") return <>{children}</>;
 
   // Check module permission if specified
-  if (module && !permissions.includes(module)) return <Navigate to="/panel" />;
+  const hasModule = module && (permissions.includes(module) || (module === "inventario" && permissions.includes("productos")));
+  if (module && !hasModule) return <Navigate to="/panel" />;
 
   return <>{children}</>;
 }

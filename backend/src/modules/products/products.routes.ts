@@ -192,7 +192,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 // POST — Crear producto (solo ADMIN)
 router.post("/", authenticate, authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
-    const { itemCode, manufacturer, name, brand, model, year, detail, oemCode, factoryCode, price1, price2, wholesalePrice, cost, categoryId, image } = req.body;
+    const { itemCode, manufacturer, name, brand, model, year, detail, oemCode, factoryCode, price1, price2, wholesalePrice, cost, categoryId, image, locationId, stock = 0, minStock = 1 } = req.body;
 
     if (!itemCode || !manufacturer || !name || !brand || !model || !year || price1 == null) {
       return res.status(400).json({ message: "Campos obligatorios: itemCode, manufacturer, name, brand, model, year, price1" });
@@ -222,6 +222,10 @@ router.post("/", authenticate, authorize("ADMIN"), async (req: AuthRequest, res:
         image: image || null,
       },
     });
+
+    if (locationId) {
+      await prisma.inventory.create({ data: { productId: product.id, locationId: Number(locationId), stock: Number(stock) || 0, minStock: Number(minStock) || 1 } });
+    }
 
     res.status(201).json(product);
   } catch (error) {
@@ -435,7 +439,9 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       const price2 = parseFloat(row["Precio 2"] || row["precio2"] || row["Precio mayoreo"] || row["price2"] || "0") || 0;
       const wholesalePrice = parseFloat(row["Precio mayor"] || row["precio mayor"] || row["wholesalePrice"] || "0") || 0;
       const cost = parseFloat(row["Costo"] || row["costo"] || row["cost"] || "0") || 0;
-      const calidad = (row["Calidad"] || row["calidad"] || row["quality"] || row["Detalles"] || row["detalles"] || row["detalles"] || "").toString().trim();
+      const calidad = (row["Calidad"] || row["calidad"] || row["quality"] || row["Detalles"] || row["detalles"] || "").toString().trim();
+      const rowStock = parseInt(row["Stock"] || row["stock"] || "0", 10) || 0;
+      const requestedLocationId = Number(req.body.locationId) || 0;
 
       if (!itemCode || !name) {
         errors.push(`Fila ${i + 2}: Código y nombre son obligatorios`);
@@ -470,6 +476,9 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
           if (Object.keys(updateData).length > 0) {
             await prisma.product.update({ where: { id: existing.id }, data: updateData });
           }
+          if (requestedLocationId) {
+            await prisma.inventory.upsert({ where: { productId_locationId: { productId: existing.id, locationId: requestedLocationId } }, update: { stock: rowStock }, create: { productId: existing.id, locationId: requestedLocationId, stock: rowStock, minStock: 1 } });
+          }
           updated.push({ id: existing.id, itemCode, name, action: "actualizado" });
         } else {
           const product = await prisma.product.create({
@@ -492,11 +501,10 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
             },
           });
 
-          for (const loc of await prisma.location.findMany()) {
-            await prisma.inventory.create({
-              data: { productId: product.id, locationId: loc.id, stock: 0, minStock: 1 },
-            });
-          }
+          const locations = requestedLocationId
+            ? await prisma.location.findMany({ where: { id: requestedLocationId } })
+            : await prisma.location.findMany();
+          for (const loc of locations) await prisma.inventory.create({ data: { productId: product.id, locationId: loc.id, stock: requestedLocationId ? rowStock : 0, minStock: 1 } });
 
           imported.push({ id: product.id, itemCode, name, action: "creado" });
         }

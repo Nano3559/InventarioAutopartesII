@@ -75,6 +75,7 @@ export default function ReportsPage() {
   const [filterMonth, setFilterMonth] = useState("");
   const [filterFrom, setFilterFrom] = useState("");
   const [filterTo, setFilterTo] = useState("");
+  const [filterNoInvoice, setFilterNoInvoice] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
 
   const [dailyData, setDailyData] = useState<DailyGroup[]>([]);
@@ -91,6 +92,7 @@ export default function ReportsPage() {
       if (filterLocation) params.set("locationId", filterLocation);
       if (filterFrom) params.set("startDate", filterFrom);
       if (filterTo) params.set("endDate", filterTo);
+      if (filterNoInvoice) params.set("noInvoice", "true");
       const res = await api.get(`/reports/sales?${params.toString()}`);
       setSalesData(res.data.sales);
       setSalesSummary(res.data.summary);
@@ -99,7 +101,7 @@ export default function ReportsPage() {
     } finally {
       setSalesLoading(false);
     }
-  }, [filterLocation, filterFrom, filterTo]);
+  }, [filterLocation, filterFrom, filterTo, filterNoInvoice]);
 
   const fetchDaily = useCallback(async () => {
     try {
@@ -291,6 +293,12 @@ export default function ReportsPage() {
             <span className="text-gray-500 text-sm">→</span>
             <input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)}
               className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+            {activeTab === "ventas" && (
+              <label className="inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-300">
+                <input type="checkbox" checked={filterNoInvoice} onChange={(e) => setFilterNoInvoice(e.target.checked)} className="accent-primary-600" />
+                Sin factura
+              </label>
+            )}
           </>
         ) : (
           <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}

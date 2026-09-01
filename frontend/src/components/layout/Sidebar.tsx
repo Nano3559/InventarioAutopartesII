@@ -37,7 +37,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const links = allLinks.filter((l) => {
     if (!l.module) return true; // Dashboard always visible
     if (isAdmin) return true; // ADMIN sees everything
-    return permissions.includes(l.module);
+    return permissions.includes(l.module) || (l.module === "inventario" && permissions.includes("productos"));
   });
 
   const handleLogout = () => {
