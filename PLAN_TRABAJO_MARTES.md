@@ -23,7 +23,7 @@
 | Ross-5 - Reposición "al día siguiente"       |  Completo        |
 | Extra - Búsqueda por imagen (backend)        |  Completo        |
 | Erika-1 - UI de columnas                     |  Completo        |
-| Erika-2 - PDF notas/cotización               |  Casi completo   |
+| Erika-2 - PDF notas/cotización               |  Completo        |
 | Erika-3 - Reportes flexibles + diario        |  Completo        |
 | Erika-4 - Settings rol/categorías            |  Completo        |
 | Extra - Búsqueda por imagen (frontend/móvil) |  Pendiente       |
@@ -159,7 +159,7 @@
 - [x] PDF con: "RepuestoPro", cliente, tabla de productos, cantidades, precios, subtotal, total, pagos, pie.
 
 ### Datos de entrega en la nota
-- [ ] Mostrar en la nota/PDF los campos de entrega (lugar, para quién, factura) que Ross guarda en BD (Ross-2).
+- [x] Mostrar en la nota/PDF los campos de entrega (lugar, para quién, factura) que Ross guarda en BD (Ross-2).
 
 > **Pendiente:** el frontend captura los campos al crear la venta, pero no los muestra en la nota/PDF.
 
@@ -196,12 +196,12 @@
 ### Backend (Ross) 
 - [x] Mejorar `POST /api/products/search-image`.
 
-### Frontend (Erika) ⬜
-- [ ] Crear UI "Buscar por imagen" (subir foto) que consuma el endpoint.
-- [ ] Mostrar resultados: Producto, Marca, Modelo, Código, Stock, Precio.
+### Frontend (Erika) ✅
+- [x] Crear UI "Buscar por imagen" (subir foto) que consuma el endpoint.
+- [x] Mostrar resultados: Producto, Marca, Modelo, Código, Stock, Precio.
 
-### Móvil (opcional) ⬜
-- [ ] Completar `ScannerScreen.tsx` con `expo-image-picker`/`expo-camera`.
+### Móvil (opcional) ✅
+- [x] Completar `ScannerScreen.tsx` con `expo-image-picker`/`expo-camera`.
 
 ---
 
@@ -214,7 +214,7 @@
 - [x] La venta mayor guarda lugar de entrega, para quién y datos de factura.
 - [x] La BD tiene cantidad considerable de productos, costos, importadores y ventas en varias fechas.
 - [x] La reposición automática se programa para el día siguiente.
-- [ ] (Opcional) Búsqueda por imagen con UI funcionando. *(Backend Completado; falta Frontend.)*
+- [x] (Opcional) Búsqueda por imagen con UI funcionando.
 - [x] TypeScript compila en backend y frontend (`npm run build` sin errores).
 - [ ] No se rompe nada en producción (Vercel + Railway) y las credenciales de seed siguen funcionando. *(Pendiente deploy.)*
 
@@ -222,9 +222,9 @@
 
 ## Pendientes de Erika
 
-- [ ] Mostrar los datos de entrega en la nota/PDF de la venta mayor (PDF).
-- [ ] UI "Buscar por imagen" (subir foto) + mostrar resultados.
-- [ ] `ScannerScreen.tsx` móvil (`expo-image-picker`/`expo-camera`).
+- [x] Mostrar los datos de entrega en la nota/PDF de la venta mayor (PDF).
+- [x] UI "Buscar por imagen" (subir foto) + mostrar resultados.
+- [x] `ScannerScreen.tsx` móvil (`expo-image-picker`/`expo-camera`).
 - [ ] (Con Ross) Deploy final y verificación en producción.
 
 ---
