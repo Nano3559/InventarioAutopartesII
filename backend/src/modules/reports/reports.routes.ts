@@ -11,11 +11,12 @@ router.use(authenticate);
 // GET /sales — Ventas filtradas
 router.get("/sales", async (req: AuthRequest, res: Response) => {
   try {
-    const { brand, model, month, locationId, supplierId, startDate, endDate, page = "1", limit = "50" } = req.query;
+    const { brand, model, month, locationId, supplierId, startDate, endDate, noInvoice, page = "1", limit = "50" } = req.query;
 
     const where: any = {};
 
     if (locationId && typeof locationId === "string") where.locationId = Number(locationId);
+    if (noInvoice === "true") where.customerId = null;
 
     if (startDate || endDate) {
       where.saleDate = {};

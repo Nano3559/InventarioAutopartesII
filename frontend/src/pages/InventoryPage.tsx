@@ -29,6 +29,12 @@ interface Filters {
   years?: string[];
 }
 
+interface Location {
+  id: number;
+  name: string;
+  type: string;
+}
+
 interface FormData {
   itemCode: string; manufacturer: string; name: string; brand: string;
   model: string; year: string; detail: string; oemCode: string;
@@ -63,6 +69,7 @@ export default function InventoryPage() {
   const hasCategoryRestriction = user?.role === "TIENDA" && allowedCategories.length > 0;
   const [products, setProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<Filters>({ brands: [], manufacturers: [], categories: [] });
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -96,6 +103,7 @@ export default function InventoryPage() {
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
+  const [importLocationId, setImportLocationId] = useState("");
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -127,6 +135,7 @@ export default function InventoryPage() {
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
   useEffect(() => { fetchFilters(); }, [fetchFilters]);
+  useEffect(() => { api.get("/locations").then((res) => setLocations(res.data.locations || res.data)).catch(() => {}); }, []);
 
   useEffect(() => { setPage(1); }, [search, brand, manufacturer]);
 
@@ -222,6 +231,7 @@ export default function InventoryPage() {
       setImportResult(null);
       const formData = new FormData();
       formData.append("file", importFile);
+      if (importLocationId) formData.append("locationId", importLocationId);
       const res = await api.post("/products/import", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -567,10 +577,19 @@ export default function InventoryPage() {
             <div className="p-5 space-y-4">
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
                 <p className="text-blue-400 text-xs font-medium mb-1">Columnas aceptadas:</p>
-                <p className="text-gray-400 text-xs">Codigo fabrica, Descripcion, Fabricante, Marca, Modelo, Años, Detalle, Codigo OEM, Codigo fabrica, Categoría, Precio 1, Precio 2, Precio mayor, Costo, Detalles</p>
+       <p className="text-gray-400 text-xs">Codigo fabrica, Descripcion, Fabricante, Marca, Modelo, Años, Detalle, Codigo OEM, Codigo fabrica, Categoría, Precio 1, Precio 2, Precio mayor, Costo, Stock, Detalles</p>
               </div>
-              {!importResult ? (
-                <div className="space-y-3">
+                {!importResult ? (
+                  <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Ubicación de los productos</label>
+                    <select value={importLocationId} onChange={(e) => setImportLocationId(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                      <option value="">Todas las ubicaciones (stock 0)</option>
+                      {locations.map((location) => <option key={location.id} value={location.id}>{location.name} ({location.type})</option>)}
+                    </select>
+                    <p className="text-[11px] text-gray-600 mt-1">Si eliges una ubicación, la columna Stock se asigna allí.</p>
+                  </div>
                   <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-dark-600/50 rounded-xl cursor-pointer hover:border-primary-500/50 transition-colors bg-dark-900/30">
                     <div className="flex flex-col items-center gap-2">
                       {importFile ? (
