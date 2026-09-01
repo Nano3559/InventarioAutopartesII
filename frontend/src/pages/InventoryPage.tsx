@@ -80,7 +80,6 @@ export default function InventoryPage() {
     const merged = ALL_COLUMNS.filter((c) => base.includes(c));
     return merged.length ? merged : ALL_COLUMNS;
   });
-  const isColVisible = (col: string) => visibleColumns.includes(col);
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -245,6 +244,26 @@ export default function InventoryPage() {
 
   const allVisibleCount = hasCategoryRestriction ? visibleProducts.length : total;
 
+  const renderInventoryCell = (p: Product, column: string) => {
+    switch (column) {
+      case "ID": return <td key={column} className="px-4 py-3 text-gray-400">{p.id}</td>;
+      case "Fabricante": return <td key={column} className="px-4 py-3 text-gray-300">{p.manufacturer}</td>;
+      case "Producto": return <td key={column} className="px-4 py-3 text-white font-medium max-w-[200px] truncate">{p.name}</td>;
+      case "Marca": return <td key={column} className="px-4 py-3 text-gray-300">{p.brand}</td>;
+      case "Modelo": return <td key={column} className="px-4 py-3 text-gray-300">{p.model}</td>;
+      case "Año": return <td key={column} className="px-4 py-3 text-gray-400">{p.year}</td>;
+      case "Detalles": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.detalles || p.detail || "—"}</td>;
+      case "Cód. OEM": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>;
+      case "Cód. Fábrica": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>;
+      case "Imagen": return <td key={column} className="px-4 py-3"><div className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden"><ProductImage image={p.image} category={p.category} name={p.name} /></div></td>;
+      case "Precio 1": return <td key={column} className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>;
+      case "Precio 2": return <td key={column} className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>;
+      case "Stock": return <td key={column} className="px-4 py-3 text-center"><span className={`px-2 py-0.5 text-xs font-medium rounded-full ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{p.stock}</span></td>;
+      case "Acciones": return <td key={column} className="px-4 py-3"><div className="flex items-center justify-center gap-1"><button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all" title="Ver detalle"><Eye size={16} /></button>{canEdit && <><button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar"><Pencil size={16} /></button><button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar"><Trash2 size={16} /></button></>}<button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all" title="Ver stock por ubicación"><Package size={16} /></button></div></td>;
+      default: return null;
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -352,53 +371,7 @@ export default function InventoryPage() {
                 <tbody>
                   {visibleProducts.map((p) => (
                     <tr key={p.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30 transition-colors">
-                      {isColVisible("ID") && <td className="px-4 py-3 text-gray-400">{p.id}</td>}
-                      {isColVisible("Fabricante") && <td className="px-4 py-3 text-gray-300">{p.manufacturer}</td>}
-                      {isColVisible("Producto") && <td className="px-4 py-3 text-white font-medium max-w-[200px] truncate">{p.name}</td>}
-                      {isColVisible("Marca") && <td className="px-4 py-3 text-gray-300">{p.brand}</td>}
-                      {isColVisible("Modelo") && <td className="px-4 py-3 text-gray-300">{p.model}</td>}
-                      {isColVisible("Año") && <td className="px-4 py-3 text-gray-400">{p.year}</td>}
-                      {isColVisible("Detalles") && <td className="px-4 py-3 text-gray-400 text-xs">{p.detalles || p.detail || "—"}</td>}
-                      {isColVisible("Cód. OEM") && <td className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>}
-                      {isColVisible("Cód. Fábrica") && <td className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>}
-                      {isColVisible("Imagen") && (
-                        <td className="px-4 py-3">
-                          <div className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden">
-                            <ProductImage image={p.image} category={p.category} name={p.name} />
-                          </div>
-                        </td>
-                      )}
-                      {isColVisible("Precio 1") && <td className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>}
-                      {isColVisible("Precio 2") && <td className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>}
-                      {isColVisible("Stock") && (
-                        <td className="px-4 py-3 text-center">
-                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>
-                            {p.stock}
-                          </span>
-                        </td>
-                      )}
-                      {isColVisible("Acciones") && (
-                        <td className="px-4 py-3">
-                          <div className="flex items-center justify-center gap-1">
-                            <button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all" title="Ver detalle">
-                              <Eye size={16} />
-                            </button>
-                            {canEdit && (
-                              <>
-                                <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar">
-                                  <Pencil size={16} />
-                                </button>
-                                <button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar">
-                                  <Trash2 size={16} />
-                                </button>
-                              </>
-                            )}
-                            <button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all" title="Ver stock por ubicación">
-                              <Package size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      )}
+                      {visibleColumns.map((column) => renderInventoryCell(p, column))}
                     </tr>
                   ))}
                 </tbody>

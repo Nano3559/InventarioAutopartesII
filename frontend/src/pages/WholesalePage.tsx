@@ -16,6 +16,7 @@ interface WholesaleItem {
 
 interface WholesaleSale {
   id: number; saleDate: string; total: number; type: string;
+  paraQuien?: string | null; lugarEntrega?: string | null; datosFactura?: string | null; formaPago?: string | null;
   customer: { name: string; nit: string | null } | null;
   location: { name: string } | null;
   user: { name: string } | null;
@@ -177,7 +178,10 @@ export default function WholesalePage() {
       <style>body{font-family:Arial,sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}th{background:#f0f0f0}h1{font-size:18px}.total{font-size:16px;font-weight:bold;text-align:right;margin-top:10px}</style></head><body>
       <h1>RepuestoPro - Nota de Venta Mayorista</h1>
       <p><b>Fecha:</b> ${new Date(sale.saleDate).toLocaleDateString("es-BO")} | <b>ID:</b> #${sale.id}</p>
-      <p><b>Cliente:</b> ${sale.customer?.name || "N/A"} | <b>Lugar:</b> ${sale.location?.name || "N/A"}</p>
+       <p><b>Cliente:</b> ${sale.customer?.name || "N/A"} | <b>Lugar:</b> ${sale.lugarEntrega || sale.location?.name || "N/A"}</p>
+       ${sale.paraQuien ? `<p><b>Para quién:</b> ${sale.paraQuien}</p>` : ""}
+       ${sale.datosFactura ? `<p><b>Factura/NIT:</b> ${sale.datosFactura}</p>` : ""}
+       ${sale.formaPago ? `<p><b>Forma de pago:</b> ${sale.formaPago}</p>` : ""}
       <p><b>Vendedor:</b> ${sale.user?.name || "N/A"}</p>
       <table><thead><tr><th>Código</th><th>Producto</th><th>Marca</th><th>Modelo</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody>
       ${sale.items.map((i) => `<tr><td>${i.product.itemCode}</td><td>${i.product.name}</td><td>${i.product.brand}</td><td>${i.product.model}</td><td>${i.quantity}</td><td>${formatBs(Number(i.unitPrice))}</td><td>${formatBs(Number(i.subtotal))}</td></tr>`).join("")}
@@ -430,11 +434,21 @@ export default function WholesalePage() {
                 <X size={18} />
               </button>
             </div>
-            <div className="p-6 space-y-3">
-              <div className="flex justify-between text-sm"><span className="text-gray-400">Cliente:</span><span className="text-white">{clientName}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-gray-400">Entrega:</span><span className="text-white">{deliveryPlace}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-gray-400">Pago:</span><span className="text-white">{paymentMethod}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-gray-400">Productos:</span><span className="text-white">{items.length}</span></div>
+              <div className="p-6 space-y-3">
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Cliente:</span><span className="text-white">{clientName}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Para quién:</span><span className="text-white">{pedido || "No especificado"}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Entrega:</span><span className="text-white">{deliveryPlace}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Factura/NIT:</span><span className="text-white">{facturaNIT || "No especificado"}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Pago:</span><span className="text-white">{paymentMethod}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Productos:</span><span className="text-white">{items.length}</span></div>
+                <div className="border-t border-dark-700/50 pt-3 space-y-1">
+                  {items.map((item) => (
+                    <div key={item.productId} className="flex justify-between gap-3 text-xs">
+                      <span className="text-gray-300 truncate">{item.name} x{item.quantity}</span>
+                      <span className="text-gray-400 shrink-0">{formatBs(item.subtotal)}</span>
+                    </div>
+                  ))}
+                </div>
               <div className="border-t border-dark-700/50 pt-3 flex justify-between">
                 <span className="text-white font-medium">Total:</span>
                 <span className="text-amber-400 text-lg font-bold">{formatBs(total)}</span>

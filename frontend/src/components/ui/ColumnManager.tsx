@@ -20,13 +20,25 @@ export default function ColumnManager({ module, columns, onVisibleChange }: Colu
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (open) {
+    if (!open) return;
+    let cancelled = false;
+    const loadPreferences = async () => {
       const roleCols = columnConfig?.[module];
-      const stored = getStored(module);
-      const storedList = stored && stored.length ? stored : roleCols && roleCols.length ? roleCols : columns;
-      const merged = columns.filter((c) => storedList.includes(c));
-      setVisible(merged.length ? merged : columns);
-    }
+      const allowed = roleCols && roleCols.length ? columns.filter((c) => roleCols.includes(c)) : columns;
+      let stored = getStored(module);
+      try {
+        const response = await api.get("/users/me/preferences");
+        const remote = response.data.columnPrefs?.[module];
+        if (Array.isArray(remote) && remote.length) stored = remote;
+      } catch {
+        // La preferencia local permite continuar si el endpoint no está disponible.
+      }
+      if (cancelled) return;
+      const storedAllowed = stored?.filter((c) => allowed.includes(c)) || [];
+      setVisible(storedAllowed.length ? storedAllowed : allowed);
+    };
+    loadPreferences();
+    return () => { cancelled = true; };
   }, [open, module, columnConfig, columns]);
 
   const move = (idx: number, dir: -1 | 1) => {
@@ -59,10 +71,11 @@ export default function ColumnManager({ module, columns, onVisibleChange }: Colu
     try {
       localStorage.setItem(`columns_${module}`, JSON.stringify(visible));
       onVisibleChange(visible);
+      const currentPrefs = JSON.parse(localStorage.getItem("columnPrefs") || "{}");
+      currentPrefs[module] = visible;
+      localStorage.setItem("columnPrefs", JSON.stringify(currentPrefs));
       try {
-        await api.put("/users/me/preferences", {
-          columnPrefs: { ...JSON.parse(localStorage.getItem("columnPrefs") || "{}"), [module]: visible },
-        });
+        await api.put("/users/me/preferences", { columnPrefs: currentPrefs });
       } catch {
         // Sin token/permission aún guardamos en localStorage
       }

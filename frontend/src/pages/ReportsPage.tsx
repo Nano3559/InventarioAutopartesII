@@ -36,6 +36,7 @@ interface DailyStore {
   locationName: string;
   total: number;
   saleCount: number;
+  returns: number;
   products: { name: string; quantity: number; subtotal: number }[];
 }
 
@@ -106,17 +107,20 @@ export default function ReportsPage() {
       const params = new URLSearchParams({ limit: "1000" });
       if (filterFrom) params.set("startDate", filterFrom);
       if (filterTo) params.set("endDate", filterTo);
-      const res = await api.get(`/sales?${params.toString()}`);
-      groupDaily(res.data.sales);
+      const [salesRes, returnsRes] = await Promise.all([
+        api.get(`/sales?${params.toString()}`),
+        api.get("/returns?limit=100"),
+      ]);
+      groupDaily(salesRes.data.sales, returnsRes.data.returns || []);
     } catch {
       toast.error("Error al cargar reporte diario");
       setDailyData([]);
     } finally {
       setDailyLoading(false);
     }
-  }, [filterFrom, filterTo]);
+  }, [filterFrom, filterTo, locations]);
 
-  const groupDaily = (sales: any[]) => {
+  const groupDaily = (sales: any[], returns: any[]) => {
     const byDate: Record<string, DailyGroup> = {};
     for (const s of sales) {
       const day = s.saleDate ? new Date(s.saleDate).toDateString() : "Sin fecha";
@@ -127,7 +131,7 @@ export default function ReportsPage() {
       const locName = s.location?.name || "Sin tienda";
       let store = group.stores.find((st) => st.locationName === locName);
       if (!store) {
-        store = { locationName: locName, total: 0, saleCount: 0, products: [] };
+        store = { locationName: locName, total: 0, saleCount: 0, returns: 0, products: [] };
         group.stores.push(store);
       }
       store.total += Number(s.total) || 0;
@@ -142,6 +146,18 @@ export default function ReportsPage() {
         p.quantity += item.quantity || 0;
         p.subtotal += Number(item.subtotal) || 0;
       }
+    }
+    for (const item of returns) {
+      const day = item.date ? new Date(item.date).toDateString() : "Sin fecha";
+      if (!byDate[day]) byDate[day] = { date: day, stores: [], total: 0, saleCount: 0 };
+      const group = byDate[day];
+      const locName = locations.find((location) => location.id === item.sale?.locationId)?.name || "Sin tienda";
+      let store = group.stores.find((st) => st.locationName === locName);
+      if (!store) {
+        store = { locationName: locName, total: 0, saleCount: 0, returns: 0, products: [] };
+        group.stores.push(store);
+      }
+      store.returns += Number(item.amount) || 0;
     }
     const sorted = Object.values(byDate).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     setDailyData(sorted);
@@ -346,7 +362,7 @@ export default function ReportsPage() {
               <button onClick={fetchDaily} className="p-1.5 text-gray-400 hover:text-white rounded-lg transition-all"><RefreshCw size={14} /></button>
               <button onClick={() => exportCSV(dailyData.flatMap((g) => g.stores.map((st) => ({
                 Fecha: formatDate(g.date), Tienda: st.locationName,
-                "N° Ventas": st.saleCount, Total: st.total,
+                "N° Ventas": st.saleCount, Total: st.total, Devoluciones: st.returns,
               }))), "reporte_diario")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
                 <Download size={14} /> Exportar
@@ -372,6 +388,7 @@ export default function ReportsPage() {
                           <th className="text-left px-4 py-2 text-gray-400 font-medium">Tienda</th>
                           <th className="text-center px-4 py-2 text-gray-400 font-medium">N° Ventas</th>
                           <th className="text-right px-4 py-2 text-gray-400 font-medium">Total</th>
+                          <th className="text-right px-4 py-2 text-gray-400 font-medium">Devoluciones</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -380,6 +397,7 @@ export default function ReportsPage() {
                             <td className="px-4 py-2 text-white font-medium">{st.locationName}</td>
                             <td className="px-4 py-2 text-gray-300 text-center">{st.saleCount}</td>
                             <td className="px-4 py-2 text-amber-400 font-medium text-right">{formatBs(st.total)}</td>
+                            <td className="px-4 py-2 text-red-400 text-right">{formatBs(st.returns)}</td>
                           </tr>
                         ))}
                       </tbody>
