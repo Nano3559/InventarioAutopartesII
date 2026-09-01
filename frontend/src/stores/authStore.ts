@@ -19,6 +19,14 @@ const getCategoriesFromConfig = (cc: Record<string, string[]> | Record<string, u
   return Array.isArray(cats) ? (cats as string[]) : [];
 };
 
+const normalizePermissions = (permissions: string[]): string[] =>
+  permissions.map((permission) => permission === "productos" ? "inventario" : permission);
+
+const getAllowedCategories = (role: string, config: Record<string, unknown>): string[] => {
+  const configured = getCategoriesFromConfig(config);
+  return configured.length || role !== "TIENDA" ? configured : ["Frenos", "Motor", "Eléctrico"];
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: localStorage.getItem("token"),
@@ -35,7 +43,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await api.get("/permissions/permissions/me");
       const perms = res.data.permissions || [];
       const cc = res.data.columnConfig || {};
-      set({ permissions: perms, columnConfig: cc, allowedCategories: getCategoriesFromConfig(cc) });
+      set({ permissions: normalizePermissions(perms), columnConfig: cc, allowedCategories: getAllowedCategories(user.role, cc) });
     } catch {
       // Si falla, ADMIN tiene todos los permisos
       if (user.role === "ADMIN") {
@@ -66,7 +74,7 @@ export const useAuthStore = create<AuthState>((set) => ({
           .get("/permissions/permissions/me")
           .then((res) => {
             const cc = res.data.columnConfig || {};
-            set({ permissions: res.data.permissions || [], columnConfig: cc, allowedCategories: getCategoriesFromConfig(cc) });
+            set({ permissions: normalizePermissions(res.data.permissions || []), columnConfig: cc, allowedCategories: getAllowedCategories(user.role, cc) });
           })
           .catch(() => {
             if (user.role === "ADMIN") {
