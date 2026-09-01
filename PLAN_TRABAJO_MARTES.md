@@ -1,7 +1,6 @@
 # Plan de Trabajo — RepuestoPro
 
 > Proyecto: Sistema de Inventario y Ventas ("RepuestoPro").
-> **Nota de decisión (roles):** el filtrado por categorías se aplica al rol **TIENDA** (el rol que vende), respetando los 3 roles originales del enunciado (ADMIN, TIENDA, INVENTARIO). Se eliminó el rol VENDEDOR que se había creado como extra y **Fernando** quedó como usuario de prueba con rol **TIENDA** en la Tienda 1.
 
 ## Distribución de tareas
 
@@ -196,11 +195,11 @@
 ### Backend (Ross) 
 - [x] Mejorar `POST /api/products/search-image`.
 
-### Frontend (Erika) ✅
+### Frontend (Erika) 
 - [x] Crear UI "Buscar por imagen" (subir foto) que consuma el endpoint.
 - [x] Mostrar resultados: Producto, Marca, Modelo, Código, Stock, Precio.
 
-### Móvil (opcional) ✅
+### Móvil (opcional) 
 - [x] Completar `ScannerScreen.tsx` con `expo-image-picker`/`expo-camera`.
 
 ---
@@ -225,6 +224,6 @@
 - [x] Mostrar los datos de entrega en la nota/PDF de la venta mayor (PDF).
 - [x] UI "Buscar por imagen" (subir foto) + mostrar resultados.
 - [x] `ScannerScreen.tsx` móvil (`expo-image-picker`/`expo-camera`).
-- [ ] (Con Ross) Deploy final y verificación en producción.
+- [x] (Con Ross) Deploy final y verificación en producción.
 
 ---
