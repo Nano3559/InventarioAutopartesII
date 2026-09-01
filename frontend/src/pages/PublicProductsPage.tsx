@@ -11,6 +11,7 @@ import {
   Truck,
   Shield,
   Phone,
+  Image as ImageIcon,
 } from "lucide-react";
 import ProductImage from "../components/public/ProductImage";
 import api from "../services/api";
@@ -33,6 +34,18 @@ interface Filters {
   brands: string[];
   categories: string[];
   qualities: string[];
+}
+
+interface ImageSearchResult {
+  id: number;
+  itemCode: string;
+  name: string;
+  brand: string;
+  model: string;
+  year: string;
+  image: string | null;
+  price1: number;
+  totalStock: number;
 }
 
 const bannerSlides = [
@@ -75,8 +88,30 @@ export default function PublicProductsPage() {
   const [year, setYear] = useState("");
   const [category, setCategory] = useState("");
   const [detalles, setDetalles] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageResults, setImageResults] = useState<ImageSearchResult[]>([]);
+  const [imageSearching, setImageSearching] = useState(false);
 
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const searchByImage = async () => {
+    if (!imageFile) return;
+    const data = new FormData();
+    data.append("image", imageFile);
+    try {
+      setImageSearching(true);
+      const res = await api.post("/products/search-image", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setImageResults(res.data.products || []);
+      if (!(res.data.products || []).length) alert("No encontramos productos relacionados con la imagen.");
+    } catch {
+      setImageResults([]);
+      alert("No se pudo buscar la imagen. Intenta nuevamente.");
+    } finally {
+      setImageSearching(false);
+    }
+  };
 
   useEffect(() => {
     api.get("/public/filters").then((res) => setFilters(res.data));
@@ -288,7 +323,49 @@ export default function PublicProductsPage() {
               </button>
             )}
           </div>
+          <div className="max-w-2xl mx-auto mt-3 flex flex-wrap items-center justify-center gap-2">
+            <label className="inline-flex items-center gap-2 px-3 py-2.5 bg-dark-800/50 border border-white/[0.06] rounded-xl text-gray-300 text-sm cursor-pointer hover:border-primary-500/50 transition-colors">
+              <ImageIcon size={16} className="text-primary-400" />
+              {imageFile ? imageFile.name : "Buscar por imagen"}
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
+            </label>
+            {imageFile && (
+              <>
+                <button onClick={searchByImage} disabled={imageSearching}
+                  className="px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium disabled:opacity-50">
+                  {imageSearching ? "Buscando..." : "Buscar"}
+                </button>
+                <button onClick={() => { setImageFile(null); setImageResults([]); }} className="p-2.5 text-gray-400 hover:text-white" title="Limpiar imagen">
+                  <X size={16} />
+                </button>
+              </>
+            )}
+          </div>
         </div>
+
+        {imageResults.length > 0 && (
+          <section className="mb-8 bg-dark-800/30 border border-primary-500/20 rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-white font-semibold">Resultados por imagen</h2>
+              <span className="text-xs text-gray-500">{imageResults.length} coincidencias</span>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {imageResults.map((product) => (
+                <Link key={product.id} to={`/productos/${product.id}`} className="bg-dark-900/40 border border-white/[0.06] rounded-xl overflow-hidden hover:border-primary-500/40 transition-colors">
+                  <div className="aspect-square flex items-center justify-center p-4 bg-dark-900/50">
+                    <ProductImage image={product.image} category={null} name={product.name} />
+                  </div>
+                  <div className="p-3 space-y-1">
+                    <p className="text-white text-sm font-medium line-clamp-2">{product.name}</p>
+                    <p className="text-xs text-gray-500">{product.brand} · {product.model}</p>
+                    <p className="text-xs text-gray-400">Código: {product.itemCode}</p>
+                    <div className="flex justify-between text-xs pt-1"><span className="text-amber-400">Bs. {Number(product.price1).toFixed(2)}</span><span className="text-green-400">Stock: {product.totalStock}</span></div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Filters */}
         <div className="bg-dark-800/30 border border-white/[0.06] rounded-2xl p-4 mb-8">

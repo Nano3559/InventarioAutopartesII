@@ -122,7 +122,6 @@ export default function SalesPage() {
       return CART_COLUMNS;
     }
   });
-  const isCartCol = (col: string) => cartColumns.includes(col);
 
   // --- Confirmation ---
   const [showConfirmed, setShowConfirmed] = useState(false);
@@ -130,6 +129,15 @@ export default function SalesPage() {
 
   const formatBs = (v: number) =>
     `Bs. ${v.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const renderCartCell = (c: CartItem, column: string) => {
+    if (column === "Producto") return <td key={column} className="px-5 py-3"><p className="text-white font-medium text-sm">{c.name}</p><p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p></td>;
+    if (column === "Precio") return <td key={column} className="px-4 py-3 text-right text-gray-300">{formatBs(c.unitPrice)}</td>;
+    if (column === "Cantidad") return <td key={column} className="px-4 py-3"><div className="flex items-center justify-center gap-1.5"><button onClick={() => updateQuantity(c.productId, c.quantity - 1)} className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400"><Minus size={14} /></button><span className="w-10 text-center text-white text-sm font-medium">{c.quantity}</span><button onClick={() => updateQuantity(c.productId, c.quantity + 1)} className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400"><Plus size={14} /></button></div><p className="text-center text-xs text-gray-600 mt-0.5">disp: {c.availableStock}</p></td>;
+    if (column === "Subtotal") return <td key={column} className="px-4 py-3 text-right text-green-400 font-medium">{formatBs(c.unitPrice * c.quantity)}</td>;
+    if (column === "Eliminar") return <td key={column} className="px-5 py-3 text-center"><button onClick={() => removeItem(c.productId)} className="p-1.5 rounded-lg text-gray-500 hover:text-red-400"><Trash2 size={14} /></button></td>;
+    return null;
+  };
 
   // ==================== SEARCH ====================
   const doSearch = useCallback(async (q: string) => {
@@ -466,42 +474,7 @@ export default function SalesPage() {
                     <tbody>
                       {cart.map((c) => (
                         <tr key={c.productId} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
-                          {isCartCol("Producto") && (
-                            <td className="px-5 py-3">
-                              <p className="text-white font-medium text-sm">{c.name}</p>
-                              <p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p>
-                            </td>
-                          )}
-                          {isCartCol("Precio") && <td className="px-4 py-3 text-right text-gray-300">{formatBs(c.unitPrice)}</td>}
-                          {isCartCol("Cantidad") && (
-                            <td className="px-4 py-3">
-                              <div className="flex items-center justify-center gap-1.5">
-                                <button onClick={() => updateQuantity(c.productId, c.quantity - 1)}
-                                  className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white hover:border-primary-500/50 transition-all">
-                                  <Minus size={14} />
-                                </button>
-                                <span className="w-10 text-center text-white text-sm font-medium">{c.quantity}</span>
-                                <button onClick={() => updateQuantity(c.productId, c.quantity + 1)}
-                                  className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white hover:border-primary-500/50 transition-all">
-                                  <Plus size={14} />
-                                </button>
-                              </div>
-                              <p className="text-center text-xs text-gray-600 mt-0.5">disp: {c.availableStock}</p>
-                            </td>
-                          )}
-                          {isCartCol("Subtotal") && (
-                            <td className="px-4 py-3 text-right text-green-400 font-medium">
-                              {formatBs(c.unitPrice * c.quantity)}
-                            </td>
-                          )}
-                          {isCartCol("Eliminar") && (
-                            <td className="px-5 py-3 text-center">
-                              <button onClick={() => removeItem(c.productId)}
-                                className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all">
-                                <Trash2 size={14} />
-                              </button>
-                            </td>
-                          )}
+                          {cartColumns.map((column) => renderCartCell(c, column))}
                         </tr>
                       ))}
                     </tbody>

@@ -195,11 +195,11 @@
 ### Backend (Ross) 
 - [x] Mejorar `POST /api/products/search-image`.
 
-### Frontend (Erika)
+### Frontend (Erika) 
 - [x] Crear UI "Buscar por imagen" (subir foto) que consuma el endpoint.
 - [x] Mostrar resultados: Producto, Marca, Modelo, Código, Stock, Precio.
 
-### Móvil (opcional)
+### Móvil (opcional) 
 - [x] Completar `ScannerScreen.tsx` con `expo-image-picker`/`expo-camera`.
 
 ---
