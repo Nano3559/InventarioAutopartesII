@@ -105,6 +105,12 @@ router.get("/sale/:saleId", async (req: AuthRequest, res: Response) => {
       },
     });
     if (!sale) return res.status(404).json({ message: "Venta no encontrada" });
+
+    const lookupUser = req.user!;
+    if (lookupUser.role === "TIENDA" && lookupUser.locationId && sale.locationId !== lookupUser.locationId) {
+      return res.status(403).json({ message: "No tiene acceso a esta venta" });
+    }
+
     res.json(sale);
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
@@ -134,10 +140,36 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     });
     if (!sale) return res.status(404).json({ message: "Venta no encontrada" });
 
+    const returnUser = req.user!;
+    if (returnUser.role === "TIENDA" && returnUser.locationId && sale.locationId !== returnUser.locationId) {
+      return res.status(403).json({ message: "No puede devolver productos de una venta de otra tienda" });
+    }
+
     const saleItem = sale.items.find((i) => i.productId === productId);
     if (!saleItem) return res.status(400).json({ message: "El producto no pertenece a esta venta" });
     if (quantity > saleItem.quantity) {
       return res.status(400).json({ message: `La cantidad a devolver (${quantity}) excede la vendida (${saleItem.quantity})` });
+    }
+
+    // Impedir devolver la misma cantidad dos veces (suma devoluciones previas)
+    const previousReturns = await prisma.return.findMany({
+      where: { saleId, productId },
+      select: { quantity: true },
+    });
+    const alreadyReturned = previousReturns.reduce((sum, r) => sum + r.quantity, 0);
+    if (alreadyReturned + quantity > saleItem.quantity) {
+      const remaining = saleItem.quantity - alreadyReturned;
+      return res.status(400).json({
+        message: `Ya se devolvieron ${alreadyReturned} de ${saleItem.quantity} unidades. Máximo adicional: ${Math.max(remaining, 0)}.`,
+      });
+    }
+
+    // El monto debe coincidir con el precio vendido × cantidad
+    const expectedAmount = Number(saleItem.unitPrice) * quantity;
+    if (Math.abs(amount - expectedAmount) > 0.01) {
+      return res.status(400).json({
+        message: `El monto devuelto (Bs. ${amount}) no coincide con el precio vendido de la cantidad a devolver (Bs. ${expectedAmount.toFixed(2)})`,
+      });
     }
 
     const returned = await prisma.$transaction(async (tx) => {

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { AuthRequest } from "../../shared/types";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -79,7 +80,7 @@ router.get("/product/:productId", async (req: Request, res: Response) => {
 });
 
 // PUT /:id — Actualizar stock manualmente (solo ADMIN)
-router.put("/:id", authorize("ADMIN"), async (req: Request, res: Response) => {
+router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     const { stock, minStock } = req.body;
@@ -89,13 +90,37 @@ router.put("/:id", authorize("ADMIN"), async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Registro de inventario no encontrado" });
     }
 
+    const data: any = {};
+    if (stock != null) {
+      const s = Number(stock);
+      if (!Number.isInteger(s) || s < 0) {
+        return res.status(400).json({ message: "El stock debe ser un entero mayor o igual a 0" });
+      }
+      data.stock = s;
+    }
+    if (minStock != null) {
+      const m = Number(minStock);
+      if (!Number.isInteger(m) || m < 0) {
+        return res.status(400).json({ message: "El stock mínimo debe ser un entero mayor o igual a 0" });
+      }
+      data.minStock = m;
+    }
+
     const updated = await prisma.inventory.update({
       where: { id },
-      data: {
-        ...(stock != null && { stock }),
-        ...(minStock != null && { minStock }),
-      },
+      data,
       include: { product: true, location: true },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        userId: req.user!.userId,
+        action: "UPDATE_INVENTORY",
+        targetType: "INVENTORY",
+        targetId: id,
+        oldValue: { stock: existing.stock, minStock: existing.minStock },
+        newValue: { stock: updated.stock, minStock: updated.minStock },
+      },
     });
 
     res.json(updated);

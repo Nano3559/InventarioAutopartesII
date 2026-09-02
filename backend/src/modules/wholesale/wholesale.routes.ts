@@ -2,9 +2,10 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import * as XLSX from "xlsx";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8 } from "../../utils/replenish";
+import { validateAndMergeItems } from "../../utils/saleItems";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -26,7 +27,19 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     }
 
     const user = req.user!;
-    let userLocationId = user.locationId || locationId ? Number(locationId) : null;
+    let userLocationId: number | null = null;
+
+    if (user.role === "TIENDA") {
+      userLocationId = user.locationId ?? null;
+      if (!userLocationId) {
+        return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
+      }
+      if (locationId && Number(locationId) !== userLocationId) {
+        return res.status(403).json({ message: "No puede vender productos de otra tienda" });
+      }
+    } else {
+      userLocationId = locationId ? Number(locationId) : user.locationId || null;
+    }
 
     if (!userLocationId) {
       const tienda = await prisma.location.findFirst({ where: { type: "TIENDA" } });
@@ -42,6 +55,9 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         return res.status(400).json({ message: `Método de pago inválido: ${p.method}` });
       }
     }
+
+    // Validar, deduplicar y resolver precio unitario de los ítems
+    const validItems = validateAndMergeItems(items);
 
     // Datos de entrega: usar los enviados explícitamente o inferir del payload
     const entregaParaQuien = paraQuien || clienteName || null;
@@ -70,7 +86,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     const result = await prisma.$transaction(async (tx) => {
       const stockUpdates: { productId: number; quantity: number }[] = [];
 
-      for (const item of items) {
+      for (const item of validItems) {
         const product = await tx.product.findUnique({ where: { id: item.productId } });
         if (!product) {
           throw new Error(`Producto con ID ${item.productId} no encontrado`);
@@ -89,7 +105,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       }
 
       let totalSale = 0;
-      const saleItemsData = items.map((item: any) => {
+      const saleItemsData = validItems.map((item: any) => {
         const unitPrice = item.unitPrice || item.wholesalePrice || 0;
         const subtotal = item.quantity * unitPrice;
         totalSale += subtotal;
@@ -189,7 +205,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 });
 
 // POST /import — Importar productos desde Excel
-router.post("/import", upload.single("file"), async (req: AuthRequest, res: Response) => {
+router.post("/import", authorize("ADMIN"), upload.single("file"), async (req: AuthRequest, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "Debe subir un archivo Excel" });
@@ -281,8 +297,9 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       }
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const pg = Math.max(1, Number(page) || 1);
+    const take = Math.min(500, Math.max(1, Number(limit) || 20));
+    const skip = (pg - 1) * take;
 
     const [sales, total] = await Promise.all([
       prisma.sale.findMany({
@@ -308,7 +325,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         items: s.items.map((i) => ({ ...i, unitPrice: Number(i.unitPrice), subtotal: Number(i.subtotal) })),
         payments: s.payments.map((p) => ({ ...p, amount: Number(p.amount) })),
       })),
-      pagination: { total, page: Number(page), limit: take, pages: Math.ceil(total / take) },
+      pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
     console.error("Error al listar ventas mayoristas:", error);

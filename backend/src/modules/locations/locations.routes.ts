@@ -13,7 +13,7 @@ router.get("/", async (_req: Request, res: Response) => {
     const locations = await prisma.location.findMany({
       orderBy: { name: "asc" },
     });
-    res.json(locations);
+    res.json({ locations });
   } catch (error) {
     console.error("Error al listar ubicaciones:", error);
     res.status(500).json({ message: "Error interno del servidor" });

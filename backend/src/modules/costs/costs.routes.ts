@@ -1,18 +1,24 @@
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveDecimal, parsePositiveInt } from "../../shared/middlewares/validate";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 
 const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
 
+const uploadsDir = path.join(__dirname, "../../../uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, path.join(__dirname, "../../../uploads")),
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (_req, file, cb) => {
     const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     cb(null, `${unique}${path.extname(file.originalname)}`);
@@ -25,8 +31,27 @@ const upload = multer({
   fileFilter: (_req, file, cb) => {
     const allowed = [".pdf", ".jpg", ".jpeg", ".png"];
     const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, allowed.includes(ext));
+    const allowedMimes = ["application/pdf", "image/jpeg", "image/png"];
+    const mimeOk = allowedMimes.includes(file.mimetype);
+    if (allowed.includes(ext) && mimeOk) {
+      cb(null, true);
+    } else {
+      cb(new Error("Solo se permiten archivos PDF, JPG o PNG"));
+    }
   },
+});
+
+// GET /invoice/:filename — Visualizar/descargar factura subida
+router.get("/invoice/:filename", (req: AuthRequest, res: Response) => {
+  const filename = path.basename(String(req.params.filename));
+  if (!filename || filename !== req.params.filename) {
+    return res.status(400).json({ message: "Nombre de archivo inválido" });
+  }
+  const filePath = path.join(uploadsDir, filename);
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "Factura no encontrada" });
+  }
+  res.sendFile(filePath);
 });
 
 // GET / — Listar costos con filtros
@@ -89,7 +114,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 });
 
 // POST — Registrar costo con factura
-router.post("/", upload.single("invoice"), async (req: AuthRequest, res: Response) => {
+router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthRequest, res: Response) => {
   try {
     const productId = parsePositiveInt(req.body.productId, "Producto");
     const supplierId = parsePositiveInt(req.body.supplierId, "Proveedor");
@@ -117,6 +142,21 @@ router.post("/", upload.single("invoice"), async (req: AuthRequest, res: Respons
       },
     });
 
+    await prisma.auditLog.create({
+      data: {
+        userId: req.user!.userId,
+        action: "CREATE_COST",
+        targetType: "COST",
+        targetId: cost.id,
+        newValue: {
+          productId,
+          supplierId,
+          costPrice,
+          invoiceUrl: cost.invoiceUrl,
+        },
+      },
+    });
+
     res.status(201).json({
       id: cost.id,
       productName: cost.product.name,
@@ -141,7 +181,7 @@ router.post("/", upload.single("invoice"), async (req: AuthRequest, res: Respons
 });
 
 // PUT /:id — Editar costo
-router.put("/:id", upload.single("invoice"), async (req: AuthRequest, res: Response) => {
+router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: AuthRequest, res: Response) => {
   try {
     const id = parseId(req.params.id);
     const existing = await prisma.cost.findUnique({ where: { id } });
@@ -173,12 +213,39 @@ router.put("/:id", upload.single("invoice"), async (req: AuthRequest, res: Respo
     }
     if (req.file) data.invoiceUrl = req.file.filename;
 
+    const previous = {
+      productId: existing.productId,
+      supplierId: existing.supplierId,
+      costPrice: Number(existing.costPrice),
+      exchangeRate: existing.exchangeRate ? Number(existing.exchangeRate) : null,
+      percentage: existing.percentage ? Number(existing.percentage) : null,
+      invoiceUrl: existing.invoiceUrl,
+    };
+
     const cost = await prisma.cost.update({
       where: { id },
       data,
       include: {
         product: { select: { name: true, itemCode: true } },
         supplier: { select: { name: true } },
+      },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        userId: req.user!.userId,
+        action: "UPDATE_COST",
+        targetType: "COST",
+        targetId: id,
+        oldValue: previous,
+        newValue: {
+          productId: cost.productId,
+          supplierId: cost.supplierId,
+          costPrice: Number(cost.costPrice),
+          exchangeRate: cost.exchangeRate ? Number(cost.exchangeRate) : null,
+          percentage: cost.percentage ? Number(cost.percentage) : null,
+          invoiceUrl: cost.invoiceUrl,
+        },
       },
     });
 
@@ -206,12 +273,21 @@ router.put("/:id", upload.single("invoice"), async (req: AuthRequest, res: Respo
 });
 
 // DELETE /:id — Eliminar costo
-router.delete("/:id", async (req: AuthRequest, res: Response) => {
+router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const id = parseId(req.params.id);
     const existing = await prisma.cost.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Costo no encontrado" });
     await prisma.cost.delete({ where: { id } });
+    await prisma.auditLog.create({
+      data: {
+        userId: req.user!.userId,
+        action: "DELETE_COST",
+        targetType: "COST",
+        targetId: id,
+        oldValue: { costPrice: Number(existing.costPrice), invoiceUrl: existing.invoiceUrl },
+      },
+    });
     res.json({ message: "Costo eliminado" });
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });

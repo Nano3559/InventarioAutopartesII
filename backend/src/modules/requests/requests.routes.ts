@@ -86,6 +86,9 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
     });
 
     if (!request) return res.status(404).json({ message: "Solicitud no encontrada" });
+    if (req.user?.role === "TIENDA" && req.user.locationId && request.locationId !== req.user.locationId) {
+      return res.status(403).json({ message: "No tiene acceso a esta solicitud" });
+    }
     res.json(request);
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
@@ -99,21 +102,31 @@ router.post("/", async (req: AuthRequest, res: Response) => {
   try {
     const productId = parsePositiveInt(req.body.productId, "Producto");
     const quantity = parsePositiveInt(req.body.quantity, "Cantidad");
-    const locationId = parsePositiveInt(req.body.locationId, "Ubicación");
-    const requestedById = parsePositiveInt(req.body.requestedById, "Usuario solicitante");
     const note = req.body.note || null;
 
     if (quantity <= 0) return res.status(400).json({ message: "La cantidad debe ser mayor a 0" });
 
-    const [product, location, user] = await Promise.all([
+    // El solicitante y su rol salen del token, no del body
+    const requestedById = req.user!.userId;
+    const requesterRole = req.user!.role;
+
+    let locationId: number;
+    if (requesterRole === "TIENDA") {
+      if (!req.user!.locationId) {
+        return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
+      }
+      locationId = req.user!.locationId;
+    } else {
+      locationId = parsePositiveInt(req.body.locationId, "Ubicación");
+    }
+
+    const [product, location] = await Promise.all([
       prisma.product.findUnique({ where: { id: productId } }),
       prisma.location.findUnique({ where: { id: locationId } }),
-      prisma.user.findUnique({ where: { id: requestedById } }),
     ]);
 
     if (!product) return res.status(404).json({ message: "Producto no encontrado" });
     if (!location) return res.status(404).json({ message: "Ubicación no encontrada" });
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
     const request = await prisma.productRequest.create({
       data: {
@@ -126,7 +139,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
           create: {
             newStatus: "PENDIENTE",
             userId: requestedById,
-            userRole: req.user?.role || "TIENDA",
+            userRole: requesterRole,
           },
         },
       },
@@ -236,6 +249,14 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
 
     if (existing.status === "RECIBIDO_POR_TIENDA" || existing.status === "CANCELADO") {
       return res.status(400).json({ message: "No se puede cancelar una solicitud ya recibida o cancelada" });
+    }
+
+    // Solo ADMIN/INVENTARIO o la tienda propietaria pueden cancelar
+    const delRole = req.user?.role || "";
+    if (delRole !== "ADMIN" && delRole !== "INVENTARIO") {
+      if (delRole !== "TIENDA" || existing.locationId !== req.user?.locationId) {
+        return res.status(403).json({ message: "No tiene permisos para cancelar esta solicitud" });
+      }
     }
 
     await prisma.$transaction([

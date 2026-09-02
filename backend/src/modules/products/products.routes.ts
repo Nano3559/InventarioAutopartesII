@@ -2,6 +2,8 @@ import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import * as XLSX from "xlsx";
+import { createWorker } from "tesseract.js";
+import path from "path";
 import { yearMatchesRanges } from "../../utils/yearRanges";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
@@ -9,6 +11,11 @@ import { AuthRequest } from "../../shared/types";
 const router = Router();
 const prisma = new PrismaClient();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+// Datos de idioma locales para OCR (evita descargas en cada request)
+const OCR_LANG_PATH = path.join(process.cwd(), "node_modules", "@tesseract.js-data", "eng", "4.0.0");
+
+const IMAGE_STOPWORDS = new Set(["img", "imagen", "image", "photo", "foto", "producto", "product", "part", "ref", "cod", "code", "dsc", "dscn", "captura", "nuevo", "venta", "jpeg", "jpg", "png", "webp", "2024", "2023", "2022", "the", "and", "for", "con", "numero", "number", "original", "oem", "referencia", "repuesto", "accesorio", "universal", "calidad", "estandar"]);
 
 // GET / — Listar productos con filtros, búsqueda y paginación
 router.get("/", async (req: Request, res: Response) => {
@@ -317,15 +324,40 @@ router.post("/search-image", upload.single("image"), async (req: Request, res: R
 
     // Normalizar el nombre del archivo: quitar extensión, guiones/guiones bajos y tokens genéricos/códigos
     const raw = req.file.originalname.toLowerCase().replace(/\.[^.]+$/, "");
-    const STOPWORDS = new Set(["img", "imagen", "image", "photo", "foto", "producto", "product", "part", "ref", "cod", "code", "dsc", "dscn", "captura", "nuevo", "venta", "jpeg", "jpg", "png", "webp", "2024", "2023", "2022"]);
-    const keywords = raw
+
+    const tokenPool = new Set<string>();
+    const pushToken = (w: string) => {
+      if (w.length > 2 && !/^\d+$/.test(w) && !IMAGE_STOPWORDS.has(w)) tokenPool.add(w);
+    };
+
+    raw
       .replace(/[_\-\.\+\(\)\[\]]/g, " ")
       .replace(/\s+/g, " ")
       .trim()
       .split(" ")
-      .filter((w) => w.length > 2)
-      .filter((w) => !/^\d+$/.test(w))
-      .filter((w) => !STOPWORDS.has(w));
+      .forEach(pushToken);
+
+    // R25/C5: extraer el contenido real de la imagen (OCR) además del nombre del archivo
+    let ocrText = "";
+    try {
+      const worker = await createWorker("eng", 1, { langPath: OCR_LANG_PATH, gzip: true });
+      try {
+        const ctx = await worker.recognize(req.file.buffer);
+        ocrText = ctx.data.text || "";
+      } finally {
+        await worker.terminate();
+      }
+    } catch (ocrErr) {
+      console.error("OCR no disponible:", ocrErr);
+    }
+
+    ocrText
+      .toLowerCase()
+      .split(/[\s,;/|]+/)
+      .map((t) => t.replace(/[^\w.-]/g, "").replace(/-/g, ""))
+      .forEach(pushToken);
+
+    const keywords = Array.from(tokenPool);
 
     if (keywords.length === 0) {
       return res.json({ products: [], message: "No se pudieron extraer palabras clave del nombre o la imagen" });

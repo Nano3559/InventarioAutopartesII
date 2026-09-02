@@ -104,7 +104,7 @@ model Inventory {
 model Customer {
   id        Int      @id @default(autoincrement())
   name      String
-  nit       String?
+  nit       String?  @unique
   phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -203,7 +203,7 @@ model ProductRequest {
 model Supplier {
   id        Int      @id @default(autoincrement())
   name      String
-  nit       String?
+  nit       String?  @unique
   phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
