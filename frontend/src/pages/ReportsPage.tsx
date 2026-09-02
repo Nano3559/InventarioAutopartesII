@@ -6,6 +6,7 @@ import {
 import toast from "react-hot-toast";
 import api from "../services/api";
 import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
 
 interface SalesReport {
   id: number; date: string; type: string; total: number;
@@ -225,6 +226,36 @@ export default function ReportsPage() {
     toast.success("Exportado correctamente");
   };
 
+  const exportPDF = (headers: string[], rows: string[][], title: string, filename: string) => {
+    if (!rows.length) { toast.error("No hay datos para exportar"); return; }
+    const doc = new jsPDF("l", "mm", "a4");
+    doc.setFontSize(14);
+    doc.text(`RepuestoPro - ${title}`, 14, 15);
+    doc.setFontSize(9);
+    doc.text(`Fecha: ${new Date().toLocaleDateString("es-BO")}`, 14, 22);
+
+    let y = 28;
+    const colWidths = headers.map(() => Math.floor(267 / headers.length));
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    let x = 14;
+    headers.forEach((h, i) => { doc.text(h, x, y); x += colWidths[i]; });
+    y += 5;
+    doc.setFont("helvetica", "normal");
+    doc.line(14, y, 281, y);
+    y += 4;
+
+    for (const row of rows) {
+      if (y > 190) { doc.addPage(); y = 15; }
+      x = 14;
+      row.forEach((cell, i) => { doc.text(String(cell).substring(0, 30), x, y); x += colWidths[i]; });
+      y += 4;
+    }
+
+    doc.save(`${filename}.pdf`);
+    toast.success("PDF exportado correctamente");
+  };
+
   const formatDate = (d: string) => new Date(d).toLocaleDateString("es-BO", { day: "2-digit", month: "short", year: "numeric" });
 
   const filteredSales = salesData.filter((s) =>
@@ -335,7 +366,15 @@ export default function ReportsPage() {
                 Ubicacion: s.location?.name || "N/A", Cliente: s.customer?.name || "N/A", Vendedor: s.user?.name || "N/A",
               })), "reporte_ventas")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar
+                <Download size={14} /> Excel
+              </button>
+              <button onClick={() => exportPDF(
+                ["ID", "Fecha", "Tipo", "Total", "Ubicacion", "Cliente", "Vendedor"],
+                filteredSales.map((s) => [String(s.id), formatDate(s.date), s.type, String(s.total), s.location?.name || "N/A", s.customer?.name || "N/A", s.user?.name || "N/A"]),
+                "Reporte de Ventas", "reporte_ventas"
+              )}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
+                <Download size={14} /> PDF
               </button>
             </div>
           </div>
@@ -391,7 +430,15 @@ export default function ReportsPage() {
                 "N° Ventas": st.saleCount, Total: st.total, Devoluciones: st.returns,
               }))), "reporte_diario")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar
+                <Download size={14} /> Excel
+              </button>
+              <button onClick={() => exportPDF(
+                ["Fecha", "Tienda", "N° Ventas", "Total", "Devoluciones"],
+                dailyData.flatMap((g) => g.stores.map((st) => [formatDate(g.date), st.locationName, String(st.saleCount), String(st.total), String(st.returns)])),
+                "Reporte Diario por Tienda", "reporte_diario"
+              )}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
+                <Download size={14} /> PDF
               </button>
             </div>
           </div>
@@ -465,7 +512,15 @@ export default function ReportsPage() {
                 Ubicacion: i.location.name, Stock: i.stock, Minimo: i.minStock, Estado: i.status,
               })), "reporte_inventario")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar
+                <Download size={14} /> Excel
+              </button>
+              <button onClick={() => exportPDF(
+                ["Codigo", "Producto", "Marca", "Modelo", "Ubicacion", "Stock", "Minimo", "Estado"],
+                filteredInventory.map((i) => [i.product.itemCode, i.product.name, i.product.brand, i.product.model, i.location.name, String(i.stock), String(i.minStock), i.status]),
+                "Reporte de Inventario", "reporte_inventario"
+              )}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
+                <Download size={14} /> PDF
               </button>
             </div>
           </div>
@@ -531,7 +586,15 @@ export default function ReportsPage() {
                 Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
               })), "reporte_mensual")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar
+                <Download size={14} /> Excel
+              </button>
+              <button onClick={() => exportPDF(
+                ["Tienda", "Ventas", "Devoluciones", "Netas", "N° Ventas", "Promedio"],
+                filteredMonthly.map((m) => [m.location.name, String(m.summary.totalSales), String(m.summary.totalReturns), String(m.summary.netSales), String(m.summary.saleCount), String(m.summary.averagePerSale)]),
+                "Reporte Mensual por Tienda", "reporte_mensual"
+              )}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
+                <Download size={14} /> PDF
               </button>
             </div>
           </div>
