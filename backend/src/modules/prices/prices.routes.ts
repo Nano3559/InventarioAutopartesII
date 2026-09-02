@@ -34,7 +34,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       prisma.product.findMany({
         where,
         include: {
-          costs: { orderBy: { date: "desc" }, take: 1 },
+          costs: { orderBy: { date: "desc" }, include: { supplier: { select: { id: true, name: true } } } },
         },
         orderBy: { name: "asc" },
         skip: skipClamped,
@@ -44,10 +44,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     ]);
 
     const prices = products.map((p) => {
-      const cost = p.costs[0]?.costPrice ? Number(p.costs[0].costPrice) : p.cost ? Number(p.cost) : 0;
+      const latestCost = p.costs[0]?.costPrice ? Number(p.costs[0].costPrice) : p.cost ? Number(p.cost) : 0;
       const calculated: Record<string, number> = {};
       for (const pct of PERCENTAGES) {
-        calculated[`p${pct}`] = Number((cost * (1 + pct / 100)).toFixed(2));
+        calculated[`p${pct}`] = Number((latestCost * (1 + pct / 100)).toFixed(2));
       }
 
       return {
@@ -58,7 +58,14 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         model: p.model,
         years: p.year,
         detail: p.detail || "",
-        cost,
+        cost: latestCost,
+        costs: p.costs.map((c) => ({
+          id: c.id,
+          costPrice: Number(c.costPrice),
+          supplierName: c.supplier?.name || null,
+          invoiceUrl: c.invoiceUrl || null,
+          date: c.date,
+        })),
         ...calculated,
         wholesalePrice: p.wholesalePrice ? Number(p.wholesalePrice) : 0,
       };
