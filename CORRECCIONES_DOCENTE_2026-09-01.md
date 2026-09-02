@@ -9,41 +9,83 @@
 
 ## A. PENDIENTES CRÍTICOS
 
-| # | Punto | Estado | Evidencia / detalle |
-|---|-------|--------|----------------------|
-| A1 | Aplicar autorización por rol en TODAS las rutas backend | **[C]** | `authorizeModule` existe en `auth.ts` pero se usa en **0 rutas**. Además, rutas CRUD abiertas solo con `authenticate`: usuarios (A7), costos (E2), movimientos (D1), import mayorista (F2). |
-| A2 | Restringir datos y operaciones a la tienda del usuario | **[C]** | Ventas y solicitudes GET sí filtran por TIENDA; pero **returns POST** NO valida la tienda de la venta (D3) y **wholesale POST** NO tiene lógica TIENDA (F1). |
-| A3 | Rol TIENDA accede al Inventario desde App.tsx | **[C]** | `frontend/src/App.tsx:69-78`: rutas `inventario` solo `allowedRoles={["ADMIN","INVENTARIO"]}` → TIENDA es redirigido. Backend `GET /products` es público, así que solo falla el frontend. |
-| A4 | Evitar sobreventas: productos repetidos / ventas simultáneas | **[C]** | `sales.routes.ts:307-323`: el chequeo de stock es por ítem contra BD antes de descontar; si `items` trae el mismo productId 2 veces, ambos pasan el check y luego se descuentan 2 veces → posible stock negativo. No hay deduplicación ni lock. |
-| A5 | Validar cantidades, precios, pagos e IDs en backend | **[C/⚡]** | Ventas validan payments y vendedor, pero NO validan `quantity>0` ni `unitPrice>0` por ítem (`sales.routes.ts:243-255`, `saleItemsData` línea 326). Pagos deben igualar el total exacto (línea 337-340). Mayorista permite precio 0 (F4). |
-| A6 | Evitar devoluciones superiores a la cantidad vendida | **[C]** | `returns.routes.ts:139-141` valida `quantity ≤ saleItem.quantity`, PERO no descuenta devoluciones previas del mismo sale+product → se puede devolver 2 veces el total. |
-| A7 | Proteger pagos adicionales contra saldo pendiente | **[C]** | No existe concepto de "pago adicional sobre saldo pendiente"; el backend exige `totalPaid === total` exacto (`sales.routes.ts:337-340`). OK para venta única, pero no hay flujo de parcial/adicional. |
-| A8 | Botón "Solicitar a almacén" en ProductDetailPage.tsx | **[C]** | `ProductDetailPage.tsx:135`: `<button>` sin `onClick`. Las solicitudes solo se crean por venta (stock 0). |
-| A9 | Validar ubicación en ventas mayoristas | **[C]** | **BUG de precedencia**: `wholesale.routes.ts:29` → `user.locationId || locationId ? Number(locationId) : null`. Con TIENDA que tiene location y sin body `locationId`, `Number(undefined)` = `NaN`. |
-| A10 | Restringir CRUD de usuarios a ADMIN | **[C]** | `users.routes.ts` completo (líneas 10-219): solo `router.use(authenticate)`, **sin** `authorize("ADMIN")` en POST/PUT/DELETE. Cualquier TIENDA puede crear/editar/borrar usuarios. Además `GET /` (13-39) y `GET /roles` (42-53) exponen a cualquier autenticado la lista completa (email/rol/ubicación). |
-| A11 | Proteger el endpoint público de registro | **[C]** | `auth.routes.ts:12-58`: `POST /api/auth/register` es **público** y usa `roleId: roleId || 1` (línea 32). En BD fresca el rol id 1 = **ADMIN** (`seed.ts:11-15`) ⇒ cualquiera puede registrarse y obtener token ADMIN. **Prioridad máxima.** |
+|  #  | Punto                                                        | Estado     | Evidencia / detalle                                                                                        |
+|-----|--------------------------------------------------------------|------------|------------------------------------------------------------------------------------------------------------|
+| A1  | Aplicar autorización por rol en TODAS las rutas backend      | **[C]**    | `authorizeModule` existe en `auth.ts` pero se usa en **0 rutas**. Además, rutas CRUD abiertas solo con     |
+|     |                                                              |            |`authenticate`:  usuarios (A7), costos (E2), movimientos (D1), import mayorista (F2).                       |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A2  | Restringir datos y operaciones a la tienda del usuario       | **[C]**    | Ventas y solicitudes GET sí filtran por TIENDA; pero **returns POST** NO valida la tienda de la venta (D3) |
+|     |                                                              |            | y **wholesale POST** NO tiene lógica TIENDA (F1).                                                          |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A3  | Rol TIENDA accede al Inventario desde App.tsx                | **[C]**    | `frontend/src/App.tsx:69-78`: rutas `inventario` solo `allowedRoles={["ADMIN","INVENTARIO"]}` → TIENDA es  |
+|     |                                                              |            | redirigido. Backend `GET /products` es público, así que solo falla el frontend.                            |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A4  | Evitar sobreventas: productos repetidos / ventas simultáneas | **[C]**    | `sales.routes.ts:307-323`: el chequeo de stock es por ítem contra BD antes de descontar; si `items` trae el|
+|     |                                                              |            | mismo productId 2 veces, ambos pasan el check y luego se descuentan 2 veces → posible stock negativo. No   |
+|     |                                                              |            | hay deduplicación ni lock.                                                                                 |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A5  | Validar cantidades, precios, pagos e IDs en backend          | **[C/⚡]** | Ventas validan payments y vendedor, pero NO validan `quantity>0` ni `unitPrice>0` por ítem (`sales.routes. |
+|     |                                                              |            |ts:243-255`, `saleItemsData` línea 326). Pagos deben igualar el total exacto (línea 337-340). Mayorista     |
+|     |                                                              |            | permite precio 0 (F4).                                                                                     |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A6  | Evitar devoluciones superiores a la cantidad vendida         | **[C]**    | `returns.routes.ts:139-141` valida `quantity ≤ saleItem.quantity`, PERO no descuenta devoluciones previas  |
+|     |                                                              |            | del mismo sale+product → se puede devolver 2 veces el total.                                               |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A7  | Proteger pagos adicionales contra saldo pendiente            | **[C]**    | No existe concepto de "pago adicional sobre saldo pendiente"; el backend exige `totalPaid === total` exacto|
+|     |                                                              |            | (`sales.routes.ts:337-340`). OK para venta única, pero no hay flujo de parcial/adicional.                  |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A8  | Botón "Solicitar a almacén" en ProductDetailPage.tsx         | **[C]**    | `ProductDetailPage.tsx:135`: `<button>` sin `onClick`. Las solicitudes solo se crean por venta (stock 0).  |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A9  | Validar ubicación en ventas mayoristas                       | **[C]**    | **BUG de precedencia**: `wholesale.routes.ts:29` → `user.locationId || locationId ? Number(locationId) :   |
+|     |                                                              |            | null`. Con TIENDA que tiene location y sin body `locationId`, `Number(undefined)` = `NaN`.                 |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A10 | Restringir CRUD de usuarios a ADMIN                          | **[C]**    | `users.routes.ts` completo (líneas 10-219): solo `router.use(authenticate)`, **sin** `authorize("ADMIN")`  |
+|     |                                                              |            | en POST/PUT/DELETE. Cualquier TIENDA puede crear/editar/borrar usuarios. Además `GET /` (13-39) y `GET /   |
+|     |                                                              |            |roles` (42-53) exponen a cualquier autenticado la lista completa (email/rol/ubicación).                     |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A11 | Proteger el endpoint público de registro                     | **[C]**    | `auth.routes.ts:12-58`: `POST /api/auth/register` es **público** y usa `roleId: roleId || 1` (línea 32). En|
+|     |                                                              |            | BD fresca el rol id 1 = **ADMIN** (`seed.ts:11-15`) ⇒ cualquiera puede registrarse y obtener token ADMIN.  |
+|     |                                                              |            | **Prioridad máxima.**                                                                                      |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 ---
 
 ## B. INVENTARIO
 
-| # | Punto | Estado | Evidencia / detalle |
-|---|-------|--------|----------------------|
-| B1 | Filtros visibles: modelo, año, OEM, fábrica | **[C]** | UI solo envía `search/brand/manufacturer` (`InventoryPage.tsx:111-116`). Backend ya soporta `model/year/oemCode/factoryCode` (`products.routes.ts:40-42,66-69`) pero no se usan. Falta UI de Año + año en el selector. Además `yearRanges.ts:44-58`: `expandYearRanges` trata un rango abierto `"13-"` como **un solo año** (solo 2013) cuando el comentario dice "2013 en adelante" ⇒ la búsqueda/autocompletado de Año no matchea años posteriores. |
-| B2 | Stock nunca negativo | **[C]** | `inventory.routes.ts:82-105`: `PUT /:id` acepta cualquier `stock` sin validar `>= 0`. Además la sobreventa (A4) puede dejar negativo. |
-| B3 | Auditoría al modificar stock manualmente | **[C]** | `inventory.routes.ts` PUT no registra movimiento/auditoría. Solo existe `Movement` para transferencias. |
-| B4 | Validar que la ubicación exista en import Excel | **[C]** | `products.routes.ts:504-507`: con `locationId` inexistente, `findMany` devuelve `[]` y el producto se crea **sin inventario**, en silencio (no hay error). |
-| B5 | Stock importado asignado a la ubicación indicada | **[C]** | Con `locationId` → upsert con `rowStock` (`products.routes.ts:479-481`). Sin `locationId` → crea en TODAS con stock 0 (504-507). Import acepta un único `locationId` global por archivo (444), no por fila. |
-| B6 | Restringir consulta de inventario por rol y tienda | **[C]** | `inventory.routes.ts:11-50` GET no filtra por rol/tienda (cualquiera autenticado ve todo). `GET /api/products`, `/filters` y `/:id` **ni siquiera usan `authenticate`** (`products.routes.ts:14,112,135`) ⇒ sin login se expone `price1/price2/wholesalePrice/cost/stock` de todo el catálogo. |
-| B7 | Columna "Proveedor" | **[C]** | No está en `DEFAULT_COLUMNS.inventario` (`permissions.routes.ts:17`). Solo existe `supplier` por Cost. |
-| B8 | Código fábrica duplicado | **[C]** | Import mapea `itemCode ← "Codigo fabrica"` (`products.routes.ts:428`) Y `factoryCode ← "Código fábrica"/"codigo fabrica"` (436). Ambas leen la misma fuente → ambigüedad. |
+|  #  | Punto                                             | Estado  | Evidencia / detalle                                                                                                      |
+|-----|---------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------|
+| B1  | Filtros visibles: modelo, año, OEM, fábrica       | **[C]** | UI solo envía `search/brand/manufacturer` (`InventoryPage.tsx:111-116`). Backend ya soporta `model/year/oemCode/         |
+|     |                                                   |         |factoryCode` (`products.routes.ts:40-42,66-69`) pero no se usan. Falta UI de Año + año en el selector. Además `yearRanges.|
+|     |                                                   |         |ts:44-58`: `expandYearRanges` trata un rango abierto `"13-"` como **un solo año**(solo 2013) cuando el comentario dice    |
+|     |                                                   |         |"2013 en adelante" ⇒ la búsqueda/autocompletado de Año no matchea años posteriores.                                       |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| B2  | Stock nunca negativo                              | **[C]** | `inventory.routes.ts:82-105`: `PUT /:id` acepta cualquier `stock` sin validar `>= 0`. Además la sobreventa (A4) puede    |
+|     |                                                   |         | dejar negativo.                                                                                                          |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| B3  | Auditoría al modificar stock manualmente          | **[C]** | `inventory.routes.ts` PUT no registra movimiento/auditoría. Solo existe `Movement` para transferencias.                  |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| B4  | Validar que la ubicación exista en import Excel   | **[C]** | `products.routes.ts:504-507`: con `locationId` inexistente, `findMany` devuelve `[]` y el producto se crea **sin         |
+|     |                                                   |         |inventario**, en silencio (no hay error).                                                                                 |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| B5  | Stock importado asignado a la ubicación indicada  | **[C]** | Con `locationId` → upsert con `rowStock` (`products.routes.ts:479-481`). Sin `locationId` → crea en TODAS con stock 0    |
+|     |                                                   |         |(504-507). Import acepta un único `locationId` global por archivo (444), no por fila.                                     |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| B6  | Restringir consulta de inventario por rol y tienda| **[C]** | `inventory.routes.ts:11-50` GET no filtra por rol/tienda (cualquiera autenticado ve todo). `GET /api/products`, `/       |
+|     |                                                   |         |filters` y `/:id` **ni siquiera usan `authenticate`** (`products.routes.ts:14,112,135`) ⇒ sin login se expone `price1/    |
+|     |                                                   |         |price2/wholesalePrice/cost/stock` de todo el catálogo.                                                                    |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| B7  | Columna "Proveedor"                               | **[C]** | No está en `DEFAULT_COLUMNS.inventario` (`permissions.routes.ts:17`). Solo existe `supplier` por Cost.                   |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| B8  | Código fábrica duplicado                          | **[C]** | Import mapea `itemCode ← "Codigo fabrica"` (`products.routes.ts:428`) Y `factoryCode ← "Código fábrica"/"codigo fabrica"`|
+|     |                                                   |         | (436). Ambas leen la misma fuente → ambigüedad.                                                                          |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 ---
 
 ## C. VENTAS NORMALES
 
-| # | Punto | Estado | Evidencia / detalle |
-|---|-------|--------|----------------------|
+|  #  | Punto                                                        | Estado     | Evidencia / detalle                                                                                        |
+|-----|--------------------------------------------------------------|------------|------------------------------------------------------------------------------------------------------------|
 | C1 | Búsqueda específica por código OEM | **✅/⚡** | Backend `search` incluye `oemCode` en el OR (`products.routes.ts:29`) y hay filtro `?oemCode=` (41). El buscador de SalesPage usa `search` genérico → OEM ya funcionaría; falta filtro dedicado en la UI. |
 | C2 | Vendedor válido y perteneciente a la tienda | **[C]** | Solo se valida que sea "Vendedor 1/2/3" (`sales.routes.ts:253-255`). No se valida que pertenezca a la tienda (no hay relación user-vendedor). |
 | C3 | Probar venta desde el navegador | **⚡** | Docente reporta pantalla negra. Código normal OK (search/cart/pago). Verificar en producción; revisar `setLocations(r.data)` (locations devuelve array plano) y el modal de pago. |
