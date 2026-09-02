@@ -2,6 +2,8 @@ import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import * as XLSX from "xlsx";
+import { createWorker } from "tesseract.js";
+import path from "path";
 import { yearMatchesRanges } from "../../utils/yearRanges";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
@@ -9,6 +11,11 @@ import { AuthRequest } from "../../shared/types";
 const router = Router();
 const prisma = new PrismaClient();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+// Datos de idioma locales para OCR (evita descargas en cada request)
+const OCR_LANG_PATH = path.join(process.cwd(), "node_modules", "@tesseract.js-data", "eng", "4.0.0");
+
+const IMAGE_STOPWORDS = new Set(["img", "imagen", "image", "photo", "foto", "producto", "product", "part", "ref", "cod", "code", "dsc", "dscn", "captura", "nuevo", "venta", "jpeg", "jpg", "png", "webp", "2024", "2023", "2022", "the", "and", "for", "con", "numero", "number", "original", "oem", "referencia", "repuesto", "accesorio", "universal", "calidad", "estandar"]);
 
 // GET / — Listar productos con filtros, búsqueda y paginación
 router.get("/", async (req: Request, res: Response) => {
@@ -317,15 +324,40 @@ router.post("/search-image", upload.single("image"), async (req: Request, res: R
 
     // Normalizar el nombre del archivo: quitar extensión, guiones/guiones bajos y tokens genéricos/códigos
     const raw = req.file.originalname.toLowerCase().replace(/\.[^.]+$/, "");
-    const STOPWORDS = new Set(["img", "imagen", "image", "photo", "foto", "producto", "product", "part", "ref", "cod", "code", "dsc", "dscn", "captura", "nuevo", "venta", "jpeg", "jpg", "png", "webp", "2024", "2023", "2022"]);
-    const keywords = raw
+
+    const tokenPool = new Set<string>();
+    const pushToken = (w: string) => {
+      if (w.length > 2 && !/^\d+$/.test(w) && !IMAGE_STOPWORDS.has(w)) tokenPool.add(w);
+    };
+
+    raw
       .replace(/[_\-\.\+\(\)\[\]]/g, " ")
       .replace(/\s+/g, " ")
       .trim()
       .split(" ")
-      .filter((w) => w.length > 2)
-      .filter((w) => !/^\d+$/.test(w))
-      .filter((w) => !STOPWORDS.has(w));
+      .forEach(pushToken);
+
+    // R25/C5: extraer el contenido real de la imagen (OCR) además del nombre del archivo
+    let ocrText = "";
+    try {
+      const worker = await createWorker("eng", 1, { langPath: OCR_LANG_PATH, gzip: true });
+      try {
+        const ctx = await worker.recognize(req.file.buffer);
+        ocrText = ctx.data.text || "";
+      } finally {
+        await worker.terminate();
+      }
+    } catch (ocrErr) {
+      console.error("OCR no disponible:", ocrErr);
+    }
+
+    ocrText
+      .toLowerCase()
+      .split(/[\s,;/|]+/)
+      .map((t) => t.replace(/[^\w.-]/g, "").replace(/-/g, ""))
+      .forEach(pushToken);
+
+    const keywords = Array.from(tokenPool);
 
     if (keywords.length === 0) {
       return res.json({ products: [], message: "No se pudieron extraer palabras clave del nombre o la imagen" });
@@ -442,6 +474,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       const calidad = (row["Calidad"] || row["calidad"] || row["quality"] || row["Detalles"] || row["detalles"] || "").toString().trim();
       const rowStock = parseInt(row["Stock"] || row["stock"] || "0", 10) || 0;
       const requestedLocationId = Number(req.body.locationId) || 0;
+      const rowLocation = (row["Ubicación"] || row["Ubicacion"] || row["Tienda"] || row["Almacén"] || row["Almacen"] || "").toString().trim();
 
       if (!itemCode || !name) {
         errors.push(`Fila ${i + 2}: Código y nombre son obligatorios`);
@@ -452,6 +485,13 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
         let categoryId: number | null = null;
         if (category && catMap[category.toLowerCase()]) {
           categoryId = catMap[category.toLowerCase()];
+        }
+
+        let rowLocationId = requestedLocationId;
+        if (rowLocation) {
+          const location = await prisma.location.findFirst({ where: { OR: [{ name: { equals: rowLocation, mode: "insensitive" } }, { id: Number(rowLocation) || -1 }] } });
+          if (!location) throw new Error(`Ubicación no encontrada: ${rowLocation}`);
+          rowLocationId = location.id;
         }
 
         const existing = await prisma.product.findUnique({ where: { itemCode } });
@@ -476,8 +516,8 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
           if (Object.keys(updateData).length > 0) {
             await prisma.product.update({ where: { id: existing.id }, data: updateData });
           }
-          if (requestedLocationId) {
-            await prisma.inventory.upsert({ where: { productId_locationId: { productId: existing.id, locationId: requestedLocationId } }, update: { stock: rowStock }, create: { productId: existing.id, locationId: requestedLocationId, stock: rowStock, minStock: 1 } });
+          if (rowLocationId) {
+            await prisma.inventory.upsert({ where: { productId_locationId: { productId: existing.id, locationId: rowLocationId } }, update: { stock: rowStock }, create: { productId: existing.id, locationId: rowLocationId, stock: rowStock, minStock: 1 } });
           }
           updated.push({ id: existing.id, itemCode, name, action: "actualizado" });
         } else {
@@ -501,10 +541,10 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
             },
           });
 
-          const locations = requestedLocationId
-            ? await prisma.location.findMany({ where: { id: requestedLocationId } })
+          const locations = rowLocationId
+            ? await prisma.location.findMany({ where: { id: rowLocationId } })
             : await prisma.location.findMany();
-          for (const loc of locations) await prisma.inventory.create({ data: { productId: product.id, locationId: loc.id, stock: requestedLocationId ? rowStock : 0, minStock: 1 } });
+          for (const loc of locations) await prisma.inventory.create({ data: { productId: product.id, locationId: loc.id, stock: rowLocationId ? rowStock : 0, minStock: 1 } });
 
           imported.push({ id: product.id, itemCode, name, action: "creado" });
         }

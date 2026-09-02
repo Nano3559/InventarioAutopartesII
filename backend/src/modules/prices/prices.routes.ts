@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorizeModule } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 
 const router = Router();
@@ -25,8 +25,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       ];
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    // R23: acotar paginación
+    const pg = Math.max(1, Number(page) || 1);
+    const takeClamped = Math.min(200, Math.max(1, Number(limit) || 20));
+    const skipClamped = (pg - 1) * takeClamped;
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -35,8 +37,8 @@ router.get("/", async (req: AuthRequest, res: Response) => {
           costs: { orderBy: { date: "desc" }, take: 1 },
         },
         orderBy: { name: "asc" },
-        skip,
-        take,
+        skip: skipClamped,
+        take: takeClamped,
       }),
       prisma.product.count({ where }),
     ]);
@@ -65,7 +67,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     res.json({
       prices,
       percentages: PERCENTAGES,
-      pagination: { total, page: Number(page), limit: take, pages: Math.ceil(total / take) },
+      pagination: { total, page: pg, limit: takeClamped, pages: Math.ceil(total / takeClamped) },
     });
   } catch (error) {
     console.error("Error al calcular precios:", error);
@@ -73,8 +75,8 @@ router.get("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// PUT /:productId — Actualizar precio por mayor
-router.put("/:productId", async (req: AuthRequest, res: Response) => {
+// PUT /:productId — Actualizar precio por mayor (requiere permiso del módulo "precios")
+router.put("/:productId", authorizeModule("precios"), async (req: AuthRequest, res: Response) => {
   try {
     const { productId } = req.params;
     const { wholesalePrice } = req.body;
@@ -83,12 +85,17 @@ router.put("/:productId", async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "El campo wholesalePrice es obligatorio" });
     }
 
+    const price = Number(wholesalePrice);
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).json({ message: "El precio por mayor debe ser un número mayor a 0" });
+    }
+
     const product = await prisma.product.findUnique({ where: { id: Number(productId) } });
     if (!product) return res.status(404).json({ message: "Producto no encontrado" });
 
     const updated = await prisma.product.update({
       where: { id: Number(productId) },
-      data: { wholesalePrice: Number(wholesalePrice) },
+      data: { wholesalePrice: price },
       select: { id: true, name: true, itemCode: true, wholesalePrice: true },
     });
 

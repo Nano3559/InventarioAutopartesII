@@ -4,12 +4,12 @@ import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { config } from "../../config";
 import { AuthRequest } from "../../shared/types";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize } from "../../shared/middlewares/auth";
 
 const router = Router();
 const prisma = new PrismaClient();
 
-router.post("/register", async (req: AuthRequest, res: Response) => {
+router.post("/register", authenticate, authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const { name, email, password, roleId, locationId } = req.body;
 
@@ -17,9 +17,25 @@ router.post("/register", async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "Nombre, email y contraseña son requeridos" });
     }
 
+    if (!roleId) {
+      return res.status(400).json({ message: "El campo roleId es obligatorio" });
+    }
+
+    const role = await prisma.roleModel.findUnique({ where: { id: Number(roleId) } });
+    if (!role) {
+      return res.status(400).json({ message: "El rol especificado no existe" });
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       return res.status(400).json({ message: "El email ya está registrado" });
+    }
+
+    if (locationId) {
+      const location = await prisma.location.findUnique({ where: { id: Number(locationId) } });
+      if (!location) {
+        return res.status(400).json({ message: "La ubicación especificada no existe" });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -29,8 +45,8 @@ router.post("/register", async (req: AuthRequest, res: Response) => {
         name,
         email,
         password: hashedPassword,
-        roleId: roleId || 1,
-        locationId: locationId || null,
+        roleId: Number(roleId),
+        locationId: locationId ? Number(locationId) : null,
       },
       include: { role: true, location: true },
     });

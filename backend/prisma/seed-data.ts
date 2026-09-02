@@ -206,9 +206,11 @@ export async function seedData(prisma: PrismaClient) {
   const createdCustomers = await prisma.customer.findMany();
   console.log(`${createdCustomers.length} clientes creados`);
 
-  console.log("Creando ventas de los últimos 60 días...");
   const now = new Date();
   const saleRecords = [];
+  const existingNormalSales = await prisma.sale.count({ where: { type: "NORMAL" } });
+  if (existingNormalSales === 0) {
+  console.log("Creando ventas de los últimos 60 días...");
   const tiendaUsers = [tienda1, tienda2, tienda3];
   const tiendaLocs = [ti1, ti2, ti3];
   const methods: Array<"EFECTIVO" | "QR" | "TRANSFERENCIA" | "CREDITO"> = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];
@@ -263,9 +265,14 @@ export async function seedData(prisma: PrismaClient) {
     process.stdout.write(`\r  Día ${day + 1}/60...`);
   }
   console.log(`\n${saleRecords.length} ventas normales creadas`);
+  } else {
+    console.log(`Ventas normales ya existen (${existingNormalSales}); omitiendo generación demo.`);
+  }
 
   console.log("Creando ventas por mayor...");
+  const existingWholesaleSales = await prisma.sale.count({ where: { type: "MAYOR" } });
   let wholesaleCount = 0;
+  if (existingWholesaleSales === 0) {
   for (let day = 0; day < 30; day++) {
     const numSales = Math.floor(Math.random() * 3) + 1;
     for (let s = 0; s < numSales; s++) {
@@ -305,9 +312,14 @@ export async function seedData(prisma: PrismaClient) {
     process.stdout.write(`\r  Día ${day + 1}/30...`);
   }
   console.log(`\n${wholesaleCount} ventas por mayor creadas`);
+  } else {
+    console.log(`Ventas por mayor ya existen (${existingWholesaleSales}); omitiendo generación demo.`);
+  }
 
   console.log("Creando movimientos...");
   const movementCount = 80;
+  const existingMovements = await prisma.movement.count();
+  if (existingMovements === 0) {
   for (let i = 0; i < movementCount; i++) {
     const fromIdx = Math.floor(Math.random() * 4);
     let toIdx = Math.floor(Math.random() * 3) + 4;
@@ -331,9 +343,14 @@ export async function seedData(prisma: PrismaClient) {
     });
   }
   console.log(`${movementCount} movimientos creados`);
+  } else {
+    console.log(`Movimientos ya existen (${existingMovements}); omitiendo demo.`);
+  }
 
   console.log("Creando solicitudes de producto...");
   const requestStatuses: Array<"PENDIENTE" | "RECIBIDO_POR_INVENTARIO" | "PREPARANDO" | "ENTREGADO" | "RECIBIDO_POR_TIENDA" | "CANCELADO"> = ["PENDIENTE", "RECIBIDO_POR_INVENTARIO", "PREPARANDO", "ENTREGADO", "RECIBIDO_POR_TIENDA"];
+  const existingRequests = await prisma.productRequest.count();
+  if (existingRequests === 0) {
   for (let i = 0; i < 25; i++) {
     const prod = createdProducts[Math.floor(Math.random() * createdProducts.length)];
     const tiendaUser = tiendaUsers[Math.floor(Math.random() * 3)];
@@ -353,6 +370,9 @@ export async function seedData(prisma: PrismaClient) {
     });
   }
   console.log("25 solicitudes creadas");
+  } else {
+    console.log(`Solicitudes ya existen (${existingRequests}); omitiendo demo.`);
+  }
 
   console.log("Creando devoluciones...");
   const allSales = await prisma.sale.findMany({
@@ -362,6 +382,8 @@ export async function seedData(prisma: PrismaClient) {
   });
   const returnMethods: Array<"EFECTIVO" | "QR" | "TRANSFERENCIA" | "CREDITO"> = ["EFECTIVO", "QR", "TRANSFERENCIA"];
   let returnCount = 0;
+  const existingReturns = await prisma.return.count();
+  if (existingReturns === 0) {
   for (const sale of allSales) {
     if (sale.items.length === 0) continue;
     const shouldReturn = Math.random() < 0.12;
@@ -387,9 +409,14 @@ export async function seedData(prisma: PrismaClient) {
     returnCount++;
   }
   console.log(`${returnCount} devoluciones creadas`);
+  } else {
+    console.log(`Devoluciones ya existen (${existingReturns}); omitiendo demo.`);
+  }
 
   console.log("Creando costos con facturas...");
   let costCount = 0;
+  const existingCosts = await prisma.cost.count();
+  if (existingCosts === 0) {
   for (const product of createdProducts) {
     const numCosts = Math.floor(Math.random() * 3) + 1;
     for (let c = 0; c < numCosts; c++) {
@@ -413,10 +440,15 @@ export async function seedData(prisma: PrismaClient) {
     }
   }
   console.log(`${costCount} costos creados`);
+  } else {
+    console.log(`Costos ya existen (${existingCosts}); omitiendo demo.`);
+  }
 
   console.log("Asociando productos con importadoras y calidades...");
   const importersData = importersSeed;
   const createdImporters = [];
+  const existingImporters = await prisma.importer.count();
+  if (existingImporters === 0) {
   for (const imp of importersData) {
     const importer = await prisma.importer.create({ data: imp });
     createdImporters.push(importer);
@@ -433,6 +465,9 @@ export async function seedData(prisma: PrismaClient) {
   }
   await prisma.productImporter.createMany({ data: productImporterData, skipDuplicates: true });
   console.log("Productos asociados con importadoras");
+  } else {
+    console.log(`Importadoras ya existen (${existingImporters}); omitiendo asociación demo.`);
+  }
 
   console.log("\n=== Datos sembrados correctamente ===");
   console.log(`  - ${createdProducts.length} productos (50+ categorías)`);

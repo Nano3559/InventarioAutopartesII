@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { authenticate } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8 } from "../../utils/replenish";
+import { validateAndMergeItems } from "../../utils/saleItems";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -86,6 +87,11 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
 
     if (!sale) {
       return res.status(404).json({ message: "Venta no encontrada" });
+    }
+
+    const noteUser = req.user!;
+    if (noteUser.role === "TIENDA" && noteUser.locationId && sale.locationId !== noteUser.locationId) {
+      return res.status(403).json({ message: "No tiene acceso a la nota de esta venta" });
     }
 
     const totalReturned = sale.returns.reduce((sum, r) => sum + Number(r.amount), 0);
@@ -224,6 +230,11 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Venta no encontrada" });
     }
 
+    const detailUser = req.user!;
+    if (detailUser.role === "TIENDA" && detailUser.locationId && sale.locationId !== detailUser.locationId) {
+      return res.status(403).json({ message: "No tiene acceso a esta venta" });
+    }
+
     res.json({
       ...sale,
       total: Number(sale.total),
@@ -253,6 +264,9 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     if (seller && typeof seller === "string" && !["Vendedor 1", "Vendedor 2", "Vendedor 3"].includes(seller)) {
       return res.status(400).json({ message: "Vendedor inválido. Use: Vendedor 1, Vendedor 2 o Vendedor 3" });
     }
+
+    // Validar y deduplicar ítems (evita sobreventa con productos repetidos)
+    const validItems = validateAndMergeItems(items);
 
     const user = req.user!;
     let userLocationId: number;
@@ -304,7 +318,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     const result = await prisma.$transaction(async (tx) => {
       const stockUpdates: { productId: number; quantity: number }[] = [];
 
-      for (const item of items) {
+      for (const item of validItems) {
         const product = await tx.product.findUnique({ where: { id: item.productId } });
         if (!product) {
           throw new Error(`Producto con ID ${item.productId} no encontrado`);
@@ -323,7 +337,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       }
 
       let totalSale = 0;
-      const saleItemsData = items.map((item: any) => {
+      const saleItemsData = validItems.map((item: any) => {
         const subtotal = item.quantity * item.unitPrice;
         totalSale += subtotal;
         return {

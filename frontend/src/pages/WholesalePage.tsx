@@ -36,6 +36,8 @@ export default function WholesalePage() {
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [lastWholesaleSale, setLastWholesaleSale] = useState<{ id: number; saleDate: string; total: number; items: WholesaleItem[]; clientName: string; pedido: string; deliveryPlace: string; paymentMethod: string; facturaNIT: string } | null>(null);
 
   const [showImportModal, setShowImportModal] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
@@ -136,10 +138,12 @@ export default function WholesalePage() {
         })),
         payments: [{ method: paymentMethod, amount: total }],
       };
-      await api.post("/wholesale", payload);
+      const response = await api.post("/wholesale", payload);
+      setLastWholesaleSale({ id: response.data.id, saleDate: response.data.createdAt || new Date().toISOString(), total: Number(response.data.total) || total, items: [...items], clientName, pedido, deliveryPlace, paymentMethod, facturaNIT });
       toast.success("Venta por mayor registrada");
       setShowConfirm(false);
       setShowForm(false);
+      setShowReceipt(true);
       resetForm();
       fetchSales();
     } catch (err: any) {
@@ -195,7 +199,7 @@ export default function WholesalePage() {
   const formatDate = (d: string) => new Date(d).toLocaleDateString("es-BO", { day: "2-digit", month: "short", year: "numeric" });
 
   const downloadPDF = async () => {
-    const el = document.getElementById("wholesale-confirm-modal");
+    const el = document.getElementById(showReceipt ? "wholesale-receipt-modal" : "wholesale-confirm-modal");
     if (!el) return;
     toast.loading("Generando PDF...", { id: "wpdf" });
     try {
@@ -205,7 +209,7 @@ export default function WholesalePage() {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const imgHeight = (canvas.height * pageWidth) / canvas.width;
       pdf.addImage(img, "PNG", 0, 0, pageWidth, imgHeight);
-      pdf.save(`venta-mayorista.pdf`);
+      pdf.save(`venta-mayorista-${lastWholesaleSale?.id || "cotizacion"}.pdf`);
       toast.success("PDF descargado", { id: "wpdf" });
     } catch {
       toast.error("Error al generar PDF", { id: "wpdf" });
@@ -467,6 +471,42 @@ export default function WholesalePage() {
                 className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-600/20">
                 Confirmar
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showReceipt && lastWholesaleSale && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div id="wholesale-receipt-modal" className="bg-dark-900 border border-dark-700/50 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="px-6 py-5 border-b border-dark-700/50 text-center">
+              <h3 className="text-lg font-bold text-white">Venta mayorista registrada</h3>
+              <p className="text-xs text-gray-500 mt-1">RepuestoPro · Venta #{lastWholesaleSale.id}</p>
+            </div>
+            <div className="p-6 space-y-4 text-sm">
+              <div className="grid grid-cols-2 gap-2 text-gray-300">
+                <span>Cliente: <strong className="text-white">{lastWholesaleSale.clientName || "Registrado"}</strong></span>
+                <span>Fecha: <strong className="text-white">{formatDate(lastWholesaleSale.saleDate)}</strong></span>
+                <span>Para quién: <strong className="text-white">{lastWholesaleSale.pedido || "No especificado"}</strong></span>
+                <span>Entrega: <strong className="text-white">{lastWholesaleSale.deliveryPlace}</strong></span>
+                <span>Factura/NIT: <strong className="text-white">{lastWholesaleSale.facturaNIT || "No especificado"}</strong></span>
+                <span>Pago: <strong className="text-white">{lastWholesaleSale.paymentMethod}</strong></span>
+              </div>
+              <div className="border-t border-dark-700/50 pt-3 space-y-2">
+                {lastWholesaleSale.items.map((item) => (
+                  <div key={item.productId} className="flex justify-between gap-3">
+                    <span className="text-gray-300">{item.name} x{item.quantity}</span>
+                    <span className="text-amber-400">{formatBs(item.subtotal)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-dark-700/50 pt-3 flex justify-between text-lg font-bold">
+                <span className="text-white">Total</span><span className="text-amber-400">{formatBs(lastWholesaleSale.total)}</span>
+              </div>
+            </div>
+            <div className="flex gap-3 px-6 py-4 border-t border-dark-700/50">
+              <button onClick={() => setShowReceipt(false)} className="flex-1 px-4 py-2.5 text-gray-300 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm">Cerrar</button>
+              <button onClick={downloadPDF} className="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2"><FileText size={15} /> Descargar PDF</button>
             </div>
           </div>
         </div>

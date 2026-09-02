@@ -25,9 +25,8 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
     const lowStockItems = await prisma.inventory.findMany({
       where: { stock: { gt: 0 }, minStock: { gt: 0 } },
     });
-    const productsWithLowStock = lowStockItems.filter(
-      (item) => item.stock <= item.minStock
-    ).length;
+    const criticalStockItems = lowStockItems.filter((item) => item.stock <= item.minStock);
+    const productsWithLowStock = criticalStockItems.length;
 
     const locations = await prisma.location.findMany({ select: { id: true, name: true, type: true } });
 
@@ -133,7 +132,7 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
       },
     });
 
-    const criticalStock = lowStockItems.map((item) => ({
+    const criticalStock = criticalStockItems.map((item) => ({
       product: "",
       itemCode: "",
       locationId: item.locationId,

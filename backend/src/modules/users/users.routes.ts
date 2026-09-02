@@ -9,8 +9,8 @@ const prisma = new PrismaClient();
 
 router.use(authenticate);
 
-// GET / — Listar usuarios
-router.get("/", async (req: AuthRequest, res: Response) => {
+// GET / — Listar usuarios (solo ADMIN)
+router.get("/", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const users = await prisma.user.findMany({
       include: {
@@ -38,8 +38,8 @@ router.get("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /roles — Listar roles disponibles
-router.get("/roles", async (req: AuthRequest, res: Response) => {
+// GET /roles — Listar roles disponibles (solo ADMIN)
+router.get("/roles", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const roles = await prisma.roleModel.findMany({
       select: { id: true, name: true, permissions: true },
@@ -52,8 +52,8 @@ router.get("/roles", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST / — Crear usuario
-router.post("/", async (req: AuthRequest, res: Response) => {
+// POST / — Crear usuario (solo ADMIN)
+router.post("/", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const { name, email, password, role, roleId, locationId } = req.body;
 
@@ -109,8 +109,8 @@ router.post("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// PUT /:id — Actualizar usuario
-router.put("/:id", async (req: AuthRequest, res: Response) => {
+// PUT /:id — Actualizar usuario (solo ADMIN)
+router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).json({ message: "ID inválido" });
@@ -197,8 +197,8 @@ router.put("/me/preferences", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// DELETE /:id — Eliminar usuario
-router.delete("/:id", async (req: AuthRequest, res: Response) => {
+// DELETE /:id — Eliminar usuario (solo ADMIN)
+router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).json({ message: "ID inválido" });

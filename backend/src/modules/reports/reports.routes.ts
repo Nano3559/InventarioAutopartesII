@@ -15,7 +15,17 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
 
     const where: any = {};
 
-    if (locationId && typeof locationId === "string") where.locationId = Number(locationId);
+    let effectiveLocationId: number | null = null;
+    if (locationId && typeof locationId === "string") effectiveLocationId = Number(locationId);
+    if (effectiveLocationId) where.locationId = effectiveLocationId;
+
+    if (req.user?.role === "TIENDA") {
+      if (!req.user.locationId) {
+        return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
+      }
+      where.locationId = req.user.locationId;
+    }
+
     if (noInvoice === "true") where.customerId = null;
 
     if (startDate || endDate) {
@@ -35,27 +45,21 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
       where.saleDate = { gte: start, lte: end };
     }
 
-    if (brand && typeof brand === "string") {
-      where.items = { some: { product: { brand: { contains: brand, mode: "insensitive" } } } };
+    // Filtros por marca/modelo/proveedor se aplican a los productos de las ventas
+    if (brand || model || (supplierId && supplierId !== "all")) {
+      const productFilter: any = {};
+      if (brand && typeof brand === "string") productFilter.brand = { contains: brand, mode: "insensitive" };
+      if (model && typeof model === "string") productFilter.model = { contains: model, mode: "insensitive" };
+      if (supplierId && supplierId !== "all" && typeof supplierId === "string") {
+        const sid = Number(supplierId);
+        if (!Number.isNaN(sid) && sid >= 1) productFilter.costs = { some: { supplierId: sid } };
+      }
+      where.items = { some: { product: productFilter } };
     }
 
-    if (model && typeof model === "string") {
-      where.items = { some: { product: { model: { contains: model, mode: "insensitive" } } } };
-    }
-
-    if (brand && model) {
-      where.items = {
-        some: {
-          product: {
-            brand: { contains: brand, mode: "insensitive" },
-            model: { contains: model, mode: "insensitive" },
-          },
-        },
-      };
-    }
-
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const pg = Math.max(1, Number(page) || 1);
+    const take = Math.min(500, Math.max(1, Number(limit) || 50));
+    const skip = (pg - 1) * take;
 
     const [sales, total, summary] = await Promise.all([
       prisma.sale.findMany({
@@ -92,7 +96,7 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
         count: summary._count,
         average: summary._count > 0 ? Number((Number(summary._sum.total) / summary._count).toFixed(2)) : 0,
       },
-      pagination: { total, page: Number(page), limit: take, pages: Math.ceil(total / take) },
+      pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
     console.error("Error en reporte de ventas:", error);
@@ -217,20 +221,43 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
     const startDate = new Date(targetYear, targetMonth - 1, 1);
     const endDate = new Date(targetYear, targetMonth, 0, 23, 59, 59, 999);
 
-    const [sales, returns, locations] = await Promise.all([
+    // TIENDA solo ve su propia tienda; resto ven todas
+    const locationScope = req.user?.role === "TIENDA" && req.user?.locationId ? req.user.locationId : null;
+    if (req.user?.role === "TIENDA" && !req.user.locationId) {
+      return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
+    }
+
+    const saleWhere: any = { saleDate: { gte: startDate, lte: endDate } };
+    if (locationScope) saleWhere.locationId = locationScope;
+
+    const returnWhere: any = { date: { gte: startDate, lte: endDate } };
+    if (locationScope) returnWhere.sale = { locationId: locationScope };
+
+    const [sales, returns, locations, costs] = await Promise.all([
       prisma.sale.findMany({
-        where: { saleDate: { gte: startDate, lte: endDate } },
+        where: saleWhere,
         include: {
           location: { select: { id: true, name: true } },
           items: { include: { product: { select: { id: true, name: true, brand: true } } } },
         },
       }),
       prisma.return.findMany({
-        where: { date: { gte: startDate, lte: endDate } },
+        where: returnWhere,
         include: { sale: { select: { locationId: true, location: { select: { name: true } } } } },
       }),
       prisma.location.findMany({ select: { id: true, name: true, type: true } }),
+      prisma.cost.findMany({
+        where: { date: { gte: startDate, lte: endDate } },
+        orderBy: { date: "desc" },
+        select: { productId: true, costPrice: true },
+      }),
     ]);
+
+    // Costo más reciente por producto dentro del mes
+    const costMap = new Map<number, number>();
+    for (const c of costs) {
+      if (!costMap.has(c.productId)) costMap.set(c.productId, Number(c.costPrice));
+    }
 
     const byLocation: any[] = locations.map((loc) => {
       const locSales = sales.filter((s) => s.locationId === loc.id);
@@ -251,6 +278,15 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
         }
       }
 
+      // G7: costo tienda = costo de la mercadería vendida + 10%
+      let productsCost = 0;
+      for (const key of Object.keys(productSales)) {
+        const pid = Number(key);
+        const baseCost = costMap.get(pid) ?? 0;
+        productsCost += baseCost * productSales[key].quantity;
+      }
+      const storeCost = Number((productsCost * 1.1).toFixed(2));
+
       return {
         location: loc,
         summary: {
@@ -259,6 +295,10 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
           netSales: totalSales - totalReturns,
           saleCount,
           averagePerSale: saleCount > 0 ? Number((totalSales / saleCount).toFixed(2)) : 0,
+        },
+        costs: {
+          productsCost: Number(productsCost.toFixed(2)),
+          storeCost,
         },
         topProducts: Object.values(productSales)
           .sort((a: any, b: any) => b.total - a.total)
@@ -273,6 +313,8 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
 
     const totalGeneral = byLocation.reduce((sum, l) => sum + l.summary.totalSales, 0);
     const returnsGeneral = byLocation.reduce((sum, l) => sum + l.summary.totalReturns, 0);
+    const totalProductsCost = byLocation.reduce((sum, l) => sum + l.costs.productsCost, 0);
+    const totalStoreCost = byLocation.reduce((sum, l) => sum + l.costs.storeCost, 0);
 
     res.json({
       period: { year: targetYear, month: targetMonth, startDate, endDate },
@@ -283,6 +325,10 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
         netSales: totalGeneral - returnsGeneral,
         totalLocations: locations.length,
         activeLocations: byLocation.filter((l) => l.summary.saleCount > 0).length,
+        costs: {
+          totalProductsCost: Number(totalProductsCost.toFixed(2)),
+          totalStoreCost: Number(totalStoreCost.toFixed(2)),
+        },
       },
     });
   } catch (error) {

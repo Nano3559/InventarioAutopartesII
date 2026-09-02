@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import * as XLSX from "xlsx";
 
 interface PriceRow {
   id: number; itemCode: string; productName: string; brand: string;
@@ -66,17 +67,20 @@ export default function PricesPage() {
 
   const exportExcel = async () => {
     try {
-      const res = await api.get("/prices/export");
-      const data = res.data.data;
+      const [pricesRes, productsRes, costsRes] = await Promise.all([
+        api.get("/prices/export"),
+        api.get("/products?limit=1000"),
+        api.get("/costs?limit=100"),
+      ]);
+      const stockByCode = new Map((productsRes.data.products || []).map((p: any) => [p.itemCode, p.stock]));
+      const supplierByCode = new Map((costsRes.data.costs || []).map((c: any) => [c.itemCode, c.supplierName]));
+      const data = pricesRes.data.data.map((row: any) => ({ ...row, stock: stockByCode.get(row.itemCode) ?? 0, supplier: supplierByCode.get(row.itemCode) || "" }));
       if (!data.length) { toast.error("No hay datos para exportar"); return; }
-      const headers = ["Código Fábrica", "Producto", "Marca", "Modelo", "Años", "Detalle", "Precio Mayor"];
-      const rows = data.map((r: any) => [r.itemCode, r.name, r.brand, r.model, r.years, r.detail, r.wholesalePrice]);
-      const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = "precios_mayor.csv"; a.click();
-      URL.revokeObjectURL(url);
+      const rows = data.map((r: any) => ({ "Código Fábrica": r.itemCode, Producto: r.name, Marca: r.brand, Modelo: r.model, Años: r.years, Detalle: r.detail, Proveedor: r.supplier, Stock: r.stock, "Precio Mayor": r.wholesalePrice }));
+      const sheet = XLSX.utils.json_to_sheet(rows);
+      const book = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(book, sheet, "Precios");
+      XLSX.writeFile(book, "precios_mayor.xlsx");
       toast.success("Precios exportados");
     } catch { toast.error("Error al exportar"); }
   };

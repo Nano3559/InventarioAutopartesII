@@ -77,12 +77,18 @@ export default function ReportsPage() {
   const [filterTo, setFilterTo] = useState("");
   const [filterNoInvoice, setFilterNoInvoice] = useState(false);
   const [filterSearch, setFilterSearch] = useState("");
+  const [filterBrand, setFilterBrand] = useState("");
+  const [filterModel, setFilterModel] = useState("");
+  const [filterSupplier, setFilterSupplier] = useState("");
+  const [filterProduct, setFilterProduct] = useState("");
+  const [suppliers, setSuppliers] = useState<{ id: number; name: string }[]>([]);
 
   const [dailyData, setDailyData] = useState<DailyGroup[]>([]);
   const [dailyLoading, setDailyLoading] = useState(false);
 
   useEffect(() => {
     api.get("/locations").then((res) => setLocations(res.data.locations || res.data)).catch(() => {});
+    api.get("/suppliers?limit=100").then((res) => setSuppliers(res.data.suppliers || [])).catch(() => {});
   }, []);
 
   const fetchSales = useCallback(async () => {
@@ -93,6 +99,10 @@ export default function ReportsPage() {
       if (filterFrom) params.set("startDate", filterFrom);
       if (filterTo) params.set("endDate", filterTo);
       if (filterNoInvoice) params.set("noInvoice", "true");
+      if (filterBrand) params.set("brand", filterBrand);
+      if (filterModel) params.set("model", filterModel);
+      if (filterSupplier) params.set("supplierId", filterSupplier);
+      if (filterProduct) params.set("product", filterProduct);
       const res = await api.get(`/reports/sales?${params.toString()}`);
       setSalesData(res.data.sales);
       setSalesSummary(res.data.summary);
@@ -101,7 +111,7 @@ export default function ReportsPage() {
     } finally {
       setSalesLoading(false);
     }
-  }, [filterLocation, filterFrom, filterTo, filterNoInvoice]);
+  }, [filterLocation, filterFrom, filterTo, filterNoInvoice, filterBrand, filterModel, filterSupplier, filterProduct]);
 
   const fetchDaily = useCallback(async () => {
     try {
@@ -303,6 +313,17 @@ export default function ReportsPage() {
         ) : (
           <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}
             className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+        )}
+        {activeTab === "ventas" && (
+          <>
+            <input value={filterBrand} onChange={(e) => setFilterBrand(e.target.value)} placeholder="Marca" className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 w-32" />
+            <input value={filterModel} onChange={(e) => setFilterModel(e.target.value)} placeholder="Modelo" className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 w-32" />
+            <input value={filterProduct} onChange={(e) => setFilterProduct(e.target.value)} placeholder="Producto" className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 w-32" />
+            <select value={filterSupplier} onChange={(e) => setFilterSupplier(e.target.value)} className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 max-w-40">
+              <option value="">Proveedor</option>
+              {suppliers.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}
+            </select>
+          </>
         )}
       </div>
 

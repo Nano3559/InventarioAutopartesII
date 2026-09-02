@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorizeModule } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parsePositiveInt, parseString } from "../../shared/middlewares/validate";
 
@@ -58,8 +58,8 @@ router.get("/", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST / — Registrar movimiento
-router.post("/", async (req: AuthRequest, res: Response) => {
+// POST / — Registrar movimiento (requiere permiso del módulo "movimientos")
+router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: Response) => {
   try {
     const productId = parsePositiveInt(req.body.productId, "Producto");
     const fromLocationId = parsePositiveInt(req.body.fromLocationId, "Ubicación origen");
@@ -82,6 +82,13 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     if (!product) return res.status(404).json({ message: "Producto no encontrado" });
     if (!fromLocation) return res.status(404).json({ message: "Ubicación de origen no encontrada" });
     if (!toLocation) return res.status(404).json({ message: "Ubicación de destino no encontrada" });
+
+    if (fromLocation.type !== "ALMACEN") {
+      return res.status(400).json({ message: "El movimiento solo puede originarse desde un almacén" });
+    }
+    if (toLocation.type !== "TIENDA") {
+      return res.status(400).json({ message: "El destino del movimiento debe ser una tienda" });
+    }
 
     const inventoryOrigin = await prisma.inventory.findUnique({
       where: { productId_locationId: { productId, locationId: fromLocationId } },
