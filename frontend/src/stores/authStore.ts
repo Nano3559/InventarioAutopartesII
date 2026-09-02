@@ -27,6 +27,13 @@ const getAllowedCategories = (role: string, config: Record<string, unknown>): st
   return configured.length || role !== "TIENDA" ? configured : ["Frenos", "Motor", "Eléctrico"];
 };
 
+const fallbackPermissions = (role: string): string[] => {
+  if (role === "ADMIN") return ["inventario", "ventas", "ventas-mayor", "devoluciones", "solicitudes", "movimientos", "costos", "precios", "reportes", "configuracion"];
+  if (role === "TIENDA") return ["inventario", "ventas", "ventas-mayor", "devoluciones", "solicitudes", "reportes"];
+  if (role === "INVENTARIO") return ["inventario", "solicitudes", "movimientos", "costos", "precios"];
+  return [];
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: localStorage.getItem("token"),
@@ -45,15 +52,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const cc = res.data.columnConfig || {};
       set({ permissions: normalizePermissions(perms), columnConfig: cc, allowedCategories: getAllowedCategories(user.role, cc) });
     } catch {
-      // Si falla, ADMIN tiene todos los permisos
-      if (user.role === "ADMIN") {
-        set({
-          permissions: [
-            "inventario", "ventas", "ventas-mayor", "devoluciones",
-            "solicitudes", "movimientos", "costos", "precios", "reportes", "configuracion",
-          ],
-        });
-      }
+      set({ permissions: fallbackPermissions(user.role), allowedCategories: getAllowedCategories(user.role, {}) });
     }
   },
   logout: () => {
@@ -77,14 +76,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             set({ permissions: normalizePermissions(res.data.permissions || []), columnConfig: cc, allowedCategories: getAllowedCategories(user.role, cc) });
           })
           .catch(() => {
-            if (user.role === "ADMIN") {
-              set({
-                permissions: [
-                  "inventario", "ventas", "ventas-mayor", "devoluciones",
-                  "solicitudes", "movimientos", "costos", "precios", "reportes", "configuracion",
-                ],
-              });
-            }
+            set({ permissions: fallbackPermissions(user.role), allowedCategories: getAllowedCategories(user.role, {}) });
           });
       } catch {
         localStorage.removeItem("token");

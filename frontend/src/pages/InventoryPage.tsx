@@ -18,7 +18,7 @@ interface Product {
   detalles: string | null; image: string | null; oemCode: string | null;
   factoryCode: string | null; price1: string; price2: string;
   wholesalePrice: string | null; cost: string | null;
-  categoryId: number | null; category: string | null; stock: number;
+  categoryId: number | null; category: string | null; supplierName?: string | null; stock: number;
 }
 
 interface Filters {
@@ -50,7 +50,7 @@ const emptyForm: FormData = {
 
 const ALL_COLUMNS = [
   "ID", "Fabricante", "Producto", "Marca", "Modelo", "Año", "Detalles",
-  "Cód. OEM", "Cód. Fábrica", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones",
+  "Cód. OEM", "Cód. Fábrica", "Proveedor", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones",
 ];
 
 function getStoredColumns(): string[] | null {
@@ -78,6 +78,10 @@ export default function InventoryPage() {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("");
   const [manufacturer, setManufacturer] = useState("");
+  const [model, setModel] = useState("");
+  const [year, setYear] = useState("");
+  const [oemCode, setOemCode] = useState("");
+  const [factoryCode, setFactoryCode] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
@@ -112,11 +116,21 @@ export default function InventoryPage() {
       if (search) params.set("search", search);
       if (brand) params.set("brand", brand);
       if (manufacturer) params.set("manufacturer", manufacturer);
+      if (model) params.set("model", model);
+      if (year) params.set("year", year);
+      if (oemCode) params.set("oemCode", oemCode);
+      if (factoryCode) params.set("factoryCode", factoryCode);
       params.set("page", String(page));
       params.set("limit", "15");
 
       const res = await api.get(`/products?${params.toString()}`);
-      setProducts(res.data.products);
+      let products = res.data.products;
+      try {
+        const costs = await api.get("/costs?limit=100");
+        const suppliers = new Map((costs.data.costs || []).map((c: any) => [c.itemCode, c.supplierName]));
+        products = products.map((product: Product) => ({ ...product, supplierName: suppliers.get(product.itemCode) || null }));
+      } catch { /* proveedor es información complementaria */ }
+      setProducts(products);
       setTotal(res.data.pagination.total);
       setPages(res.data.pagination.pages);
     } catch {
@@ -124,7 +138,7 @@ export default function InventoryPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, brand, manufacturer, page]);
+  }, [search, brand, manufacturer, model, year, oemCode, factoryCode, page]);
 
   const fetchFilters = useCallback(async () => {
     try {
@@ -137,7 +151,7 @@ export default function InventoryPage() {
   useEffect(() => { fetchFilters(); }, [fetchFilters]);
   useEffect(() => { api.get("/locations").then((res) => setLocations(res.data.locations || res.data)).catch(() => {}); }, []);
 
-  useEffect(() => { setPage(1); }, [search, brand, manufacturer]);
+  useEffect(() => { setPage(1); }, [search, brand, manufacturer, model, year, oemCode, factoryCode]);
 
   const openCreate = () => {
     setEditingId(null);
@@ -265,6 +279,7 @@ export default function InventoryPage() {
       case "Detalles": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.detalles || p.detail || "—"}</td>;
       case "Cód. OEM": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>;
       case "Cód. Fábrica": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>;
+      case "Proveedor": return <td key={column} className="px-4 py-3 text-gray-300 text-xs">{p.supplierName || "—"}</td>;
       case "Imagen": return <td key={column} className="px-4 py-3"><div className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden"><ProductImage image={p.image} category={p.category} name={p.name} /></div></td>;
       case "Precio 1": return <td key={column} className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>;
       case "Precio 2": return <td key={column} className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>;
@@ -341,9 +356,19 @@ export default function InventoryPage() {
               placeholder="Todos los fabricantes"
               label="Fabricante"
             />
-            {(brand || manufacturer) && (
+            <Autocomplete value={model} onChange={setModel} suggestions={filters.models || []} placeholder="Todos los modelos" label="Modelo" />
+            <Autocomplete value={year} onChange={setYear} suggestions={filters.years || []} placeholder="Todos los años (ej. 92)" label="Año / rango" />
+            <div>
+              <label className="block text-xs text-gray-400 mb-1.5">Cód. OEM</label>
+              <input value={oemCode} onChange={(e) => setOemCode(e.target.value)} placeholder="Todos los OEM" className="w-full px-3 py-2 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none placeholder-gray-600" />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1.5">Cód. Fábrica</label>
+              <input value={factoryCode} onChange={(e) => setFactoryCode(e.target.value)} placeholder="Todos los códigos" className="w-full px-3 py-2 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none placeholder-gray-600" />
+            </div>
+            {(brand || manufacturer || model || year || oemCode || factoryCode) && (
               <div className="flex items-end">
-                <button onClick={() => { setBrand(""); setManufacturer(""); }} className="px-3 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/20 transition-colors">
+                <button onClick={() => { setBrand(""); setManufacturer(""); setModel(""); setYear(""); setOemCode(""); setFactoryCode(""); }} className="px-3 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/20 transition-colors">
                   Limpiar filtros
                 </button>
               </div>

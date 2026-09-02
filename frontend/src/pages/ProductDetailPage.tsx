@@ -16,6 +16,7 @@ interface ProductDetail {
   factoryCode: string | null; price1: string; price2: string;
   wholesalePrice: string | null; cost: string | null;
   categoryId: number | null; category: string | null; stock: number;
+  supplierName?: string | null;
   stockByLocation: StockItem[];
   importers: { id: number; name: string; phone: string | null; city: string | null }[];
 }
@@ -35,6 +36,7 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const canEdit = user?.role === "ADMIN";
+  const [requesting, setRequesting] = useState(false);
 
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,7 +49,12 @@ export default function ProductDetailPage() {
     try {
       setLoading(true);
       const res = await api.get(`/products/${id}`);
-      setProduct(res.data);
+      let supplierName: string | null = null;
+      try {
+        const costs = await api.get(`/costs?productId=${id}&limit=1`);
+        supplierName = costs.data.costs?.[0]?.supplierName || null;
+      } catch { /* proveedor complementario */ }
+      setProduct({ ...res.data, supplierName });
       setForm({
         itemCode: res.data.itemCode, manufacturer: res.data.manufacturer,
         name: res.data.name, brand: res.data.brand, model: res.data.model,
@@ -104,6 +111,28 @@ export default function ProductDetailPage() {
   const setField = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
   const fc = (v: string) => `Bs. ${Number(v).toLocaleString("es-BO", { minimumFractionDigits: 2 })}`;
 
+  const requestFromWarehouse = async () => {
+    if (!product || !user?.locationId) {
+      toast.error("Tu usuario no tiene una tienda asignada");
+      return;
+    }
+    try {
+      setRequesting(true);
+      await api.post("/requests", {
+        productId: product.id,
+        quantity: 1,
+        locationId: user.locationId,
+        requestedById: user.id,
+        note: `Solicitud desde el detalle de ${product.name}`,
+      });
+      toast.success("Solicitud enviada al almacén");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "No se pudo crear la solicitud");
+    } finally {
+      setRequesting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -132,9 +161,9 @@ export default function ProductDetailPage() {
         </div>
         <div className="flex items-center gap-3">
           {product.stock === 0 && (
-            <button className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
-              <Truck size={16} />
-              Solicitar a almacén
+             <button onClick={requestFromWarehouse} disabled={requesting} className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50">
+               <Truck size={16} />
+               {requesting ? "Enviando..." : "Solicitar a almacén"}
             </button>
           )}
           {editing ? (
@@ -201,6 +230,7 @@ export default function ProductDetailPage() {
                 <InfoBox label="Código OEM" value={product.oemCode || "—"} />
                 <InfoBox label="Código Fábrica" value={product.factoryCode || "—"} />
                 <InfoBox label="Categoría" value={product.category || "Sin categoría"} />
+                <InfoBox label="Proveedor" value={(product as any).supplierName || "—"} />
               </div>
             )}
           </div>

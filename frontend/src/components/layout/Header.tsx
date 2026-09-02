@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { User, Bell, Menu, CheckCheck, X } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 import api from "../../services/api";
@@ -14,6 +15,7 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifs, setShowNotifs] = useState(false);
@@ -48,6 +50,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
     } catch { /* ignore */ }
+  };
+
+  const openNotification = async (notification: Notification) => {
+    if (!notification.read) await markAsRead(notification.id);
+    setShowNotifs(false);
+    if (notification.linkUrl) {
+      const path = notification.linkUrl.startsWith("/panel/") ? notification.linkUrl : `/panel${notification.linkUrl.startsWith("/") ? notification.linkUrl : `/${notification.linkUrl}`}`;
+      navigate(path);
+    }
   };
 
   return (
@@ -98,7 +109,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     notifications.map((n) => (
                       <div
                         key={n.id}
-                        onClick={() => !n.read && markAsRead(n.id)}
+                        onClick={() => openNotification(n)}
                         className={`px-4 py-3 border-b border-dark-700/30 cursor-pointer transition-colors ${
                           n.read ? "hover:bg-dark-700/20" : "bg-primary-600/5 hover:bg-primary-600/10"
                         }`}

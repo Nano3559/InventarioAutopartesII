@@ -7,15 +7,37 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
+import api, { saveSession, LoginResponse } from "../services/api";
+import { useSession } from "../navigation/AppNavigator";
 
-export default function LoginScreen({ navigation }: any) {
+export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { setSession } = useSession();
 
-  const handleLogin = () => {
-    // TODO: Implementar login real
-    navigation.replace("Home");
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      setError("Ingresa tu correo y contraseña.");
+      return;
+    }
+    try {
+      setLoading(true);
+      setError("");
+      const response = await api.post<LoginResponse>("/auth/login", {
+        email: email.trim().toLowerCase(),
+        password,
+      });
+      await saveSession(response.data);
+      setSession(response.data);
+    } catch (requestError: any) {
+      setError(requestError.response?.data?.message || "No se pudo iniciar sesión.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,8 +65,9 @@ export default function LoginScreen({ navigation }: any) {
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Ingresar</Text>
+        {!!error && <Text style={styles.error}>{error}</Text>}
+        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Ingresar</Text>}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -100,5 +123,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  error: {
+    color: "#dc2626",
+    marginBottom: 8,
+    textAlign: "center",
   },
 });

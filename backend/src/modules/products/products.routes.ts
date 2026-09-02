@@ -442,6 +442,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       const calidad = (row["Calidad"] || row["calidad"] || row["quality"] || row["Detalles"] || row["detalles"] || "").toString().trim();
       const rowStock = parseInt(row["Stock"] || row["stock"] || "0", 10) || 0;
       const requestedLocationId = Number(req.body.locationId) || 0;
+      const rowLocation = (row["Ubicación"] || row["Ubicacion"] || row["Tienda"] || row["Almacén"] || row["Almacen"] || "").toString().trim();
 
       if (!itemCode || !name) {
         errors.push(`Fila ${i + 2}: Código y nombre son obligatorios`);
@@ -452,6 +453,13 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
         let categoryId: number | null = null;
         if (category && catMap[category.toLowerCase()]) {
           categoryId = catMap[category.toLowerCase()];
+        }
+
+        let rowLocationId = requestedLocationId;
+        if (rowLocation) {
+          const location = await prisma.location.findFirst({ where: { OR: [{ name: { equals: rowLocation, mode: "insensitive" } }, { id: Number(rowLocation) || -1 }] } });
+          if (!location) throw new Error(`Ubicación no encontrada: ${rowLocation}`);
+          rowLocationId = location.id;
         }
 
         const existing = await prisma.product.findUnique({ where: { itemCode } });
@@ -476,8 +484,8 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
           if (Object.keys(updateData).length > 0) {
             await prisma.product.update({ where: { id: existing.id }, data: updateData });
           }
-          if (requestedLocationId) {
-            await prisma.inventory.upsert({ where: { productId_locationId: { productId: existing.id, locationId: requestedLocationId } }, update: { stock: rowStock }, create: { productId: existing.id, locationId: requestedLocationId, stock: rowStock, minStock: 1 } });
+          if (rowLocationId) {
+            await prisma.inventory.upsert({ where: { productId_locationId: { productId: existing.id, locationId: rowLocationId } }, update: { stock: rowStock }, create: { productId: existing.id, locationId: rowLocationId, stock: rowStock, minStock: 1 } });
           }
           updated.push({ id: existing.id, itemCode, name, action: "actualizado" });
         } else {
@@ -501,10 +509,10 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
             },
           });
 
-          const locations = requestedLocationId
-            ? await prisma.location.findMany({ where: { id: requestedLocationId } })
+          const locations = rowLocationId
+            ? await prisma.location.findMany({ where: { id: rowLocationId } })
             : await prisma.location.findMany();
-          for (const loc of locations) await prisma.inventory.create({ data: { productId: product.id, locationId: loc.id, stock: requestedLocationId ? rowStock : 0, minStock: 1 } });
+          for (const loc of locations) await prisma.inventory.create({ data: { productId: product.id, locationId: loc.id, stock: rowLocationId ? rowStock : 0, minStock: 1 } });
 
           imported.push({ id: product.id, itemCode, name, action: "creado" });
         }
