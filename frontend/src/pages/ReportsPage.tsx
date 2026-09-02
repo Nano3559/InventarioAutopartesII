@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
 
 interface SalesReport {
   id: number; date: string; type: string; total: number;
@@ -218,77 +220,41 @@ export default function ReportsPage() {
 
   const exportCSV = (data: Record<string, any>[], filename: string) => {
     if (!data.length) { toast.error("No hay datos para exportar"); return; }
-    const headers = Object.keys(data[0]);
-    const rows = data.map((r) => headers.map((h) => r[h]));
-    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `${filename}.csv`; a.click();
-    URL.revokeObjectURL(url);
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+    XLSX.writeFile(wb, `${filename}.xlsx`);
     toast.success("Exportado correctamente");
   };
 
-  const exportPDF = (title: string, data: Record<string, any>[], filename: string) => {
-    if (!data.length) { toast.error("No hay datos para exportar"); return; }
-    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-    const pageWidth = doc.internal.pageSize.getWidth();
+  const exportPDF = (headers: string[], rows: string[][], title: string, filename: string) => {
+    if (!rows.length) { toast.error("No hay datos para exportar"); return; }
+    const doc = new jsPDF("l", "mm", "a4");
     doc.setFontSize(14);
-    doc.text(title, 14, 16);
+    doc.text(`RepuestoPro - ${title}`, 14, 15);
     doc.setFontSize(9);
-    doc.text(`Generado: ${new Date().toLocaleString("es-BO")}`, pageWidth - 14, 16, { align: "right" });
+    doc.text(`Fecha: ${new Date().toLocaleDateString("es-BO")}`, 14, 22);
 
-    const headers = Object.keys(data[0]);
-    const cellPad = 4;
-    const fontSize = 8;
-    const lineH = 7;
-    doc.setFontSize(fontSize);
+    let y = 28;
+    const colWidths = headers.map(() => Math.floor(267 / headers.length));
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    let x = 14;
+    headers.forEach((h, i) => { doc.text(h, x, y); x += colWidths[i]; });
+    y += 5;
+    doc.setFont("helvetica", "normal");
+    doc.line(14, y, 281, y);
+    y += 4;
 
-    const columnWidths = (() => {
-      const avail = pageWidth - 28;
-      const totalChars = headers.reduce((sum, h) => sum + Math.max(h.length, ...data.map((r) => String(r[h] ?? "").length)), 0);
-      return headers.map((h) => {
-        const maxLen = Math.max(h.length, ...data.map((r) => String(r[h] ?? "").length));
-        return Math.max(20, Math.min(60, (maxLen / totalChars) * avail * 1.5));
-      });
-    })();
-
-    let y = 26;
-    const bottomMargin = 10;
-
-    const renderHeader = () => {
-      doc.setFont("helvetica", "bold");
-      doc.setFillColor(30, 41, 59);
-      doc.setTextColor(255, 255, 255);
-      let x = 14;
-      headers.forEach((h, i) => {
-        doc.rect(x, y, columnWidths[i], lineH, "F");
-        doc.text(String(h), x + cellPad, y + (lineH - 2));
-        x += columnWidths[i];
-      });
-      doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "normal");
-      y += lineH;
-    };
-
-    renderHeader();
-
-    data.forEach((r) => {
-      if (y > doc.internal.pageSize.getHeight() - bottomMargin) {
-        doc.addPage();
-        y = 20;
-        renderHeader();
-      }
-      let x = 14;
-      headers.forEach((h, i) => {
-        doc.text(String(r[h] ?? ""), x + cellPad, y + (lineH - 2));
-        x += columnWidths[i];
-      });
-      y += lineH;
-    });
+    for (const row of rows) {
+      if (y > 190) { doc.addPage(); y = 15; }
+      x = 14;
+      row.forEach((cell, i) => { doc.text(String(cell).substring(0, 30), x, y); x += colWidths[i]; });
+      y += 4;
+    }
 
     doc.save(`${filename}.pdf`);
-    toast.success("PDF descargado");
+    toast.success("PDF exportado correctamente");
   };
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString("es-BO", { day: "2-digit", month: "short", year: "numeric" });
@@ -401,14 +367,15 @@ export default function ReportsPage() {
                 Ubicacion: s.location?.name || "N/A", Cliente: s.customer?.name || "N/A", Vendedor: s.user?.name || "N/A",
               })), "reporte_ventas")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar CSV
+                <Download size={14} /> Excel
               </button>
-              <button onClick={() => exportPDF("Reporte de Ventas", filteredSales.map((s) => ({
-                ID: s.id, Fecha: formatDate(s.date), Tipo: s.type, Total: s.total,
-                Ubicacion: s.location?.name || "N/A", Cliente: s.customer?.name || "N/A", Vendedor: s.user?.name || "N/A",
-              })), "reporte_ventas")}
+              <button onClick={() => exportPDF(
+                ["ID", "Fecha", "Tipo", "Total", "Ubicacion", "Cliente", "Vendedor"],
+                filteredSales.map((s) => [String(s.id), formatDate(s.date), s.type, String(s.total), s.location?.name || "N/A", s.customer?.name || "N/A", s.user?.name || "N/A"]),
+                "Reporte de Ventas", "reporte_ventas"
+              )}
                 className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
-                <FileText size={14} /> PDF
+                <Download size={14} /> PDF
               </button>
             </div>
           </div>
@@ -464,14 +431,15 @@ export default function ReportsPage() {
                 "N° Ventas": st.saleCount, Total: st.total, Devoluciones: st.returns,
               }))), "reporte_diario")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar CSV
+                <Download size={14} /> Excel
               </button>
-              <button onClick={() => exportPDF("Reporte Diario por Tienda", dailyData.flatMap((g) => g.stores.map((st) => ({
-                Fecha: formatDate(g.date), Tienda: st.locationName,
-                "N° Ventas": st.saleCount, Total: st.total, Devoluciones: st.returns,
-              }))), "reporte_diario")}
+              <button onClick={() => exportPDF(
+                ["Fecha", "Tienda", "N° Ventas", "Total", "Devoluciones"],
+                dailyData.flatMap((g) => g.stores.map((st) => [formatDate(g.date), st.locationName, String(st.saleCount), String(st.total), String(st.returns)])),
+                "Reporte Diario por Tienda", "reporte_diario"
+              )}
                 className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
-                <FileText size={14} /> PDF
+                <Download size={14} /> PDF
               </button>
             </div>
           </div>
@@ -545,14 +513,15 @@ export default function ReportsPage() {
                 Ubicacion: i.location.name, Stock: i.stock, Minimo: i.minStock, Estado: i.status,
               })), "reporte_inventario")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar CSV
+                <Download size={14} /> Excel
               </button>
-              <button onClick={() => exportPDF("Reporte de Inventario", filteredInventory.map((i) => ({
-                Codigo: i.product.itemCode, Producto: i.product.name, Marca: i.product.brand, Modelo: i.product.model,
-                Ubicacion: i.location.name, Stock: i.stock, Minimo: i.minStock, Estado: i.status,
-              })), "reporte_inventario")}
+              <button onClick={() => exportPDF(
+                ["Codigo", "Producto", "Marca", "Modelo", "Ubicacion", "Stock", "Minimo", "Estado"],
+                filteredInventory.map((i) => [i.product.itemCode, i.product.name, i.product.brand, i.product.model, i.location.name, String(i.stock), String(i.minStock), i.status]),
+                "Reporte de Inventario", "reporte_inventario"
+              )}
                 className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
-                <FileText size={14} /> PDF
+                <Download size={14} /> PDF
               </button>
             </div>
           </div>
@@ -618,14 +587,15 @@ export default function ReportsPage() {
                 Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
               })), "reporte_mensual")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar CSV
+                <Download size={14} /> Excel
               </button>
-              <button onClick={() => exportPDF("Reporte Mensual por Tienda", filteredMonthly.map((m) => ({
-                Tienda: m.location.name, Ventas: m.summary.totalSales, Devoluciones: m.summary.totalReturns,
-                Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
-              })), "reporte_mensual")}
+              <button onClick={() => exportPDF(
+                ["Tienda", "Ventas", "Devoluciones", "Netas", "N° Ventas", "Promedio"],
+                filteredMonthly.map((m) => [m.location.name, String(m.summary.totalSales), String(m.summary.totalReturns), String(m.summary.netSales), String(m.summary.saleCount), String(m.summary.averagePerSale)]),
+                "Reporte Mensual por Tienda", "reporte_mensual"
+              )}
                 className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
-                <FileText size={14} /> PDF
+                <Download size={14} /> PDF
               </button>
             </div>
           </div>

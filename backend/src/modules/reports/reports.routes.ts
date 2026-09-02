@@ -45,7 +45,7 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
       where.saleDate = { gte: start, lte: end };
     }
 
-    // Filtros por marca/modelo/proveedor se aplican a los productos de las ventas
+    // Filtros por marca/modelo/proveedor/producto se aplican a los productos de las ventas
     if (brand || model || (supplierId && supplierId !== "all") || product) {
       const productFilter: any = {};
       if (brand && typeof brand === "string") productFilter.brand = { contains: brand, mode: "insensitive" };

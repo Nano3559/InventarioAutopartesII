@@ -460,6 +460,15 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
     const catMap: Record<string, number> = {};
     categories.forEach((c) => { catMap[c.name.toLowerCase()] = c.id; });
 
+    // Validar que locationId global exista si se proporciona
+    const requestedLocationId = Number(req.body.locationId) || 0;
+    if (requestedLocationId) {
+      const globalLocation = await prisma.location.findUnique({ where: { id: requestedLocationId } });
+      if (!globalLocation) {
+        return res.status(400).json({ message: `Ubicación no encontrada (ID: ${requestedLocationId})` });
+      }
+    }
+
     const imported: any[] = [];
     const updated: any[] = [];
     const errors: string[] = [];
@@ -467,7 +476,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i] as any;
 
-      const itemCode = (row["itemCode"] || row["Código"] || row["Codigo"] || "").toString().trim();
+      const itemCode = (row["itemCode"] || row["Código"] || row["codigo"] || row["Codigo"] || row["Cód. Producto"] || "").toString().trim();
       const name = (row["Descripcion"] || row["descripcion"] || row["Producto"] || row["producto"] || row["Nombre"] || "").toString().trim();
       const manufacturer = (row["Fabricante"] || row["fabricante"] || row["Manufacturer"] || "Sin especificar").toString().trim();
       const brand = (row["Marca"] || row["marca"] || row["Brand"] || "").toString().trim();
@@ -475,7 +484,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       const year = (row["Anos"] || row["anos"] || row["Años"] || row["años"] || row["Año"] || "").toString().trim();
       const detail = (row["Detalle"] || row["detalle"] || row["Detail"] || "").toString().trim();
       const oemCode = (row["Código OEM"] || row["codigo oem"] || row["oemCode"] || row["Cód. OEM"] || "").toString().trim();
-      const factoryCode = (row["Código fábrica"] || row["codigo fabrica"] || row["factoryCode"] || row["Cód. Fábrica"] || "").toString().trim();
+      const factoryCode = (row["Código fábrica"] || row["codigo fabrica"] || row["Codigo fabrica"] || row["factoryCode"] || row["Cód. Fábrica"] || "").toString().trim();
       const category = (row["Categoría"] || row["categoría"] || row["Categoria"] || row["categoria"] || row["Category"] || "").toString().trim();
       const price1 = parseFloat(row["Precio 1"] || row["precio1"] || row["Precio minorista"] || row["price1"] || "0") || 0;
       const price2 = parseFloat(row["Precio 2"] || row["precio2"] || row["Precio mayoreo"] || row["price2"] || "0") || 0;
@@ -483,15 +492,6 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       const cost = parseFloat(row["Costo"] || row["costo"] || row["cost"] || "0") || 0;
       const calidad = (row["Calidad"] || row["calidad"] || row["quality"] || row["Detalles"] || row["detalles"] || "").toString().trim();
       const rowStock = parseInt(row["Stock"] || row["stock"] || "0", 10) || 0;
-      const requestedLocationId = Number(req.body.locationId) || 0;
-
-      if (requestedLocationId) {
-        const locExists = await prisma.location.findUnique({ where: { id: requestedLocationId } });
-        if (!locExists) {
-          errors.push(`Fila ${i + 2}: Ubicación con id ${requestedLocationId} no existe`);
-          continue;
-        }
-      }
       const rowLocation = (row["Ubicación"] || row["Ubicacion"] || row["Tienda"] || row["Almacén"] || row["Almacen"] || "").toString().trim();
 
       if (!itemCode || !name) {

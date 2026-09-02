@@ -40,6 +40,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
           fromLocation: { select: { id: true, name: true, type: true } },
           toLocation: { select: { id: true, name: true, type: true } },
           user: { select: { id: true, name: true } },
+          request: { select: { id: true, status: true } },
         },
         orderBy: { date: "desc" },
         skip,
@@ -66,6 +67,7 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
     const toLocationId = parsePositiveInt(req.body.toLocationId, "Ubicación destino");
     const quantity = parsePositiveInt(req.body.quantity, "Cantidad");
     const observation = parseString(req.body.observation, "Observación", { max: 500 });
+    const requestId = req.body.requestId ? Number(req.body.requestId) : null;
 
     if (fromLocationId === toLocationId) {
       return res.status(400).json({ message: "La ubicación de origen y destino no pueden ser la misma" });
@@ -100,8 +102,18 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
     }
 
     const movement = await prisma.$transaction(async (tx) => {
+      // Bloqueo pesimista: re-leer stock dentro de la transacción
+      const lockedOrigin = await tx.$queryRaw<{ id: number; stock: number }[]>`
+        SELECT id, stock FROM "Inventory"
+        WHERE "productId" = ${productId} AND "locationId" = ${fromLocationId}
+        FOR UPDATE`;
+
+      if (!lockedOrigin.length || lockedOrigin[0].stock < quantity) {
+        throw new Error(`Stock insuficiente en origen. Disponible: ${lockedOrigin[0]?.stock || 0}, solicitado: ${quantity}`);
+      }
+
       await tx.inventory.update({
-        where: { id: inventoryOrigin.id },
+        where: { id: lockedOrigin[0].id },
         data: { stock: { decrement: quantity } },
       });
 
@@ -121,12 +133,13 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
       }
 
       return tx.movement.create({
-        data: { productId, fromLocationId, toLocationId, quantity, userId: user.userId, observation },
+        data: { productId, fromLocationId, toLocationId, quantity, userId: user.userId, observation, requestId },
         include: {
           product: { select: { name: true, itemCode: true } },
           fromLocation: { select: { name: true } },
           toLocation: { select: { name: true } },
           user: { select: { name: true } },
+          request: { select: { id: true, status: true } },
         },
       });
     });
