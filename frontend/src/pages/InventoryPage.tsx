@@ -40,12 +40,14 @@ interface FormData {
   model: string; year: string; detail: string; oemCode: string;
   factoryCode: string; price1: string; price2: string;
   wholesalePrice: string; cost: string; categoryId: string;
+  image: string; stock: string; locationId: string;
 }
 
 const emptyForm: FormData = {
   itemCode: "", manufacturer: "", name: "", brand: "", model: "", year: "",
   detail: "", oemCode: "", factoryCode: "", price1: "", price2: "",
   wholesalePrice: "", cost: "", categoryId: "",
+  image: "", stock: "", locationId: "",
 };
 
 const ALL_COLUMNS = [
@@ -169,6 +171,7 @@ export default function InventoryPage() {
       wholesalePrice: p.wholesalePrice ? String(p.wholesalePrice) : "",
       cost: p.cost ? String(p.cost) : "",
       categoryId: p.categoryId ? String(p.categoryId) : "",
+      image: p.image || "", stock: "", locationId: "",
     });
     setShowModal(true);
   };
@@ -193,6 +196,9 @@ export default function InventoryPage() {
         wholesalePrice: form.wholesalePrice ? Number(form.wholesalePrice) : null,
         cost: form.cost ? Number(form.cost) : null,
         categoryId: form.categoryId ? Number(form.categoryId) : null,
+        image: form.image || null,
+        stock: form.stock ? Number(form.stock) : 0,
+        locationId: form.locationId ? Number(form.locationId) : null,
       };
 
       if (editingId) {
@@ -521,6 +527,24 @@ export default function InventoryPage() {
                   {filters.categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
                 <ChevronDown size={14} className="absolute right-2.5 top-[38px] text-gray-500 pointer-events-none" />
+              </div>
+              <div className="border-t border-dark-700/50 pt-4">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Inventario e Imagen</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="URL de Imagen" value={form.image} onChange={(v) => setField("image", v)} placeholder="https://..." />
+                  {!editingId && (
+                    <Field label="Stock inicial" value={form.stock} onChange={(v) => setField("stock", v)} type="number" />
+                  )}
+                  {!editingId && (
+                    <div className="col-span-2">
+                      <label className="block text-xs text-gray-400 mb-1.5">Ubicación inicial</label>
+                      <select value={form.locationId} onChange={(e) => setField("locationId", e.target.value)} className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
+                        <option value="">Sin ubicación</option>
+                        {locations.map((l) => <option key={l.id} value={l.id}>{l.name} ({l.type === "ALMACEN" ? "Almacén" : "Tienda"})</option>)}
+                      </select>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex items-center justify-end gap-3 p-5 border-t border-dark-700/50">

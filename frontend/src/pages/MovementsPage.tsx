@@ -58,7 +58,7 @@ export default function MovementsPage() {
   const fetchLocations = useCallback(async () => {
     try {
       const res = await api.get("/locations");
-      setLocations(res.data);
+      setLocations(res.data.locations || []);
     } catch { /* ignore */ }
   }, []);
 

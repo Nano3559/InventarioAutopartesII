@@ -41,6 +41,17 @@ export default function CostsPage() {
   const [saving, setSaving] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Invoice bulk import
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [invoiceExcel, setInvoiceExcel] = useState<File | null>(null);
+  const [invFactFile, setInvFactFile] = useState<File | null>(null);
+  const [invoiceSupplierId, setInvoiceSupplierId] = useState("");
+  const [invoiceRate, setInvoiceRate] = useState("6.96");
+  const [invoicePercent, setInvoicePercent] = useState("10");
+  const [invoiceMargin, setInvoiceMargin] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<any>(null);
+
   // Supplier form
   const [showSupplierModal, setShowSupplierModal] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<number | null>(null);
@@ -148,6 +159,36 @@ export default function CostsPage() {
     }
   };
 
+  const openImportInvoice = () => {
+    setInvoiceExcel(null); setInvFactFile(null); setInvoiceSupplierId("");
+    setInvoiceRate("6.96"); setInvoicePercent("10"); setInvoiceMargin(""); setImportResult(null);
+    setShowInvoiceModal(true);
+  };
+
+  const importInvoice = async () => {
+    if (!invoiceExcel || !invoiceSupplierId || !invoiceRate) {
+      toast.error("Excel, proveedor y tipo de cambio son obligatorios"); return;
+    }
+    try {
+      setImporting(true);
+      const formData = new FormData();
+      formData.append("file", invoiceExcel);
+      if (invFactFile) formData.append("invoice", invFactFile);
+      formData.append("supplierId", invoiceSupplierId);
+      formData.append("exchangeRate", invoiceRate);
+      if (invoicePercent) formData.append("percentage", invoicePercent);
+      if (invoiceMargin) formData.append("defaultMargin", invoiceMargin);
+      const res = await api.post("/costs/import-invoice", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setImportResult(res.data);
+      toast.success(`Factura importada: ${res.data.imported} registrados, ${res.data.updated} actualizados`);
+      fetchCosts();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Error al importar factura");
+    } finally { setImporting(false); }
+  };
+
   // ========== SUPPLIER CRUD ==========
   const openCreateSupplier = () => {
     setEditingSupplier(null);
@@ -205,6 +246,10 @@ export default function CostsPage() {
           <button onClick={openCreateSupplier}
             className="flex items-center gap-2 px-4 py-2.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-xl text-sm transition-all border border-dark-600">
             <Building2 size={16} /> Proveedor
+          </button>
+          <button onClick={openImportInvoice}
+            className="flex items-center gap-2 px-4 py-2.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-xl text-sm transition-all border border-dark-600">
+            <Upload size={16} /> Importar Factura
           </button>
           <button onClick={openCreateCost}
             className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-600/20">
@@ -479,6 +524,92 @@ export default function CostsPage() {
               <button onClick={saveSupplier}
                 className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-600/20">
                 {editingSupplier ? "Guardar Cambios" : "Crear Proveedor"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Invoice Import Modal */}
+      {showInvoiceModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-dark-900 border border-dark-700/50 rounded-2xl w-full max-w-lg shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-dark-700/50">
+              <h3 className="text-lg font-bold text-white">Importar Factura (Costos)</h3>
+              <button onClick={() => setShowInvoiceModal(false)} className="p-1.5 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-all">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Sube el Excel de la factura (columnas: Código, Cantidad, Precio Unitario) y si tienes el PDF/imagen de la factura. El sistema calculará automáticamente el <span className="text-primary-400 font-medium">Costo Puesto Aquí</span> de cada producto.
+              </p>
+
+              <div className="p-3 bg-dark-800 border border-primary-600/20 rounded-xl text-xs text-gray-300 leading-relaxed">
+                <b className="text-primary-400">Fórmula aplicada:</b> Costo Puesto Aquí = Precio Unitario (USD) × Tipo Cambio × (1 + %Gastos/100)
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Excel de factura *</label>
+                <label className="flex items-center gap-2 px-4 py-2.5 bg-dark-800 border border-dark-700 rounded-xl text-gray-400 text-sm cursor-pointer hover:border-primary-500 transition-all">
+                  <Upload size={16} />
+                  <span className="truncate">{invoiceExcel ? invoiceExcel.name : "Seleccionar archivo .xlsx"}</span>
+                  <input type="file" className="hidden" accept=".xlsx,.xls" onChange={(e) => setInvoiceExcel(e.target.files?.[0] || null)} />
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Factura PDF/Imagen (opcional)</label>
+                <label className="flex items-center gap-2 px-4 py-2.5 bg-dark-800 border border-dark-700 rounded-xl text-gray-400 text-sm cursor-pointer hover:border-primary-500 transition-all">
+                  <Upload size={16} />
+                  <span className="truncate">{invFactFile ? invFactFile.name : "Seleccionar archivo .pdf/.jpg/.png"}</span>
+                  <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => setInvFactFile(e.target.files?.[0] || null)} />
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Proveedor *</label>
+                <select value={invoiceSupplierId} onChange={(e) => setInvoiceSupplierId(e.target.value)}
+                  className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500">
+                  <option value="">Seleccionar...</option>
+                  {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Tipo de Cambio (Bs/USD) *</label>
+                  <input type="number" step="0.01" value={invoiceRate} onChange={(e) => setInvoiceRate(e.target.value)}
+                    className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">% Gastos (flete/nac.)</label>
+                  <input type="number" value={invoicePercent} onChange={(e) => setInvoicePercent(e.target.value)}
+                    className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">% Margen (precio)</label>
+                  <input type="number" value={invoiceMargin} onChange={(e) => setInvoiceMargin(e.target.value)}
+                    className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+                </div>
+              </div>
+
+              {importResult && (
+                <div className="p-3 bg-dark-800 border border-dark-700 rounded-xl text-sm">
+                  <p className="text-gray-300">Excel: {importResult.total} filas · <span className="text-green-400">{importResult.imported} nuevos</span> · <span className="text-blue-400">{importResult.updated} actualizados</span> · <span className="text-red-400">{importResult.errors} errores</span></p>
+                  {importResult.errors > 0 && (
+                    <pre className="mt-2 text-xs text-red-400 max-h-32 overflow-y-auto whitespace-pre-wrap">{importResult.details?.errors?.join("\n")}</pre>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-dark-700/50">
+              <button onClick={() => setShowInvoiceModal(false)}
+                className="px-4 py-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl text-sm transition-all">
+                Cerrar
+              </button>
+              <button onClick={importInvoice} disabled={importing}
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-600/20 disabled:opacity-50">
+                {importing ? "Procesando..." : "Importar Factura"}
               </button>
             </div>
           </div>

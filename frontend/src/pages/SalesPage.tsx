@@ -27,7 +27,8 @@ interface Location {
 
 interface CartItem {
   productId: number; itemCode: string; name: string; brand: string;
-  unitPrice: number; quantity: number; availableStock: number;
+  unitPrice: number; priceTier: 1 | 2; price1: number; price2: number;
+  quantity: number; availableStock: number;
 }
 
 interface PaymentEntry {
@@ -134,7 +135,24 @@ export default function SalesPage() {
 
   const renderCartCell = (c: CartItem, column: string) => {
     if (column === "Producto") return <td key={column} className="px-5 py-3"><p className="text-white font-medium text-sm">{c.name}</p><p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p></td>;
-    if (column === "Precio") return <td key={column} className="px-4 py-3 text-right text-gray-300">{formatBs(c.unitPrice)}</td>;
+    if (column === "Precio") return (
+      <td key={column} className="px-4 py-3 text-right">
+        {c.price2 > 0 && c.price2 !== c.price1 ? (
+          <div className="flex items-center justify-end gap-1">
+            <button
+              onClick={() => changePriceTier(c.productId, 1, String(c.price1), String(c.price2))}
+              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceTier === 1 ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"}`}
+            >Precio 1</button>
+            <button
+              onClick={() => changePriceTier(c.productId, 2, String(c.price1), String(c.price2))}
+              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceTier === 2 ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"}`}
+            >Precio 2</button>
+          </div>
+        ) : (
+          <span className="text-gray-300">{formatBs(c.unitPrice)}</span>
+        )}
+      </td>
+    );
     if (column === "Cantidad") return <td key={column} className="px-4 py-3"><div className="flex items-center justify-center gap-1.5"><button onClick={() => updateQuantity(c.productId, c.quantity - 1)} className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400"><Minus size={14} /></button><span className="w-10 text-center text-white text-sm font-medium">{c.quantity}</span><button onClick={() => updateQuantity(c.productId, c.quantity + 1)} className="p-1 rounded-lg bg-dark-900/50 border border-dark-600/50 text-gray-400"><Plus size={14} /></button></div><p className="text-center text-xs text-gray-600 mt-0.5">disp: {c.availableStock}</p></td>;
     if (column === "Subtotal") return <td key={column} className="px-4 py-3 text-right text-green-400 font-medium">{formatBs(c.unitPrice * c.quantity)}</td>;
     if (column === "Eliminar") return <td key={column} className="px-5 py-3 text-center"><button onClick={() => removeItem(c.productId)} className="p-1.5 rounded-lg text-gray-500 hover:text-red-400"><Trash2 size={14} /></button></td>;
@@ -170,8 +188,8 @@ export default function SalesPage() {
   };
 
   // ==================== CART ====================
-  const addToCart = (p: Product) => {
-    const price = Number(p.price1);
+  const addToCart = (p: Product, tier: 1 | 2 = 1) => {
+    const price = tier === 2 && Number(p.price2) > 0 ? Number(p.price2) : Number(p.price1);
     setCart((prev) => {
       const existing = prev.find((c) => c.productId === p.id);
       if (existing) {
@@ -185,7 +203,8 @@ export default function SalesPage() {
       }
       return [...prev, {
         productId: p.id, itemCode: p.itemCode, name: p.name, brand: p.brand,
-        unitPrice: price, quantity: 1, availableStock: p.stock,
+        unitPrice: price, priceTier: tier, price1: Number(p.price1), price2: Number(p.price2),
+        quantity: 1, availableStock: p.stock,
       }];
     });
     setSearch("");
@@ -203,6 +222,14 @@ export default function SalesPage() {
         return { ...c, quantity: c.availableStock };
       }
       return { ...c, quantity: newQty };
+    }));
+  };
+
+  const changePriceTier = (productId: number, tier: 1 | 2, price1: string, price2: string) => {
+    setCart((prev) => prev.map((c) => {
+      if (c.productId !== productId) return c;
+      const price = tier === 2 && Number(price2) > 0 ? Number(price2) : Number(price1);
+      return { ...c, priceTier: tier, unitPrice: price };
     }));
   };
 
@@ -455,24 +482,48 @@ export default function SalesPage() {
 
             {searchResults.length > 0 && (
               <div className="mt-3 space-y-1.5 max-h-72 overflow-y-auto">
-                {searchResults.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => addToCart(p)}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-dark-900/50 border border-dark-700/30 rounded-xl hover:border-primary-500/30 hover:bg-dark-800/50 transition-all text-left"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm text-white font-medium truncate">{p.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{p.brand} · {p.model} · {p.itemCode}</p>
+                {searchResults.map((p) => {
+                  const hasPrice2 = Number(p.price2) > 0 && Number(p.price2) !== Number(p.price1);
+                  return (
+                    <div
+                      key={p.id}
+                      className="w-full flex items-center justify-between px-4 py-3 bg-dark-900/50 border border-dark-700/30 rounded-xl hover:border-primary-500/30 hover:bg-dark-800/50 transition-all"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm text-white font-medium truncate">{p.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{p.brand} · {p.model} · {p.itemCode}</p>
+                        <p className={`text-xs font-medium mt-0.5 ${p.stock <= 3 ? "text-yellow-400" : "text-gray-500"}`}>
+                          Stock: {p.stock}
+                        </p>
+                      </div>
+                      <div className="text-right ml-4 shrink-0 space-y-1">
+                        {hasPrice2 ? (
+                          <div className="flex flex-col items-end gap-1">
+                            <button
+                              onClick={() => addToCart(p, 1)}
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-all"
+                            >
+                              <Plus size={12} /> P1: {formatBs(Number(p.price1))}
+                            </button>
+                            <button
+                              onClick={() => addToCart(p, 2)}
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-all"
+                            >
+                              <Plus size={12} /> P2: {formatBs(Number(p.price2))}
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => addToCart(p, 1)}
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-all"
+                          >
+                            <Plus size={12} /> {formatBs(Number(p.price1))}
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-right ml-4 shrink-0">
-                      <p className="text-sm text-green-400 font-medium">{formatBs(Number(p.price1))}</p>
-                      <p className={`text-xs font-medium ${p.stock <= 3 ? "text-yellow-400" : "text-gray-500"}`}>
-                        Stock: {p.stock}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+                  );
+                })}
               </div>
             )}
             {(search.length >= 2 || oemSearch.length >= 2) && searchResults.length === 0 && !searching && (
