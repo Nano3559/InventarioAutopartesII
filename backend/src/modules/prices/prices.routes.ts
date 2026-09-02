@@ -13,7 +13,7 @@ const PERCENTAGES = [20, 30, 40, 50, 60, 70, 80];
 // GET / — Calcular precios desde costo con porcentajes
 router.get("/", async (req: AuthRequest, res: Response) => {
   try {
-    const { search, page = "1", limit = "20" } = req.query;
+    const { search, costId, page = "1", limit = "20" } = req.query;
 
     const where: any = {};
     if (search && typeof search === "string") {
@@ -29,6 +29,18 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     const pg = Math.max(1, Number(page) || 1);
     const takeClamped = Math.min(200, Math.max(1, Number(limit) || 20));
     const skipClamped = (pg - 1) * takeClamped;
+
+    // H5: permitir seleccionar un costo/factura específico (si aplica)
+    let selectedCost: any = null;
+    if (costId && typeof costId === "string") {
+      const cid = Number(costId);
+      if (!Number.isNaN(cid) && cid >= 1) {
+        selectedCost = await prisma.cost.findUnique({
+          where: { id: cid },
+          include: { product: { select: { id: true, itemCode: true, name: true, brand: true, model: true, year: true, detail: true, wholesalePrice: true } } },
+        });
+      }
+    }
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -68,12 +80,31 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         })),
         ...calculated,
         wholesalePrice: p.wholesalePrice ? Number(p.wholesalePrice) : 0,
+        costId: p.costs[0]?.id ?? null,
+        costDate: p.costs[0]?.date ?? null,
+        invoiceUrl: p.costs[0]?.invoiceUrl ?? null,
       };
     });
 
     res.json({
       prices,
       percentages: PERCENTAGES,
+      selectedCost: selectedCost
+        ? {
+            id: selectedCost.id,
+            itemCode: selectedCost.product.itemCode,
+            productName: selectedCost.product.name,
+            brand: selectedCost.product.brand,
+            model: selectedCost.product.model,
+            years: selectedCost.product.year,
+            detail: selectedCost.product.detail || "",
+            costPrice: Number(selectedCost.costPrice),
+            exchangeRate: selectedCost.exchangeRate ? Number(selectedCost.exchangeRate) : null,
+            percentage: selectedCost.percentage ? Number(selectedCost.percentage) : null,
+            invoiceUrl: selectedCost.invoiceUrl,
+            supplierId: selectedCost.supplierId,
+          }
+        : null,
       pagination: { total, page: pg, limit: takeClamped, pages: Math.ceil(total / takeClamped) },
     });
   } catch (error) {
@@ -140,7 +171,19 @@ router.get("/export", async (req: AuthRequest, res: Response) => {
       };
     });
 
-    res.json({ data: rows, total: rows.length });
+    const esc = (v: any) => {
+      const s = v == null ? "" : String(v);
+      if (/[",\n\r]/.test(s)) {
+        return `"${s.replace(/"/g, '""')}"`;
+      }
+      return s;
+    };
+
+    const header = ["Codigo Fabrica", "Nombre", "Marca", "Modelo", "Año", "Detalle", "Precio Mayor"];
+    const csvLines = [header, ...rows.map((r) => [r.itemCode, r.name, r.brand, r.model, r.years, r.detail, r.wholesalePrice].map(esc))];
+    const csv = "\uFEFF" + csvLines.map((l) => l.join(",")).join("\r\n");
+
+    res.json({ data: rows, total: rows.length, csv });
   } catch (error) {
     console.error("Error al exportar precios:", error);
     res.status(500).json({ message: "Error interno del servidor" });

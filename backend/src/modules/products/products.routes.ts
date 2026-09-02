@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 import { createWorker } from "tesseract.js";
 import path from "path";
 import { yearMatchesRanges } from "../../utils/yearRanges";
-import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { authenticate, authorize, optionalAuth } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 
 const router = Router();
@@ -17,8 +17,8 @@ const OCR_LANG_PATH = path.join(process.cwd(), "node_modules", "@tesseract.js-da
 
 const IMAGE_STOPWORDS = new Set(["img", "imagen", "image", "photo", "foto", "producto", "product", "part", "ref", "cod", "code", "dsc", "dscn", "captura", "nuevo", "venta", "jpeg", "jpg", "png", "webp", "2024", "2023", "2022", "the", "and", "for", "con", "numero", "number", "original", "oem", "referencia", "repuesto", "accesorio", "universal", "calidad", "estandar"]);
 
-// GET / — Listar productos con filtros, búsqueda y paginación (requiere autenticación)
-router.get("/", authenticate, async (req: Request, res: Response) => {
+// GET / — Listar productos con filtros, búsqueda y paginación
+router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
   try {
     const {
       search, brand, manufacturer, model, year, oemCode, factoryCode,
@@ -78,11 +78,13 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
     const total = allProducts.length;
     const products = allProducts.slice(skip, skip + take);
 
+    const isAuth = !!req.user;
+
     const result = products.map((p) => {
       const stock = filterLocationId
         ? (p.inventories.find((inv) => inv.locationId === filterLocationId)?.stock || 0)
         : p.inventories.reduce((sum, inv) => sum + inv.stock, 0);
-      return {
+      const item: any = {
         id: p.id,
         itemCode: p.itemCode,
         manufacturer: p.manufacturer,
@@ -95,14 +97,17 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
         image: p.image,
         oemCode: p.oemCode,
         factoryCode: p.factoryCode,
-        price1: p.price1,
-        price2: p.price2,
-        wholesalePrice: p.wholesalePrice,
-        cost: p.cost,
         categoryId: p.categoryId,
         category: p.category?.name || null,
         stock,
       };
+      if (isAuth) {
+        item.price1 = p.price1;
+        item.price2 = p.price2;
+        item.wholesalePrice = p.wholesalePrice;
+        item.cost = p.cost;
+      }
+      return item;
     });
 
     res.json({
@@ -115,8 +120,8 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
   }
 });
 
-// GET /filters — Marcas, fabricantes, modelos, años, categorías disponibles (requiere autenticación)
-router.get("/filters", authenticate, async (_req: Request, res: Response) => {
+// GET /filters — Marcas, fabricantes, modelos, años, categorías disponibles
+router.get("/filters", optionalAuth, async (_req: AuthRequest, res: Response) => {
   try {
     const [brandsRaw, manufacturersRaw, modelsRaw, yearsRaw, categories] = await Promise.all([
       prisma.product.findMany({ select: { brand: true }, orderBy: { brand: "asc" } }),
@@ -138,8 +143,8 @@ router.get("/filters", authenticate, async (_req: Request, res: Response) => {
   }
 });
 
-// GET /:id — Detalle de producto con stock por ubicación (requiere autenticación)
-router.get("/:id", authenticate, async (req: Request, res: Response) => {
+// GET /:id — Detalle de producto con stock por ubicación
+router.get("/:id", optionalAuth, async (req: AuthRequest, res: Response) => {
   try {
     const product = await prisma.product.findUnique({
       where: { id: Number(req.params.id) },
@@ -156,7 +161,9 @@ router.get("/:id", authenticate, async (req: Request, res: Response) => {
 
     const stockTotal = product.inventories.reduce((sum, inv) => sum + inv.stock, 0);
 
-    res.json({
+    const isAuth = !!req.user;
+
+    const response: any = {
       id: product.id,
       itemCode: product.itemCode,
       manufacturer: product.manufacturer,
@@ -169,10 +176,6 @@ router.get("/:id", authenticate, async (req: Request, res: Response) => {
       image: product.image,
       oemCode: product.oemCode,
       factoryCode: product.factoryCode,
-      price1: product.price1,
-      price2: product.price2,
-      wholesalePrice: product.wholesalePrice,
-      cost: product.cost,
       categoryId: product.categoryId,
       category: product.category?.name || null,
       stock: stockTotal,
@@ -189,7 +192,14 @@ router.get("/:id", authenticate, async (req: Request, res: Response) => {
         phone: pi.importer.phone,
         city: pi.importer.city,
       })),
-    });
+    };
+    if (isAuth) {
+      response.price1 = product.price1;
+      response.price2 = product.price2;
+      response.wholesalePrice = product.wholesalePrice;
+      response.cost = product.cost;
+    }
+    res.json(response);
   } catch (error) {
     console.error("Error al obtener producto:", error);
     res.status(500).json({ message: "Error interno del servidor" });
