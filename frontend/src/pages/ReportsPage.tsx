@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { jsPDF } from "jspdf";
 import {
-  BarChart3, Search, Download, FileText,
+  BarChart3, Search, Download,
   TrendingUp, Package, RefreshCw, CalendarDays,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
 import * as XLSX from "xlsx";
-import { jsPDF } from "jspdf";
 
 interface SalesReport {
   id: number; date: string; type: string; total: number;
