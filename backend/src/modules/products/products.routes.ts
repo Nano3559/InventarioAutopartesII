@@ -17,8 +17,8 @@ const OCR_LANG_PATH = path.join(process.cwd(), "node_modules", "@tesseract.js-da
 
 const IMAGE_STOPWORDS = new Set(["img", "imagen", "image", "photo", "foto", "producto", "product", "part", "ref", "cod", "code", "dsc", "dscn", "captura", "nuevo", "venta", "jpeg", "jpg", "png", "webp", "2024", "2023", "2022", "the", "and", "for", "con", "numero", "number", "original", "oem", "referencia", "repuesto", "accesorio", "universal", "calidad", "estandar"]);
 
-// GET / — Listar productos con filtros, búsqueda y paginación
-router.get("/", async (req: Request, res: Response) => {
+// GET / — Listar productos con filtros, búsqueda y paginación (requiere autenticación)
+router.get("/", authenticate, async (req: Request, res: Response) => {
   try {
     const {
       search, brand, manufacturer, model, year, oemCode, factoryCode,
@@ -115,8 +115,8 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
-// GET /filters — Marcas, fabricantes, modelos, años, categorías disponibles
-router.get("/filters", async (_req: Request, res: Response) => {
+// GET /filters — Marcas, fabricantes, modelos, años, categorías disponibles (requiere autenticación)
+router.get("/filters", authenticate, async (_req: Request, res: Response) => {
   try {
     const [brandsRaw, manufacturersRaw, modelsRaw, yearsRaw, categories] = await Promise.all([
       prisma.product.findMany({ select: { brand: true }, orderBy: { brand: "asc" } }),
@@ -138,8 +138,8 @@ router.get("/filters", async (_req: Request, res: Response) => {
   }
 });
 
-// GET /:id — Detalle de producto con stock por ubicación
-router.get("/:id", async (req: Request, res: Response) => {
+// GET /:id — Detalle de producto con stock por ubicación (requiere autenticación)
+router.get("/:id", authenticate, async (req: Request, res: Response) => {
   try {
     const product = await prisma.product.findUnique({
       where: { id: Number(req.params.id) },
@@ -450,6 +450,15 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
     const catMap: Record<string, number> = {};
     categories.forEach((c) => { catMap[c.name.toLowerCase()] = c.id; });
 
+    // Validar que locationId global exista si se proporciona
+    const requestedLocationId = Number(req.body.locationId) || 0;
+    if (requestedLocationId) {
+      const globalLocation = await prisma.location.findUnique({ where: { id: requestedLocationId } });
+      if (!globalLocation) {
+        return res.status(400).json({ message: `Ubicación no encontrada (ID: ${requestedLocationId})` });
+      }
+    }
+
     const imported: any[] = [];
     const updated: any[] = [];
     const errors: string[] = [];
@@ -457,7 +466,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i] as any;
 
-      const itemCode = (row["Codigo fabrica"] || row["codigo fabrica"] || row["Código Fábrica"] || row["itemCode"] || row["Código"] || "").toString().trim();
+      const itemCode = (row["itemCode"] || row["Código"] || row["codigo"] || row["Codigo"] || row["Cód. Producto"] || "").toString().trim();
       const name = (row["Descripcion"] || row["descripcion"] || row["Producto"] || row["producto"] || row["Nombre"] || "").toString().trim();
       const manufacturer = (row["Fabricante"] || row["fabricante"] || row["Manufacturer"] || "Sin especificar").toString().trim();
       const brand = (row["Marca"] || row["marca"] || row["Brand"] || "").toString().trim();
@@ -465,7 +474,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       const year = (row["Anos"] || row["anos"] || row["Años"] || row["años"] || row["Año"] || "").toString().trim();
       const detail = (row["Detalle"] || row["detalle"] || row["Detail"] || "").toString().trim();
       const oemCode = (row["Código OEM"] || row["codigo oem"] || row["oemCode"] || row["Cód. OEM"] || "").toString().trim();
-      const factoryCode = (row["Código fábrica"] || row["codigo fabrica"] || row["factoryCode"] || row["Cód. Fábrica"] || "").toString().trim();
+      const factoryCode = (row["Código fábrica"] || row["codigo fabrica"] || row["Codigo fabrica"] || row["factoryCode"] || row["Cód. Fábrica"] || "").toString().trim();
       const category = (row["Categoría"] || row["categoría"] || row["Categoria"] || row["categoria"] || row["Category"] || "").toString().trim();
       const price1 = parseFloat(row["Precio 1"] || row["precio1"] || row["Precio minorista"] || row["price1"] || "0") || 0;
       const price2 = parseFloat(row["Precio 2"] || row["precio2"] || row["Precio mayoreo"] || row["price2"] || "0") || 0;
@@ -473,7 +482,6 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       const cost = parseFloat(row["Costo"] || row["costo"] || row["cost"] || "0") || 0;
       const calidad = (row["Calidad"] || row["calidad"] || row["quality"] || row["Detalles"] || row["detalles"] || "").toString().trim();
       const rowStock = parseInt(row["Stock"] || row["stock"] || "0", 10) || 0;
-      const requestedLocationId = Number(req.body.locationId) || 0;
       const rowLocation = (row["Ubicación"] || row["Ubicacion"] || row["Tienda"] || row["Almacén"] || row["Almacen"] || "").toString().trim();
 
       if (!itemCode || !name) {

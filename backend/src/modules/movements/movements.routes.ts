@@ -100,8 +100,18 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
     }
 
     const movement = await prisma.$transaction(async (tx) => {
+      // Bloqueo pesimista: re-leer stock dentro de la transacción
+      const lockedOrigin = await tx.$queryRaw<{ id: number; stock: number }[]>`
+        SELECT id, stock FROM "Inventory"
+        WHERE "productId" = ${productId} AND "locationId" = ${fromLocationId}
+        FOR UPDATE`;
+
+      if (!lockedOrigin.length || lockedOrigin[0].stock < quantity) {
+        throw new Error(`Stock insuficiente en origen. Disponible: ${lockedOrigin[0]?.stock || 0}, solicitado: ${quantity}`);
+      }
+
       await tx.inventory.update({
-        where: { id: inventoryOrigin.id },
+        where: { id: lockedOrigin[0].id },
         data: { stock: { decrement: quantity } },
       });
 
