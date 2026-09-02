@@ -224,21 +224,22 @@
 
 ## TAREAS — ERIKA (FRONTEND)
 
-- [ ] E1. `App.tsx:69-78`: agregar `"TIENDA"` a `allowedRoles` de `inventario` e `inventario/:id` (A3).
-- [ ] E2. Filtros de inventario: UI para Modelo, Año (con rangos `13-`/`13-15`), OEM, Fábrica; conectar `?year=`, `?oemCode=`, `?model=`, `?factoryCode=` (`InventoryPage`). Backend ya soporta.
-- [ ] E3. Autocompletado de Modelo y Año (solo hay Marca/Fabricante).
-- [ ] E4. Botón "Solicitar a almacén" (`ProductDetailPage.tsx:135`) → crear solicitud vía API con `requestedById=req.user`.
+- [x] E1. `App.tsx:69-78`: agregar `"TIENDA"` a `allowedRoles` de `inventario` e `inventario/:id` (A3).
+- [x] E2. Filtros de inventario: UI para Modelo, Año (con rangos `13-`/`13-15`), OEM, Fábrica; conectar `?year=`, `?oemCode=`, `?model=`, `?factoryCode=` (`InventoryPage`). Backend ya soporta.
+- [x] E3. Autocompletado de Modelo y Año (solo hay Marca/Fabricante).
+- [x] E4. Botón "Solicitar a almacén" (`ProductDetailPage.tsx:135`) → crear solicitud vía API con `requestedById=req.user`.
 - [ ] E5. Módulo ventas: reproducir pantalla negra en consola del navegador (body/fondo global `bg-dark-950`); verificar build Vercel (fork en `ce645da` atrasado) — ver C3 y NOTAS al final.
-- [ ] E6. Columna "Proveedor" en inventario y detalle (desde `Cost.supplier`).
-- [ ] E7. Export de precios como Excel real (o renombrar a CSV) + escapar CSV.
-- [ ] E8. Import: poder elegir ubicación/stock y validar que exista; opción de fila→ubicación.
-- [ ] E9. Notificaciones: `linkUrl` correcto a `/panel/solicitudes` y navegar al abrir (E6).
-- [ ] E10. Móvil: completar InventoryScreen/SalesScreen, Login real, URL backend configurable, protección por sesión/rol (K3, K4).
-- [ ] E11. Reportes: filtros de marca/modelo/proveedor/producto en la UI; checkbox no-factura OK.
-- [ ] E12. PDF mayorista desde datos persistentes (I6) con cliente/productos/pagos/entrega.
-- [ ] E13. Añadir ErrorBoundary global (cualquier error de render deja pantalla negra por `bg-dark-950`) + revisar consola (C3).
-- [ ] E14. `authStore.ts`: si falla `GET /permissions/permissions/me`, dar permisos mínimos también para TIENDA (K15).
-- [ ] E15. Sidebar: ocultar enlace "Inventario" para TIENDA mientras `App.tsx` lo bloquee, o arreglar A3 (K14).
+- [ ] E5. Módulo ventas: reproducir pantalla negra en consola del navegador (body/fondo global `bg-dark-950`); verificar build Vercel (fork en `ce645da` atrasado) — ver C3 y NOTAS al final. *(Corrección de render implementada; falta prueba visual en Vercel.)*
+- [x] E6. Columna "Proveedor" en inventario y detalle (desde `Cost.supplier`).
+- [x] E7. Export de precios como Excel real (o renombrar a CSV) + escapar CSV.
+- [x] E8. Import: poder elegir ubicación/stock y validar que exista; opción de fila→ubicación.
+- [x] E9. Notificaciones: `linkUrl` correcto a `/panel/solicitudes` y navegar al abrir (E6).
+- [x] E10. Móvil: completar InventoryScreen/SalesScreen, Login real, URL backend configurable, protección por sesión/rol (K3, K4).
+- [ ] E11. Reportes: filtros de marca/modelo/proveedor/producto en la UI; checkbox no-factura OK. *(UI implementada; falta que el backend aplique proveedor/producto.)*
+- [x] E12. PDF mayorista desde datos persistentes (I6) con cliente/productos/pagos/entrega.
+- [x] E13. Añadir ErrorBoundary global (cualquier error de render deja pantalla negra por `bg-dark-950`) + revisar consola (C3).
+- [x] E14. `authStore.ts`: si falla `GET /permissions/permissions/me`, dar permisos mínimos también para TIENDA (K15).
+- [x] E15. Sidebar: ocultar enlace "Inventario" para TIENDA mientras `App.tsx` lo bloquee, o arreglar A3 (K14).
 
 ## TAREAS — ROSS (BACKEND)
 
