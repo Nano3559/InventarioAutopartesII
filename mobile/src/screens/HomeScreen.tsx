@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import { useSession } from "../navigation/AppNavigator";
 
 const modules = [
   { label: "Inventario", screen: "Inventory", color: "#2563eb" },
@@ -8,11 +9,21 @@ const modules = [
 ];
 
 export default function HomeScreen({ navigation }: any) {
+  const { user, logout } = useSession();
+  const availableModules = modules.filter((mod) =>
+    mod.screen === "Inventory"
+      ? user?.role === "ADMIN" || user?.role === "INVENTARIO" || user?.role === "TIENDA"
+      : mod.screen === "Sales"
+        ? user?.role === "ADMIN" || user?.role === "TIENDA"
+        : true
+  );
+
   return (
     <ScrollView style={styles.container}>
+      <Text style={styles.welcome}>Hola, {user?.name}</Text>
       <Text style={styles.title}>Módulos</Text>
       <View style={styles.grid}>
-        {modules.map((mod) => (
+        {availableModules.map((mod) => (
           <TouchableOpacity
             key={mod.screen}
             style={[styles.card, { backgroundColor: mod.color }]}
@@ -22,6 +33,9 @@ export default function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         ))}
       </View>
+      <TouchableOpacity style={styles.logout} onPress={logout}>
+        <Text style={styles.logoutText}>Cerrar sesión</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -37,6 +51,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 16,
   },
+  welcome: {
+    color: "#4b5563",
+    marginBottom: 4,
+  },
   grid: {
     gap: 12,
   },
@@ -48,6 +66,18 @@ const styles = StyleSheet.create({
   cardText: {
     color: "#fff",
     fontSize: 18,
+    fontWeight: "600",
+  },
+  logout: {
+    borderWidth: 1,
+    borderColor: "#dc2626",
+    borderRadius: 8,
+    padding: 12,
+    alignItems: "center",
+    marginTop: 24,
+  },
+  logoutText: {
+    color: "#dc2626",
     fontWeight: "600",
   },
 });

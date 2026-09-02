@@ -60,7 +60,8 @@ export default function SalesPage() {
 
   useEffect(() => {
     api.get("/locations").then((r) => {
-      setLocations(r.data);
+      const locationList = Array.isArray(r.data) ? r.data : r.data.locations || [];
+      setLocations(locationList);
       if (isTienda && user?.locationId) {
         setSelectedLocationId(user.locationId);
       }
@@ -267,7 +268,20 @@ export default function SalesPage() {
       }
 
       const res = await api.post("/sales", payload);
-      setLastSale(res.data);
+      const savedItems = (res.data.items || []).map((item: any) => {
+        const cartItem = cart.find((entry) => entry.productId === item.productId);
+        return {
+          ...item,
+          product: item.product || { id: item.productId, name: cartItem?.name || "Producto", itemCode: cartItem?.itemCode || "" },
+        };
+      });
+      setLastSale({
+        ...res.data,
+        saleDate: res.data.saleDate || new Date().toISOString(),
+        total: Number(res.data.total) || cartTotal,
+        items: savedItems,
+        payments: Array.isArray(res.data.payments) ? res.data.payments : [],
+      });
       setShowPayment(false);
       setShowConfirmed(true);
       setCart([]);

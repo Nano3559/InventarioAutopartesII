@@ -21,6 +21,7 @@ import CostsPage from "./pages/CostsPage";
 import PricesPage from "./pages/PricesPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const ALL = ["ADMIN", "INVENTARIO", "TIENDA"];
 
@@ -42,6 +43,7 @@ export default function App() {
           },
         }}
       />
+      <ErrorBoundary>
       <Routes>
         {/* Public routes */}
         <Route element={<PublicLayout />}>
@@ -65,14 +67,14 @@ export default function App() {
           {/* Dashboard — todos los roles */}
           <Route index element={<DashboardPage />} />
 
-          {/* Inventario — ADMIN + INVENTARIO */}
+          {/* Inventario — ADMIN + INVENTARIO + TIENDA (solo lectura) */}
           <Route path="inventario" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="inventario">
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO", "TIENDA"]} module="inventario">
               <InventoryPage />
             </RoleRoute>
           } />
           <Route path="inventario/:id" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="inventario">
+            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO", "TIENDA"]} module="inventario">
               <ProductDetailPage />
             </RoleRoute>
           } />
@@ -141,6 +143,7 @@ export default function App() {
           } />
         </Route>
       </Routes>
+      </ErrorBoundary>
     </>
   );
 }

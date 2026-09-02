@@ -11,6 +11,11 @@ export interface YearRange {
   end: number | null;
 }
 
+function normalizeYear(value: number): number {
+  if (value >= 0 && value < 100) return value >= 50 ? 1900 + value : 2000 + value;
+  return value;
+}
+
 export function parseYearRange(range: string): YearRange | null {
   const trimmed = range.trim();
   if (!trimmed) return null;
@@ -18,7 +23,7 @@ export function parseYearRange(range: string): YearRange | null {
   if (trimmed.endsWith("-")) {
     const start = parseInt(trimmed.replace("-", ""), 10);
     if (isNaN(start)) return null;
-    return { start, end: null };
+    return { start: normalizeYear(start), end: null };
   }
 
   if (trimmed.includes("-")) {
@@ -26,12 +31,12 @@ export function parseYearRange(range: string): YearRange | null {
     const start = parseInt(startStr, 10);
     const end = parseInt(endStr, 10);
     if (isNaN(start) || isNaN(end)) return null;
-    return { start, end };
+    return { start: normalizeYear(start), end: normalizeYear(end) };
   }
 
   const single = parseInt(trimmed, 10);
   if (isNaN(single)) return null;
-  return { start: single, end: single };
+  return { start: normalizeYear(single), end: normalizeYear(single) };
 }
 
 export function parseMultipleYearRanges(value: string): YearRange[] {
@@ -45,7 +50,7 @@ export function expandYearRanges(ranges: YearRange[]): number[] {
   const years = new Set<number>();
   for (const range of ranges) {
     if (range.end === null) {
-      years.add(range.start);
+      for (let y = range.start; y <= new Date().getFullYear(); y++) years.add(y);
     } else {
       const min = Math.min(range.start, range.end);
       const max = Math.max(range.start, range.end);
