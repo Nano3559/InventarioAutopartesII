@@ -476,15 +476,15 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i] as any;
 
-      const itemCode = (row["itemCode"] || row["Código"] || row["codigo"] || row["Codigo"] || row["Cód. Producto"] || "").toString().trim();
-      const name = (row["Descripcion"] || row["descripcion"] || row["Producto"] || row["producto"] || row["Nombre"] || "").toString().trim();
+      const itemCode = (row["itemCode"] || row["Código"] || row["codigo"] || row["Codigo"] || row["Cód. Producto"] || row["Cod. Producto"] || row["Codigo Producto"] || row["Código Producto"] || row["Codigo Fabrica"] || row["Código Fábrica"] || row["Código fabrica"] || row["Cód. Fábrica"] || row["Cod. Fabrica"] || row["Code"] || "").toString().trim();
+      const name = (row["Descripcion"] || row["descripcion"] || row["Descripción"] || row["descripción"] || row["Producto"] || row["producto"] || row["Nombre"] || row["nombre"] || row["Nombre del Producto"] || row["Nombre Producto"] || row["Nombre del Articulo"] || row["Articulo"] || row["Artículo"] || "").toString().trim();
       const manufacturer = (row["Fabricante"] || row["fabricante"] || row["Manufacturer"] || "Sin especificar").toString().trim();
       const brand = (row["Marca"] || row["marca"] || row["Brand"] || "").toString().trim();
       const model = (row["Modelo"] || row["modelo"] || row["Model"] || "").toString().trim();
       const year = (row["Anos"] || row["anos"] || row["Años"] || row["años"] || row["Año"] || "").toString().trim();
       const detail = (row["Detalle"] || row["detalle"] || row["Detail"] || "").toString().trim();
-      const oemCode = (row["Código OEM"] || row["codigo oem"] || row["oemCode"] || row["Cód. OEM"] || "").toString().trim();
-      const factoryCode = (row["Código fábrica"] || row["codigo fabrica"] || row["Codigo fabrica"] || row["factoryCode"] || row["Cód. Fábrica"] || "").toString().trim();
+      const oemCode = (row["Código OEM"] || row["codigo oem"] || row["Codigo OEM"] || row["oemCode"] || row["Cód. OEM"] || row["Cod.OEM"] || row["OEM"] || "").toString().trim();
+      const factoryCode = (row["Código fábrica"] || row["Código fabrica"] || row["codigo fabrica"] || row["Codigo fabrica"] || row["Codigo Fabrica"] || row["factoryCode"] || row["Cód. Fábrica"] || row["Cod. Fabrica"] || "").toString().trim();
       const category = (row["Categoría"] || row["categoría"] || row["Categoria"] || row["categoria"] || row["Category"] || "").toString().trim();
       const price1 = parseFloat(row["Precio 1"] || row["precio1"] || row["Precio minorista"] || row["price1"] || "0") || 0;
       const price2 = parseFloat(row["Precio 2"] || row["precio2"] || row["Precio mayoreo"] || row["price2"] || "0") || 0;

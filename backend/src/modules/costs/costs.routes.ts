@@ -6,6 +6,7 @@ import { parseId, parsePositiveDecimal, parsePositiveInt } from "../../shared/mi
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import * as XLSX from "xlsx";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -29,14 +30,14 @@ const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    const allowed = [".pdf", ".jpg", ".jpeg", ".png"];
+    const allowed = [".pdf", ".jpg", ".jpeg", ".png", ".xlsx", ".xls"];
     const ext = path.extname(file.originalname).toLowerCase();
-    const allowedMimes = ["application/pdf", "image/jpeg", "image/png"];
+    const allowedMimes = ["application/pdf", "image/jpeg", "image/png", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel"];
     const mimeOk = allowedMimes.includes(file.mimetype);
     if (allowed.includes(ext) && mimeOk) {
       cb(null, true);
     } else {
-      cb(new Error("Solo se permiten archivos PDF, JPG o PNG"));
+      cb(new Error("Solo se permiten archivos PDF, JPG, PNG o Excel"));
     }
   },
 });
@@ -299,6 +300,105 @@ router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
     console.error("Error al eliminar costo:", error);
     res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+
+// POST /import-invoice — Importar costos masivamente desde factura Excel (ADMIN)
+// Calcula el "Costo Puesto Aquí" (CIF nacionalizado):
+//   CostoPuestoAqui = PrecioUnitario(USD) × TipoCambio × (1 + %Gastos/100)
+router.post("/import-invoice", authorize("ADMIN"), upload.fields([{ name: "file", maxCount: 1 }, { name: "invoice", maxCount: 1 }]), async (req: AuthRequest, res: Response) => {
+  try {
+    const excelFile = (req.files as any)?.["file"]?.[0];
+    const invoiceFile = (req.files as any)?.["invoice"]?.[0];
+    if (!excelFile) {
+      return res.status(400).json({ message: "Debe subir el archivo Excel de la factura (columna 'file')" });
+    }
+
+    const supplierId = parsePositiveInt(req.body.supplierId, "Proveedor");
+    const exchangeRate = parsePositiveDecimal(req.body.exchangeRate, "Tipo de cambio");
+    if (exchangeRate <= 0) return res.status(400).json({ message: "El tipo de cambio debe ser mayor a 0" });
+    const percentage = req.body.percentage !== undefined && req.body.percentage !== "" ? parsePositiveDecimal(req.body.percentage, "Porcentaje de gastos") : 0;
+    if (percentage < 0 || percentage > 100) return res.status(400).json({ message: "El porcentaje debe estar entre 0 y 100" });
+    const defaultMargin = req.body.defaultMargin !== undefined && req.body.defaultMargin !== "" ? parsePositiveDecimal(req.body.defaultMargin, "Margen de ganancia") : 0;
+    if (defaultMargin < 0 || defaultMargin > 200) return res.status(400).json({ message: "El margen debe estar entre 0 y 200" });
+
+    const supplier = await prisma.supplier.findUnique({ where: { id: supplierId } });
+    if (!supplier) return res.status(404).json({ message: "Proveedor no encontrado" });
+
+    const workbook = XLSX.read(excelFile.buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+    if (rows.length === 0) return res.status(400).json({ message: "El archivo Excel está vacío" });
+
+    const imported: any[] = [];
+    const updated: any[] = [];
+    const errors: string[] = [];
+    const invoiceUrl = invoiceFile?.filename || null;
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i] as any;
+      const code = (row["Código"] || row["Codigo"] || row["codigo"] || row["itemCode"] || row["ItemCode"] || row["Codigo Fabrica"] || row["Código Fábrica"] || row["Cod. Fabrica"] || row["Cód. Fabrica"] || row["Cód. Producto"] || row["Codigo Producto"] || "").toString().trim();
+      const qtyRaw = parseFloat(row["Cantidad"] || row["cantidad"] || row["Cant"] || row["Qty"] || row["Quantity"] || "1") || 1;
+      const unitRaw = parseFloat(row["Precio Unitario"] || row["Precio unitario"] || row["Precio"] || row["PU"] || row["Pu"] || row["Unit Price"] || row["Precio USD"] || row["Precio US"] || row["precio"] || "0") || 0;
+
+      if (!code) {
+        errors.push(`Fila ${i + 2}: Falta el código del producto`);
+        continue;
+      }
+      if (unitRaw <= 0) {
+        errors.push(`Fila ${i + 2}: Precio unitario inválido para "${code}"`);
+        continue;
+      }
+
+      const product = await prisma.product.findUnique({ where: { itemCode: code } });
+      if (!product) {
+        errors.push(`Fila ${i + 2}: Producto no encontrado (código "${code}")`);
+        continue;
+      }
+
+      const costPuestoAqui = unitRaw * exchangeRate * (1 + percentage / 100);
+
+      const existing = await prisma.cost.findFirst({ where: { productId: product.id, supplierId } });
+      if (existing) {
+        await prisma.cost.update({
+          where: { id: existing.id },
+          data: { costPrice: costPuestoAqui, exchangeRate, percentage: percentage > 0 ? percentage : null, invoiceUrl: invoiceUrl || existing.invoiceUrl },
+        });
+        updated.push({ id: existing.id, itemCode: code, name: product.name, costPrice: costPuestoAqui, cantidad: qtyRaw });
+      } else {
+        const cost = await prisma.cost.create({
+          data: { productId: product.id, supplierId, costPrice: costPuestoAqui, exchangeRate, percentage: percentage > 0 ? percentage : null, invoiceUrl },
+        });
+        imported.push({ id: cost.id, itemCode: code, name: product.name, costPrice: costPuestoAqui, cantidad: qtyRaw });
+      }
+
+      await prisma.product.update({
+        where: { id: product.id },
+        data: {
+          cost: costPuestoAqui,
+          ...(defaultMargin > 0 ? { price1: costPuestoAqui * (1 + defaultMargin / 100) } : {}),
+        },
+      });
+    }
+
+    res.json({
+      total: rows.length,
+      imported: imported.length,
+      updated: updated.length,
+      errors: errors.length,
+      formula: `PrecioUnitario × TipoCambio(${exchangeRate}) × (1 + ${percentage}% / 100)`,
+      details: { imported, updated, errors },
+    });
+  } catch (error: any) {
+    if (error.message && !error.message.includes("Prisma") && !error.code) {
+      return res.status(400).json({ message: error.message });
+    }
+    if (error.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
+    }
+    console.error("Error al importar factura:", error);
+    res.status(500).json({ message: error.message || "Error interno del servidor" });
   }
 });
 

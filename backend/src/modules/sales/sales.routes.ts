@@ -290,13 +290,14 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       }
     }
 
-    // C2: validar que el vendedor pertenezca a la tienda (usuario con esa ubicación)
+    // C2: validar que el vendedor pertenezca a la tienda, solo si es un usuario registrado.
+    // Los vendedores genéricos ("Vendedor 1/2/3") o libres se aceptan como texto.
     if (seller && typeof seller === "string") {
-      const sellerUser = await prisma.user.findFirst({
-        where: { name: seller, locationId: userLocationId },
-      });
-      if (!sellerUser) {
-        return res.status(400).json({ message: `El vendedor "${seller}" no pertenece a esta tienda` });
+      const sellerUser = await prisma.user.findFirst({ where: { name: seller } });
+      if (sellerUser) {
+        if (sellerUser.locationId !== userLocationId) {
+          return res.status(400).json({ message: `El vendedor "${seller}" no pertenece a esta tienda` });
+        }
       }
     }
 
