@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
@@ -9,12 +9,17 @@ const prisma = new PrismaClient();
 router.use(authenticate);
 
 // GET / — Listar todo el inventario con información de producto y ubicación
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: AuthRequest, res: Response) => {
   try {
     const { locationId, lowStock } = req.query;
 
     const where: any = {};
-    if (locationId && typeof locationId === "string") where.locationId = Number(locationId);
+
+    if (req.user?.role === "TIENDA" && req.user.locationId) {
+      where.locationId = req.user.locationId;
+    } else if (locationId && typeof locationId === "string") {
+      where.locationId = Number(locationId);
+    }
 
     const inventories = await prisma.inventory.findMany({
       where,
@@ -51,7 +56,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // GET /product/:productId — Stock por ubicación de un producto
-router.get("/product/:productId", async (req: Request, res: Response) => {
+router.get("/product/:productId", async (req: AuthRequest, res: Response) => {
   try {
     const productId = Number(req.params.productId);
     const inventories = await prisma.inventory.findMany({

@@ -18,7 +18,7 @@ interface Product {
   id: number; itemCode: string; manufacturer: string; name: string;
   brand: string; model: string; year: string; price1: string; price2: string;
   wholesalePrice: string | null; stock: number; category: string | null;
-  image: string | null;
+  image: string | null; oemCode: string | null;
 }
 
 interface Location {
@@ -73,6 +73,7 @@ export default function SalesPage() {
 
   // --- Search ---
   const [search, setSearch] = useState("");
+  const [oemSearch, setOemSearch] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [searching, setSearching] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -141,11 +142,14 @@ export default function SalesPage() {
   };
 
   // ==================== SEARCH ====================
-  const doSearch = useCallback(async (q: string) => {
-    if (!q || q.trim().length < 2) { setSearchResults([]); return; }
+  const doSearch = useCallback(async (q: string, oem?: string) => {
+    const query = (q || "").trim();
+    const oemQ = (oem || "").trim();
+    if (query.length < 2 && oemQ.length < 2) { setSearchResults([]); return; }
     try {
       setSearching(true);
-      const params = new URLSearchParams({ search: q.trim(), limit: "10" });
+      const params = new URLSearchParams({ search: query, limit: "10" });
+      if (oemQ) params.set("oemCode", oemQ);
       if (selectedLocationId) params.set("locationId", String(selectedLocationId));
       const res = await api.get(`/products?${params.toString()}`);
       setSearchResults(res.data.products.filter((p: Product) => p.stock > 0 && (!isVendedor || allowedCategories.length === 0 || allowedCategories.includes(p.category || ""))));
@@ -156,7 +160,13 @@ export default function SalesPage() {
   const handleSearchChange = (v: string) => {
     setSearch(v);
     if (searchTimer.current) clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => doSearch(v), 300);
+    searchTimer.current = setTimeout(() => doSearch(v, oemSearch), 300);
+  };
+
+  const handleOemChange = (v: string) => {
+    setOemSearch(v);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => doSearch(search, v), 300);
   };
 
   // ==================== CART ====================
@@ -179,6 +189,7 @@ export default function SalesPage() {
       }];
     });
     setSearch("");
+    setOemSearch("");
     setSearchResults([]);
     searchInputRef.current?.focus();
   };
@@ -409,21 +420,37 @@ export default function SalesPage() {
           </div>
 
           {/* Search */}
-          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4">
-            <div className="relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-              <input
-                ref={searchInputRef}
-                type="text" value={search} onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Buscar producto por código, nombre, marca, modelo..."
-                className="w-full pl-10 pr-4 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
-              />
-              {search && (
-                <button onClick={() => { setSearch(""); setSearchResults([]); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
-                  <X size={16} />
-                </button>
-              )}
+          <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="relative">
+                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input
+                  ref={searchInputRef}
+                  type="text" value={search} onChange={(e) => handleSearchChange(e.target.value)}
+                  placeholder="Buscar producto por código, nombre, marca, modelo..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                />
+                {search && (
+                  <button onClick={() => { setSearch(""); handleSearchChange(""); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              <div className="relative">
+                <FileText size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input
+                  type="text" value={oemSearch} onChange={(e) => handleOemChange(e.target.value)}
+                  placeholder="Buscar por código OEM"
+                  className="w-full pl-10 pr-4 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                />
+                {oemSearch && (
+                  <button onClick={() => { setOemSearch(""); handleOemChange(""); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
             </div>
 
             {searchResults.length > 0 && (
@@ -448,7 +475,7 @@ export default function SalesPage() {
                 ))}
               </div>
             )}
-            {search.length >= 2 && searchResults.length === 0 && !searching && (
+            {(search.length >= 2 || oemSearch.length >= 2) && searchResults.length === 0 && !searching && (
               <p className="text-center text-gray-500 text-sm py-4">No se encontraron productos con stock</p>
             )}
           </div>

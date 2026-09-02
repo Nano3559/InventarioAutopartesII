@@ -122,6 +122,9 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
     if (costPrice <= 0) return res.status(400).json({ message: "El costo debe ser mayor a 0" });
 
     const exchangeRate = req.body.exchangeRate ? parsePositiveDecimal(req.body.exchangeRate, "Tipo de cambio") : null;
+    if (exchangeRate !== null && exchangeRate <= 0) {
+      return res.status(400).json({ message: "El tipo de cambio debe ser mayor a 0" });
+    }
     const percentage = req.body.percentage !== undefined && req.body.percentage !== "" ? parsePositiveDecimal(req.body.percentage, "Porcentaje") : null;
     if (percentage !== null && (percentage < 0 || percentage > 100)) {
       return res.status(400).json({ message: "El porcentaje debe estar entre 0 y 100" });
@@ -204,6 +207,9 @@ router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: Aut
     }
     if (req.body.exchangeRate !== undefined) {
       data.exchangeRate = req.body.exchangeRate !== "" ? parsePositiveDecimal(req.body.exchangeRate, "Tipo de cambio") : null;
+      if (data.exchangeRate !== null && data.exchangeRate <= 0) {
+        return res.status(400).json({ message: "El tipo de cambio debe ser mayor a 0" });
+      }
     }
     if (req.body.percentage !== undefined) {
       data.percentage = req.body.percentage !== "" ? parsePositiveDecimal(req.body.percentage, "Porcentaje") : null;

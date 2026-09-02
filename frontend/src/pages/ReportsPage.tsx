@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
+import { jsPDF } from "jspdf";
 import {
-  BarChart3, Search, Download,
+  BarChart3, Search, Download, FileText,
   TrendingUp, Package, RefreshCw, CalendarDays,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -228,6 +229,68 @@ export default function ReportsPage() {
     toast.success("Exportado correctamente");
   };
 
+  const exportPDF = (title: string, data: Record<string, any>[], filename: string) => {
+    if (!data.length) { toast.error("No hay datos para exportar"); return; }
+    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    doc.setFontSize(14);
+    doc.text(title, 14, 16);
+    doc.setFontSize(9);
+    doc.text(`Generado: ${new Date().toLocaleString("es-BO")}`, pageWidth - 14, 16, { align: "right" });
+
+    const headers = Object.keys(data[0]);
+    const cellPad = 4;
+    const fontSize = 8;
+    const lineH = 7;
+    doc.setFontSize(fontSize);
+
+    const columnWidths = (() => {
+      const avail = pageWidth - 28;
+      const totalChars = headers.reduce((sum, h) => sum + Math.max(h.length, ...data.map((r) => String(r[h] ?? "").length)), 0);
+      return headers.map((h) => {
+        const maxLen = Math.max(h.length, ...data.map((r) => String(r[h] ?? "").length));
+        return Math.max(20, Math.min(60, (maxLen / totalChars) * avail * 1.5));
+      });
+    })();
+
+    let y = 26;
+    const bottomMargin = 10;
+
+    const renderHeader = () => {
+      doc.setFont("helvetica", "bold");
+      doc.setFillColor(30, 41, 59);
+      doc.setTextColor(255, 255, 255);
+      let x = 14;
+      headers.forEach((h, i) => {
+        doc.rect(x, y, columnWidths[i], lineH, "F");
+        doc.text(String(h), x + cellPad, y + (lineH - 2));
+        x += columnWidths[i];
+      });
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "normal");
+      y += lineH;
+    };
+
+    renderHeader();
+
+    data.forEach((r) => {
+      if (y > doc.internal.pageSize.getHeight() - bottomMargin) {
+        doc.addPage();
+        y = 20;
+        renderHeader();
+      }
+      let x = 14;
+      headers.forEach((h, i) => {
+        doc.text(String(r[h] ?? ""), x + cellPad, y + (lineH - 2));
+        x += columnWidths[i];
+      });
+      y += lineH;
+    });
+
+    doc.save(`${filename}.pdf`);
+    toast.success("PDF descargado");
+  };
+
   const formatDate = (d: string) => new Date(d).toLocaleDateString("es-BO", { day: "2-digit", month: "short", year: "numeric" });
 
   const filteredSales = salesData.filter((s) =>
@@ -338,7 +401,14 @@ export default function ReportsPage() {
                 Ubicacion: s.location?.name || "N/A", Cliente: s.customer?.name || "N/A", Vendedor: s.user?.name || "N/A",
               })), "reporte_ventas")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar
+                <Download size={14} /> Exportar CSV
+              </button>
+              <button onClick={() => exportPDF("Reporte de Ventas", filteredSales.map((s) => ({
+                ID: s.id, Fecha: formatDate(s.date), Tipo: s.type, Total: s.total,
+                Ubicacion: s.location?.name || "N/A", Cliente: s.customer?.name || "N/A", Vendedor: s.user?.name || "N/A",
+              })), "reporte_ventas")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
+                <FileText size={14} /> PDF
               </button>
             </div>
           </div>
@@ -394,7 +464,14 @@ export default function ReportsPage() {
                 "N° Ventas": st.saleCount, Total: st.total, Devoluciones: st.returns,
               }))), "reporte_diario")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar
+                <Download size={14} /> Exportar CSV
+              </button>
+              <button onClick={() => exportPDF("Reporte Diario por Tienda", dailyData.flatMap((g) => g.stores.map((st) => ({
+                Fecha: formatDate(g.date), Tienda: st.locationName,
+                "N° Ventas": st.saleCount, Total: st.total, Devoluciones: st.returns,
+              }))), "reporte_diario")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
+                <FileText size={14} /> PDF
               </button>
             </div>
           </div>
@@ -468,7 +545,14 @@ export default function ReportsPage() {
                 Ubicacion: i.location.name, Stock: i.stock, Minimo: i.minStock, Estado: i.status,
               })), "reporte_inventario")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar
+                <Download size={14} /> Exportar CSV
+              </button>
+              <button onClick={() => exportPDF("Reporte de Inventario", filteredInventory.map((i) => ({
+                Codigo: i.product.itemCode, Producto: i.product.name, Marca: i.product.brand, Modelo: i.product.model,
+                Ubicacion: i.location.name, Stock: i.stock, Minimo: i.minStock, Estado: i.status,
+              })), "reporte_inventario")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
+                <FileText size={14} /> PDF
               </button>
             </div>
           </div>
@@ -534,7 +618,14 @@ export default function ReportsPage() {
                 Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
               })), "reporte_mensual")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
-                <Download size={14} /> Exportar
+                <Download size={14} /> Exportar CSV
+              </button>
+              <button onClick={() => exportPDF("Reporte Mensual por Tienda", filteredMonthly.map((m) => ({
+                Tienda: m.location.name, Ventas: m.summary.totalSales, Devoluciones: m.summary.totalReturns,
+                Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
+              })), "reporte_mensual")}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
+                <FileText size={14} /> PDF
               </button>
             </div>
           </div>

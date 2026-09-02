@@ -174,12 +174,14 @@ model Movement {
   toLocationId   Int
   quantity       Int
   userId         Int
+  requestId      Int?
   date           DateTime @default(now())
   observation    String?
   fromLocation   Location @relation("MovementFrom", fields: [fromLocationId], references: [id])
   product        Product  @relation(fields: [productId], references: [id])
   toLocation     Location @relation("MovementTo", fields: [toLocationId], references: [id])
   user           User     @relation(fields: [userId], references: [id])
+  request        ProductRequest? @relation(fields: [requestId], references: [id])
 }
 
 model ProductRequest {
@@ -197,6 +199,7 @@ model ProductRequest {
   location      Location      @relation(fields: [locationId], references: [id])
   product       Product       @relation(fields: [productId], references: [id])
   requestedBy   User          @relation("RequestedBy", fields: [requestedById], references: [id])
+  movements     Movement[]
   history       RequestHistory[]
 }
 

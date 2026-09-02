@@ -290,6 +290,16 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       }
     }
 
+    // C2: validar que el vendedor pertenezca a la tienda (usuario con esa ubicación)
+    if (seller && typeof seller === "string") {
+      const sellerUser = await prisma.user.findFirst({
+        where: { name: seller, locationId: userLocationId },
+      });
+      if (!sellerUser) {
+        return res.status(400).json({ message: `El vendedor "${seller}" no pertenece a esta tienda` });
+      }
+    }
+
     const validMethods = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];
     for (const p of payments) {
       if (!validMethods.includes(p.method)) {

@@ -11,7 +11,7 @@ router.use(authenticate);
 // GET /sales — Ventas filtradas
 router.get("/sales", async (req: AuthRequest, res: Response) => {
   try {
-    const { brand, model, month, locationId, supplierId, startDate, endDate, noInvoice, page = "1", limit = "50" } = req.query;
+    const { brand, model, month, locationId, supplierId, startDate, endDate, noInvoice, product, page = "1", limit = "50" } = req.query;
 
     const where: any = {};
 
@@ -46,10 +46,11 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
     }
 
     // Filtros por marca/modelo/proveedor se aplican a los productos de las ventas
-    if (brand || model || (supplierId && supplierId !== "all")) {
+    if (brand || model || (supplierId && supplierId !== "all") || product) {
       const productFilter: any = {};
       if (brand && typeof brand === "string") productFilter.brand = { contains: brand, mode: "insensitive" };
       if (model && typeof model === "string") productFilter.model = { contains: model, mode: "insensitive" };
+      if (product && typeof product === "string") productFilter.name = { contains: product, mode: "insensitive" };
       if (supplierId && supplierId !== "all" && typeof supplierId === "string") {
         const sid = Number(supplierId);
         if (!Number.isNaN(sid) && sid >= 1) productFilter.costs = { some: { supplierId: sid } };
