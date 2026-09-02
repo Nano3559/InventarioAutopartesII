@@ -53,11 +53,16 @@ export default function WholesalePage() {
   const [clientName, setClientName] = useState("");
   const [pedido, setPedido] = useState("");
   const [deliveryPlace, setDeliveryPlace] = useState("Cochabamba");
+  const [customDeliveryPlace, setCustomDeliveryPlace] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("TRANSFERENCIA");
   const [facturaNIT, setFacturaNIT] = useState("");
 
   const formatBs = (v: number) =>
     `Bs. ${v.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const finalDeliveryPlace = deliveryPlace === "Otra"
+    ? (customDeliveryPlace.trim() || "Otra ubicación")
+    : deliveryPlace;
 
   const total = items.reduce((sum, i) => sum + i.subtotal, 0);
 
@@ -130,7 +135,7 @@ export default function WholesalePage() {
       const payload = {
         customerData: { name: clientName, nit: facturaNIT || null },
         paraQuien: pedido,
-        lugarEntrega: deliveryPlace,
+        lugarEntrega: finalDeliveryPlace,
         items: items.map((i) => ({
           productId: i.productId,
           quantity: i.quantity,
@@ -139,7 +144,7 @@ export default function WholesalePage() {
         payments: [{ method: paymentMethod, amount: total }],
       };
       const response = await api.post("/wholesale", payload);
-      setLastWholesaleSale({ id: response.data.id, saleDate: response.data.createdAt || new Date().toISOString(), total: Number(response.data.total) || total, items: [...items], clientName, pedido, deliveryPlace, paymentMethod, facturaNIT });
+      setLastWholesaleSale({ id: response.data.id, saleDate: response.data.createdAt || new Date().toISOString(), total: Number(response.data.total) || total, items: [...items], clientName, pedido, deliveryPlace: finalDeliveryPlace, paymentMethod, facturaNIT });
       toast.success("Venta por mayor registrada");
       setShowConfirm(false);
       setShowForm(false);
@@ -153,6 +158,7 @@ export default function WholesalePage() {
 
   const resetForm = () => {
     setItems([]); setClientName(""); setPedido(""); setDeliveryPlace("Cochabamba");
+    setCustomDeliveryPlace("");
     setPaymentMethod("TRANSFERENCIA"); setFacturaNIT("");
   };
 
@@ -317,13 +323,21 @@ export default function WholesalePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Lugar de entrega *</label>
-                <select value={deliveryPlace} onChange={(e) => setDeliveryPlace(e.target.value)}
+                <select value={deliveryPlace} onChange={(e) => { setDeliveryPlace(e.target.value); if (e.target.value !== "Otra") setCustomDeliveryPlace(""); }}
                   className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500">
                   <option value="Cochabamba">Cochabamba</option>
                   <option value="Santa Cruz">Santa Cruz</option>
                   <option value="La Paz">La Paz</option>
                   <option value="Otra">Otra ubicación</option>
                 </select>
+                {deliveryPlace === "Otra" && (
+                  <input
+                    value={customDeliveryPlace}
+                    onChange={(e) => setCustomDeliveryPlace(e.target.value)}
+                    placeholder="Escribe la ubicación a la que se envía o vende..."
+                    className="mt-2 w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500"
+                  />
+                )}
               </div>
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Forma de pago *</label>
@@ -441,7 +455,7 @@ export default function WholesalePage() {
               <div className="p-6 space-y-3">
                 <div className="flex justify-between text-sm"><span className="text-gray-400">Cliente:</span><span className="text-white">{clientName}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-400">Para quién:</span><span className="text-white">{pedido || "No especificado"}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-gray-400">Entrega:</span><span className="text-white">{deliveryPlace}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Entrega:</span><span className="text-white">{finalDeliveryPlace}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-400">Factura/NIT:</span><span className="text-white">{facturaNIT || "No especificado"}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-400">Pago:</span><span className="text-white">{paymentMethod}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-400">Productos:</span><span className="text-white">{items.length}</span></div>
