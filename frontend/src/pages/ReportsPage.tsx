@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import * as XLSX from "xlsx";
 
 interface SalesReport {
   id: number; date: string; type: string; total: number;
@@ -217,14 +218,10 @@ export default function ReportsPage() {
 
   const exportCSV = (data: Record<string, any>[], filename: string) => {
     if (!data.length) { toast.error("No hay datos para exportar"); return; }
-    const headers = Object.keys(data[0]);
-    const rows = data.map((r) => headers.map((h) => r[h]));
-    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `${filename}.csv`; a.click();
-    URL.revokeObjectURL(url);
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+    XLSX.writeFile(wb, `${filename}.xlsx`);
     toast.success("Exportado correctamente");
   };
 
