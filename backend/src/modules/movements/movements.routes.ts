@@ -9,8 +9,8 @@ const prisma = new PrismaClient();
 
 router.use(authenticate);
 
-// GET / — Historial de movimientos con filtros
-router.get("/", async (req: AuthRequest, res: Response) => {
+// GET / — Historial de movimientos con filtros (requiere permiso del módulo "movimientos")
+router.get("/", authorizeModule("movimientos"), async (req: AuthRequest, res: Response) => {
   try {
     const { productId, fromLocationId, toLocationId, startDate, endDate, page = "1", limit = "20" } = req.query;
 

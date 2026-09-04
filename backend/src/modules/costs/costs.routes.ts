@@ -12,6 +12,7 @@ const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
+router.use(authorize("ADMIN"));
 
 const uploadsDir = path.join(__dirname, "../../../uploads");
 if (!fs.existsSync(uploadsDir)) {

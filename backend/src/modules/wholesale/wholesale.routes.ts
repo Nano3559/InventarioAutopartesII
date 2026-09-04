@@ -2,7 +2,7 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import * as XLSX from "xlsx";
-import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8 } from "../../utils/replenish";
 import { validateAndMergeItems } from "../../utils/saleItems";
@@ -12,6 +12,8 @@ const prisma = new PrismaClient();
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.use(authenticate);
+router.use(requireTiendaLocation);
+router.use(authorize("ADMIN", "TIENDA"));
 
 // POST — Crear venta mayorista
 router.post("/", async (req: AuthRequest, res: Response) => {
@@ -286,7 +288,11 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     const { startDate, endDate, locationId, page = "1", limit = "20" } = req.query;
 
     const where: any = { type: "MAYOR" };
-    if (locationId && typeof locationId === "string") where.locationId = Number(locationId);
+    if (req.user?.role === "TIENDA") {
+      where.locationId = req.user.locationId;
+    } else if (locationId && typeof locationId === "string") {
+      where.locationId = Number(locationId);
+    }
     if (startDate || endDate) {
       where.saleDate = {};
       if (startDate && typeof startDate === "string") where.saleDate.gte = new Date(startDate);

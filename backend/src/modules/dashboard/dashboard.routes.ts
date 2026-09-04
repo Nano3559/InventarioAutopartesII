@@ -6,11 +6,16 @@ import { AuthRequest } from "../../shared/types";
 const router = Router();
 const prisma = new PrismaClient();
 
-router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
+router.get("/", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Un usuario TIENDA solo ve los datos de su propia tienda.
+    const userLoc = req.user?.locationId ?? null;
+    const isTienda = req.user?.role === "TIENDA";
+    const locWhere: any = isTienda && userLoc ? { locationId: userLoc } : {};
 
     const totalProducts = await prisma.product.count();
 
@@ -23,7 +28,7 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
     ).length;
 
     const lowStockItems = await prisma.inventory.findMany({
-      where: { stock: { gt: 0 }, minStock: { gt: 0 } },
+      where: { stock: { gt: 0 }, minStock: { gt: 0 }, ...locWhere },
     });
     const criticalStockItems = lowStockItems.filter((item) => item.stock <= item.minStock);
     const productsWithLowStock = criticalStockItems.length;
@@ -32,6 +37,7 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
 
     const stockAgg = await prisma.inventory.groupBy({
       by: ["locationId"],
+      ...(isTienda && userLoc ? { where: { locationId: userLoc } } : {}),
       _sum: { stock: true },
     });
     const stockByLocation = stockAgg.map((agg) => {
@@ -45,20 +51,20 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
     });
 
     const salesToday = await prisma.sale.aggregate({
-      where: { saleDate: { gte: startOfDay } },
+      where: { saleDate: { gte: startOfDay }, ...locWhere },
       _count: true,
       _sum: { total: true },
     });
 
     const salesMonth = await prisma.sale.aggregate({
-      where: { saleDate: { gte: startOfMonth } },
+      where: { saleDate: { gte: startOfMonth }, ...locWhere },
       _count: true,
       _sum: { total: true },
     });
 
     const salesByLocationAgg = await prisma.sale.groupBy({
       by: ["locationId"],
-      where: { saleDate: { gte: startOfMonth } },
+      where: { saleDate: { gte: startOfMonth }, ...locWhere },
       _count: true,
       _sum: { total: true },
     });
@@ -73,7 +79,7 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
     });
 
     const saleItems = await prisma.saleItem.findMany({
-      where: { sale: { saleDate: { gte: startOfMonth } } },
+      where: { sale: { saleDate: { gte: startOfMonth }, ...locWhere } },
       include: { product: { select: { brand: true, model: true } } },
     });
 
@@ -100,6 +106,7 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
       .sort((a, b) => b.totalAmount - a.totalAmount);
 
     const recentSales = await prisma.sale.findMany({
+      ...(isTienda ? { where: locWhere } : {}),
       take: 10,
       orderBy: { saleDate: "desc" },
       include: {
@@ -111,6 +118,7 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
     });
 
     const recentMovements = await prisma.movement.findMany({
+      ...(isTienda && userLoc ? { where: { OR: [{ fromLocationId: userLoc }, { toLocationId: userLoc }] } } : {}),
       take: 10,
       orderBy: { date: "desc" },
       include: {
@@ -122,7 +130,7 @@ router.get("/", authenticate, async (_req: AuthRequest, res: Response) => {
     });
 
     const pendingRequests = await prisma.productRequest.findMany({
-      where: { status: "PENDIENTE" },
+      where: { status: "PENDIENTE", ...locWhere },
       take: 10,
       orderBy: { createdAt: "desc" },
       include: {

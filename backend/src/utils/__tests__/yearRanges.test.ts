@@ -5,6 +5,7 @@ import {
   parseMultipleYearRanges,
   expandYearRanges,
   yearMatchesRanges,
+  yearRangesOverlap,
 } from "../yearRanges";
 
 test("rango cerrado '13-15' produce 2013-2015", () => {
@@ -41,4 +42,21 @@ test("parseYearRange de 2 dígitos normaliza a 2000+/1900+", () => {
 test("range with end < start keeps expand sorted", () => {
   const expanded = expandYearRanges([{ start: 2015, end: 2013 }]);
   assert.deepEqual(expanded, [2013, 2014, 2015]);
+});
+
+test("yearRangesOverlap con rangos solapados", () => {
+  assert.ok(yearRangesOverlap("13-15", "14-16"));
+  assert.ok(yearRangesOverlap("14-16", "13-15"));
+  assert.ok(yearRangesOverlap("13", "13-15"));
+  assert.ok(yearRangesOverlap("13-15", "13"));
+});
+
+test("yearRangesOverlap con rangos disjuntos", () => {
+  assert.ok(!yearRangesOverlap("13-15", "16-18"));
+  assert.ok(!yearRangesOverlap("16-18", "13-15"));
+});
+
+test("yearRangesOverlap con rangos multi", () => {
+  assert.ok(yearRangesOverlap("13-15/20-22", "21"));
+  assert.ok(!yearRangesOverlap("13-15/20-22", "23"));
 });

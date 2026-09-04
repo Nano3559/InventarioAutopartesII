@@ -28,6 +28,7 @@ interface ProductCard {
   category: string | null;
   availability: string;
   price1: number;
+  price2: number;
 }
 
 interface Filters {
@@ -45,6 +46,7 @@ interface ImageSearchResult {
   year: string;
   image: string | null;
   price1: number;
+  price2: number;
   totalStock: number;
 }
 
@@ -359,7 +361,7 @@ export default function PublicProductsPage() {
                     <p className="text-white text-sm font-medium line-clamp-2">{product.name}</p>
                     <p className="text-xs text-gray-500">{product.brand} · {product.model}</p>
                     <p className="text-xs text-gray-400">Código: {product.itemCode}</p>
-                    <div className="flex justify-between text-xs pt-1"><span className="text-amber-400">Bs. {Number(product.price1).toFixed(2)}</span><span className="text-green-400">Stock: {product.totalStock}</span></div>
+                    <div className="flex justify-between text-xs pt-1"><span className="text-amber-400">Bs. {(Number(product.price2) > 0 ? Number(product.price2) : Number(product.price1)).toFixed(2)}</span><span className="text-green-400">Stock: {product.totalStock}</span></div>
                   </div>
                 </Link>
               ))}

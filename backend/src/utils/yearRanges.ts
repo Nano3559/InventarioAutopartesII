@@ -68,6 +68,21 @@ export function yearMatchesRanges(searchYear: number, storedYear: string): boole
   return expanded.includes(searchYear);
 }
 
+/**
+ * Verifica si el rango de años del filtro tiene intersección con el rango almacenado
+ * en el producto. Ambos pueden ser rangos ("13-15") o años simples ("13").
+ * Devuelve true si comparten al menos un año.
+ */
+export function yearRangesOverlap(filterValue: string, storedYear: string): boolean {
+  const filterRanges = parseMultipleYearRanges(filterValue);
+  const storedRanges = parseMultipleYearRanges(storedYear);
+  if (filterRanges.length === 0 || storedRanges.length === 0) return false;
+
+  const filterYears = expandYearRanges(filterRanges);
+  const storedYears = new Set(expandYearRanges(storedRanges));
+  return filterYears.some((y) => storedYears.has(y));
+}
+
 export function validateYearRanges(value: string): string | null {
   if (!value.trim()) return null;
 
