@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { yearMatchesRanges } from "../../utils/yearRanges";
+import { yearRangesOverlap } from "../../utils/yearRanges";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -32,13 +32,6 @@ router.get("/products", async (req: Request, res: Response) => {
       AND.push({ model: { contains: model, mode: "insensitive" } });
     }
 
-    if (year && typeof year === "string") {
-      const searchYear = parseInt(year, 10);
-      if (!isNaN(searchYear)) {
-        AND.push({ id: { gt: 0 } });
-      }
-    }
-
     if (category && typeof category === "string") {
       AND.push({ category: { name: { equals: category, mode: "insensitive" } } });
     }
@@ -63,10 +56,7 @@ router.get("/products", async (req: Request, res: Response) => {
     });
 
     if (hasYearFilter) {
-      const searchYear = parseInt(year as string, 10);
-      if (!isNaN(searchYear)) {
-        allProducts = allProducts.filter((p) => yearMatchesRanges(searchYear, p.year));
-      }
+      allProducts = allProducts.filter((p) => yearRangesOverlap(year as string, p.year));
     }
 
     const total = allProducts.length;

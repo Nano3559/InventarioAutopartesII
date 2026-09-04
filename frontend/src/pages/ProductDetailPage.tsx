@@ -240,15 +240,15 @@ export default function ProductDetailPage() {
             <h3 className="text-white font-semibold mb-4">Precios</h3>
             {editing ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <Input label="Precio 1 (Bs.) *" value={form.price1} onChange={(v) => setField("price1", v)} type="number" />
-                <Input label="Precio 2 (Bs.)" value={form.price2} onChange={(v) => setField("price2", v)} type="number" />
+                <Input label="Precio Mayorista (Bs.) *" value={form.price1} onChange={(v) => setField("price1", v)} type="number" />
+                <Input label="Precio Minorista (Bs.)" value={form.price2} onChange={(v) => setField("price2", v)} type="number" />
                 <Input label="Precio Mayor (Bs.)" value={form.wholesalePrice} onChange={(v) => setField("wholesalePrice", v)} type="number" />
                 <Input label="Costo (Bs.)" value={form.cost} onChange={(v) => setField("cost", v)} type="number" />
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <InfoBox label="Precio 1" value={fc(product.price1)} highlight="green" />
-                <InfoBox label="Precio 2" value={fc(product.price2)} highlight="blue" />
+                <InfoBox label="Precio Mayorista" value={fc(product.price1)} highlight="green" />
+                <InfoBox label="Precio Minorista" value={fc(product.price2)} highlight="blue" />
                 <InfoBox label="Precio Mayor" value={product.wholesalePrice ? fc(product.wholesalePrice) : "—"} />
                 <InfoBox label="Costo" value={product.cost ? fc(product.cost) : "—"} />
               </div>

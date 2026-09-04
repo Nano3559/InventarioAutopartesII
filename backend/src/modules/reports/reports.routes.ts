@@ -21,7 +21,7 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
 
     if (req.user?.role === "TIENDA") {
       if (!req.user.locationId) {
-        return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
+        return res.status(403).json({ message: "Usuario TIENDA sin ubicación asignada" });
       }
       where.locationId = req.user.locationId;
     }
@@ -113,6 +113,13 @@ router.get("/inventory", async (req: AuthRequest, res: Response) => {
     const where: any = {};
     if (locationId && typeof locationId === "string") where.locationId = Number(locationId);
 
+    if (req.user?.role === "TIENDA") {
+      if (!req.user.locationId) {
+        return res.status(403).json({ message: "Usuario TIENDA sin ubicación asignada" });
+      }
+      where.locationId = req.user.locationId;
+    }
+
     if (brand && typeof brand === "string") {
       where.product = { ...where.product, brand: { contains: brand, mode: "insensitive" } };
     }
@@ -160,9 +167,12 @@ router.get("/inventory", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /suppliers — Reporte por proveedor
+// GET /suppliers — Reporte por proveedor (solo ADMIN/INVENTARIO)
 router.get("/suppliers", async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user?.role === "TIENDA") {
+      return res.status(403).json({ message: "Reporte de proveedores no disponible para TIENDA" });
+    }
     const suppliers = await prisma.supplier.findMany({
       include: {
         costs: {
@@ -225,7 +235,7 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
     // TIENDA solo ve su propia tienda; resto ven todas
     const locationScope = req.user?.role === "TIENDA" && req.user?.locationId ? req.user.locationId : null;
     if (req.user?.role === "TIENDA" && !req.user.locationId) {
-      return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
+      return res.status(403).json({ message: "Usuario TIENDA sin ubicación asignada" });
     }
 
     const saleWhere: any = { saleDate: { gte: startDate, lte: endDate } };
@@ -246,7 +256,7 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
         where: returnWhere,
         include: { sale: { select: { locationId: true, location: { select: { name: true } } } } },
       }),
-      prisma.location.findMany({ select: { id: true, name: true, type: true } }),
+      prisma.location.findMany({ select: { id: true, name: true, type: true }, ...(locationScope ? { where: { id: locationScope } } : {}) }),
       prisma.cost.findMany({
         where: { date: { gte: startDate, lte: endDate } },
         orderBy: { date: "desc" },

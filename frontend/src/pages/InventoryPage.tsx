@@ -104,12 +104,16 @@ export default function InventoryPage() {
   const [showStockModal, setShowStockModal] = useState<number | null>(null);
   const [stockData, setStockData] = useState<any>(null);
   const [stockLoading, setStockLoading] = useState(false);
+  const [stockEdits, setStockEdits] = useState<Record<number, { stock: string; minStock: string; reasonType: string; reason: string }>>({});
+  const [stockSaving, setStockSaving] = useState(false);
 
   const [showImportModal, setShowImportModal] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
   const [importLocationId, setImportLocationId] = useState("");
+
+  const [imageModal, setImageModal] = useState<Product | null>(null);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -234,12 +238,48 @@ export default function InventoryPage() {
       setStockLoading(true);
       const res = await api.get(`/inventory/product/${productId}`);
       setStockData(res.data);
+      const edits: Record<number, { stock: string; minStock: string; reasonType: string; reason: string }> = {};
+      (res.data.locations || []).forEach((loc: any) => {
+        edits[loc.id] = { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
+      });
+      setStockEdits(edits);
     } catch {
       toast.error("Error al cargar stock");
       setShowStockModal(null);
     } finally {
       setStockLoading(false);
     }
+  };
+
+  const saveStockAdjust = async (invId: number) => {
+    const edit = stockEdits[invId];
+    if (!edit) return;
+    const current = stockData?.locations?.find((l: any) => l.id === invId)?.stock;
+    const stockChanged = current != null && Number(edit.stock) !== Number(current);
+    if (stockChanged && !edit.reasonType) {
+      toast.error("Selecciona el motivo del ajuste de stock");
+      return;
+    }
+    try {
+      setStockSaving(true);
+      await api.put(`/inventory/${invId}`, {
+        stock: Number(edit.stock),
+        minStock: Number(edit.minStock),
+        reasonType: edit.reasonType,
+        reason: edit.reason || null,
+      });
+      toast.success("Stock ajustado");
+      const res = await api.get(`/inventory/product/${showStockModal}`);
+      setStockData(res.data);
+      const edits: Record<number, { stock: string; minStock: string; reasonType: string; reason: string }> = {};
+      (res.data.locations || []).forEach((loc: any) => {
+        edits[loc.id] = { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
+      });
+      setStockEdits(edits);
+      fetchProducts();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Error al ajustar stock");
+    } finally { setStockSaving(false); }
   };
 
   const formatCurrency = (v: string) => `Bs. ${Number(v).toLocaleString("es-BO", { minimumFractionDigits: 2 })}`;
@@ -286,7 +326,14 @@ export default function InventoryPage() {
       case "Cód. OEM": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>;
       case "Cód. Fábrica": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>;
       case "Proveedor": return <td key={column} className="px-4 py-3 text-gray-300 text-xs">{p.supplierName || "—"}</td>;
-      case "Imagen": return <td key={column} className="px-4 py-3"><div className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden"><ProductImage image={p.image} category={p.category} name={p.name} /></div></td>;
+      case "Imagen": return (
+        <td key={column} className="px-4 py-3">
+          <button type="button" onClick={() => setImageModal(p)} title="Ver imagen ampliada"
+            className="w-10 h-10 mx-auto bg-dark-900/50 rounded-lg flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-primary-500/50 transition-all cursor-zoom-in">
+            <ProductImage image={p.image} category={p.category} name={p.name} />
+          </button>
+        </td>
+      );
       case "Precio 1": return <td key={column} className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>;
       case "Precio 2": return <td key={column} className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>;
       case "Stock": return <td key={column} className="px-4 py-3 text-center"><span className={`px-2 py-0.5 text-xs font-medium rounded-full ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{p.stock}</span></td>;
@@ -424,9 +471,9 @@ export default function InventoryPage() {
               {visibleProducts.map((p) => (
                 <div key={p.id} className="p-4 space-y-2">
                   <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 bg-dark-900/50 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                    <button type="button" onClick={() => setImageModal(p)} className="w-12 h-12 bg-dark-900/50 rounded-xl flex items-center justify-center overflow-hidden shrink-0 cursor-zoom-in hover:ring-2 hover:ring-primary-500/50 transition-all">
                       <ProductImage image={p.image} category={p.category} name={p.name} />
-                    </div>
+                    </button>
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-medium text-sm truncate">{p.name}</p>
                       <p className="text-xs text-gray-500">{p.brand} · {p.model} · {p.year}</p>
@@ -514,8 +561,8 @@ export default function InventoryPage() {
               <div className="border-t border-dark-700/50 pt-4">
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Precios (Bs.)</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Field label="Precio 1 *" value={form.price1} onChange={(v) => setField("price1", v)} type="number" />
-                  <Field label="Precio 2" value={form.price2} onChange={(v) => setField("price2", v)} type="number" />
+                    <Field label="Precio Mayorista (Bs.) *" value={form.price1} onChange={(v) => setField("price1", v)} type="number" />
+                    <Field label="Precio Minorista (Bs.)" value={form.price2} onChange={(v) => setField("price2", v)} type="number" />
                   <Field label="Precio Mayor" value={form.wholesalePrice} onChange={(v) => setField("wholesalePrice", v)} type="number" />
                   <Field label="Costo" value={form.cost} onChange={(v) => setField("cost", v)} type="number" />
                 </div>
@@ -557,6 +604,26 @@ export default function InventoryPage() {
         </div>
       )}
 
+      {/* Modal: Vista ampliada de imagen */}
+      {imageModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setImageModal(null)}>
+          <div className="bg-dark-800 border border-dark-700/50 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-dark-700/50">
+              <div className="min-w-0">
+                <p className="text-white font-medium truncate">{imageModal.name}</p>
+                <p className="text-xs text-gray-500 truncate">{imageModal.brand} · {imageModal.itemCode}</p>
+              </div>
+              <button onClick={() => setImageModal(null)} className="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-xl transition-all">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-4 bg-dark-900/50 flex items-center justify-center min-h-[280px]">
+              <ProductImage image={imageModal.image} category={imageModal.category} name={imageModal.name} className="max-h-[60vh] w-auto" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal: Confirmar Eliminación */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -591,20 +658,79 @@ export default function InventoryPage() {
                 <>
                   <div className="mb-4 p-3 bg-dark-900/50 rounded-xl border border-dark-700/30">
                     <p className="text-white font-medium">{stockData.stockTotal} unidades totales</p>
+                    {canEdit && <p className="text-xs text-gray-500 mt-1">Haz clic en un campo para ajustar el stock de cada ubicación.</p>}
                   </div>
-                  <div className="space-y-2">
-                    {stockData.locations.map((loc: any) => (
-                      <div key={loc.locationId} className="flex items-center justify-between p-3 bg-dark-900/50 rounded-xl border border-dark-700/30">
-                        <div>
-                          <p className="text-sm text-gray-200">{loc.locationName}</p>
-                          <p className="text-xs text-gray-500">{loc.locationType === "ALMACEN" ? "Almacén" : "Tienda"}</p>
+                  <div className="space-y-3">
+                    {stockData.locations.map((loc: any) => {
+                      const edit = stockEdits[loc.id] || { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
+                      return (
+                        <div key={loc.locationId} className="p-3 bg-dark-900/50 rounded-xl border border-dark-700/30">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <p className="text-sm text-gray-200">{loc.locationName}</p>
+                              <p className="text-xs text-gray-500">{loc.locationType === "ALMACEN" ? "Almacén" : "Tienda"}</p>
+                            </div>
+                            {canEdit && (
+                              <button
+                                onClick={() => saveStockAdjust(loc.id)}
+                                disabled={stockSaving}
+                                className="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-all disabled:opacity-50"
+                              >
+                                Guardar ajuste
+                              </button>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-[11px] text-gray-500 mb-0.5">Stock</label>
+                              <input
+                                type="number" min={0} disabled={!canEdit}
+                                value={edit.stock}
+                                onChange={(e) => setStockEdits((prev) => ({ ...prev, [loc.id]: { ...prev[loc.id], stock: e.target.value } }))}
+                                className="w-full px-2.5 py-1.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm focus:outline-none focus:border-primary-500 disabled:opacity-60"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[11px] text-gray-500 mb-0.5">Stock mínimo</label>
+                              <input
+                                type="number" min={0} disabled={!canEdit}
+                                value={edit.minStock}
+                                onChange={(e) => setStockEdits((prev) => ({ ...prev, [loc.id]: { ...prev[loc.id], minStock: e.target.value } }))}
+                                className="w-full px-2.5 py-1.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm focus:outline-none focus:border-primary-500 disabled:opacity-60"
+                              />
+                            </div>
+                          </div>
+                          {canEdit && (
+                            <div className="mt-2 grid grid-cols-1 gap-2">
+                              <div>
+                                <label className="block text-[11px] text-gray-500 mb-0.5">Motivo</label>
+                                <select
+                                  value={edit.reasonType}
+                                  onChange={(e) => setStockEdits((prev) => ({ ...prev, [loc.id]: { ...prev[loc.id], reasonType: e.target.value } }))}
+                                  className="w-full px-2.5 py-1.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm focus:outline-none focus:border-primary-500"
+                                >
+                                  <option value="">Sin motivo</option>
+                                  <option value="COMPRA">Compra</option>
+                                  <option value="AJUSTE">Ajuste</option>
+                                  <option value="DEVOLUCION">Devolución</option>
+                                  <option value="MERMA">Merma</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-[11px] text-gray-500 mb-0.5">Observación (opcional)</label>
+                                <input
+                                  type="text"
+                                  value={edit.reason}
+                                  onChange={(e) => setStockEdits((prev) => ({ ...prev, [loc.id]: { ...prev[loc.id], reason: e.target.value } }))}
+                                  placeholder="Detalle del ajuste..."
+                                  className="w-full px-2.5 py-1.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm focus:outline-none focus:border-primary-500"
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <div className="text-right">
-                          <p className={`text-lg font-bold ${loc.stock === 0 ? "text-red-400" : loc.stock <= loc.minStock ? "text-yellow-400" : "text-green-400"}`}>{loc.stock}</p>
-                          <p className="text-xs text-gray-500">mín: {loc.minStock}</p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </>
               ) : null}

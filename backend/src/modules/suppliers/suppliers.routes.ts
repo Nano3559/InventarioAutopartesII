@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parseString } from "../../shared/middlewares/validate";
 
@@ -8,6 +8,7 @@ const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
+router.use(authorize("ADMIN"));
 
 // GET / — Listar proveedores con búsqueda
 router.get("/", async (req: AuthRequest, res: Response) => {

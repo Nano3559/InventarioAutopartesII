@@ -1,12 +1,14 @@
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 
 const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
+router.use(requireTiendaLocation);
+router.use(authorize("ADMIN", "TIENDA"));
 
 // GET / — Listar pagos con filtros
 router.get("/", async (req: AuthRequest, res: Response) => {
@@ -17,7 +19,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     if (saleId && typeof saleId === "string") where.saleId = Number(saleId);
     if (method && typeof method === "string") where.method = method;
 
-    if (req.user?.role === "TIENDA" && req.user.locationId) {
+    if (req.user?.role === "TIENDA") {
       where.sale = { locationId: req.user.locationId };
     }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  Plus, X, Upload, Search, Pencil, Trash2,
+  Plus, X, Upload, Search, Pencil, Trash2, Download,
   ChevronLeft, ChevronRight, Building2, RefreshCw,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -36,7 +36,7 @@ export default function CostsPage() {
   const [costSupplierId, setCostSupplierId] = useState("");
   const [exchangeRate, setExchangeRate] = useState("6.96");
   const [percentage, setPercentage] = useState("");
-  const [costPrice, setCostPrice] = useState("");
+  const [costUsd, setCostUsd] = useState("");
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -105,7 +105,7 @@ export default function CostsPage() {
   const openCreateCost = () => {
     setEditingCost(null);
     setSelectedProduct(null); setProductSearch(""); setCostSupplierId("");
-    setExchangeRate("6.96"); setPercentage(""); setCostPrice(""); setInvoiceFile(null);
+    setExchangeRate("6.96"); setPercentage(""); setCostUsd(""); setInvoiceFile(null);
     setShowCostModal(true);
   };
 
@@ -114,23 +114,30 @@ export default function CostsPage() {
     setSelectedProduct({ id: c.productId, itemCode: c.itemCode, name: c.productName, brand: c.brand, model: c.model });
     setProductSearch(c.productName);
     setCostSupplierId(String(c.supplierId));
-    setExchangeRate(c.exchangeRate ? String(c.exchangeRate) : "6.96");
+    const tc = c.exchangeRate ? Number(c.exchangeRate) : 6.96;
+    const pct = c.percentage ? Number(c.percentage) : 0;
+    setExchangeRate(String(tc));
     setPercentage(c.percentage ? String(c.percentage) : "");
-    setCostPrice(String(c.costPrice));
+    const usd = tc > 0 ? c.costPrice / (tc * (1 + pct / 100)) : c.costPrice;
+    setCostUsd(String(usd));
     setInvoiceFile(null);
     setShowCostModal(true);
   };
 
   const saveCost = async () => {
-    if (!selectedProduct || !costSupplierId || !costPrice) {
-      toast.error("Producto, proveedor y costo son obligatorios"); return;
+    if (!selectedProduct || !costSupplierId || !costUsd) {
+      toast.error("Producto, proveedor, costo USD y tipo de cambio son obligatorios"); return;
     }
+    const tc = Number(exchangeRate) || 0;
+    if (tc <= 0) { toast.error("El tipo de cambio debe ser mayor a 0"); return; }
+    const pct = Number(percentage) || 0;
+    const computed = Number(costUsd) * tc * (1 + pct / 100);
     try {
       setSaving(true);
       const formData = new FormData();
       formData.append("productId", String(selectedProduct.id));
       formData.append("supplierId", costSupplierId);
-      formData.append("costPrice", costPrice);
+      formData.append("costPrice", String(computed));
       if (exchangeRate) formData.append("exchangeRate", exchangeRate);
       if (percentage) formData.append("percentage", percentage);
       if (invoiceFile) formData.append("invoice", invoiceFile);
@@ -147,6 +154,23 @@ export default function CostsPage() {
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Error al guardar costo");
     } finally { setSaving(false); }
+  };
+
+  const downloadInvoice = async (filename: string | null) => {
+    if (!filename) return;
+    try {
+      const res = await api.get(`/costs/invoice/${encodeURIComponent(filename)}`, { responseType: "blob" });
+      const url = URL.createObjectURL(res.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("No se pudo descargar la factura");
+    }
   };
 
   const deleteCost = async (id: number) => {
@@ -301,7 +325,7 @@ export default function CostsPage() {
                       <td className="px-4 py-3 text-gray-300">{c.supplierName}</td>
                       <td className="px-4 py-3">
                         {c.invoiceUrl ? (
-                          <span className="text-green-400 text-xs flex items-center gap-1"><Upload size={12} /> {c.invoiceUrl}</span>
+                          <button onClick={() => downloadInvoice(c.invoiceUrl)} className="text-green-400 hover:text-green-300 text-xs flex items-center gap-1"><Download size={12} /> {c.invoiceUrl}</button>
                         ) : (
                           <span className="text-gray-600 text-xs">Sin archivo</span>
                         )}
@@ -450,20 +474,27 @@ export default function CostsPage() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Tipo Cambio</label>
-                  <input type="number" step="0.01" value={exchangeRate} onChange={(e) => setExchangeRate(e.target.value)}
+                  <label className="block text-xs text-gray-400 mb-1">Tipo Cambio (Bs/USD) *</label>
+                  <input type="number" step="0.01" min="0" value={exchangeRate} onChange={(e) => setExchangeRate(e.target.value)}
                     className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Porcentaje (%)</label>
+                  <label className="block text-xs text-gray-400 mb-1">% Gastos</label>
                   <input type="number" value={percentage} onChange={(e) => setPercentage(e.target.value)}
                     className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Costo (Bs.) *</label>
-                  <input type="number" step="0.01" value={costPrice} onChange={(e) => setCostPrice(e.target.value)}
+                  <label className="block text-xs text-gray-400 mb-1">Costo (USD) *</label>
+                  <input type="number" step="0.01" min="0" value={costUsd} onChange={(e) => setCostUsd(e.target.value)}
                     className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
                 </div>
+              </div>
+
+              <div className="p-3 bg-primary-600/10 border border-primary-600/20 rounded-xl flex items-center justify-between">
+                <span className="text-xs text-gray-300">Costo Puesto Aquí (Bs.)</span>
+                <span className="text-sm font-semibold text-primary-300">
+                  {formatBs(Number(costUsd || 0) * (Number(exchangeRate) || 0) * (1 + (Number(percentage) || 0) / 100))}
+                </span>
               </div>
 
               <div>

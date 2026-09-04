@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  Search, Pencil, Download, ChevronLeft, ChevronRight, X, Check, RefreshCw,
+  Search, Download, ChevronLeft, ChevronRight, RefreshCw, FileText, Check,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
@@ -9,9 +9,14 @@ import * as XLSX from "xlsx";
 interface PriceRow {
   id: number; itemCode: string; productName: string; brand: string;
   model: string; years: string; detail: string;
-  cost: number; p20: number; p30: number; p40: number;
-  p50: number; p60: number; p70: number; p80: number;
+  cost: number; precioMayorista: number; precioMinorista: number;
+  currentPrice1: number; currentPrice2: number;
   wholesalePrice: number;
+}
+
+interface Invoice {
+  id: number; invoiceUrl: string | null; productName: string; itemCode: string;
+  supplierName: string | null; date: string;
 }
 
 const PAGE_SIZE = 15;
@@ -23,8 +28,11 @@ export default function PricesPage() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [search, setSearch] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValue, setEditValue] = useState("");
+  const [margin1, setMargin1] = useState("25");
+  const [margin2, setMargin2] = useState("45");
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [costId, setCostId] = useState("");
+  const [applying, setApplying] = useState(false);
 
   const formatBs = (v: number) =>
     `Bs. ${v.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -36,51 +44,56 @@ export default function PricesPage() {
       params.set("page", String(page));
       params.set("limit", String(PAGE_SIZE));
       if (search) params.set("search", search);
+      if (margin1) params.set("margin1", margin1);
+      if (margin2) params.set("margin2", margin2);
+      if (costId) params.set("costId", costId);
       const res = await api.get(`/prices?${params.toString()}`);
       setPrices(res.data.prices);
       setTotal(res.data.pagination.total);
       setPages(res.data.pagination.pages);
+      if (Array.isArray(res.data.invoices)) setInvoices(res.data.invoices);
+      if (res.data.defaultMargin1 != null) setMargin1(String(res.data.defaultMargin1));
+      if (res.data.defaultMargin2 != null) setMargin2(String(res.data.defaultMargin2));
     } catch { toast.error("Error al cargar precios"); }
     finally { setLoading(false); }
-  }, [page, search]);
+  }, [page, search, margin1, margin2, costId]);
 
   useEffect(() => { fetchPrices(); }, [fetchPrices]);
-  useEffect(() => { setPage(1); }, [search]);
+  useEffect(() => { setPage(1); }, [search, costId, margin1, margin2]);
 
-  const startEdit = (p: PriceRow) => {
-    setEditingId(p.id);
-    setEditValue(String(p.wholesalePrice));
-  };
-
-  const saveEdit = async (id: number) => {
-    const val = Number(editValue);
-    if (isNaN(val) || val < 0) { toast.error("Precio inválido"); return; }
+  const applyPrices = async () => {
     try {
-      await api.put(`/prices/${id}`, { wholesalePrice: val });
-      setPrices((prev) => prev.map((p) => p.id === id ? { ...p, wholesalePrice: val } : p));
-      setEditingId(null);
-      toast.success("Precio por mayor actualizado");
+      setApplying(true);
+      const res = await api.post("/prices/apply", {
+        margin1: Number(margin1) || 0,
+        margin2: Number(margin2) || 0,
+        costId: costId ? Number(costId) : null,
+      });
+      toast.success(`Precios aplicados a ${res.data.updated} productos`);
+      fetchPrices();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Error al actualizar");
-    }
+      toast.error(err.response?.data?.message || "Error al aplicar precios");
+    } finally { setApplying(false); }
   };
 
   const exportExcel = async () => {
     try {
-      const [pricesRes, productsRes, costsRes] = await Promise.all([
-        api.get("/prices/export"),
-        api.get("/products?limit=1000"),
-        api.get("/costs?limit=100"),
-      ]);
-      const stockByCode = new Map((productsRes.data.products || []).map((p: any) => [p.itemCode, p.stock]));
-      const supplierByCode = new Map((costsRes.data.costs || []).map((c: any) => [c.itemCode, c.supplierName]));
-      const data = pricesRes.data.data.map((row: any) => ({ ...row, stock: stockByCode.get(row.itemCode) ?? 0, supplier: supplierByCode.get(row.itemCode) || "" }));
+      const params = new URLSearchParams();
+      if (margin1) params.set("margin1", margin1);
+      if (margin2) params.set("margin2", margin2);
+      const res = await api.get(`/prices/export?${params.toString()}`);
+      const data = res.data.data || [];
       if (!data.length) { toast.error("No hay datos para exportar"); return; }
-      const rows = data.map((r: any) => ({ "Código Fábrica": r.itemCode, Producto: r.name, Marca: r.brand, Modelo: r.model, Años: r.years, Detalle: r.detail, Proveedor: r.supplier, Stock: r.stock, "Precio Mayor": r.wholesalePrice }));
+      const rows = data.map((r: any) => ({
+        "Código Fábrica": r.itemCode, Producto: r.name, Marca: r.brand, Modelo: r.model,
+        Años: r.years, Detalle: r.detail, "Costo (Bs.)": r.cost,
+        "Precio 1 (Mayorista)": r.precioMayorista, "Precio 2 (Minorista)": r.precioMinorista,
+        "Precio Mayor": r.wholesalePrice,
+      }));
       const sheet = XLSX.utils.json_to_sheet(rows);
       const book = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(book, sheet, "Precios");
-      XLSX.writeFile(book, "precios_mayor.xlsx");
+      XLSX.writeFile(book, "precios.xlsx");
       toast.success("Precios exportados");
     } catch { toast.error("Error al exportar"); }
   };
@@ -90,7 +103,7 @@ export default function PricesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Precios</h1>
-          <p className="text-gray-400 text-sm mt-1">Cálculo de precios por porcentaje desde costo</p>
+          <p className="text-gray-400 text-sm mt-1">Cálculo desde el costo: Precio 1 (mayorista) y Precio 2 (minorista) con márgenes configurables</p>
         </div>
         <div className="flex gap-2">
           <button onClick={fetchPrices}
@@ -104,11 +117,47 @@ export default function PricesPage() {
         </div>
       </div>
 
-      <div className="relative">
-        <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
-        <input value={search} onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar por producto, código, marca o modelo..."
-          className="w-full pl-10 pr-4 py-2.5 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 transition-all" />
+      {/* Config: filtro por factura + márgenes configurables */}
+      <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="md:col-span-2">
+          <label className="block text-xs text-gray-400 mb-1.5">Factura / Archivo importado</label>
+          <div className="relative">
+            <FileText size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <select value={costId} onChange={(e) => setCostId(e.target.value)}
+              className="w-full pl-9 pr-3 py-2.5 bg-dark-900/50 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 appearance-none">
+              <option value="">Todas las facturas (todo el inventario)</option>
+              {invoices.map((i) => (
+                <option key={i.id} value={i.id}>
+                  {i.invoiceUrl} · {i.productName} · {i.supplierName || "s/proveedor"}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1.5">Margen Precio 1 (%) — mayorista</label>
+          <input type="number" min="0" value={margin1} onChange={(e) => setMargin1(e.target.value)}
+            className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1.5">Margen Precio 2 (%) — minorista</label>
+          <input type="number" min="0" value={margin2} onChange={(e) => setMargin2(e.target.value)}
+            className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
+        </div>
+      </div>
+
+      {/* Acciones: aplicar precios */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por producto, código, marca o modelo..."
+            className="w-full pl-10 pr-4 py-2.5 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 transition-all" />
+        </div>
+        <button onClick={applyPrices} disabled={applying}
+          className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-600/20 disabled:opacity-50">
+          <Check size={16} /> {applying ? "Aplicando..." : "Aplicar precios"}
+        </button>
       </div>
 
       <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl overflow-hidden">
@@ -126,21 +175,16 @@ export default function PricesPage() {
                     <th className="text-left px-3 py-3 text-gray-400 font-medium">Producto</th>
                     <th className="text-left px-3 py-3 text-gray-400 font-medium">Marca</th>
                     <th className="text-left px-3 py-3 text-gray-400 font-medium">Modelo</th>
-                    <th className="text-right px-3 py-3 text-gray-400 font-medium">Costo</th>
-                    <th className="text-right px-3 py-3 text-amber-400/70 font-medium">+20%</th>
-                    <th className="text-right px-3 py-3 text-amber-400/70 font-medium">+30%</th>
-                    <th className="text-right px-3 py-3 text-amber-400/70 font-medium">+40%</th>
-                    <th className="text-right px-3 py-3 text-amber-400/70 font-medium">+50%</th>
-                    <th className="text-right px-3 py-3 text-amber-400/70 font-medium">+60%</th>
-                    <th className="text-right px-3 py-3 text-amber-400/70 font-medium">+70%</th>
-                    <th className="text-right px-3 py-3 text-amber-400/70 font-medium">+80%</th>
-                    <th className="text-right px-3 py-3 text-primary-400 font-medium">P. Mayor</th>
-                    <th className="text-center px-3 py-3 text-gray-400 font-medium"></th>
+                    <th className="text-right px-3 py-3 text-gray-400 font-medium">Costo (Bs.)</th>
+                    <th className="text-right px-3 py-3 text-primary-400 font-medium">Precio 1 (Mayorista)</th>
+                    <th className="text-right px-3 py-3 text-blue-400 font-medium">Precio 2 (Minorista)</th>
+                    <th className="text-right px-3 py-3 text-green-400 font-medium">Actual P1</th>
+                    <th className="text-right px-3 py-3 text-cyan-400 font-medium">Actual P2</th>
                   </tr>
                 </thead>
                 <tbody>
                   {prices.length === 0 ? (
-                    <tr><td colSpan={14} className="px-3 py-8 text-center text-gray-500">No hay productos con costo registrado</td></tr>
+                    <tr><td colSpan={9} className="px-3 py-8 text-center text-gray-500">No hay productos con costo registrado</td></tr>
                   ) : prices.map((p) => (
                     <tr key={p.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
                       <td className="px-3 py-3 text-gray-300 font-mono text-xs">{p.itemCode}</td>
@@ -148,33 +192,10 @@ export default function PricesPage() {
                       <td className="px-3 py-3 text-gray-300">{p.brand}</td>
                       <td className="px-3 py-3 text-gray-300">{p.model}</td>
                       <td className="px-3 py-3 text-amber-400 font-medium text-right">{formatBs(p.cost)}</td>
-                      <td className="px-3 py-3 text-gray-300 text-right text-xs">{formatBs(p.p20)}</td>
-                      <td className="px-3 py-3 text-gray-300 text-right text-xs">{formatBs(p.p30)}</td>
-                      <td className="px-3 py-3 text-gray-300 text-right text-xs">{formatBs(p.p40)}</td>
-                      <td className="px-3 py-3 text-gray-300 text-right text-xs">{formatBs(p.p50)}</td>
-                      <td className="px-3 py-3 text-gray-300 text-right text-xs">{formatBs(p.p60)}</td>
-                      <td className="px-3 py-3 text-gray-300 text-right text-xs">{formatBs(p.p70)}</td>
-                      <td className="px-3 py-3 text-gray-300 text-right text-xs">{formatBs(p.p80)}</td>
-                      <td className="px-3 py-3 text-right">
-                        {editingId === p.id ? (
-                          <div className="flex items-center gap-1 justify-end">
-                            <input type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)}
-                              onKeyDown={(e) => e.key === "Enter" && saveEdit(p.id)}
-                              className="w-24 px-2 py-1 bg-dark-800 border border-primary-500 rounded-lg text-white text-xs text-right focus:outline-none" autoFocus />
-                            <button onClick={() => saveEdit(p.id)} className="p-1 text-green-400 hover:text-green-300"><Check size={12} /></button>
-                            <button onClick={() => setEditingId(null)} className="p-1 text-gray-400 hover:text-white"><X size={12} /></button>
-                          </div>
-                        ) : (
-                          <span className="text-primary-400 font-bold cursor-pointer hover:text-primary-300" onClick={() => startEdit(p)}>
-                            {formatBs(p.wholesalePrice)}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3">
-                        <button onClick={() => startEdit(p)} className="p-1.5 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-all" title="Editar precio mayor">
-                          <Pencil size={14} />
-                        </button>
-                      </td>
+                      <td className="px-3 py-3 text-primary-400 font-medium text-right">{formatBs(p.precioMayorista)}</td>
+                      <td className="px-3 py-3 text-blue-400 font-medium text-right">{formatBs(p.precioMinorista)}</td>
+                      <td className="px-3 py-3 text-green-400 text-right text-xs">{formatBs(p.currentPrice1)}</td>
+                      <td className="px-3 py-3 text-cyan-400 text-right text-xs">{formatBs(p.currentPrice2)}</td>
                     </tr>
                   ))}
                 </tbody>

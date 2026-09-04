@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient, RequestStatus } from "@prisma/client";
-import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt } from "../../shared/middlewares/validate";
 
@@ -8,6 +8,7 @@ const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
+router.use(requireTiendaLocation);
 
 const VALID_STATUSES: RequestStatus[] = [
   "PENDIENTE", "RECIBIDO_POR_INVENTARIO", "PREPARANDO",
@@ -187,6 +188,9 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
     }
     if (status === "RECIBIDO_POR_TIENDA" && role !== "ADMIN" && role !== "TIENDA") {
       return res.status(403).json({ message: "Solo TIENDA o ADMIN pueden confirmar recepción" });
+    }
+    if (role === "TIENDA" && existing.locationId !== req.user?.locationId) {
+      return res.status(403).json({ message: "No puede modificar solicitudes de otra tienda" });
     }
 
     const STATUS_LABELS: Record<string, string> = {

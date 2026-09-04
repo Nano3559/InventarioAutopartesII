@@ -114,16 +114,16 @@ export default function App() {
             </RoleRoute>
           } />
 
-          {/* Costos — ADMIN + INVENTARIO */}
+          {/* Costos — solo ADMIN */}
           <Route path="costos" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="costos">
+            <RoleRoute allowedRoles={["ADMIN"]} module="costos">
               <CostsPage />
             </RoleRoute>
           } />
 
-          {/* Precios — ADMIN + INVENTARIO */}
+          {/* Precios — solo ADMIN */}
           <Route path="precios" element={
-            <RoleRoute allowedRoles={["ADMIN", "INVENTARIO"]} module="precios">
+            <RoleRoute allowedRoles={["ADMIN"]} module="precios">
               <PricesPage />
             </RoleRoute>
           } />

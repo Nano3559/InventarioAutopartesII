@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient, PaymentMethod } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt, parsePositiveDecimal, parseString } from "../../shared/middlewares/validate";
 
@@ -8,6 +8,8 @@ const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
+router.use(requireTiendaLocation);
+router.use(authorize("ADMIN", "TIENDA"));
 
 const VALID_METHODS: PaymentMethod[] = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];
 
@@ -22,7 +24,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
     const user = req.user!;
     const saleFilters: any = {};
-    if (user.role === "TIENDA" && user.locationId) {
+    if (user.role === "TIENDA") {
       saleFilters.locationId = user.locationId;
     } else if (locationId && typeof locationId === "string") {
       saleFilters.locationId = Number(locationId);

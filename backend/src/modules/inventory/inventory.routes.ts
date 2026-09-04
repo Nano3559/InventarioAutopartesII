@@ -1,12 +1,13 @@
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 
 const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
+router.use(requireTiendaLocation);
 
 // GET / — Listar todo el inventario con información de producto y ubicación
 router.get("/", async (req: AuthRequest, res: Response) => {
@@ -15,7 +16,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
     const where: any = {};
 
-    if (req.user?.role === "TIENDA" && req.user.locationId) {
+    if (req.user?.role === "TIENDA") {
       where.locationId = req.user.locationId;
     } else if (locationId && typeof locationId === "string") {
       where.locationId = Number(locationId);
@@ -59,8 +60,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 router.get("/product/:productId", async (req: AuthRequest, res: Response) => {
   try {
     const productId = Number(req.params.productId);
+    const inventoryWhere: any = { productId };
+    if (req.user?.role === "TIENDA") inventoryWhere.locationId = req.user.locationId;
     const inventories = await prisma.inventory.findMany({
-      where: { productId },
+      where: inventoryWhere,
       include: { location: true },
       orderBy: { location: { name: "asc" } },
     });
@@ -71,6 +74,7 @@ router.get("/product/:productId", async (req: AuthRequest, res: Response) => {
       productId,
       stockTotal,
       locations: inventories.map((inv) => ({
+        id: inv.id,
         locationId: inv.location.id,
         locationName: inv.location.name,
         locationType: inv.location.type,
@@ -84,11 +88,11 @@ router.get("/product/:productId", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// PUT /:id — Actualizar stock manualmente (solo ADMIN)
+// PUT /:id — Actualizar stock manualmente con motivo (solo ADMIN)
 router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const { stock, minStock } = req.body;
+    const { stock, minStock, reasonType, reason } = req.body;
 
     const existing = await prisma.inventory.findUnique({ where: { id } });
     if (!existing) {
@@ -96,12 +100,14 @@ router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) =
     }
 
     const data: any = {};
+    let stockChanged = false;
     if (stock != null) {
       const s = Number(stock);
       if (!Number.isInteger(s) || s < 0) {
         return res.status(400).json({ message: "El stock debe ser un entero mayor o igual a 0" });
       }
       data.stock = s;
+      stockChanged = s !== existing.stock;
     }
     if (minStock != null) {
       const m = Number(minStock);
@@ -109,6 +115,14 @@ router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) =
         return res.status(400).json({ message: "El stock mínimo debe ser un entero mayor o igual a 0" });
       }
       data.minStock = m;
+    }
+
+    const validReasons = ["COMPRA", "AJUSTE", "DEVOLUCION", "MERMA"];
+    if (reasonType != null && reasonType !== "" && !validReasons.includes(reasonType)) {
+      return res.status(400).json({ message: "El motivo debe ser COMPRA, AJUSTE, DEVOLUCION o MERMA" });
+    }
+    if (stockChanged && (!reasonType || reasonType === "")) {
+      return res.status(400).json({ message: "Selecciona el motivo del ajuste de stock (COMPRA, AJUSTE, DEVOLUCION o MERMA)" });
     }
 
     const updated = await prisma.inventory.update({
@@ -124,7 +138,7 @@ router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) =
         targetType: "INVENTORY",
         targetId: id,
         oldValue: { stock: existing.stock, minStock: existing.minStock },
-        newValue: { stock: updated.stock, minStock: updated.minStock },
+        newValue: { stock: updated.stock, minStock: updated.minStock, reasonType: reasonType || null, reason: reason || null },
       },
     });
 

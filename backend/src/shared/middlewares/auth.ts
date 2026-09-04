@@ -76,3 +76,26 @@ export const authorizeModule = (module: string) => {
     }
   };
 };
+
+/**
+ * Exige que los usuarios TIENDA tengan una ubicación asignada. Los usuarios
+ * de otros roles pasan sin restricción. Devuelve 403 si un TIENDA no tiene
+ * locationId (no puede operar sobre datos de ubicación sin estar asignado a una).
+ */
+export const requireTiendaLocation = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.user?.role === "TIENDA" && !req.user.locationId) {
+    return res.status(403).json({ message: "Usuario TIENDA sin ubicación asignada" });
+  }
+  next();
+};
+
+/**
+ * Bloquea por completo el acceso de usuarios TIENDA a una ruta/recurso.
+ * Util para endpoints administrativos globales (proveedores, costos, etc.).
+ */
+export const blockTienda = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.user?.role === "TIENDA") {
+    return res.status(403).json({ message: "Acción no permitida para usuario TIENDA" });
+  }
+  next();
+};

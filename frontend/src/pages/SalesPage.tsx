@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 import {
   Search, ShoppingCart, Plus, Minus, Trash2, X, CreditCard,
-  FileText, RefreshCw, ChevronDown, ChevronLeft, ChevronRight,
+  FileText, RefreshCw, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   Check, Clock, MapPin, User,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -43,7 +43,7 @@ interface SaleRecord {
   seller: string | null;
   customer: { id: number; name: string; nit: string | null } | null;
   items: { id: number; quantity: number; unitPrice: number; subtotal: number;
-    product: { id: number; name: string; itemCode: string } }[];
+    product: { id: number; name: string; itemCode: string; brand?: string } }[];
   payments: { id: number; method: string; amount: number }[];
 }
 
@@ -75,10 +75,23 @@ export default function SalesPage() {
   // --- Search ---
   const [search, setSearch] = useState("");
   const [oemSearch, setOemSearch] = useState("");
+  const [filterBrand, setFilterBrand] = useState("");
+  const [filterManufacturer, setFilterManufacturer] = useState("");
+  const [filterModel, setFilterModel] = useState("");
+  const [filterYear, setFilterYear] = useState("");
+  const [filterCategoryId, setFilterCategoryId] = useState("");
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [searching, setSearching] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    api.get("/categories").then((r) => {
+      const list = Array.isArray(r.data) ? r.data : r.data.categories || [];
+      setCategories(list);
+    }).catch(() => {});
+  }, []);
 
   // --- Cart ---
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -99,6 +112,7 @@ export default function SalesPage() {
   const [histTotal, setHistTotal] = useState(0);
   const [histDateFrom, setHistDateFrom] = useState("");
   const [histDateTo, setHistDateTo] = useState("");
+  const [expandedSale, setExpandedSale] = useState<number | null>(null);
 
   const [histColumns, setHistColumns] = useState<string[]>(() => {
     try {
@@ -142,11 +156,11 @@ export default function SalesPage() {
             <button
               onClick={() => changePriceTier(c.productId, 1, String(c.price1), String(c.price2))}
               className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceTier === 1 ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"}`}
-            >Precio 1</button>
+            >Mayorista</button>
             <button
               onClick={() => changePriceTier(c.productId, 2, String(c.price1), String(c.price2))}
               className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceTier === 2 ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"}`}
-            >Precio 2</button>
+            >Minorista</button>
           </div>
         ) : (
           <span className="text-gray-300">{formatBs(c.unitPrice)}</span>
@@ -163,17 +177,34 @@ export default function SalesPage() {
   const doSearch = useCallback(async (q: string, oem?: string) => {
     const query = (q || "").trim();
     const oemQ = (oem || "").trim();
-    if (query.length < 2 && oemQ.length < 2) { setSearchResults([]); return; }
+    if (query.length < 2 && oemQ.length < 2 && !filterBrand && !filterManufacturer && !filterModel && !filterYear && !filterCategoryId) { setSearchResults([]); return; }
     try {
       setSearching(true);
       const params = new URLSearchParams({ search: query, limit: "10" });
       if (oemQ) params.set("oemCode", oemQ);
+      if (filterBrand) params.set("brand", filterBrand);
+      if (filterManufacturer) params.set("manufacturer", filterManufacturer);
+      if (filterModel) params.set("model", filterModel);
+      if (filterYear) params.set("year", filterYear);
+      if (filterCategoryId) params.set("categoryId", filterCategoryId);
       if (selectedLocationId) params.set("locationId", String(selectedLocationId));
       const res = await api.get(`/products?${params.toString()}`);
       setSearchResults(res.data.products.filter((p: Product) => p.stock > 0 && (!isVendedor || allowedCategories.length === 0 || allowedCategories.includes(p.category || ""))));
     } catch { toast.error("Error al buscar productos"); }
     finally { setSearching(false); }
-  }, [selectedLocationId, isVendedor, allowedCategories]);
+  }, [selectedLocationId, isVendedor, allowedCategories, filterBrand, filterManufacturer, filterModel, filterYear, filterCategoryId]);
+
+  const applyFilters = () => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    doSearch(search, oemSearch);
+  };
+
+  const clearAllFilters = () => {
+    setFilterBrand(""); setFilterManufacturer(""); setFilterModel(""); setFilterYear(""); setFilterCategoryId("");
+    setSearch(""); setOemSearch("");
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    setSearchResults([]);
+  };
 
   const handleSearchChange = (v: string) => {
     setSearch(v);
@@ -188,7 +219,7 @@ export default function SalesPage() {
   };
 
   // ==================== CART ====================
-  const addToCart = (p: Product, tier: 1 | 2 = 1) => {
+  const addToCart = (p: Product, tier: 1 | 2 = 2) => {
     const price = tier === 2 && Number(p.price2) > 0 ? Number(p.price2) : Number(p.price1);
     setCart((prev) => {
       const existing = prev.find((c) => c.productId === p.id);
@@ -480,6 +511,37 @@ export default function SalesPage() {
               </div>
             </div>
 
+            {(filterBrand || filterManufacturer || filterModel || filterYear || filterCategoryId) && (
+              <div className="pt-3 border-t border-dark-700/30">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider">Filtros:</span>
+                  <button onClick={applyFilters}
+                    className="px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white rounded-lg text-xs font-medium transition-all">
+                    Aplicar filtros
+                  </button>
+                  <button onClick={clearAllFilters}
+                    className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs hover:bg-red-500/20 transition-all">
+                    Limpiar
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  <input value={filterBrand} onChange={(e) => setFilterBrand(e.target.value)} placeholder="Marca"
+                    className="w-full px-3 py-2 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-600 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <input value={filterManufacturer} onChange={(e) => setFilterManufacturer(e.target.value)} placeholder="Fabricante"
+                    className="w-full px-3 py-2 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-600 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <input value={filterModel} onChange={(e) => setFilterModel(e.target.value)} placeholder="Modelo"
+                    className="w-full px-3 py-2 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-600 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <input value={filterYear} onChange={(e) => setFilterYear(e.target.value)} placeholder="Año / rango"
+                    className="w-full px-3 py-2 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-600 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <select value={filterCategoryId} onChange={(e) => setFilterCategoryId(e.target.value)}
+                    className="w-full appearance-none px-3 py-2 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
+                    <option value="">Categoría</option>
+                    {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+              </div>
+            )}
+
             {searchResults.length > 0 && (
               <div className="mt-3 space-y-1.5 max-h-72 overflow-y-auto">
                 {searchResults.map((p) => {
@@ -503,13 +565,13 @@ export default function SalesPage() {
                               onClick={() => addToCart(p, 1)}
                               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-all"
                             >
-                              <Plus size={12} /> P1: {formatBs(Number(p.price1))}
+                              <Plus size={12} /> Mayorista: {formatBs(Number(p.price1))}
                             </button>
                             <button
                               onClick={() => addToCart(p, 2)}
                               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-all"
                             >
-                              <Plus size={12} /> P2: {formatBs(Number(p.price2))}
+                              <Plus size={12} /> Minorista: {formatBs(Number(p.price2))}
                             </button>
                           </div>
                         ) : (
@@ -526,7 +588,7 @@ export default function SalesPage() {
                 })}
               </div>
             )}
-            {(search.length >= 2 || oemSearch.length >= 2) && searchResults.length === 0 && !searching && (
+            {(search.length >= 2 || oemSearch.length >= 2 || filterBrand || filterManufacturer || filterModel || filterYear || filterCategoryId) && searchResults.length === 0 && !searching && (
               <p className="text-center text-gray-500 text-sm py-4">No se encontraron productos con stock</p>
             )}
           </div>
@@ -691,7 +753,15 @@ export default function SalesPage() {
                       </thead>
                       <tbody>
                         {sales.map((s) => (
-                          <tr key={s.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
+                          <Fragment key={s.id}>
+                          <tr className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
+                            <td className="px-2 py-3">
+                              <button onClick={() => setExpandedSale(expandedSale === s.id ? null : s.id)}
+                                className="p-1.5 rounded-lg text-gray-500 hover:text-primary-400 hover:bg-dark-700/50 transition-all"
+                                title={expandedSale === s.id ? "Ocultar ítems" : "Ver ítems"}>
+                                {expandedSale === s.id ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                              </button>
+                            </td>
                             {isHistCol("#") && <td className="px-4 py-3 text-gray-400">{s.id}</td>}
                             {isHistCol("Fecha") && (
                               <td className="px-4 py-3 text-gray-300 text-xs">
@@ -747,6 +817,45 @@ export default function SalesPage() {
                               </td>
                             )}
                           </tr>
+                          {expandedSale === s.id && (
+                            <tr className="bg-dark-900/40">
+                              <td colSpan={histColumns.length + 1} className="px-4 py-3">
+                                <div className="space-y-2">
+                                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Detalle de ítems</p>
+                                  <div className="overflow-x-auto">
+                                    <table className="w-full text-xs">
+                                      <thead>
+                                        <tr className="text-gray-500 border-b border-dark-700/50">
+                                          <th className="text-left px-2 py-1.5 font-medium">Producto</th>
+                                          <th className="text-left px-2 py-1.5 font-medium">Código</th>
+                                          <th className="text-right px-2 py-1.5 font-medium">Cantidad</th>
+                                          <th className="text-right px-2 py-1.5 font-medium">Precio</th>
+                                          <th className="text-right px-2 py-1.5 font-medium">Subtotal</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {s.items.length === 0 ? (
+                                          <tr><td colSpan={5} className="px-2 py-3 text-center text-gray-600">Sin ítems</td></tr>
+                                        ) : s.items.map((item) => (
+                                          <tr key={item.id} className="border-b border-dark-700/20">
+                                            <td className="px-2 py-1.5">
+                                              <span className="text-white">{item.product?.name || "Producto"}</span>
+                                              {item.product?.brand && <span className="text-gray-500 ml-2">{item.product.brand}</span>}
+                                            </td>
+                                            <td className="px-2 py-1.5 text-gray-400 font-mono">{item.product?.itemCode || "—"}</td>
+                                            <td className="px-2 py-1.5 text-right text-gray-300">{item.quantity}</td>
+                                            <td className="px-2 py-1.5 text-right text-gray-300">{formatBs(Number(item.unitPrice))}</td>
+                                            <td className="px-2 py-1.5 text-right text-green-400 font-medium">{formatBs(Number(item.subtotal))}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                          </Fragment>
                         ))}
                       </tbody>
                     </table>

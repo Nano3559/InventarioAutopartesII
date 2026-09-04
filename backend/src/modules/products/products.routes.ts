@@ -4,7 +4,7 @@ import multer from "multer";
 import * as XLSX from "xlsx";
 import { createWorker } from "tesseract.js";
 import path from "path";
-import { yearMatchesRanges } from "../../utils/yearRanges";
+import { yearRangesOverlap } from "../../utils/yearRanges";
 import { authenticate, authorize, optionalAuth } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 
@@ -49,6 +49,21 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
     if (factoryCode && typeof factoryCode === "string") AND.push({ factoryCode: { contains: factoryCode, mode: "insensitive" } });
     if (categoryId && typeof categoryId === "string") AND.push({ categoryId: Number(categoryId) });
 
+    // Filtro de categorías permitidas por rol (TIENDA) directamente en backend para
+    // no depender solo de la UI. Se incluyen productos sin categoría (coherente con el frontend).
+    if (req.user?.role === "TIENDA" && !req.query.categoryId) {
+      const roleUser = await prisma.user.findUnique({
+        where: { id: req.user.userId },
+        include: { role: true },
+      });
+      const cats: string[] = ((roleUser?.role?.columnConfig as any)?.__categorias ?? []) as string[];
+      if (cats.length > 0) {
+        AND.push({
+          OR: [{ category: { name: { in: cats } } }, { categoryId: null }],
+        });
+      }
+    }
+
     if (queryLocationId && typeof queryLocationId === "string") {
       AND.push({ inventories: { some: { locationId: Number(queryLocationId), stock: { gt: 0 } } } });
     }
@@ -71,8 +86,7 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
     });
 
     if (hasYearFilter) {
-      const searchYear = parseInt(year as string, 10);
-      allProducts = allProducts.filter((p) => yearMatchesRanges(searchYear, p.year));
+      allProducts = allProducts.filter((p) => yearRangesOverlap(year as string, p.year));
     }
 
     const total = allProducts.length;
@@ -159,9 +173,13 @@ router.get("/:id", optionalAuth, async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Producto no encontrado" });
     }
 
-    const stockTotal = product.inventories.reduce((sum, inv) => sum + inv.stock, 0);
-
     const isAuth = !!req.user;
+    const isTienda = req.user?.role === "TIENDA";
+    const tiendaLocationId = req.user?.locationId || null;
+    const visibleInventories = isTienda && tiendaLocationId
+      ? product.inventories.filter((inv) => inv.locationId === tiendaLocationId)
+      : product.inventories;
+    const stockTotal = visibleInventories.reduce((sum, inv) => sum + inv.stock, 0);
 
     const response: any = {
       id: product.id,
@@ -179,7 +197,7 @@ router.get("/:id", optionalAuth, async (req: AuthRequest, res: Response) => {
       categoryId: product.categoryId,
       category: product.category?.name || null,
       stock: stockTotal,
-      stockByLocation: product.inventories.map((inv) => ({
+      stockByLocation: visibleInventories.map((inv) => ({
         locationId: inv.location.id,
         locationName: inv.location.name,
         locationType: inv.location.type,

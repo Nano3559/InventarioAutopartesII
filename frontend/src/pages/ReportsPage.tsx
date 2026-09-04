@@ -27,6 +27,7 @@ interface InventoryItem {
 interface MonthlyReport {
   location: { id: number; name: string; type: string };
   summary: { totalSales: number; totalReturns: number; netSales: number; saleCount: number; averagePerSale: number };
+  costs: { productsCost: number; storeCost: number };
   topProducts: { product: { name: string; brand: string }; quantitySold: number; totalRevenue: number }[];
 }
 
@@ -121,9 +122,10 @@ export default function ReportsPage() {
       const params = new URLSearchParams({ limit: "1000" });
       if (filterFrom) params.set("startDate", filterFrom);
       if (filterTo) params.set("endDate", filterTo);
+      if (filterLocation) params.set("locationId", filterLocation);
       const [salesRes, returnsRes] = await Promise.all([
         api.get(`/sales?${params.toString()}`),
-        api.get("/returns?limit=100"),
+        api.get(`/returns?limit=100${filterLocation ? `&locationId=${filterLocation}` : ""}`),
       ]);
       groupDaily(salesRes.data.sales, returnsRes.data.returns || []);
     } catch {
@@ -132,7 +134,7 @@ export default function ReportsPage() {
     } finally {
       setDailyLoading(false);
     }
-  }, [filterFrom, filterTo, locations]);
+  }, [filterFrom, filterTo, filterLocation, locations]);
 
   const groupDaily = (sales: any[], returns: any[]) => {
     const byDate: Record<string, DailyGroup> = {};
@@ -584,13 +586,16 @@ export default function ReportsPage() {
               <button onClick={() => exportCSV(filteredMonthly.map((m) => ({
                 Tienda: m.location.name, Ventas: m.summary.totalSales, Devoluciones: m.summary.totalReturns,
                 Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
+                "Costo Mercadería": m.costs?.productsCost ?? 0,
+                "Costo Tienda (+10%)": m.costs?.storeCost ?? 0,
+                Utilidad: (m.summary.netSales - (m.costs?.storeCost ?? 0)),
               })), "reporte_mensual")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
                 <Download size={14} /> Excel
               </button>
               <button onClick={() => exportPDF(
-                ["Tienda", "Ventas", "Devoluciones", "Netas", "N° Ventas", "Promedio"],
-                filteredMonthly.map((m) => [m.location.name, String(m.summary.totalSales), String(m.summary.totalReturns), String(m.summary.netSales), String(m.summary.saleCount), String(m.summary.averagePerSale)]),
+                ["Tienda", "Ventas", "Devoluciones", "Netas", "N° Ventas", "Promedio", "Costo Mercadería", "Costo Tienda", "Utilidad"],
+                filteredMonthly.map((m) => [m.location.name, String(m.summary.totalSales), String(m.summary.totalReturns), String(m.summary.netSales), String(m.summary.saleCount), String(m.summary.averagePerSale), String(m.costs?.productsCost ?? 0), String(m.costs?.storeCost ?? 0), String(m.summary.netSales - (m.costs?.storeCost ?? 0))]),
                 "Reporte Mensual por Tienda", "reporte_mensual"
               )}
                 className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
@@ -611,22 +616,30 @@ export default function ReportsPage() {
                       <th className="text-right px-4 py-3 text-gray-400 font-medium">Total Ventas</th>
                       <th className="text-right px-4 py-3 text-gray-400 font-medium">Devoluciones</th>
                       <th className="text-right px-4 py-3 text-gray-400 font-medium">Neto</th>
-                      <th className="text-right px-4 py-3 text-gray-400 font-medium">Promedio</th>
+                      <th className="text-right px-4 py-3 text-amber-400 font-medium">Costo Mercadería</th>
+                      <th className="text-right px-4 py-3 text-red-400 font-medium">Costo Tienda (+10%)</th>
+                      <th className="text-right px-4 py-3 text-green-400 font-medium">Utilidad</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredMonthly.length === 0 ? (
-                      <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">No hay datos para los filtros seleccionados</td></tr>
-                    ) : filteredMonthly.map((m, idx) => (
+                      <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-500">No hay datos para los filtros seleccionados</td></tr>
+                    ) : filteredMonthly.map((m, idx) => {
+                      const storeCost = m.costs?.storeCost ?? 0;
+                      const utilidad = (m.summary.netSales - storeCost);
+                      return (
                       <tr key={idx} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
                         <td className="px-4 py-3 text-white font-medium">{m.location.name}</td>
                         <td className="px-4 py-3 text-gray-300 text-center">{m.summary.saleCount}</td>
                         <td className="px-4 py-3 text-amber-400 font-medium text-right">{formatBs(m.summary.totalSales)}</td>
                         <td className="px-4 py-3 text-red-400 text-right">{formatBs(m.summary.totalReturns)}</td>
                         <td className="px-4 py-3 text-green-400 font-medium text-right">{formatBs(m.summary.netSales)}</td>
-                        <td className="px-4 py-3 text-gray-300 text-right">{formatBs(m.summary.averagePerSale)}</td>
+                        <td className="px-4 py-3 text-amber-400/70 text-right">{formatBs(m.costs?.productsCost ?? 0)}</td>
+                        <td className="px-4 py-3 text-red-400/80 text-right">{formatBs(storeCost)}</td>
+                        <td className="px-4 py-3 text-green-400 font-medium text-right">{formatBs(utilidad)}</td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

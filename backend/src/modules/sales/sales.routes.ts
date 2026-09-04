@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8 } from "../../utils/replenish";
 import { validateAndMergeItems } from "../../utils/saleItems";
@@ -9,6 +9,8 @@ const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
+router.use(requireTiendaLocation);
+router.use(authorize("ADMIN", "TIENDA"));
 
 // GET / — Listar ventas con filtros
 router.get("/", async (req: AuthRequest, res: Response) => {
@@ -29,7 +31,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     }
 
     const user = req.user!;
-    if (user.role === "TIENDA" && user.locationId) {
+    if (user.role === "TIENDA") {
       where.locationId = user.locationId;
     } else if (locationId && typeof locationId === "string") {
       where.locationId = Number(locationId);
@@ -45,7 +47,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
           user: { select: { id: true, name: true } },
           location: { select: { id: true, name: true } },
           customer: true,
-          items: { include: { product: { select: { id: true, name: true, itemCode: true } } } },
+          items: { include: { product: { select: { id: true, name: true, itemCode: true, brand: true } } } },
           payments: true,
         },
         orderBy: { saleDate: "desc" },
