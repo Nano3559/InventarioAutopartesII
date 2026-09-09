@@ -44,10 +44,13 @@ interface ImageSearchResult {
   brand: string;
   model: string;
   year: string;
+  detail: string | null;
+  detalles: string | null;
   image: string | null;
+  category: string | null;
   price1: number;
-  price2: number;
-  totalStock: number;
+  availability: string;
+  score: number;
 }
 
 const bannerSlides = [
@@ -96,13 +99,24 @@ export default function PublicProductsPage() {
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
+  const MAX_SIZE = 5 * 1024 * 1024;
+
   const searchByImage = async () => {
     if (!imageFile) return;
+    if (!ALLOWED_MIME.includes(imageFile.type)) {
+      alert("Formato no permitido. Usa JPEG, PNG o WebP.");
+      return;
+    }
+    if (imageFile.size > MAX_SIZE) {
+      alert("La imagen supera 5 MB. Usa una imagen más pequeña.");
+      return;
+    }
     const data = new FormData();
     data.append("image", imageFile);
     try {
       setImageSearching(true);
-      const res = await api.post("/products/search-image", data, {
+      const res = await api.post("/public/search-image", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setImageResults(res.data.products || []);
@@ -329,7 +343,7 @@ export default function PublicProductsPage() {
             <label className="inline-flex items-center gap-2 px-3 py-2.5 bg-dark-800/50 border border-white/[0.06] rounded-xl text-gray-300 text-sm cursor-pointer hover:border-primary-500/50 transition-colors">
               <ImageIcon size={16} className="text-primary-400" />
               {imageFile ? imageFile.name : "Buscar por imagen"}
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
+              <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
             </label>
             {imageFile && (
               <>
@@ -361,7 +375,7 @@ export default function PublicProductsPage() {
                     <p className="text-white text-sm font-medium line-clamp-2">{product.name}</p>
                     <p className="text-xs text-gray-500">{product.brand} · {product.model}</p>
                     <p className="text-xs text-gray-400">Código: {product.itemCode}</p>
-                    <div className="flex justify-between text-xs pt-1"><span className="text-amber-400">Bs. {(Number(product.price2) > 0 ? Number(product.price2) : Number(product.price1)).toFixed(2)}</span><span className="text-green-400">Stock: {product.totalStock}</span></div>
+                    <div className="flex justify-between items-center text-xs pt-1"><span className="text-amber-400">Bs. {Number(product.price1).toFixed(2)}</span><span className={`px-1.5 py-0.5 rounded border text-[10px] font-semibold uppercase ${availabilityColor(product.availability)}`}>{product.availability}</span></div>
                   </div>
                 </Link>
               ))}

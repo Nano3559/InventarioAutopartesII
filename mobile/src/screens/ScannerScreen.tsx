@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 import api from "../services/api";
 
 interface SearchResult {
@@ -16,9 +17,36 @@ interface SearchResult {
 
 export default function ScannerScreen({ navigation }: any) {
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [assetFileName, setAssetFileName] = useState<string | null>(null);
+  const [assetFileSize, setAssetFileSize] = useState<number | undefined>(undefined);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const MAX_SIZE = 5 * 1024 * 1024;
+
+  const ALLOWED_EXTENSIONS: Record<string, string> = {
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    webp: "image/webp",
+  };
+
+  const getMimeType = (fileName: string | null | undefined, uri: string): string | null => {
+    if (fileName) {
+      const ext = fileName.split(".").pop()?.toLowerCase();
+      if (ext && ALLOWED_EXTENSIONS[ext]) return ALLOWED_EXTENSIONS[ext];
+    }
+    const uriExt = uri.split(".").pop()?.split("?")[0]?.toLowerCase();
+    if (uriExt && ALLOWED_EXTENSIONS[uriExt]) return ALLOWED_EXTENSIONS[uriExt];
+    return null;
+  };
+
+  const getFileName = (assetFileName: string | null | undefined, uri: string, mimeType: string): string => {
+    if (assetFileName) return assetFileName;
+    const ext = mimeType === "image/png" ? "png" : mimeType === "image/webp" ? "webp" : "jpg";
+    return `image.${ext}`;
+  };
 
   const selectImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -31,7 +59,10 @@ export default function ScannerScreen({ navigation }: any) {
       quality: 0.8,
     });
     if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+      const asset = result.assets[0];
+      setImageUri(asset.uri);
+      setAssetFileName(asset.fileName ?? null);
+      setAssetFileSize(asset.fileSize);
       setResults([]);
       setError("");
     }
@@ -39,11 +70,26 @@ export default function ScannerScreen({ navigation }: any) {
 
   const searchImage = async () => {
     if (!imageUri) return;
+    const mimeType = getMimeType(assetFileName, imageUri);
+    if (!mimeType) {
+      setError("Formato no permitido. Usa JPEG, PNG o WebP.");
+      return;
+    }
+    let fileSize = assetFileSize;
+    if (fileSize === undefined || fileSize === null) {
+      const info = await FileSystem.getInfoAsync(imageUri);
+      fileSize = info.exists ? info.size : undefined;
+    }
+    if (fileSize !== undefined && fileSize !== null && fileSize > MAX_SIZE) {
+      setError("La imagen supera 5 MB. Usa una imagen más pequeña.");
+      return;
+    }
     try {
       setLoading(true);
       setError("");
+      const fileName = getFileName(assetFileName, imageUri, mimeType);
       const form = new FormData();
-      form.append("image", { uri: imageUri, name: "producto.jpg", type: "image/jpeg" } as any);
+      form.append("image", { uri: imageUri, name: fileName, type: mimeType } as any);
       const response = await api.post("/products/search-image", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });

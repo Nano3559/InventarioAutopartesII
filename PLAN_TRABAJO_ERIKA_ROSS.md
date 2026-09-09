@@ -768,7 +768,7 @@ image/webp
 
 ## ERIKA — Frontend/Mobile Search Image
 
-* [ ] **E3.1 — Actualizar `PublicProductsPage.tsx`**
+* [x] **E3.1 — Actualizar `PublicProductsPage.tsx`**
 
 Debe utilizar el endpoint público.
 
@@ -776,7 +776,7 @@ No cambiar diseño.
 
 ---
 
-* [ ] **E3.2 — Verificar catálogo sin login**
+* [x] **E3.2 — Verificar catálogo sin login**
 
 Un visitante anónimo debe poder:
 
@@ -787,19 +787,19 @@ Un visitante anónimo debe poder:
 
 ---
 
-* [ ] **E3.3 — Mantener `ScannerScreen.tsx` sobre endpoint interno**
+* [x] **E3.3 — Mantener `ScannerScreen.tsx` sobre endpoint interno**
 
 Debe continuar enviando token.
 
 ---
 
-* [ ] **E3.4 — Corregir MIME en ScannerScreen**
+* [x] **E3.4 — Corregir MIME en ScannerScreen**
 
 No enviar siempre `image/jpeg` si el archivo es PNG/WebP.
 
 ---
 
-* [ ] **E3.5 — Validar tamaño de imagen antes del upload**
+* [x] **E3.5 — Validar tamaño de imagen antes del upload**
 
 Máximo:
 
@@ -809,23 +809,23 @@ Máximo:
 
 ---
 
-* [ ] **E3.6 — Verificar flujo mobile autenticado**
+* [x] **E3.6 — Verificar flujo mobile autenticado**
 
 ---
 
 ## REVISIÓN CONJUNTA SEARCH IMAGE
 
-* [ ] **J3.1 — Probar búsqueda pública anónima**
-* [ ] **J3.2 — Probar búsqueda interna con token**
-* [ ] **J3.3 — Confirmar que endpoint interno rechaza solicitud anónima**
-* [ ] **J3.4 — Confirmar que respuesta pública no contiene `price2`**
-* [ ] **J3.5 — Confirmar que respuesta pública no contiene stock exacto**
-* [ ] **J3.6 — Confirmar que respuesta pública no contiene `locations[]`**
-* [ ] **J3.7 — Confirmar que `availability` sigue funcionando**
-* [ ] **J3.8 — Probar JPEG**
-* [ ] **J3.9 — Probar PNG**
-* [ ] **J3.10 — Probar WebP**
-* [ ] **J3.11 — Probar archivo superior a 5 MB**
+* [~] **J3.1 — Probar búsqueda pública anónima**
+* [~] **J3.2 — Probar búsqueda interna con token**
+* [~] **J3.3 — Confirmar que endpoint interno rechaza solicitud anónima**
+* [x] **J3.4 — Confirmar que respuesta pública no contiene `price2`**
+* [x] **J3.5 — Confirmar que respuesta pública no contiene stock exacto**
+* [x] **J3.6 — Confirmar que respuesta pública no contiene `locations[]`**
+* [x] **J3.7 — Confirmar que `availability` sigue funcionando**
+* [~] **J3.8 — Probar JPEG**
+* [~] **J3.9 — Probar PNG**
+* [~] **J3.10 — Probar WebP**
+* [~] **J3.11 — Probar archivo superior a 5 MB**
 
 ---
 
