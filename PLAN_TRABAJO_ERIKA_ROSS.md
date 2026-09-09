@@ -110,7 +110,7 @@ Esta etapa debe realizarse antes de comenzar mejoras técnicas opcionales.
 
 ## E1. README principal
 
-* [ ] **E1.1 — Crear `README.md` en la raíz**
+* [x] **E1.1 — Crear `README.md` en la raíz**
 
 Debe incluir:
 
@@ -154,7 +154,7 @@ README.md
 
 ## E2. `.gitignore`
 
-* [ ] **E1.2 — Revisar y completar `.gitignore` raíz**
+* [x] **E1.2 — Revisar y completar `.gitignore` raíz**
 
 Debe revisar cobertura para:
 
@@ -219,13 +219,13 @@ No eliminar archivos locales automáticamente.
 
 ## E3. Variables de entorno frontend/mobile
 
-* [ ] **E1.3 — Crear o completar `frontend/.env.example`**
+* [x] **E1.3 — Crear o completar `frontend/.env.example`**
 
 Debe documentar únicamente variables necesarias.
 
 No colocar valores secretos reales.
 
-* [ ] **E1.4 — Crear o completar `mobile/.env.example`**
+* [x] **E1.4 — Crear o completar `mobile/.env.example`**
 
 Debe incluir las variables requeridas por Expo/mobile sin credenciales reales.
 
@@ -237,7 +237,7 @@ Un nuevo desarrollador puede configurar frontend y mobile siguiendo los `.env.ex
 
 ## E4. Organización de archivos Markdown
 
-* [ ] **E1.5 — Revisar todos los archivos `.md` actuales**
+* [x] **E1.5 — Revisar todos los archivos `.md` actuales**
 
 Revisar:
 
@@ -260,7 +260,7 @@ Para cada archivo determinar:
 
 ---
 
-* [ ] **E1.6 — Eliminar credenciales escritas en documentación**
+* [x] **E1.6 — Eliminar credenciales escritas en documentación**
 
 Eliminar únicamente credenciales reales o de prueba que no deban aparecer en Git.
 
@@ -268,7 +268,7 @@ No borrar información funcional del documento.
 
 ---
 
-* [ ] **E1.7 — Crear carpeta `docs/` si corresponde**
+* [x] **E1.7 — Crear carpeta `docs/` si corresponde**
 
 Mover allí documentación histórica o secundaria.
 

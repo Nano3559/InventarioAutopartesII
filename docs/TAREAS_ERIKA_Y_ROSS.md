@@ -287,4 +287,4 @@
 - Comunicarse antes de modificar archivos compartidos (schema.prisma, package.json, app.ts)
 - Backend en Railway: https://inventarioautopartesii-production-cacf.up.railway.app
 - Frontend en Vercel: https://inventario-autopartes-ii.vercel.app
-- Credenciales de prueba: admin@inventario.com / admin123, tienda1@inventario.com / tienda123
+- Credenciales de prueba: consultar `backend/prisma/seed.ts`

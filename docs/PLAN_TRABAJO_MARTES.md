@@ -70,7 +70,7 @@
 - Rol `TIENDA` (id 2) con permisos `["ventas", "inventario", "solicitudes", "devoluciones"]`.
 - `columnConfig.__categorias = ["Frenos", "Motor", "Eléctrico"]` (solo el rol que vende ve estas categorías).
 - Rol `VENDEDOR` **eliminado** de la BD (ya no existe; se mantienen los 3 roles del enunciado).
-- Fernando `fernando@inventario.com / vendedor123` (id 6) → ahora **rol TIENDA** en **Tienda 1**, para pruebas de categorías limitadas.
+- Fernando (rol TIENDA, Tienda 1) → pruebas de categorías limitadas.
 - Login ✓ · `GET /permissions/permissions/me` devuelve rol TIENDA, permisos y categorías ✓ (verificado en producción).
 
 ### Rol y usuario
