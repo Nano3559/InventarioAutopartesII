@@ -7,6 +7,10 @@ export const errorHandler = (err: any, _req: Request, res: Response, _next: Next
     return res.status(400).json({ message: "El archivo excede el tamaño máximo permitido" });
   }
 
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({ message: "Se recibió un archivo o campo inesperado en la petición" });
+  }
+
   if (err.code === "INVALID_FILE_TYPE" || (err.message && err.message.includes("file type"))) {
     return res.status(400).json({ message: "Tipo de archivo no permitido" });
   }

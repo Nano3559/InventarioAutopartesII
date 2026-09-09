@@ -2,20 +2,21 @@ import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import * as XLSX from "xlsx";
-import { createWorker } from "tesseract.js";
-import path from "path";
 import { yearRangesOverlap } from "../../utils/yearRanges";
 import { authenticate, authorize, optionalAuth } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import {
+  imageUpload,
+  procesarBusquedaPorImagen,
+  serializeProductoInterno,
+} from "./searchImage.service";
+import { ocrAuthenticatedLimiter } from "../../shared/middlewares/rateLimit";
 
 const router = Router();
 const prisma = new PrismaClient();
+
+// Upload para importación de Excel (no modifica la configuración de imagen de search-image)
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
-
-// Datos de idioma locales para OCR (evita descargas en cada request)
-const OCR_LANG_PATH = path.join(process.cwd(), "node_modules", "@tesseract.js-data", "eng", "4.0.0");
-
-const IMAGE_STOPWORDS = new Set(["img", "imagen", "image", "photo", "foto", "producto", "product", "part", "ref", "cod", "code", "dsc", "dscn", "captura", "nuevo", "venta", "jpeg", "jpg", "png", "webp", "2024", "2023", "2022", "the", "and", "for", "con", "numero", "number", "original", "oem", "referencia", "repuesto", "accesorio", "universal", "calidad", "estandar"]);
 
 // GET / — Listar productos con filtros, búsqueda y paginación
 router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
@@ -343,120 +344,38 @@ router.delete("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest,
   }
 });
 
-// POST /search-image — Buscar productos por imagen
-router.post("/search-image", upload.single("image"), async (req: Request, res: Response) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "Debe subir una imagen" });
-    }
-
-    // Normalizar el nombre del archivo: quitar extensión, guiones/guiones bajos y tokens genéricos/códigos
-    const raw = req.file.originalname.toLowerCase().replace(/\.[^.]+$/, "");
-
-    const tokenPool = new Set<string>();
-    const pushToken = (w: string) => {
-      if (w.length > 2 && !/^\d+$/.test(w) && !IMAGE_STOPWORDS.has(w)) tokenPool.add(w);
-    };
-
-    raw
-      .replace(/[_\-\.\+\(\)\[\]]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-      .split(" ")
-      .forEach(pushToken);
-
-    // R25/C5: extraer el contenido real de la imagen (OCR) además del nombre del archivo
-    let ocrText = "";
+// POST /search-image — Buscar productos por imagen (endpoint interno: requiere autenticación)
+// Orden obligatorio: authenticate → ocrAuthenticatedLimiter → imageUpload → handler.
+// authenticate va ANTES del limiter/usuario para que un request sin token no ejecute OCR
+// ni parseo multipart, y para que req.user.userId identifique el límite por usuario.
+router.post(
+  "/search-image",
+  authenticate,
+  ocrAuthenticatedLimiter,
+  imageUpload.single("image"),
+  async (req: AuthRequest, res: Response) => {
     try {
-      const worker = await createWorker("eng", 1, { langPath: OCR_LANG_PATH, gzip: true });
-      try {
-        const ctx = await worker.recognize(req.file.buffer);
-        ocrText = ctx.data.text || "";
-      } finally {
-        await worker.terminate();
+      if (!req.file) {
+        return res.status(400).json({ message: "Debe subir una imagen" });
       }
-    } catch (ocrErr) {
-      console.error("OCR no disponible:", ocrErr);
+
+      const { keywords, results } = await procesarBusquedaPorImagen(req.file);
+
+      if (keywords.length === 0) {
+        return res.json({ products: [], message: "No se pudieron extraer palabras clave del nombre o la imagen" });
+      }
+
+      res.json({
+        query: keywords.join(" "),
+        count: results.length,
+        products: results.map(({ producto, score }) => serializeProductoInterno(producto, score)),
+      });
+    } catch (error) {
+      console.error("Error en búsqueda por imagen:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
     }
-
-    ocrText
-      .toLowerCase()
-      .split(/[\s,;/|]+/)
-      .map((t) => t.replace(/[^\w.-]/g, "").replace(/-/g, ""))
-      .forEach(pushToken);
-
-    const keywords = Array.from(tokenPool);
-
-    if (keywords.length === 0) {
-      return res.json({ products: [], message: "No se pudieron extraer palabras clave del nombre o la imagen" });
-    }
-
-    // Buscar por múltiples campos y rankear por cantidad de coincidencias
-    const products = await prisma.product.findMany({
-      where: {
-        AND: [
-          {
-            OR: keywords.flatMap((kw) => [
-              { name: { contains: kw, mode: "insensitive" as const } },
-              { brand: { contains: kw, mode: "insensitive" as const } },
-              { model: { contains: kw, mode: "insensitive" as const } },
-              { itemCode: { contains: kw, mode: "insensitive" as const } },
-              { oemCode: { contains: kw, mode: "insensitive" as const } },
-              { factoryCode: { contains: kw, mode: "insensitive" as const } },
-              { detail: { contains: kw, mode: "insensitive" as const } },
-              { manufacturer: { contains: kw, mode: "insensitive" as const } },
-            ]),
-          },
-        ],
-      },
-      include: {
-        inventories: {
-          include: { location: { select: { id: true, name: true, type: true } } },
-        },
-      },
-      take: 50,
-    });
-
-    // Rankear: cuantas más keywords coincidan con el nombre/marca/modelo/códigos, mejor
-    const scored = products
-      .map((p) => {
-        const haystack = `${p.name} ${p.brand} ${p.model} ${p.itemCode} ${p.oemCode || ""} ${p.factoryCode || ""} ${p.detail || ""}`.toLowerCase();
-        const matches = keywords.filter((kw) => haystack.includes(kw)).length;
-        return { p, score: matches };
-      })
-      .filter((r) => r.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 20);
-
-    const results = scored.map(({ p }) => ({
-      id: p.id,
-      itemCode: p.itemCode,
-      name: p.name,
-      brand: p.brand,
-      model: p.model,
-      year: p.year,
-      price1: Number(p.price1),
-      price2: Number(p.price2),
-      image: p.image,
-      score: 1,
-      totalStock: p.inventories.reduce((sum, i) => sum + i.stock, 0),
-      locations: p.inventories.map((i) => ({
-        name: i.location.name,
-        type: i.location.type,
-        stock: i.stock,
-      })),
-    }));
-
-    res.json({
-      query: keywords.join(" "),
-      count: results.length,
-      products: results,
-    });
-  } catch (error) {
-    console.error("Error en búsqueda por imagen:", error);
-    res.status(500).json({ message: "Error interno del servidor" });
   }
-});
+);
 
 // POST /import — Importar productos masivamente desde Excel (solo ADMIN)
 router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), async (req: AuthRequest, res: Response) => {
