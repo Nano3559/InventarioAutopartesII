@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import { config } from "./config";
 import { errorHandler } from "./shared/middlewares";
+import { generalLimiter } from "./shared/middlewares/rateLimit";
 
 import authRoutes from "./modules/auth/auth.routes";
 import usersRoutes from "./modules/users/users.routes";
@@ -26,6 +28,13 @@ import notificationsRoutes from "./modules/notifications/notifications.routes";
 
 const app = express();
 
+// En producción el despliegue actual usa un proxy (Railway): confiar en el proxy
+// para que req.ip y el rate limiting por IP funcionen correctamente (X-Forwarded-For).
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
+app.use(helmet());
 app.use(cors({
   origin: [config.frontendUrl, config.mobileUrl],
   credentials: true,
@@ -36,6 +45,10 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+// Limiter general de API: 300 requests / 15 minutos / IP.
+// Se coloca después de /api/health para no limitar innecesariamente el health check.
+app.use(generalLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);

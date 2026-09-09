@@ -1,9 +1,41 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { yearRangesOverlap } from "../../utils/yearRanges";
+import {
+  imageUpload,
+  procesarBusquedaPorImagen,
+  serializeProductoPublico,
+} from "../products/searchImage.service";
+import { ocrPublicLimiter } from "../../shared/middlewares/rateLimit";
 
 const router = Router();
 const prisma = new PrismaClient();
+
+// POST /api/public/search-image - Búsqueda por imagen sin autenticación (solo datos públicos)
+// Definida antes de cualquier ruta dinámica para evitar interceptaciones.
+// Orden: ocrPublicLimiter → imageUpload → handler (limita el OCR costoso por IP).
+router.post("/search-image", ocrPublicLimiter, imageUpload.single("image"), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Debe subir una imagen" });
+    }
+
+    const { keywords, results } = await procesarBusquedaPorImagen(req.file);
+
+    if (keywords.length === 0) {
+      return res.json({ query: "", count: 0, products: [] });
+    }
+
+    res.json({
+      query: keywords.join(" "),
+      count: results.length,
+      products: results.map(({ producto, score }) => serializeProductoPublico(producto, score)),
+    });
+  } catch (error) {
+    console.error("Error en búsqueda por imagen pública:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
 
 // GET /api/public/products - Catálogo público con filtros
 router.get("/products", async (req: Request, res: Response) => {

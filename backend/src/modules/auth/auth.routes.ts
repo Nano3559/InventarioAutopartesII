@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client";
 import { config } from "../../config";
 import { AuthRequest } from "../../shared/types";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { loginLimiter } from "../../shared/middlewares/rateLimit";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -54,7 +55,7 @@ router.post("/register", authenticate, authorize("ADMIN"), async (req: AuthReque
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role.name, locationId: user.locationId },
       config.jwtSecret,
-      { expiresIn: "24h" }
+      { expiresIn: "24h", algorithm: "HS256" }
     );
 
     res.status(201).json({
@@ -73,7 +74,7 @@ router.post("/register", authenticate, authorize("ADMIN"), async (req: AuthReque
   }
 });
 
-router.post("/login", async (req: AuthRequest, res: Response) => {
+router.post("/login", loginLimiter, async (req: AuthRequest, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -98,7 +99,7 @@ router.post("/login", async (req: AuthRequest, res: Response) => {
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role.name, locationId: user.locationId },
       config.jwtSecret,
-      { expiresIn: "24h" }
+      { expiresIn: "24h", algorithm: "HS256" }
     );
 
     res.json({

@@ -16,7 +16,7 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, config.jwtSecret) as AuthPayload;
+    const decoded = jwt.verify(token, config.jwtSecret, { algorithms: ["HS256"] }) as AuthPayload;
     req.user = decoded;
     next();
   } catch {
@@ -29,7 +29,7 @@ export const optionalAuth = (req: AuthRequest, _res: Response, next: NextFunctio
   if (!authHeader || !authHeader.startsWith("Bearer ")) return next();
   try {
     const token = authHeader.split(" ")[1];
-    req.user = jwt.verify(token, config.jwtSecret) as AuthPayload;
+    req.user = jwt.verify(token, config.jwtSecret, { algorithms: ["HS256"] }) as AuthPayload;
   } catch { /* ignore invalid token */ }
   next();
 };
