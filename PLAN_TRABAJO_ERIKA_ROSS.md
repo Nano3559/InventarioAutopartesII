@@ -237,7 +237,7 @@ Un nuevo desarrollador puede configurar frontend y mobile siguiendo los `.env.ex
 
 ## E4. Organización de archivos Markdown
 
-* [ ] **E1.5 — Revisar todos los archivos `.md` actuales**
+* [x] **E1.5 — Revisar todos los archivos `.md` actuales**
 
 Revisar:
 
@@ -260,7 +260,7 @@ Para cada archivo determinar:
 
 ---
 
-* [ ] **E1.6 — Eliminar credenciales escritas en documentación**
+* [x] **E1.6 — Eliminar credenciales escritas en documentación**
 
 Eliminar únicamente credenciales reales o de prueba que no deban aparecer en Git.
 
@@ -268,7 +268,7 @@ No borrar información funcional del documento.
 
 ---
 
-* [ ] **E1.7 — Crear carpeta `docs/` si corresponde**
+* [x] **E1.7 — Crear carpeta `docs/` si corresponde**
 
 Mover allí documentación histórica o secundaria.
 
