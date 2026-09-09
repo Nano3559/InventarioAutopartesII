@@ -30,6 +30,12 @@ interface ProductResult {
   wholesalePrice: number | null; price1: number;
 }
 
+interface WholesaleImportResult {
+  imported: number;
+  errors: string[];
+  details?: { errors: string[] };
+}
+
 export default function WholesalePage() {
   const [sales, setSales] = useState<WholesaleSale[]>([]);
   const [loading, setLoading] = useState(false);
@@ -42,7 +48,7 @@ export default function WholesalePage() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
-  const [importResult, setImportResult] = useState<any>(null);
+  const [importResult, setImportResult] = useState<WholesaleImportResult | null>(null);
 
   const [items, setItems] = useState<WholesaleItem[]>([]);
   const [searchProd, setSearchProd] = useState("");
@@ -88,7 +94,7 @@ export default function WholesalePage() {
       try {
         setSearchingProducts(true);
         const res = await api.get(`/products?search=${encodeURIComponent(v)}&limit=10`);
-        setSearchResults(res.data.products.map((p: any) => ({
+        setSearchResults(res.data.products.map((p: ProductResult) => ({
           id: p.id, itemCode: p.itemCode, name: p.name, brand: p.brand,
           model: p.model, year: p.year, detail: p.detail,
           wholesalePrice: p.wholesalePrice ? Number(p.wholesalePrice) : null,
@@ -582,9 +588,9 @@ export default function WholesalePage() {
                       <p className="text-xs text-gray-400">Errores</p>
                     </div>
                   </div>
-                  {importResult.details?.errors?.length > 0 && (
+                  {importResult.details?.errors && importResult.details.errors.length > 0 && (
                     <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-3 max-h-32 overflow-y-auto">
-                      {importResult.details.errors.map((e: string, i: number) => (
+                      {importResult.details!.errors.map((e: string, i: number) => (
                         <p key={i} className="text-xs text-red-400">{e}</p>
                       ))}
                     </div>

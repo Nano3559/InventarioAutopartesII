@@ -60,7 +60,7 @@ export default function InventoryScreen() {
             </View>
             <Text style={styles.muted}>{item.brand} · {item.model} · {item.year}</Text>
             <Text style={styles.muted}>Código: {item.itemCode} · Fabricante: {item.manufacturer}</Text>
-            <Text style={styles.price}>Minorista: Bs. {Number(item.price1).toFixed(2)} · Venta: Bs. {Number(item.price2).toFixed(2)}</Text>
+            <Text style={styles.price}>Mayorista: Bs. {Number(item.price1).toFixed(2)} · Minorista: Bs. {Number(item.price2).toFixed(2)}</Text>
           </View>
         )}
       />

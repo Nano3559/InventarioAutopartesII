@@ -898,9 +898,9 @@ Responsable principal: **ERIKA**
 
 ## Manejo de errores
 
-* [ ] **E5.1 — Revisar catches de `InventoryPage`**
-* [ ] **E5.2 — Revisar catches de `SalesPage`**
-* [ ] **E5.3 — Revisar catches de `ReportsPage`**
+* [x] **E5.1 — Revisar catches de `InventoryPage`**
+* [x] **E5.2 — Revisar catches de `SalesPage`**
+* [x] **E5.3 — Revisar catches de `ReportsPage`**
 
 Los errores importantes deben mostrar:
 
@@ -916,12 +916,12 @@ No agregar mensajes innecesarios en operaciones donde el silencio sea intenciona
 
 ## TypeScript
 
-* [ ] **E5.4 — Revisar `any` críticos de InventoryPage**
-* [ ] **E5.5 — Revisar `any` críticos de SettingsPage**
-* [ ] **E5.6 — Revisar `any` críticos de PricesPage**
-* [ ] **E5.7 — Revisar `any` críticos de ReportsPage**
-* [ ] **E5.8 — Revisar `any` críticos de WholesalePage**
-* [ ] **E5.9 — Revisar `any` críticos de SalesPage**
+* [x] **E5.4 — Revisar `any` críticos de InventoryPage**
+* [x] **E5.5 — Revisar `any` críticos de SettingsPage**
+* [x] **E5.6 — Revisar `any` críticos de PricesPage**
+* [x] **E5.7 — Revisar `any` críticos de ReportsPage**
+* [x] **E5.8 — Revisar `any` críticos de WholesalePage**
+* [x] **E5.9 — Revisar `any` críticos de SalesPage**
 
 No es obligatorio eliminar absolutamente todos los `any`.
 
@@ -931,7 +931,7 @@ Priorizar los que puedan esconder errores reales.
 
 ## Mobile
 
-* [ ] **E5.10 — Verificar `price1` vs `price2` en `SalesScreen.tsx`**
+* [x] **E5.10 — Verificar `price1` vs `price2` en `SalesScreen.tsx`**
 
 No reemplazar automáticamente.
 
@@ -944,15 +944,15 @@ Primero determinar:
 
 ---
 
-* [ ] **E5.11 — Corregir precio mobile solo si se confirma error**
+* [x] **E5.11 — Corregir precio mobile solo si se confirma error**
 
 ---
 
-* [ ] **E5.12 — Revisar paginación de InventoryScreen**
+* [x] **E5.12 — Revisar paginación de InventoryScreen**
 
 ---
 
-* [ ] **E5.13 — Revisar paginación de SalesScreen**
+* [x] **E5.13 — Revisar paginación de SalesScreen**
 
 Implementar solamente si la limitación actual impide usar correctamente la aplicación.
 
@@ -1289,6 +1289,9 @@ Ejemplo:
 ```text
 2026-09-08 — Erika — E1.2 .gitignore — COMPLETADO
 2026-09-08 — Ross — R1.1 Git Convention — COMPLETADO
+2026-09-09 — Erika — E5.1-E5.3 Error handling audit (sin cambios de código) — COMPLETADO
+2026-09-09 — Erika — E5.4-E5.9 Corrección 17 `any` críticos en 6 páginas frontend — COMPLETADO
+2026-09-09 — Erika — E5.10-E5.13 Etapa 5 Frontend/Mobile completa (labels precio corregidos en InventoryScreen) — COMPLETADO
 ```
 
 ---

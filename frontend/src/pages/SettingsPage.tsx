@@ -20,8 +20,18 @@ interface Location {
 
 interface AuditLogEntry {
   id: number; userId: number; action: string; targetType: string; targetId: number | null;
-  oldValue: any; newValue: any; createdAt: string;
+  oldValue: Record<string, unknown> | string | number | boolean | null;
+  newValue: Record<string, unknown> | string | number | boolean | null;
+  createdAt: string;
   user?: { id: number; name: string; email: string };
+}
+
+interface UserPayload {
+  name: string;
+  email: string;
+  role: string;
+  locationId: number | null;
+  password?: string;
 }
 
 const ROLE_COLORS: Record<string, string> = {
@@ -122,7 +132,7 @@ export default function SettingsPage() {
     }
     try {
       setSaving(true);
-      const payload: any = {
+      const payload: UserPayload = {
         name: userForm.name,
         email: userForm.email,
         role: userForm.role,
