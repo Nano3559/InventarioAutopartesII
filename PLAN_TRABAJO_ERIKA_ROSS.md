@@ -110,7 +110,7 @@ Esta etapa debe realizarse antes de comenzar mejoras técnicas opcionales.
 
 ## E1. README principal
 
-* [ ] **E1.1 — Crear `README.md` en la raíz**
+* [x] **E1.1 — Crear `README.md` en la raíz**
 
 Debe incluir:
 
