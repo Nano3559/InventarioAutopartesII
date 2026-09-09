@@ -768,7 +768,7 @@ image/webp
 
 ## ERIKA — Frontend/Mobile Search Image
 
-* [ ] **E3.1 — Actualizar `PublicProductsPage.tsx`**
+* [x] **E3.1 — Actualizar `PublicProductsPage.tsx`**
 
 Debe utilizar el endpoint público.
 
@@ -776,7 +776,7 @@ No cambiar diseño.
 
 ---
 
-* [ ] **E3.2 — Verificar catálogo sin login**
+* [x] **E3.2 — Verificar catálogo sin login**
 
 Un visitante anónimo debe poder:
 
@@ -787,19 +787,19 @@ Un visitante anónimo debe poder:
 
 ---
 
-* [ ] **E3.3 — Mantener `ScannerScreen.tsx` sobre endpoint interno**
+* [x] **E3.3 — Mantener `ScannerScreen.tsx` sobre endpoint interno**
 
 Debe continuar enviando token.
 
 ---
 
-* [ ] **E3.4 — Corregir MIME en ScannerScreen**
+* [x] **E3.4 — Corregir MIME en ScannerScreen**
 
 No enviar siempre `image/jpeg` si el archivo es PNG/WebP.
 
 ---
 
-* [ ] **E3.5 — Validar tamaño de imagen antes del upload**
+* [x] **E3.5 — Validar tamaño de imagen antes del upload**
 
 Máximo:
 
@@ -809,23 +809,23 @@ Máximo:
 
 ---
 
-* [ ] **E3.6 — Verificar flujo mobile autenticado**
+* [x] **E3.6 — Verificar flujo mobile autenticado**
 
 ---
 
 ## REVISIÓN CONJUNTA SEARCH IMAGE
 
-* [ ] **J3.1 — Probar búsqueda pública anónima**
-* [ ] **J3.2 — Probar búsqueda interna con token**
-* [ ] **J3.3 — Confirmar que endpoint interno rechaza solicitud anónima**
-* [ ] **J3.4 — Confirmar que respuesta pública no contiene `price2`**
-* [ ] **J3.5 — Confirmar que respuesta pública no contiene stock exacto**
-* [ ] **J3.6 — Confirmar que respuesta pública no contiene `locations[]`**
-* [ ] **J3.7 — Confirmar que `availability` sigue funcionando**
-* [ ] **J3.8 — Probar JPEG**
-* [ ] **J3.9 — Probar PNG**
-* [ ] **J3.10 — Probar WebP**
-* [ ] **J3.11 — Probar archivo superior a 5 MB**
+* [~] **J3.1 — Probar búsqueda pública anónima**
+* [~] **J3.2 — Probar búsqueda interna con token**
+* [~] **J3.3 — Confirmar que endpoint interno rechaza solicitud anónima**
+* [x] **J3.4 — Confirmar que respuesta pública no contiene `price2`**
+* [x] **J3.5 — Confirmar que respuesta pública no contiene stock exacto**
+* [x] **J3.6 — Confirmar que respuesta pública no contiene `locations[]`**
+* [x] **J3.7 — Confirmar que `availability` sigue funcionando**
+* [~] **J3.8 — Probar JPEG**
+* [~] **J3.9 — Probar PNG**
+* [~] **J3.10 — Probar WebP**
+* [~] **J3.11 — Probar archivo superior a 5 MB**
 
 ---
 
@@ -898,9 +898,9 @@ Responsable principal: **ERIKA**
 
 ## Manejo de errores
 
-* [ ] **E5.1 — Revisar catches de `InventoryPage`**
-* [ ] **E5.2 — Revisar catches de `SalesPage`**
-* [ ] **E5.3 — Revisar catches de `ReportsPage`**
+* [x] **E5.1 — Revisar catches de `InventoryPage`**
+* [x] **E5.2 — Revisar catches de `SalesPage`**
+* [x] **E5.3 — Revisar catches de `ReportsPage`**
 
 Los errores importantes deben mostrar:
 
@@ -916,12 +916,12 @@ No agregar mensajes innecesarios en operaciones donde el silencio sea intenciona
 
 ## TypeScript
 
-* [ ] **E5.4 — Revisar `any` críticos de InventoryPage**
-* [ ] **E5.5 — Revisar `any` críticos de SettingsPage**
-* [ ] **E5.6 — Revisar `any` críticos de PricesPage**
-* [ ] **E5.7 — Revisar `any` críticos de ReportsPage**
-* [ ] **E5.8 — Revisar `any` críticos de WholesalePage**
-* [ ] **E5.9 — Revisar `any` críticos de SalesPage**
+* [x] **E5.4 — Revisar `any` críticos de InventoryPage**
+* [x] **E5.5 — Revisar `any` críticos de SettingsPage**
+* [x] **E5.6 — Revisar `any` críticos de PricesPage**
+* [x] **E5.7 — Revisar `any` críticos de ReportsPage**
+* [x] **E5.8 — Revisar `any` críticos de WholesalePage**
+* [x] **E5.9 — Revisar `any` críticos de SalesPage**
 
 No es obligatorio eliminar absolutamente todos los `any`.
 
@@ -931,7 +931,7 @@ Priorizar los que puedan esconder errores reales.
 
 ## Mobile
 
-* [ ] **E5.10 — Verificar `price1` vs `price2` en `SalesScreen.tsx`**
+* [x] **E5.10 — Verificar `price1` vs `price2` en `SalesScreen.tsx`**
 
 No reemplazar automáticamente.
 
@@ -944,15 +944,15 @@ Primero determinar:
 
 ---
 
-* [ ] **E5.11 — Corregir precio mobile solo si se confirma error**
+* [x] **E5.11 — Corregir precio mobile solo si se confirma error**
 
 ---
 
-* [ ] **E5.12 — Revisar paginación de InventoryScreen**
+* [x] **E5.12 — Revisar paginación de InventoryScreen**
 
 ---
 
-* [ ] **E5.13 — Revisar paginación de SalesScreen**
+* [x] **E5.13 — Revisar paginación de SalesScreen**
 
 Implementar solamente si la limitación actual impide usar correctamente la aplicación.
 
@@ -1011,19 +1011,19 @@ Responsable: **ERIKA**
 
 ---
 
-* [ ] **E7.1 — Configurar framework de testing frontend**
+* [x] **E7.1 — Configurar framework de testing frontend**
 
-Preferentemente Vitest por compatibilidad con Vite.
+Vitest + @testing-library/react + @testing-library/jest-dom + @testing-library/user-event + jsdom.
 
 ---
 
-* [ ] **E7.2 — Test LoginPage**
-* [ ] **E7.3 — Test authStore**
-* [ ] **E7.4 — Test interceptor Axios**
-* [ ] **E7.5 — Test carrito de SalesPage**
-* [ ] **E7.6 — Test cálculo de total**
-* [ ] **E7.7 — Test catálogo público**
-* [ ] **E7.8 — Test búsqueda pública por imagen si es viable aislar el request**
+* [x] **E7.2 — Test LoginPage**
+* [x] **E7.3 — Test authStore**
+* [x] **E7.4 — Test interceptor Axios**
+* [x] **E7.5 — Test carrito de SalesPage**
+* [x] **E7.6 — Test cálculo de total**
+* [x] **E7.7 — Test catálogo público**
+* [x] **E7.8 — Test búsqueda pública por imagen si es viable aislar el request**
 
 No intentar crear una suite E2E enorme en esta fase.
 
@@ -1289,6 +1289,10 @@ Ejemplo:
 ```text
 2026-09-08 — Erika — E1.2 .gitignore — COMPLETADO
 2026-09-08 — Ross — R1.1 Git Convention — COMPLETADO
+2026-09-09 — Erika — E5.1-E5.3 Error handling audit (sin cambios de código) — COMPLETADO
+2026-09-09 — Erika — E5.4-E5.9 Corrección 17 `any` críticos en 6 páginas frontend — COMPLETADO
+2026-09-09 — Erika — E5.10-E5.13 Etapa 5 Frontend/Mobile completa (labels precio corregidos en InventoryScreen) — COMPLETADO
+2026-09-09 — Erika — E7.1-E7.4, E7.7-E7.8 Primer bloque testing frontend (Vitest + 57 tests) — COMPLETADO
 ```
 
 ---

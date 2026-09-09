@@ -47,6 +47,23 @@ interface SaleRecord {
   payments: { id: number; method: string; amount: number }[];
 }
 
+interface SalePayload {
+  items: { productId: number; quantity: number; unitPrice: number }[];
+  payments: { method: string; amount: number }[];
+  customerData?: { name: string; nit: string | null; phone: string | null };
+  locationId?: number;
+  seller?: string;
+}
+
+interface SavedSaleItem {
+  id?: number;
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+  product?: { id: number; name: string; itemCode: string; brand?: string };
+}
+
 const PAGE_SIZE = 15;
 
 export default function SalesPage() {
@@ -309,7 +326,7 @@ export default function SalesPage() {
 
     try {
       setProcessing(true);
-      const payload: any = {
+      const payload: SalePayload = {
         items: cart.map((c) => ({
           productId: c.productId,
           quantity: c.quantity,
@@ -337,7 +354,7 @@ export default function SalesPage() {
       }
 
       const res = await api.post("/sales", payload);
-      const savedItems = (res.data.items || []).map((item: any) => {
+      const savedItems = (res.data.items || []).map((item: SavedSaleItem) => {
         const cartItem = cart.find((entry) => entry.productId === item.productId);
         return {
           ...item,

@@ -14,6 +14,19 @@ interface PriceRow {
   wholesalePrice: number;
 }
 
+interface PriceExportRow {
+  itemCode: string;
+  name: string;
+  brand: string;
+  model: string;
+  years: string;
+  detail: string;
+  cost: number;
+  precioMayorista: number;
+  precioMinorista: number;
+  wholesalePrice: number;
+}
+
 interface Invoice {
   id: number; invoiceUrl: string | null; productName: string; itemCode: string;
   supplierName: string | null; date: string;
@@ -84,7 +97,7 @@ export default function PricesPage() {
       const res = await api.get(`/prices/export?${params.toString()}`);
       const data = res.data.data || [];
       if (!data.length) { toast.error("No hay datos para exportar"); return; }
-      const rows = data.map((r: any) => ({
+      const rows = data.map((r: PriceExportRow) => ({
         "Código Fábrica": r.itemCode, Producto: r.name, Marca: r.brand, Modelo: r.model,
         Años: r.years, Detalle: r.detail, "Costo (Bs.)": r.cost,
         "Precio 1 (Mayorista)": r.precioMayorista, "Precio 2 (Minorista)": r.precioMinorista,

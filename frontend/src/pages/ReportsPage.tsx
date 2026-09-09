@@ -17,11 +17,58 @@ interface SalesReport {
   payments: { method: string; amount: number }[];
 }
 
+interface RawSaleItem {
+  product?: { name: string };
+  productId?: number;
+  quantity?: number;
+  subtotal?: number | string;
+}
+
+interface RawSale {
+  saleDate?: string;
+  total?: number | string;
+  location?: { name: string };
+  items?: RawSaleItem[];
+}
+
+interface RawReturn {
+  date?: string;
+  amount?: number | string;
+  sale?: { locationId?: number };
+}
+
 interface InventoryItem {
   id: number; stock: number; minStock: number;
   product: { id: number; name: string; itemCode: string; brand: string; model: string; manufacturer: string };
   location: { id: number; name: string; type: string };
   status: string;
+}
+
+interface InventoryLocationGroup {
+  locationName: string;
+  items: InventoryItem[];
+}
+
+interface InventoryReport {
+  locations: InventoryLocationGroup[];
+  totalProducts: number;
+  totalStock: number;
+  lowStockCount: number;
+}
+
+interface MonthlyPeriod {
+  year: number;
+  month: number;
+}
+
+interface MonthlySummary {
+  totalSales: number;
+  totalReturns: number;
+  netSales: number;
+  saleCount: number;
+  averagePerSale: number;
+  totalLocations: number;
+  activeLocations: number;
 }
 
 interface MonthlyReport {
@@ -68,10 +115,10 @@ export default function ReportsPage() {
   const [salesSummary, setSalesSummary] = useState({ totalSales: 0, count: 0, average: 0 });
   const [salesLoading, setSalesLoading] = useState(false);
 
-  const [inventoryData, setInventoryData] = useState<{ locations: any[]; totalProducts: number; totalStock: number; lowStockCount: number } | null>(null);
+  const [inventoryData, setInventoryData] = useState<InventoryReport | null>(null);
   const [inventoryLoading, setInventoryLoading] = useState(false);
 
-  const [monthlyData, setMonthlyData] = useState<{ period: any; locations: MonthlyReport[]; summary: any } | null>(null);
+  const [monthlyData, setMonthlyData] = useState<{ period: MonthlyPeriod; locations: MonthlyReport[]; summary: MonthlySummary } | null>(null);
   const [monthlyLoading, setMonthlyLoading] = useState(false);
 
   const [filterLocation, setFilterLocation] = useState("");
@@ -136,7 +183,7 @@ export default function ReportsPage() {
     }
   }, [filterFrom, filterTo, filterLocation, locations]);
 
-  const groupDaily = (sales: any[], returns: any[]) => {
+  const groupDaily = (sales: RawSale[], returns: RawReturn[]) => {
     const byDate: Record<string, DailyGroup> = {};
     for (const s of sales) {
       const day = s.saleDate ? new Date(s.saleDate).toDateString() : "Sin fecha";
@@ -153,7 +200,7 @@ export default function ReportsPage() {
       store.total += Number(s.total) || 0;
       store.saleCount += 1;
       for (const item of s.items || []) {
-        const pName = item.product?.name || item.productId || "Producto";
+        const pName = item.product?.name || String(item.productId || "") || "Producto";
         let p = store.products.find((pr) => pr.name === pName);
         if (!p) {
           p = { name: pName, quantity: 0, subtotal: 0 };
@@ -267,7 +314,7 @@ export default function ReportsPage() {
   const dailyTotal = dailyData.reduce((sum, g) => sum + g.total, 0);
   const dailyCount = dailyData.reduce((sum, g) => sum + g.saleCount, 0);
 
-  const inventoryItems: InventoryItem[] = inventoryData?.locations?.flatMap((loc: any) => loc.items) || [];
+  const inventoryItems: InventoryItem[] = inventoryData?.locations?.flatMap((loc: InventoryLocationGroup) => loc.items) || [];
   const filteredInventory = inventoryItems.filter((i) =>
     !filterSearch || i.product.name.toLowerCase().includes(filterSearch.toLowerCase()) || i.product.brand.toLowerCase().includes(filterSearch.toLowerCase())
   );

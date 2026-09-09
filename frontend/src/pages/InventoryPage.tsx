@@ -29,6 +29,32 @@ interface Filters {
   years?: string[];
 }
 
+interface InventoryLocation {
+  id: number;
+  locationId: number;
+  locationName: string;
+  locationType: string;
+  stock: number;
+  minStock: number;
+}
+
+interface StockData {
+  stockTotal: number;
+  locations: InventoryLocation[];
+}
+
+interface ImportResult {
+  imported: number;
+  updated: number;
+  errors: number;
+  details?: { errors: string[] };
+}
+
+interface CostRecord {
+  itemCode: string;
+  supplierName: string | null;
+}
+
 interface Location {
   id: number;
   name: string;
@@ -102,7 +128,7 @@ export default function InventoryPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
 
   const [showStockModal, setShowStockModal] = useState<number | null>(null);
-  const [stockData, setStockData] = useState<any>(null);
+  const [stockData, setStockData] = useState<StockData | null>(null);
   const [stockLoading, setStockLoading] = useState(false);
   const [stockEdits, setStockEdits] = useState<Record<number, { stock: string; minStock: string; reasonType: string; reason: string }>>({});
   const [stockSaving, setStockSaving] = useState(false);
@@ -110,7 +136,7 @@ export default function InventoryPage() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
-  const [importResult, setImportResult] = useState<any>(null);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [importLocationId, setImportLocationId] = useState("");
 
   const [imageModal, setImageModal] = useState<Product | null>(null);
@@ -133,7 +159,7 @@ export default function InventoryPage() {
       let products = res.data.products;
       try {
         const costs = await api.get("/costs?limit=100");
-        const suppliers = new Map((costs.data.costs || []).map((c: any) => [c.itemCode, c.supplierName]));
+        const suppliers = new Map((costs.data.costs || []).map((c: CostRecord) => [c.itemCode, c.supplierName]));
         products = products.map((product: Product) => ({ ...product, supplierName: suppliers.get(product.itemCode) || null }));
       } catch { /* proveedor es información complementaria */ }
       setProducts(products);
@@ -239,7 +265,7 @@ export default function InventoryPage() {
       const res = await api.get(`/inventory/product/${productId}`);
       setStockData(res.data);
       const edits: Record<number, { stock: string; minStock: string; reasonType: string; reason: string }> = {};
-      (res.data.locations || []).forEach((loc: any) => {
+      (res.data.locations || []).forEach((loc: InventoryLocation) => {
         edits[loc.id] = { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
       });
       setStockEdits(edits);
@@ -254,7 +280,7 @@ export default function InventoryPage() {
   const saveStockAdjust = async (invId: number) => {
     const edit = stockEdits[invId];
     if (!edit) return;
-    const current = stockData?.locations?.find((l: any) => l.id === invId)?.stock;
+    const current = stockData?.locations?.find((l: InventoryLocation) => l.id === invId)?.stock;
     const stockChanged = current != null && Number(edit.stock) !== Number(current);
     if (stockChanged && !edit.reasonType) {
       toast.error("Selecciona el motivo del ajuste de stock");
@@ -272,7 +298,7 @@ export default function InventoryPage() {
       const res = await api.get(`/inventory/product/${showStockModal}`);
       setStockData(res.data);
       const edits: Record<number, { stock: string; minStock: string; reasonType: string; reason: string }> = {};
-      (res.data.locations || []).forEach((loc: any) => {
+      (res.data.locations || []).forEach((loc: InventoryLocation) => {
         edits[loc.id] = { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
       });
       setStockEdits(edits);
@@ -661,7 +687,7 @@ export default function InventoryPage() {
                     {canEdit && <p className="text-xs text-gray-500 mt-1">Haz clic en un campo para ajustar el stock de cada ubicación.</p>}
                   </div>
                   <div className="space-y-3">
-                    {stockData.locations.map((loc: any) => {
+                    {stockData.locations.map((loc: InventoryLocation) => {
                       const edit = stockEdits[loc.id] || { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
                       return (
                         <div key={loc.locationId} className="p-3 bg-dark-900/50 rounded-xl border border-dark-700/30">
@@ -799,9 +825,9 @@ export default function InventoryPage() {
                       <p className="text-xs text-gray-400">Errores</p>
                     </div>
                   </div>
-                  {importResult.details?.errors?.length > 0 && (
+                  {importResult.details?.errors && importResult.details.errors.length > 0 && (
                     <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-3 max-h-32 overflow-y-auto">
-                      {importResult.details.errors.map((e: string, i: number) => (
+                      {importResult.details!.errors.map((e: string, i: number) => (
                         <p key={i} className="text-xs text-red-400">{e}</p>
                       ))}
                     </div>
