@@ -1,5 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient, PaymentMethod } from "@prisma/client";
+import { isPrismaClientError } from "../../shared/utils/errors";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt, parsePositiveDecimal, parseString } from "../../shared/middlewares/validate";
@@ -175,24 +176,55 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     }
 
     const returned = await prisma.$transaction(async (tx) => {
+      // R4: serializar devoluciones del mismo producto dentro de la misma venta bloqueando
+      // la(s) fila(s) del SaleItem (FOR UPDATE). Sin este lock, dos devoluciones concurrentes
+      // de un mismo producto podrían leer la misma suma previa y devolver más de lo vendido.
+      // La cantidad vendida se relee dentro de la transacción a partir de las filas bloqueadas.
+      const lockedItems = await tx.$queryRaw<{ id: number; quantity: number }[]>`
+        SELECT id, quantity FROM "SaleItem"
+        WHERE "saleId" = ${saleId} AND "productId" = ${productId}
+        FOR UPDATE`;
+
+      if (!lockedItems.length) {
+        throw new Error("El producto no pertenece a esta venta");
+      }
+      const soldQuantity = lockedItems.reduce((sum, i) => sum + i.quantity, 0);
+
+      // Re-chequeo de la suma de devoluciones previas dentro de la transacción (atómico).
+      const previousReturns = await tx.return.findMany({
+        where: { saleId, productId },
+        select: { quantity: true },
+      });
+      const alreadyReturned = previousReturns.reduce((sum, r) => sum + r.quantity, 0);
+      if (alreadyReturned + quantity > soldQuantity) {
+        const remaining = soldQuantity - alreadyReturned;
+        throw new Error(`Ya se devolvieron ${alreadyReturned} de ${soldQuantity} unidades. Máximo adicional: ${Math.max(remaining, 0)}.`);
+      }
+
       const ret = await tx.return.create({
         data: { saleId, productId, reason: reason!, quantity, amount, method },
       });
+      // El increment es atómico en PostgreSQL: devoluciones concurrentes nunca pierden stock.
+      // Se usa upsert (INSERT ... ON CONFLICT DO UPDATE) que resuelve concurrentemente la
+      // creación o el incremento de la fila sin riesgo de conflicto de unicidad (P2002).
       await tx.inventory.upsert({
         where: { productId_locationId: { productId, locationId: sale.locationId } },
         update: { stock: { increment: quantity } },
         create: { productId, locationId: sale.locationId, stock: quantity, minStock: 1 },
       });
       return ret;
-    });
+    }, { timeout: 20000 });
 
     res.status(201).json(returned);
   } catch (error: any) {
-    if (error.message && !error.message.includes("Prisma")) {
-      return res.status(400).json({ message: error.message });
+    // Los errores internos de Prisma (timeout, contención, conexión) se ocultan como 500.
+    // Los errores de dominio (doble devolución, producto no perteneciente) son mensajes
+    // planos y se responden como 400.
+    if (error && isPrismaClientError(error)) {
+      console.error("Error al registrar devolución:", error);
+      return res.status(500).json({ message: "Error interno del servidor" });
     }
-    console.error("Error al registrar devolución:", error);
-    res.status(500).json({ message: "Error interno del servidor" });
+    res.status(400).json({ message: error.message || "Error interno del servidor" });
   }
 });
 
