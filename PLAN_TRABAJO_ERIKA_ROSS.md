@@ -154,7 +154,7 @@ README.md
 
 ## E2. `.gitignore`
 
-* [ ] **E1.2 — Revisar y completar `.gitignore` raíz**
+* [x] **E1.2 — Revisar y completar `.gitignore` raíz**
 
 Debe revisar cobertura para:
 
