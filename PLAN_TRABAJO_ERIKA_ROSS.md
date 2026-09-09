@@ -219,13 +219,13 @@ No eliminar archivos locales automáticamente.
 
 ## E3. Variables de entorno frontend/mobile
 
-* [ ] **E1.3 — Crear o completar `frontend/.env.example`**
+* [x] **E1.3 — Crear o completar `frontend/.env.example`**
 
 Debe documentar únicamente variables necesarias.
 
 No colocar valores secretos reales.
 
-* [ ] **E1.4 — Crear o completar `mobile/.env.example`**
+* [x] **E1.4 — Crear o completar `mobile/.env.example`**
 
 Debe incluir las variables requeridas por Expo/mobile sin credenciales reales.
 
