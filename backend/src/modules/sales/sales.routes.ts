@@ -1,5 +1,6 @@
 import { Router, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { isPrismaClientError } from "../../shared/utils/errors";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8 } from "../../utils/replenish";
@@ -308,45 +309,58 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       if (!validMethods.includes(p.method)) {
         return res.status(400).json({ message: `Método de pago inválido: ${p.method}` });
       }
-    }
-
-    let finalCustomerId = customerId || null;
-
-    if (customerData && !finalCustomerId) {
-      const { name, nit, phone } = customerData;
-      if (name) {
-        let customer;
-        if (nit) {
-          customer = await prisma.customer.findFirst({ where: { nit } });
-        }
-        if (!customer) {
-          customer = await prisma.customer.create({
-            data: { name, nit: nit || null, phone: phone || null },
-          });
-        }
-        finalCustomerId = customer.id;
+      const amount = Number(p.amount);
+      if (!Number.isFinite(amount) || amount < 0) {
+        return res.status(400).json({ message: "El monto de pago debe ser un número mayor o igual a 0" });
       }
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      const stockUpdates: { productId: number; quantity: number }[] = [];
+      let finalCustomerId = customerId || null;
 
-      for (const item of validItems) {
-        const product = await tx.product.findUnique({ where: { id: item.productId } });
+      if (customerData && !finalCustomerId) {
+        const { name, nit, phone } = customerData;
+        if (name) {
+          let customer;
+          if (nit) {
+            customer = await tx.customer.findFirst({ where: { nit } });
+          }
+          if (!customer) {
+            customer = await tx.customer.create({
+              data: { name, nit: nit || null, phone: phone || null },
+            });
+          }
+          finalCustomerId = customer.id;
+        }
+      }
+      // R4: bloqueo de fila pesimista (FOR UPDATE) sobre el inventario antes de validar y
+      // descontar (misma mecánica que movements). Todas las filas se bloquean en un único
+      // query con ORDER BY id: los locks se toman en orden determinista y sin ventana entre
+      // bloqueos, por lo que dos ventas concurrentes no pueden deadlock. La validación y el
+      // descuento ocurren dentro de la misma transacción.
+      const orderedItems = [...validItems].sort((a, b) => a.productId - b.productId);
+      const productIds = orderedItems.map((i) => i.productId);
+      const products = await tx.product.findMany({ where: { id: { in: productIds } } });
+      const productById = new Map(products.map((p) => [p.id, p]));
+
+      const tuples = orderedItems.map((item) => Prisma.sql`(${item.productId}, ${userLocationId})`);
+      const lockedRows = await tx.$queryRaw<{ id: number; stock: number; productId: number }[]>`
+        SELECT id, stock, "productId" FROM "Inventory"
+        WHERE ("productId", "locationId") IN (${Prisma.join(tuples)})
+        ORDER BY id FOR UPDATE`;
+      const lockedStock = new Map(lockedRows.map((r) => [r.productId, { id: r.id, stock: r.stock }]));
+
+      for (const item of orderedItems) {
+        const product = productById.get(item.productId);
         if (!product) {
           throw new Error(`Producto con ID ${item.productId} no encontrado`);
         }
 
-        const inventory = await tx.inventory.findUnique({
-          where: { productId_locationId: { productId: item.productId, locationId: userLocationId } },
-        });
-
-        const currentStock = inventory?.stock || 0;
+        const locked = lockedStock.get(item.productId);
+        const currentStock = locked ? locked.stock : 0;
         if (currentStock < item.quantity) {
           throw new Error(`Stock insuficiente para "${product.name}". Disponible: ${currentStock}, solicitado: ${item.quantity}`);
         }
-
-        stockUpdates.push({ productId: item.productId, quantity: item.quantity });
       }
 
       let totalSale = 0;
@@ -385,22 +399,19 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         include: { items: true, payments: true },
       });
 
-      for (const update of stockUpdates) {
-        const inv = await tx.inventory.findUnique({
-          where: { productId_locationId: { productId: update.productId, locationId: userLocationId } },
-        });
-
-        if (inv) {
-          const newStock = inv.stock - update.quantity;
+      for (const item of validItems) {
+        const locked = lockedStock.get(item.productId);
+        if (locked) {
+          const newStock = locked.stock - item.quantity;
           await tx.inventory.update({
-            where: { id: inv.id },
-            data: { stock: newStock },
+            where: { id: locked.id },
+            data: { stock: { decrement: item.quantity } },
           });
 
           if (newStock === 0) {
             const existing = await tx.productRequest.findFirst({
               where: {
-                productId: update.productId,
+                productId: item.productId,
                 locationId: userLocationId,
                 status: { in: ["PENDIENTE", "RECIBIDO_POR_INVENTARIO", "PREPARANDO"] },
               },
@@ -409,13 +420,13 @@ router.post("/", async (req: AuthRequest, res: Response) => {
               const almacen = await tx.location.findFirst({ where: { type: "ALMACEN" } });
               if (almacen) {
                 const almacenInv = await tx.inventory.findUnique({
-                  where: { productId_locationId: { productId: update.productId, locationId: almacen.id } },
+                  where: { productId_locationId: { productId: item.productId, locationId: almacen.id } },
                 });
-                const requestQty = Math.max(update.quantity, 5);
+                const requestQty = Math.max(item.quantity, 5);
                 if (almacenInv && almacenInv.stock >= requestQty) {
                   await tx.productRequest.create({
                     data: {
-                      productId: update.productId,
+                      productId: item.productId,
                       quantity: requestQty,
                       requestedById: user.userId,
                       locationId: userLocationId,
@@ -436,11 +447,16 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         items: sale.items.map((i) => ({ ...i, unitPrice: Number(i.unitPrice), subtotal: Number(i.subtotal) })),
         payments: sale.payments.map((p) => ({ ...p, amount: Number(p.amount) })),
       };
-    });
+    }, { timeout: 20000 });
 
     res.status(201).json(result);
   } catch (error: any) {
-    console.error("Error al crear venta:", error);
+    // Los errores internos de Prisma (timeout, contención, conexión) se ocultan como 500.
+    // Los errores de dominio (stock, total, producto) son mensajes planos y se responden como 400.
+    if (error && isPrismaClientError(error)) {
+      console.error("Error al crear venta:", error);
+      return res.status(500).json({ message: "Error interno del servidor" });
+    }
     res.status(400).json({ message: error.message || "Error interno del servidor" });
   }
 });

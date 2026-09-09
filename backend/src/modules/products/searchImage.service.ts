@@ -69,7 +69,15 @@ export async function procesarBusquedaPorImagen(file: Express.Multer.File): Prom
   // Extraer el contenido real de la imagen (OCR) además del nombre del archivo
   let ocrText = "";
   try {
-    const worker = await createWorker("eng", 1, { langPath: OCR_LANG_PATH, gzip: true });
+    const worker = await createWorker("eng", 1, {
+      langPath: OCR_LANG_PATH,
+      gzip: true,
+      // Sin errorHandler tesseract.js lanza sincrónicamente (uncaughtException) cuando un
+      // job del worker rechaza (p. ej. imagen corrupta), tumbando el proceso aunque la
+      // promesa de recognize sí se rechace. El handler evita ese throw global; el rechazo
+      // de recognize lo captura el try/finally de abajo.
+      errorHandler: (ocrError) => console.error("OCR worker error:", ocrError),
+    });
     try {
       const ctx = await worker.recognize(file.buffer);
       ocrText = ctx.data.text || "";
