@@ -1,7 +1,52 @@
-node_modules
-dist
+# Dependencias
+node_modules/
+
+# Archivos de entorno
 .env
-.env.local
+.env.*
+!.env.example
+!frontend/.env.production
+
+# Build
+dist/
+build/
+coverage/
+
+# Logs
 *.log
-.codebase-memory/
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# TypeScript
 *.tsbuildinfo
+
+# Temporales
+.codebase-memory/
+*.tmp
+*.bak
+*.orig.*
+
+# Uploads
+backend/uploads/
+
+# Expo
+.expo/
+web-build/
+
+# Certificados
+*.pem
+*.key
+*.crt
+*.jks
+*.p8
+*.p12
+*.mobileprovision
