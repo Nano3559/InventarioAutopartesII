@@ -1011,19 +1011,19 @@ Responsable: **ERIKA**
 
 ---
 
-* [ ] **E7.1 — Configurar framework de testing frontend**
+* [x] **E7.1 — Configurar framework de testing frontend**
 
-Preferentemente Vitest por compatibilidad con Vite.
+Vitest + @testing-library/react + @testing-library/jest-dom + @testing-library/user-event + jsdom.
 
 ---
 
-* [ ] **E7.2 — Test LoginPage**
-* [ ] **E7.3 — Test authStore**
-* [ ] **E7.4 — Test interceptor Axios**
-* [ ] **E7.5 — Test carrito de SalesPage**
-* [ ] **E7.6 — Test cálculo de total**
-* [ ] **E7.7 — Test catálogo público**
-* [ ] **E7.8 — Test búsqueda pública por imagen si es viable aislar el request**
+* [x] **E7.2 — Test LoginPage**
+* [x] **E7.3 — Test authStore**
+* [x] **E7.4 — Test interceptor Axios**
+* [x] **E7.5 — Test carrito de SalesPage**
+* [x] **E7.6 — Test cálculo de total**
+* [x] **E7.7 — Test catálogo público**
+* [x] **E7.8 — Test búsqueda pública por imagen si es viable aislar el request**
 
 No intentar crear una suite E2E enorme en esta fase.
 
@@ -1292,6 +1292,7 @@ Ejemplo:
 2026-09-09 — Erika — E5.1-E5.3 Error handling audit (sin cambios de código) — COMPLETADO
 2026-09-09 — Erika — E5.4-E5.9 Corrección 17 `any` críticos en 6 páginas frontend — COMPLETADO
 2026-09-09 — Erika — E5.10-E5.13 Etapa 5 Frontend/Mobile completa (labels precio corregidos en InventoryScreen) — COMPLETADO
+2026-09-09 — Erika — E7.1-E7.4, E7.7-E7.8 Primer bloque testing frontend (Vitest + 57 tests) — COMPLETADO
 ```
 
 ---
