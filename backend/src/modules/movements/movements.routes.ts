@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { authenticate, authorizeModule } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parsePositiveInt, parseString } from "../../shared/middlewares/validate";
+import { isPrismaClientError } from "../../shared/utils/errors";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -117,20 +118,15 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
         data: { stock: { decrement: quantity } },
       });
 
-      const inventoryDest = await tx.inventory.findUnique({
+      // M8 (ETAPA 8): upsert atómico del destino. Dos movimientos concurrentes hacia una
+      // ubicación sin fila de inventario pueden leer null ambas lecturas e intentar create
+      // (violación de @@unique [productId, locationId] → P2002). El upsert garantiza que
+      // solo uno crea y el otro actualiza por incremento.
+      await tx.inventory.upsert({
         where: { productId_locationId: { productId, locationId: toLocationId } },
+        update: { stock: { increment: quantity } },
+        create: { productId, locationId: toLocationId, stock: quantity, minStock: 0 },
       });
-
-      if (inventoryDest) {
-        await tx.inventory.update({
-          where: { id: inventoryDest.id },
-          data: { stock: { increment: quantity } },
-        });
-      } else {
-        await tx.inventory.create({
-          data: { productId, locationId: toLocationId, stock: quantity, minStock: 0 },
-        });
-      }
 
       return tx.movement.create({
         data: { productId, fromLocationId, toLocationId, quantity, userId: user.userId, observation, requestId },
@@ -146,7 +142,7 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
 
     res.status(201).json(movement);
   } catch (error: any) {
-    if (error.message && !error.message.includes("Prisma")) {
+    if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
     console.error("Error al registrar movimiento:", error);

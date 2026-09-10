@@ -1,6 +1,7 @@
 import { Router, Response } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { isPrismaClientError } from "../../shared/utils/errors";
+import { parsePagination } from "../../shared/utils/pagination";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8 } from "../../utils/replenish";
@@ -38,8 +39,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       where.locationId = Number(locationId);
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const { skip, take, page: cleanPage } = parsePagination(page, limit);
 
     const [sales, total] = await Promise.all([
       prisma.sale.findMany({
@@ -65,7 +65,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         items: s.items.map((i) => ({ ...i, unitPrice: Number(i.unitPrice), subtotal: Number(i.subtotal) })),
         payments: s.payments.map((p) => ({ ...p, amount: Number(p.amount) })),
       })),
-      pagination: { total, page: Number(page), limit: take, pages: Math.ceil(total / take) },
+      pagination: { total, page: cleanPage, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
     console.error("Error al listar ventas:", error);

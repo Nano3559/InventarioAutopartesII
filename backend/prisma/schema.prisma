@@ -99,6 +99,7 @@ model Inventory {
   product    Product  @relation(fields: [productId], references: [id])
 
   @@unique([productId, locationId])
+  @@index([locationId])
 }
 
 model Customer {
@@ -132,6 +133,9 @@ model Sale {
   location     Location   @relation("SaleFromLocation", fields: [locationId], references: [id])
   user         User       @relation(fields: [userId], references: [id])
   items        SaleItem[]
+
+  @@index([userId])
+  @@index([locationId, saleDate(sort: Desc)])
 }
 
 model SaleItem {
@@ -143,6 +147,8 @@ model SaleItem {
   subtotal  Decimal
   product   Product @relation(fields: [productId], references: [id])
   sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
 }
 
 model Payment {
@@ -152,6 +158,8 @@ model Payment {
   amount Decimal
   date   DateTime      @default(now())
   sale   Sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([saleId])
 }
 
 model Return {
@@ -165,6 +173,9 @@ model Return {
   date      DateTime      @default(now())
   product   Product       @relation(fields: [productId], references: [id])
   sale      Sale          @relation(fields: [saleId], references: [id])
+
+  @@index([saleId])
+  @@index([productId])
 }
 
 model Movement {
@@ -182,6 +193,9 @@ model Movement {
   toLocation     Location @relation("MovementTo", fields: [toLocationId], references: [id])
   user           User     @relation(fields: [userId], references: [id])
   request        ProductRequest? @relation(fields: [requestId], references: [id])
+
+  @@index([productId])
+  @@index([toLocationId])
 }
 
 model ProductRequest {
@@ -201,6 +215,10 @@ model ProductRequest {
   requestedBy   User          @relation("RequestedBy", fields: [requestedById], references: [id])
   history       RequestHistory[]
   movements     Movement[]
+
+  @@index([status, expectedDate])
+  @@index([locationId])
+  @@index([requestedById])
 }
 
 model Supplier {
@@ -226,6 +244,9 @@ model Cost {
   updatedAt    DateTime @updatedAt
   product      Product  @relation(fields: [productId], references: [id])
   supplier     Supplier @relation(fields: [supplierId], references: [id])
+
+  @@index([productId])
+  @@index([supplierId])
 }
 
 model Importer {
@@ -250,6 +271,7 @@ model ProductImporter {
   product    Product  @relation(fields: [productId], references: [id])
 
   @@unique([productId, importerId])
+  @@index([importerId])
 }
 
 enum Role {
@@ -293,6 +315,8 @@ model RequestHistory {
   userRole      String
   createdAt     DateTime       @default(now())
   request       ProductRequest @relation(fields: [requestId], references: [id])
+
+  @@index([requestId])
 }
 
 model AuditLog {
@@ -305,6 +329,9 @@ model AuditLog {
   newValue    Json?
   createdAt   DateTime @default(now())
   user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
 }
 
 model Notification {
@@ -317,4 +344,6 @@ model Notification {
   linkUrl   String?
   createdAt DateTime @default(now())
   user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId, read])
 }

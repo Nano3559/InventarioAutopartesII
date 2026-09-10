@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { authenticate, authorize, invalidateRoleCache } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 
 const router = Router();
@@ -18,8 +18,8 @@ const DEFAULT_COLUMNS: Record<string, string[]> = {
   ventas: ["ID", "Fecha", "Cliente", "Tienda", "Vendedor", "Total", "Estado", "Acciones"],
 };
 
-// GET /roles — Listar roles con permisos y columnas
-router.get("/roles", async (_req: AuthRequest, res: Response) => {
+// GET /roles — Listar roles con permisos y columnas (solo ADMIN)
+router.get("/roles", authorize("ADMIN"), async (_req: AuthRequest, res: Response) => {
   try {
     const roles = await prisma.roleModel.findMany({
       include: { _count: { select: { users: true } } },
@@ -41,8 +41,8 @@ router.get("/roles", async (_req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /roles/modules — Módulos disponibles
-router.get("/roles/modules", (_req: AuthRequest, res: Response) => {
+// GET /roles/modules — Módulos disponibles (solo ADMIN)
+router.get("/roles/modules", authorize("ADMIN"), (_req: AuthRequest, res: Response) => {
   res.json({ modules: AVAILABLE_MODULES, defaultColumns: DEFAULT_COLUMNS });
 });
 
@@ -70,6 +70,11 @@ router.put("/roles/:id/permissions", authorize("ADMIN"), async (req: AuthRequest
       where: { id: roleId },
       data: { permissions },
     });
+
+    // Invalidar la caché inmediatamente después del update y ANTES del auditLog:
+    // si el registro de auditoría fallara, los permisos ya aplicados siguen siendo
+    // visibles de forma inmediata en las rutas protegidas.
+    invalidateRoleCache(roleId);
 
     if (req.user) {
       await prisma.auditLog.create({

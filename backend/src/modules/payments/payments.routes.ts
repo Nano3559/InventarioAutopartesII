@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { isPrismaClientError } from "../../shared/utils/errors";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -88,25 +89,32 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: `Método inválido. Use: ${validMethods.join(", ")}` });
     }
 
-    // No permitir pagar de más: pendiente = total - pagado - devuelto
-    const existingPayments = await prisma.payment.aggregate({ where: { saleId: Number(saleId) }, _sum: { amount: true } });
-    const totalReturned = await prisma.return.aggregate({ where: { saleId: Number(saleId) }, _sum: { amount: true } });
-    const paid = Number(existingPayments._sum.amount || 0);
-    const returned = Number(totalReturned._sum.amount || 0);
-    const pending = Number(sale.total) - paid - returned;
+    // M5 (ETAPA 8): la validación de "no pagar de más" es lectura+validación+escritura.
+    // Dos pagos concurrentes sobre el mismo saldo pendiente podían pasar ambos el filtro.
+    // Se protege dentro de una transacción con bloqueo pesimista de la fila de la venta.
+    const payment = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Sale" WHERE "id" = ${Number(saleId)} FOR UPDATE`;
 
-    if (amountNum - pending > 0.01) {
-      return res.status(400).json({
-        message: `El monto (Bs. ${amountNum.toFixed(2)}) supera el saldo pendiente de la venta (Bs. ${pending.toFixed(2)})`,
+      const existingPayments = await tx.payment.aggregate({ where: { saleId: Number(saleId) }, _sum: { amount: true } });
+      const totalReturned = await tx.return.aggregate({ where: { saleId: Number(saleId) }, _sum: { amount: true } });
+      const paid = Number(existingPayments._sum.amount || 0);
+      const returned = Number(totalReturned._sum.amount || 0);
+      const pending = Number(sale.total) - paid - returned;
+
+      if (amountNum - pending > 0.01) {
+        throw new Error(`El monto (Bs. ${amountNum.toFixed(2)}) supera el saldo pendiente de la venta (Bs. ${pending.toFixed(2)})`);
+      }
+
+      return tx.payment.create({
+        data: { saleId: Number(saleId), method, amount: amountNum },
       });
-    }
-
-    const payment = await prisma.payment.create({
-      data: { saleId: Number(saleId), method, amount: amountNum },
     });
 
     res.status(201).json(payment);
-  } catch (error) {
+  } catch (error: any) {
+    if (typeof error?.message === "string" && !isPrismaClientError(error)) {
+      return res.status(400).json({ message: error.message });
+    }
     console.error("Error al registrar pago:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }

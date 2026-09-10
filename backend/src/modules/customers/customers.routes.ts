@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate } from "../../shared/middlewares/auth";
 import { parseId, parseString } from "../../shared/middlewares/validate";
+import { isPrismaClientError } from "../../shared/utils/errors";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -76,7 +77,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     res.status(201).json(customer);
   } catch (error: any) {
-    if (error.message && !error.message.includes("Prisma")) {
+    if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
     console.error("Error al crear cliente:", error);
@@ -110,7 +111,7 @@ router.put("/:id", async (req: Request, res: Response) => {
 
     res.json(customer);
   } catch (error: any) {
-    if (error.message && !error.message.includes("Prisma")) {
+    if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
     console.error("Error al editar cliente:", error);

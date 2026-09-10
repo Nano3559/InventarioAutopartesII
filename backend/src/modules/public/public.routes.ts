@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { yearRangesOverlap } from "../../utils/yearRanges";
+import { parsePagination } from "../../shared/utils/pagination";
 import {
   imageUpload,
   procesarBusquedaPorImagen,
@@ -74,7 +75,7 @@ router.get("/products", async (req: Request, res: Response) => {
 
     if (AND.length > 0) where.AND = AND;
 
-    const skip = (Number(page) - 1) * Number(limit);
+    const { skip: publicSkip, take: publicTake } = parsePagination(page, limit);
     const hasYearFilter = year && typeof year === "string";
 
     let allProducts = await prisma.product.findMany({
@@ -92,7 +93,7 @@ router.get("/products", async (req: Request, res: Response) => {
     }
 
     const total = allProducts.length;
-    const products = allProducts.slice(skip, skip + Number(limit));
+    const products = allProducts.slice(publicSkip, publicSkip + publicTake);
 
     const productsWithStock = products.map((p) => {
       const stockTotal = p.inventories.reduce((sum, inv) => sum + inv.stock, 0);
@@ -129,9 +130,9 @@ router.get("/products", async (req: Request, res: Response) => {
       products: productsWithStock,
       pagination: {
         total,
-        page: Number(page),
-        limit: Number(limit),
-        pages: Math.ceil(total / Number(limit)),
+        page: Math.max(1, Number(page) || 1),
+        limit: publicTake,
+        pages: Math.ceil(total / publicTake),
       },
     });
   } catch (error) {

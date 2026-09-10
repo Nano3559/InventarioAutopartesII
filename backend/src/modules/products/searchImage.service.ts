@@ -2,11 +2,29 @@ import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import path from "path";
 import { createWorker } from "tesseract.js";
+import type { Worker as TesseractWorker } from "tesseract.js";
+import { logger } from "../../shared/utils/logger";
 
 const prisma = new PrismaClient();
 
-// Datos de idioma locales para OCR (evita descargas en cada request)
-const OCR_LANG_PATH = path.join(process.cwd(), "node_modules", "@tesseract.js-data", "eng", "4.0.0");
+// Datos de idioma locales para OCR (evita descargas en cada request).
+// Resolución robusta de la ruta: `__dirname` apunta a src/modules/products (o dist/...);
+// el paquete vive en la raíz del backend, así que subimos hasta la raíz y bajamos a
+// node_modules. Fallback a process.cwd() por si el build cambia la estructura.
+const OCR_LANG_PATH = (() => {
+  const candidates = [
+    path.join(__dirname, "../../../node_modules/@tesseract.js-data/eng/4.0.0"),
+    path.join(process.cwd(), "node_modules", "@tesseract.js-data", "eng", "4.0.0"),
+  ];
+  for (const candidate of candidates) {
+    try {
+      if (require("fs").existsSync(candidate)) return candidate;
+    } catch {
+      /* ignorar */
+    }
+  }
+  return candidates[0];
+})();
 
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
 
@@ -46,6 +64,48 @@ export interface ResultadoBusquedaImagen {
   results: ProductoConScore[];
 }
 
+// Worker reutilizable de OCR (ETAPA 8 — Ross): se crea UNA vez por proceso (los datos
+// del modelo se cargan una sola vez en lugar de hacerlo por request) y las llamadas a
+// recognize se serializan para evitar carreras sobre el mismo worker.
+let ocrWorkerPromise: Promise<TesseractWorker | null> | null = null;
+let ocrQueue: Promise<unknown> = Promise.resolve();
+
+function getOcrWorker(): Promise<TesseractWorker | null> {
+  if (!ocrWorkerPromise) {
+    ocrWorkerPromise = createWorker("eng", 1, {
+      langPath: OCR_LANG_PATH,
+      gzip: true,
+      // Sin errorHandler tesseract.js lanza sincrónicamente (uncaughtException) cuando un
+      // job del worker rechaza (p. ej. imagen corrupta), tumbando el proceso aunque la
+      // promesa de recognize sí se rechace. El handler evita ese throw global; el rechazo
+      // de recognize lo captura el caller.
+      errorHandler: (ocrError) => logger.warn("OCR worker error", { error: (ocrError as Error)?.message }),
+    }).catch((initError) => {
+      logger.error("OCR init falló", { error: (initError as Error)?.message });
+      ocrWorkerPromise = null;
+      return null;
+    });
+  }
+  return ocrWorkerPromise;
+}
+
+async function ocrExtract(buffer: Buffer): Promise<string> {
+  const task = ocrQueue.then(async () => {
+    const worker = await getOcrWorker();
+    if (!worker) return "";
+    try {
+      const ctx = await worker.recognize(buffer);
+      return ctx.data.text || "";
+    } catch (ocrError) {
+      // El worker quedó en estado inválido: descartarlo para que el próximo request lo recree.
+      ocrWorkerPromise = null;
+      throw ocrError;
+    }
+  });
+  ocrQueue = task.catch(() => undefined);
+  return task;
+}
+
 /**
  * Flujo compartido: imagen → tokens del nombre de archivo → OCR → búsqueda → ranking.
  * Cada endpoint controla la autorización y la serialización de su respuesta.
@@ -66,26 +126,13 @@ export async function procesarBusquedaPorImagen(file: Express.Multer.File): Prom
     .split(" ")
     .forEach(pushToken);
 
-  // Extraer el contenido real de la imagen (OCR) además del nombre del archivo
+  // Extraer el contenido real de la imagen (OCR) además del nombre del archivo.
+  // El worker se reutiliza entre requests (ver ocrExtract).
   let ocrText = "";
   try {
-    const worker = await createWorker("eng", 1, {
-      langPath: OCR_LANG_PATH,
-      gzip: true,
-      // Sin errorHandler tesseract.js lanza sincrónicamente (uncaughtException) cuando un
-      // job del worker rechaza (p. ej. imagen corrupta), tumbando el proceso aunque la
-      // promesa de recognize sí se rechace. El handler evita ese throw global; el rechazo
-      // de recognize lo captura el try/finally de abajo.
-      errorHandler: (ocrError) => console.error("OCR worker error:", ocrError),
-    });
-    try {
-      const ctx = await worker.recognize(file.buffer);
-      ocrText = ctx.data.text || "";
-    } finally {
-      await worker.terminate();
-    }
-  } catch (ocrErr) {
-    console.error("OCR no disponible:", ocrErr);
+    ocrText = await ocrExtract(file.buffer);
+  } catch (ocrError) {
+    logger.warn("OCR no disponible", { error: (ocrError as Error)?.message });
   }
 
   ocrText

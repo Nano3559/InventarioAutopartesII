@@ -11,6 +11,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "ts-node prisma/seed.ts",
     "test": "tsx --test \"src/**/*.test.ts\"",
+    "test:integration": "tsx --test --test-force-exit \"src/**/*.itest.ts\"",
+    "test:all": "tsx --test \"src/**/*.test.ts\" && tsx --test --test-force-exit \"src/**/*.itest.ts\"",
+    "test:coverage": "node --import tsx --test --experimental-test-coverage \"src/**/*.test.ts\"",
     "test:watch": "tsx --test --watch \"src/**/*.test.ts\""
   },
   "prisma": {

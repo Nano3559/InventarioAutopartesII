@@ -296,7 +296,7 @@ La raíz queda limpia y la documentación sigue disponible.
 
 ## R1. Git Convention
 
-* [ ] **R1.1 — Crear documentación de Git Convention**
+* [x] **R1.1 — Crear documentación de Git Convention**
 
 Debe documentar el flujo actual:
 
@@ -322,7 +322,7 @@ Debe explicar:
 
 ---
 
-* [ ] **R1.2 — Definir Conventional Commits**
+* [x] **R1.2 — Definir Conventional Commits**
 
 Formato:
 
@@ -368,7 +368,7 @@ test(inventory): add stock movement tests
 
 ---
 
-* [ ] **R1.3 — Documentar flujo de Pull Request**
+* [x] **R1.3 — Documentar flujo de Pull Request**
 
 Debe establecer como mínimo:
 
@@ -394,7 +394,7 @@ Erika y Ross pueden seguir el documento sin necesitar instrucciones externas.
 
 ## R2. Stack tecnológico
 
-* [ ] **R1.4 — Documentar stack Backend**
+* [x] **R1.4 — Documentar stack Backend**
 
 Debe incluir el stack real encontrado en `package.json`:
 
@@ -415,7 +415,7 @@ Debe incluir el stack real encontrado en `package.json`:
 
 ---
 
-* [ ] **R1.5 — Documentar stack Frontend**
+* [x] **R1.5 — Documentar stack Frontend**
 
 Debe incluir:
 
@@ -435,7 +435,7 @@ Debe incluir:
 
 ---
 
-* [ ] **R1.6 — Documentar stack Mobile**
+* [x] **R1.6 — Documentar stack Mobile**
 
 Debe incluir:
 
@@ -448,7 +448,7 @@ Debe incluir:
 
 ---
 
-* [ ] **R1.7 — Documentar infraestructura**
+* [x] **R1.7 — Documentar infraestructura**
 
 Debe incluir:
 
@@ -470,7 +470,7 @@ La información final debe entregarse a Erika para incorporarla al `README.md`.
 
 ## R3. AGENTS.md
 
-* [ ] **R1.8 — Crear `AGENTS.md`**
+* [x] **R1.8 — Crear `AGENTS.md`**
 
 Debe explicar a asistentes IA:
 
@@ -508,7 +508,7 @@ Un nuevo agente puede leer `AGENTS.md` y comprender cómo trabajar sin romper el
 
 ## R4. Agentes OpenCode
 
-* [ ] **R1.9 — Crear agente `backend-reviewer`**
+* [x] **R1.9 — Crear agente `backend-reviewer`**
 
 Debe especializarse en:
 
@@ -527,7 +527,7 @@ Debe priorizar revisión antes de modificar.
 
 ---
 
-* [ ] **R1.10 — Crear agente `frontend-reviewer`**
+* [x] **R1.10 — Crear agente `frontend-reviewer`**
 
 Debe especializarse en:
 
@@ -545,7 +545,7 @@ Debe especializarse en:
 
 ---
 
-* [ ] **R1.11 — Verificar que OpenCode detecta los agentes**
+* [x] **R1.11 — Verificar que OpenCode detecta los agentes**
 
 No continuar hasta confirmar que están disponibles.
 
@@ -553,7 +553,7 @@ No continuar hasta confirmar que están disponibles.
 
 ## R5. Skills
 
-* [ ] **R1.12 — Crear skill `prisma-review`**
+* [x] **R1.12 — Crear skill `prisma-review`**
 
 Debe permitir revisar:
 
@@ -569,7 +569,7 @@ No debe modificar `schema.prisma` automáticamente.
 
 ---
 
-* [ ] **R1.13 — Crear skill `express-security`**
+* [x] **R1.13 — Crear skill `express-security`**
 
 Debe revisar:
 
@@ -586,7 +586,7 @@ Debe revisar:
 
 ---
 
-* [ ] **R1.14 — Verificar que OpenCode reconoce ambas skills**
+* [x] **R1.14 — Verificar que OpenCode reconoce ambas skills**
 
 No crear skills adicionales salvo necesidad real.
 
@@ -602,7 +602,7 @@ No comenzar cambios de base de datos innecesarios en esta etapa.
 
 ## JWT
 
-* [ ] **R2.1 — Eliminar fallback inseguro de `JWT_SECRET`**
+* [x] **R2.1 — Eliminar fallback inseguro de `JWT_SECRET`**
 
 No debe existir:
 
@@ -616,7 +616,7 @@ Si `JWT_SECRET` no está definido, la aplicación debe fallar claramente al inic
 
 ---
 
-* [ ] **R2.2 — Forzar algoritmo JWT**
+* [x] **R2.2 — Forzar algoritmo JWT**
 
 Verificación:
 
@@ -628,7 +628,7 @@ Debe comprobarse tanto generación como validación de tokens.
 
 ---
 
-* [ ] **R2.3 — Revisar JWT_SECRET actual**
+* [x] **R2.3 — Revisar JWT_SECRET actual**
 
 No subir el nuevo secret a Git.
 
@@ -638,7 +638,7 @@ La rotación de secretos de producción debe hacerse manualmente en los servicio
 
 ## Helmet
 
-* [ ] **R2.4 — Instalar/configurar Helmet**
+* [x] **R2.4 — Instalar/configurar Helmet**
 
 Debe integrarse sin romper frontend ni CORS.
 
@@ -646,19 +646,19 @@ Debe integrarse sin romper frontend ni CORS.
 
 ## Rate limiting
 
-* [ ] **R2.5 — Configurar rate limiting general**
+* [x] **R2.5 — Configurar rate limiting general**
 
 Evitar límites demasiado agresivos.
 
 ---
 
-* [ ] **R2.6 — Configurar rate limiting de login**
+* [x] **R2.6 — Configurar rate limiting de login**
 
 Debe reducir intentos abusivos sin afectar uso normal.
 
 ---
 
-* [ ] **R2.7 — Configurar rate limiting específico para OCR**
+* [x] **R2.7 — Configurar rate limiting específico para OCR**
 
 El procesamiento OCR consume CPU y debe tener límites independientes.
 
@@ -677,7 +677,7 @@ No convertir todo el sistema en privado.
 
 # ROSS — Backend Search Image
 
-* [ ] **R3.1 — Mantener búsqueda por imagen pública**
+* [x] **R3.1 — Mantener búsqueda por imagen pública**
 
 Debe existir un endpoint público para el catálogo.
 
@@ -689,7 +689,7 @@ POST /api/public/search-image
 
 ---
 
-* [ ] **R3.2 — Mantener endpoint interno autenticado**
+* [x] **R3.2 — Mantener endpoint interno autenticado**
 
 ```text
 POST /api/products/search-image
@@ -699,7 +699,7 @@ Debe exigir autenticación.
 
 ---
 
-* [ ] **R3.3 — Reutilizar lógica OCR**
+* [x] **R3.3 — Reutilizar lógica OCR**
 
 No duplicar innecesariamente:
 
@@ -710,7 +710,7 @@ No duplicar innecesariamente:
 
 ---
 
-* [ ] **R3.4 — Limitar respuesta pública**
+* [x] **R3.4 — Limitar respuesta pública**
 
 La respuesta pública puede incluir:
 
@@ -740,13 +740,13 @@ información administrativa
 
 ---
 
-* [ ] **R3.5 — Reutilizar criterio actual de `availability`**
+* [x] **R3.5 — Reutilizar criterio actual de `availability`**
 
 No crear una segunda lógica diferente a la utilizada por el catálogo público.
 
 ---
 
-* [ ] **R3.6 — Validar MIME en backend**
+* [x] **R3.6 — Validar MIME en backend**
 
 Permitir únicamente:
 
@@ -758,11 +758,11 @@ image/webp
 
 ---
 
-* [ ] **R3.7 — Limitar imagen a 5 MB**
+* [x] **R3.7 — Limitar imagen a 5 MB**
 
 ---
 
-* [ ] **R3.8 — Aplicar rate limit específico al OCR**
+* [x] **R3.8 — Aplicar rate limit específico al OCR**
 
 ---
 
@@ -817,12 +817,12 @@ Máximo:
 
 * [~] **J3.1 — Probar búsqueda pública anónima**
 * [~] **J3.2 — Probar búsqueda interna con token**
-* [~] **J3.3 — Confirmar que endpoint interno rechaza solicitud anónima**
+* [x] **J3.3 — Confirmar que endpoint interno rechaza solicitud anónima**
 * [x] **J3.4 — Confirmar que respuesta pública no contiene `price2`**
 * [x] **J3.5 — Confirmar que respuesta pública no contiene stock exacto**
 * [x] **J3.6 — Confirmar que respuesta pública no contiene `locations[]`**
 * [x] **J3.7 — Confirmar que `availability` sigue funcionando**
-* [~] **J3.8 — Probar JPEG**
+* [x] **J3.8 — Probar JPEG**
 * [~] **J3.9 — Probar PNG**
 * [~] **J3.10 — Probar WebP**
 * [~] **J3.11 — Probar archivo superior a 5 MB**
@@ -835,7 +835,7 @@ Responsable principal: **ROSS**
 
 ---
 
-* [ ] **R4.1 — Revisar concurrencia en ventas**
+* [x] **R4.1 — Revisar concurrencia en ventas**
 
 Verificar:
 
@@ -847,13 +847,13 @@ La lectura y actualización de stock debe estar protegida dentro de la misma tra
 
 ---
 
-* [ ] **R4.2 — Implementar bloqueo de fila en ventas si corresponde**
+* [x] **R4.2 — Implementar bloqueo de fila en ventas si corresponde**
 
 Tomar como referencia el patrón existente de movimientos.
 
 ---
 
-* [ ] **R4.3 — Revisar concurrencia en wholesale**
+* [x] **R4.3 — Revisar concurrencia en wholesale**
 
 Verificar:
 
@@ -863,11 +863,11 @@ wholesale.routes.ts
 
 ---
 
-* [ ] **R4.4 — Implementar bloqueo de fila en wholesale si corresponde**
+* [x] **R4.4 — Implementar bloqueo de fila en wholesale si corresponde**
 
 ---
 
-* [ ] **R4.5 — Auditar returns**
+* [x] **R4.5 — Auditar returns**
 
 Antes de modificarlo determinar:
 
@@ -879,7 +879,7 @@ No agregar `FOR UPDATE` automáticamente sin comprobarlo.
 
 ---
 
-* [ ] **R4.6 — Verificar que stock nunca quede negativo**
+* [x] **R4.6 — Verificar que stock nunca quede negativo**
 
 Pruebas mínimas:
 
@@ -966,42 +966,42 @@ Mantener los tests existentes.
 
 ---
 
-* [ ] **R6.1 — Test login válido**
-* [ ] **R6.2 — Test login inválido**
-* [ ] **R6.3 — Test permisos ADMIN**
-* [ ] **R6.4 — Test permisos TIENDA**
-* [ ] **R6.5 — Test permisos INVENTARIO**
+* [x] **R6.1 — Test login válido**
+* [x] **R6.2 — Test login inválido**
+* [x] **R6.3 — Test permisos ADMIN**
+* [x] **R6.4 — Test permisos TIENDA**
+* [x] **R6.5 — Test permisos INVENTARIO**
 
 ---
 
 ## Ventas
 
-* [ ] **R6.6 — Test crear venta**
-* [ ] **R6.7 — Test descuento de stock**
-* [ ] **R6.8 — Test múltiples pagos**
-* [ ] **R6.9 — Test stock insuficiente**
-* [ ] **R6.10 — Test ventas concurrentes**
+* [x] **R6.6 — Test crear venta**
+* [x] **R6.7 — Test descuento de stock**
+* [x] **R6.8 — Test múltiples pagos**
+* [x] **R6.9 — Test stock insuficiente**
+* [x] **R6.10 — Test ventas concurrentes**
 
 ---
 
 ## Inventario
 
-* [ ] **R6.11 — Test movimiento de stock**
-* [ ] **R6.12 — Test movimiento concurrente**
+* [x] **R6.11 — Test movimiento de stock**
+* [x] **R6.12 — Test movimiento concurrente**
 
 ---
 
 ## Devoluciones
 
-* [ ] **R6.13 — Test devolución válida**
-* [ ] **R6.14 — Test devolución superior a cantidad vendida**
-* [ ] **R6.15 — Test incremento de stock por devolución**
+* [x] **R6.13 — Test devolución válida**
+* [x] **R6.14 — Test devolución superior a cantidad vendida**
+* [x] **R6.15 — Test incremento de stock por devolución**
 
 ---
 
 ## Automatización
 
-* [ ] **R6.16 — Test reposición automática**
+* [x] **R6.16 — Test reposición automática**
 
 ---
 
@@ -1050,15 +1050,15 @@ Solo hacerlas si existe tiempo y después de que todo lo prioritario funcione.
 
 ## ROSS — Opcionales
 
-* [ ] Revisar caché de permisos
-* [ ] Revisar logging estructurado
-* [ ] Revisar score de search-image
-* [ ] Revisar pool de Tesseract
-* [ ] Revisar índices de PostgreSQL
-* [ ] Revisar precisión Decimal
-* [ ] Revisar campos `date` / `createdAt`
-* [ ] Revisar política `ON DELETE`
-* [ ] Revisar naming `RoleModel`
+* [x] Revisar caché de permisos
+* [x] Revisar logging estructurado
+* [x] Revisar score de search-image
+* [x] Revisar pool de Tesseract
+* [x] Revisar índices de PostgreSQL
+* [!] Revisar precisión Decimal
+* [!] Revisar campos `date` / `createdAt`
+* [!] Revisar política `ON DELETE`
+* [!] Revisar naming `RoleModel`
 
 ---
 
@@ -1088,61 +1088,61 @@ Responsables: **ERIKA + ROSS**
 
 ## Código
 
-* [ ] **J9.1 — Backend compila**
-* [ ] **J9.2 — Frontend compila**
-* [ ] **J9.3 — Mobile pasa TypeScript**
-* [ ] **J9.4 — Tests backend pasan**
-* [ ] **J9.5 — Tests frontend pasan**
+* [x] **J9.1 — Backend compila**
+* [x] **J9.2 — Frontend compila**
+* [x] **J9.3 — Mobile pasa TypeScript**
+* [x] **J9.4 — Tests backend pasan**
+* [x] **J9.5 — Tests frontend pasan**
 
 ---
 
 ## Funcionalidad
 
-* [ ] **J9.6 — Login**
-* [ ] **J9.7 — Roles**
-* [ ] **J9.8 — Productos**
-* [ ] **J9.9 — Inventario**
-* [ ] **J9.10 — Ventas**
-* [ ] **J9.11 — Pagos**
-* [ ] **J9.12 — Devoluciones**
-* [ ] **J9.13 — Solicitudes**
-* [ ] **J9.14 — Movimientos**
-* [ ] **J9.15 — Costos**
-* [ ] **J9.16 — Precios**
-* [ ] **J9.17 — Mayoristas**
-* [ ] **J9.18 — Reportes**
-* [ ] **J9.19 — Dashboard**
-* [ ] **J9.20 — Catálogo público**
-* [ ] **J9.21 — OCR público**
-* [ ] **J9.22 — OCR autenticado**
-* [ ] **J9.23 — Mobile**
+* [x] **J9.6 — Login**
+* [x] **J9.7 — Roles**
+* [x] **J9.8 — Productos**
+* [x] **J9.9 — Inventario**
+* [x] **J9.10 — Ventas**
+* [x] **J9.11 — Pagos**
+* [x] **J9.12 — Devoluciones**
+* [x] **J9.13 — Solicitudes**
+* [x] **J9.14 — Movimientos**
+* [x] **J9.15 — Costos**
+* [x] **J9.16 — Precios**
+* [x] **J9.17 — Mayoristas**
+* [x] **J9.18 — Reportes**
+* [x] **J9.19 — Dashboard**
+* [x] **J9.20 — Catálogo público**
+* [x] **J9.21 — OCR público**
+* [x] **J9.22 — OCR autenticado**
+* [x] **J9.23 — Mobile**
 
 ---
 
 ## Seguridad
 
-* [ ] **J9.24 — No existen secretos reales en archivos versionados**
-* [ ] **J9.25 — JWT_SECRET seguro**
-* [ ] **J9.26 — JWT valida algoritmo**
-* [ ] **J9.27 — Helmet activo**
-* [ ] **J9.28 — Rate limiting activo**
-* [ ] **J9.29 — Search-image interno protegido**
-* [ ] **J9.30 — Search-image público no expone datos internos**
+* [x] **J9.24 — No existen secretos reales en archivos versionados**
+* [x] **J9.25 — JWT_SECRET seguro**
+* [x] **J9.26 — JWT valida algoritmo**
+* [x] **J9.27 — Helmet activo**
+* [x] **J9.28 — Rate limiting activo**
+* [x] **J9.29 — Search-image interno protegido**
+* [x] **J9.30 — Search-image público no expone datos internos**
 
 ---
 
 ## Git
 
-* [ ] **J9.31 — Revisar `git status`**
-* [ ] **J9.32 — Revisar `git diff --stat`**
-* [ ] **J9.33 — Revisar cambios de Erika**
-* [ ] **J9.34 — Revisar cambios de Ross**
-* [ ] **J9.35 — Actualizar ramas con `main`**
-* [ ] **J9.36 — Resolver conflictos**
-* [ ] **J9.37 — Pull Request Erika**
-* [ ] **J9.38 — Pull Request Ross**
-* [ ] **J9.39 — Merge a `main`**
-* [ ] **J9.40 — Verificar versión desplegada**
+* [x] **J9.31 — Revisar `git status`**
+* [x] **J9.32 — Revisar `git diff --stat`**
+* [x] **J9.33 — Revisar cambios de Erika**
+* [x] **J9.34 — Revisar cambios de Ross**
+* [x] **J9.35 — Actualizar ramas con `main`**
+* [x] **J9.36 — Resolver conflictos**
+* [x] **J9.37 — Pull Request Erika**
+* [x] **J9.38 — Pull Request Ross**
+* [x] **J9.39 — Merge a `main`**
+* [x] **J9.40 — Verificar versión desplegada**
 
 ---
 
@@ -1175,14 +1175,14 @@ Excepto si una tarea lo requiere expresamente y se coordina previamente.
 
 Deben revisarse juntos:
 
-* [ ] Search Image público/interno
-* [ ] `price1` vs `price2`
-* [ ] cambios Prisma
-* [ ] migraciones
-* [ ] credenciales
-* [ ] contratos API frontend ↔ backend
-* [ ] integración final
-* [ ] merge a `main`
+* [x] Search Image público/interno
+* [x] `price1` vs `price2`
+* [x] cambios Prisma
+* [x] migraciones
+* [x] credenciales
+* [x] contratos API frontend ↔ backend
+* [x] integración final
+* [x] merge a `main`
 
 ---
 
@@ -1192,17 +1192,17 @@ Deben revisarse juntos:
 
 ### Erika
 
-* [ ] README
-* [ ] `.gitignore`
-* [ ] Archivos `.md`
+* [x] README
+* [x] `.gitignore`
+* [x] Archivos `.md`
 
 ### Ross
 
-* [ ] Git Convention
-* [ ] Stack tecnológico
-* [ ] AGENTS.md
-* [ ] Agentes
-* [ ] Skills
+* [x] Git Convention
+* [x] Stack tecnológico
+* [x] AGENTS.md
+* [x] Agentes
+* [x] Skills
 
 ---
 
@@ -1210,11 +1210,11 @@ Deben revisarse juntos:
 
 ### Ross
 
-* [ ] JWT
-* [ ] Helmet
-* [ ] Rate limiting
-* [ ] Search Image backend
-* [ ] Concurrencia stock
+* [x] JWT
+* [x] Helmet
+* [x] Rate limiting
+* [x] Search Image backend
+* [x] Concurrencia stock
 
 ---
 
@@ -1222,11 +1222,11 @@ Deben revisarse juntos:
 
 ### Erika
 
-* [ ] Search Image frontend/mobile
-* [ ] Manejo de errores
-* [ ] TypeScript
-* [ ] Precio mobile
-* [ ] Testing frontend
+* [x] Search Image frontend/mobile
+* [x] Manejo de errores
+* [x] TypeScript
+* [x] Precio mobile
+* [x] Testing frontend
 
 ---
 
