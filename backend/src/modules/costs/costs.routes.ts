@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveDecimal, parsePositiveInt } from "../../shared/middlewares/validate";
+import { isPrismaClientError } from "../../shared/utils/errors";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -174,7 +175,7 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
       date: cost.date,
     });
   } catch (error: any) {
-    if (error.message && !error.message.includes("Prisma") && !error.code) {
+    if (typeof error?.message === "string" && !error.code && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
     if (error.code === "LIMIT_FILE_SIZE") {
@@ -272,7 +273,7 @@ router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: Aut
     if (error.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
     }
-    if (error.message && !error.message.includes("Prisma")) {
+    if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
     console.error("Error al editar costo:", error);
@@ -392,14 +393,14 @@ router.post("/import-invoice", authorize("ADMIN"), upload.fields([{ name: "file"
       details: { imported, updated, errors },
     });
   } catch (error: any) {
-    if (error.message && !error.message.includes("Prisma") && !error.code) {
+    if (typeof error?.message === "string" && !error.code && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
     if (error.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
     }
     console.error("Error al importar factura:", error);
-    res.status(500).json({ message: error.message || "Error interno del servidor" });
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 

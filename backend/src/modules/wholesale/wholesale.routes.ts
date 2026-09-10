@@ -1,16 +1,16 @@
 import { Router, Response } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { isPrismaClientError } from "../../shared/utils/errors";
-import multer from "multer";
 import * as XLSX from "xlsx";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8 } from "../../utils/replenish";
 import { validateAndMergeItems } from "../../utils/saleItems";
+import { excelUpload } from "../../shared/utils/upload";
 
 const router = Router();
 const prisma = new PrismaClient();
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = excelUpload;
 
 router.use(authenticate);
 router.use(requireTiendaLocation);
@@ -282,8 +282,8 @@ router.post("/import", authorize("ADMIN"), upload.single("file"), async (req: Au
         }
 
         imported.push({ id: product.id, itemCode: product.itemCode, name: product.name });
-      } catch (err: any) {
-        errors.push(`Fila ${i + 1}: ${err.message}`);
+      } catch {
+        errors.push(`Fila ${i + 1}: no se pudo guardar (verifique código, nombre y precio)`);
       }
     }
 
@@ -294,7 +294,7 @@ router.post("/import", authorize("ADMIN"), upload.single("file"), async (req: Au
     });
   } catch (error: any) {
     console.error("Error al importar Excel:", error);
-    res.status(500).json({ message: error.message || "Error al procesar el archivo" });
+    res.status(500).json({ message: "Error al procesar el archivo" });
   }
 });
 

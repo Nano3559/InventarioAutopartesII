@@ -1,8 +1,8 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import multer from "multer";
 import * as XLSX from "xlsx";
 import { yearRangesOverlap } from "../../utils/yearRanges";
+import { parsePagination } from "../../shared/utils/pagination";
 import { authenticate, authorize, optionalAuth } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import {
@@ -11,12 +11,13 @@ import {
   serializeProductoInterno,
 } from "./searchImage.service";
 import { ocrAuthenticatedLimiter } from "../../shared/middlewares/rateLimit";
+import { excelUpload } from "../../shared/utils/upload";
 
 const router = Router();
 const prisma = new PrismaClient();
 
 // Upload para importación de Excel (no modifica la configuración de imagen de search-image)
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+const upload = excelUpload;
 
 // GET / — Listar productos con filtros, búsqueda y paginación
 router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
@@ -71,8 +72,7 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
 
     if (AND.length > 0) where.AND = AND;
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const { skip, take, page: cleanPage } = parsePagination(page, limit);
 
     const hasYearFilter = year && typeof year === "string";
     const filterLocationId = queryLocationId && typeof queryLocationId === "string" ? Number(queryLocationId) : null;
@@ -127,7 +127,7 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
 
     res.json({
       products: result,
-      pagination: { total, page: Number(page), limit: take, pages: Math.ceil(total / take) },
+      pagination: { total, page: cleanPage, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
     console.error("Error al listar productos:", error);
@@ -333,12 +333,28 @@ router.delete("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest,
       return res.status(409).json({ message: "No se puede eliminar: el producto tiene ventas asociadas" });
     }
 
+    const [movements, costs, returns, requests] = await Promise.all([
+      prisma.movement.count({ where: { productId: id } }),
+      prisma.cost.count({ where: { productId: id } }),
+      prisma.return.count({ where: { productId: id } }),
+      prisma.productRequest.count({ where: { productId: id } }),
+    ]);
+
+    if (movements + costs + returns + requests > 0) {
+      return res.status(409).json({
+        message: "No se puede eliminar: el producto tiene movimientos, costos, devoluciones o solicitudes asociadas",
+      });
+    }
+
     await prisma.inventory.deleteMany({ where: { productId: id } });
     await prisma.productImporter.deleteMany({ where: { productId: id } });
     await prisma.product.delete({ where: { id } });
 
     res.json({ message: "Producto eliminado correctamente" });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === "P2003") {
+      return res.status(409).json({ message: "No se puede eliminar: el producto tiene registros dependientes" });
+    }
     console.error("Error al eliminar producto:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -503,8 +519,8 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
 
           imported.push({ id: product.id, itemCode, name, action: "creado" });
         }
-      } catch (err: any) {
-        errors.push(`Fila ${i + 2}: ${err.message}`);
+      } catch {
+        errors.push(`Fila ${i + 2}: no se pudo guardar (verifique códigos, precios y existencias)`);
       }
     }
 
@@ -520,7 +536,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
     if (error.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
     }
-    res.status(500).json({ message: error.message || "Error al procesar el archivo" });
+    res.status(500).json({ message: "Error al procesar el archivo" });
   }
 });
 

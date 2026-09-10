@@ -1,7 +1,16 @@
 import { Request, Response, NextFunction } from "express";
+import { logger } from "../utils/logger";
 
-export const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("Error no capturado:", err);
+export const errorHandler = (err: any, req: Request, res: Response, _next: NextFunction) => {
+  const status = statusFor(err);
+  logger.error("Error no capturado", {
+    method: req.method,
+    path: req.originalUrl,
+    status,
+    message: err?.message,
+    stack: err?.stack,
+    code: err?.code,
+  });
 
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(400).json({ message: "El archivo excede el tamaño máximo permitido" });
@@ -46,3 +55,13 @@ export const errorHandler = (err: any, _req: Request, res: Response, _next: Next
 
   res.status(500).json({ message: "Error interno del servidor" });
 };
+
+function statusFor(err: any): number {
+  if (err?.code === "LIMIT_FILE_SIZE" || err?.code === "LIMIT_UNEXPECTED_FILE") return 400;
+  if (err?.code === "INVALID_FILE_TYPE") return 400;
+  if (err?.name === "SyntaxError" && "body" in err) return 400;
+  if (err?.name === "JsonWebTokenError" || err?.name === "TokenExpiredError") return 401;
+  if (err?.code === "P2025") return 404;
+  if (err?.code === "P2002" || err?.code === "P2003" || err?.code === "P2014") return 400;
+  return 500;
+}

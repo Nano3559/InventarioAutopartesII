@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { config } from "./config";
 import { errorHandler } from "./shared/middlewares";
 import { generalLimiter } from "./shared/middlewares/rateLimit";
+import { logger } from "./shared/utils/logger";
 
 import authRoutes from "./modules/auth/auth.routes";
 import usersRoutes from "./modules/users/users.routes";
@@ -42,6 +43,17 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  if (req.path === "/api/health") return next();
+  const start = Date.now();
+  res.on("finish", () => {
+    // B1: se loguea path SIN query string (req.baseUrl + req.path). Evita exponer
+    // parámetros posiblemente sensibles (?q=contacto, ?nit=...) en los logs.
+    logger.info("http", { method: req.method, path: `${req.baseUrl}${req.path}`, status: res.statusCode, ms: Date.now() - start, ip: req.ip });
+  });
+  next();
+});
+
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
@@ -70,6 +82,11 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/permissions", permissionsRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/public", publicRoutes);
+
+// 404 JSON para rutas no definidas dentro de la API
+app.use("/api", (_req, res) => {
+  res.status(404).json({ message: "Ruta no encontrada" });
+});
 
 app.use(errorHandler);
 

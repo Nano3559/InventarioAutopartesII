@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { isValidEmail } from "../../shared/utils/validation";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -61,6 +62,10 @@ router.post("/", authorize("ADMIN"), async (req: AuthRequest, res: Response) => 
       return res.status(400).json({ message: "Nombre, email y contraseña son obligatorios" });
     }
 
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "El formato del email no es válido" });
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       return res.status(400).json({ message: "Ya existe un usuario con ese email" });
@@ -104,8 +109,11 @@ router.post("/", authorize("ADMIN"), async (req: AuthRequest, res: Response) => 
       locationName: user.location?.name || "N/A",
     });
   } catch (error: any) {
+    if (error?.code === "P2002") {
+      return res.status(400).json({ message: "Ya existe un usuario con ese email" });
+    }
     console.error("Error al crear usuario:", error);
-    res.status(500).json({ message: error.message || "Error interno del servidor" });
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 
@@ -156,8 +164,11 @@ router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) =
       locationName: user.location?.name || "N/A",
     });
   } catch (error: any) {
+    if (error?.code === "P2002") {
+      return res.status(400).json({ message: "Ya existe un usuario con ese email" });
+    }
     console.error("Error al actualizar usuario:", error);
-    res.status(500).json({ message: error.message || "Error interno del servidor" });
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 
@@ -210,11 +221,28 @@ router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response
       return res.status(400).json({ message: "No puedes eliminar tu propia cuenta" });
     }
 
+    const [salesCount, movementsCount, requestsCount, auditCount, notificationCount] = await Promise.all([
+      prisma.sale.count({ where: { userId: id } }),
+      prisma.movement.count({ where: { userId: id } }),
+      prisma.productRequest.count({ where: { requestedById: id } }),
+      prisma.auditLog.count({ where: { userId: id } }),
+      prisma.notification.count({ where: { userId: id } }),
+    ]);
+
+    if (salesCount + movementsCount + requestsCount + auditCount + notificationCount > 0) {
+      return res.status(409).json({
+        message: "No se puede eliminar el usuario: tiene registros asociados (ventas, movimientos, solicitudes, auditoría o notificaciones)",
+      });
+    }
+
     await prisma.user.delete({ where: { id } });
     res.json({ message: "Usuario eliminado" });
   } catch (error: any) {
+    if (error?.code === "P2003") {
+      return res.status(409).json({ message: "No se puede eliminar el usuario: tiene registros dependientes" });
+    }
     console.error("Error al eliminar usuario:", error);
-    res.status(500).json({ message: error.message || "Error interno del servidor" });
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 

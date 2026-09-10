@@ -3,6 +3,7 @@ import { PrismaClient, RequestStatus } from "@prisma/client";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt } from "../../shared/middlewares/validate";
+import { isPrismaClientError } from "../../shared/utils/errors";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -153,7 +154,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 
     res.status(201).json(request);
   } catch (error: any) {
-    if (error.message && !error.message.includes("Prisma")) {
+    if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
     console.error("Error al crear solicitud:", error);

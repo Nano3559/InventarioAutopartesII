@@ -190,7 +190,7 @@ router.post("/apply", authorizeModule("precios"), async (req: AuthRequest, res: 
     res.json({ updated, margin1: m1, margin2: m2, costId: costId ? Number(costId) : null });
   } catch (error: any) {
     console.error("Error al aplicar precios:", error);
-    res.status(500).json({ message: error.message || "Error interno del servidor" });
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 

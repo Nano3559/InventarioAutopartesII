@@ -6,6 +6,7 @@ import { config } from "../../config";
 import { AuthRequest } from "../../shared/types";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { loginLimiter } from "../../shared/middlewares/rateLimit";
+import { isValidEmail } from "../../shared/utils/validation";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -16,6 +17,10 @@ router.post("/register", authenticate, authorize("ADMIN"), async (req: AuthReque
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Nombre, email y contraseña son requeridos" });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "El formato del email no es válido" });
     }
 
     if (!roleId) {

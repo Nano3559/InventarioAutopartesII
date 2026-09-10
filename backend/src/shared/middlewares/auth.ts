@@ -6,6 +6,44 @@ import { AuthRequest, AuthPayload } from "../types";
 
 const prisma = new PrismaClient();
 
+// Caché en memoria (single-instancia) de permisos por rol.
+// Evita re-leer roleModel por cada request que usa authorizeModule.
+// La invalidación ocurre cuando se actualizan permisos (ver permissions.routes).
+interface CachedRole {
+  name: string;
+  permissions: string[];
+  cachedAt: number;
+}
+const rolePermissionCache = new Map<number, CachedRole>();
+
+// TTL de la caché: red de seguridad si los permisos cambian por una vía que no
+// pase por permissions.routes (migración, script, otra instancia si se escala).
+const ROLE_CACHE_TTL_MS = 60_000;
+
+export function invalidateRoleCache(roleId: number) {
+  rolePermissionCache.delete(roleId);
+}
+
+export function clearRoleCache() {
+  rolePermissionCache.clear();
+}
+
+async function getCachedRole(roleId: number): Promise<CachedRole | null> {
+  const cached = rolePermissionCache.get(roleId);
+  if (cached && Date.now() - cached.cachedAt < ROLE_CACHE_TTL_MS) return cached;
+  if (cached) rolePermissionCache.delete(roleId);
+
+  const role = await prisma.roleModel.findUnique({
+    where: { id: roleId },
+    select: { name: true, permissions: true },
+  });
+  if (!role) return null;
+
+  const entry = { name: role.name, permissions: role.permissions || [], cachedAt: Date.now() };
+  rolePermissionCache.set(roleId, entry);
+  return entry;
+}
+
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
@@ -60,13 +98,18 @@ export const authorizeModule = (module: string) => {
     try {
       const user = await prisma.user.findUnique({
         where: { id: req.user.userId },
-        include: { role: true },
+        select: { roleId: true },
       });
 
       if (!user) return res.status(401).json({ message: "Usuario no encontrado" });
 
-      const permissions = user.role.permissions || [];
-      if (!permissions.includes(module)) {
+      const cached = await getCachedRole(user.roleId);
+
+      if (!cached) return res.status(401).json({ message: "Usuario no encontrado" });
+
+      if (cached.name === "ADMIN") return next();
+
+      if (!cached.permissions.includes(module)) {
         return res.status(403).json({ message: `No tiene acceso al módulo: ${module}` });
       }
 
