@@ -113,17 +113,106 @@ test("R6.10 — dos ventas concurrentes que agotarían el stock: exactamente una
   assert.equal(soldCount, 1, "solo debe existir un ítem vendido para el producto");
 });
 
-test("R6.16 — al llegar a stock 0 se crea solicitud de reposición automática (PENDIENTE, 5 unidades)", async () => {
-  // El replenish usa findFirst({type:"ALMACEN"}), por lo tanto el producto debe tener
-  // stock en el almacén "escogido" aunque ese no sea el del namespace (evita acoplamiento
-  // con namespaces paralelos en la misma BD de prueba).
-  const almacenIds = (await ctx.prisma.location.findMany({ where: { type: "ALMACEN" } })).map((a) => a.id);
+test("R6.17 — venta NORMAL admite campos de entrega opcionales (paraQuien, lugarEntrega, datosFactura, formaPago) sin romper el flujo", async () => {
+  const p = await createProduct(ctx, { stockTienda: 6 });
 
+  const res = await postJson(
+    server.baseUrl,
+    "/api/sales",
+    {
+      items: [{ productId: p.id, quantity: 2, unitPrice: 100 }],
+      payments: [{ method: "TRANSFERENCIA", amount: 200 }],
+      paraQuien: "Cliente minorista",
+      lugarEntrega: "Av. Arce 123, La Paz",
+      datosFactura: "NIT: 10203040",
+    },
+    token
+  );
+  assert.equal(res.status, 201);
+  const body: any = await res.json();
+  assert.equal(body.paraQuien, "Cliente minorista");
+  assert.equal(body.lugarEntrega, "Av. Arce 123, La Paz");
+  assert.equal(body.datosFactura, "NIT: 10203040");
+  // formaPago se deriva del método de pago cuando no viene explícito (mismo patrón MAYOR).
+  assert.equal(body.formaPago, "TRANSFERENCIA");
+
+  // Sin campos de entrega la venta sigue funcionando y quedan nulos.
+  const sinEntrega = await postSale(p.id, 1, 100);
+  assert.equal(sinEntrega.status, 201);
+  const sinBody: any = await sinEntrega.json();
+  assert.equal(sinBody.paraQuien, null);
+  assert.equal(sinBody.lugarEntrega, null);
+});
+
+test("R6.18 — campos de entrega opcionales validados (texto y longitud)", async () => {
+  const p = await createProduct(ctx, { stockTienda: 2 });
+
+  const noTexto = await postJson(
+    server.baseUrl,
+    "/api/sales",
+    {
+      items: [{ productId: p.id, quantity: 1, unitPrice: 100 }],
+      payments: [{ method: "EFECTIVO", amount: 100 }],
+      lugarEntrega: 123 as unknown as string,
+    },
+    token
+  );
+  assert.equal(noTexto.status, 400);
+  assert.equal((await noTexto.json() as any).message, "Campo lugarEntrega debe ser texto");
+
+  const largo = await postJson(
+    server.baseUrl,
+    "/api/sales",
+    {
+      items: [{ productId: p.id, quantity: 1, unitPrice: 100 }],
+      payments: [{ method: "EFECTIVO", amount: 100 }],
+      paraQuien: "x".repeat(121),
+    },
+    token
+  );
+  assert.equal(largo.status, 400);
+  assert.match((await largo.json() as any).message, /paraQuien no puede superar 120/);
+
+  const malMetodo = await postJson(
+    server.baseUrl,
+    "/api/sales",
+    {
+      items: [{ productId: p.id, quantity: 1, unitPrice: 100 }],
+      payments: [{ method: "EFECTIVO", amount: 100 }],
+      formaPago: "PAYPAL",
+    },
+    token
+  );
+  assert.equal(malMetodo.status, 400);
+  assert.equal((await malMetodo.json() as any).message, "Método de pago inválido: PAYPAL");
+});
+
+async function spreadStockToAlmacenes(productId: number, stock: number): Promise<void> {
+  // Replenish usa findFirst({type:"ALMACEN"}) sin orden: el producto debe tener stock en el
+  // almacén "escogido". En la BD compartida los namespaces corren en paralelo y sus cleanups
+  // borran ubicaciones en pleno vuelo (FK en createMany), así que reintentamos con una lista
+  // fresca y confirmamos que el primer ALMACEN por id conserva el stock.
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const almacenes = await ctx.prisma.location.findMany({ where: { type: "ALMACEN" }, orderBy: { id: "asc" } });
+    if (almacenes.length === 0) return;
+    try {
+      await ctx.prisma.inventory.createMany({
+        data: almacenes.map((l) => ({ productId, locationId: l.id, stock, minStock: 1 })),
+        skipDuplicates: true,
+      });
+    } catch {
+      continue;
+    }
+    const first = await ctx.prisma.inventory.findUnique({
+      where: { productId_locationId: { productId, locationId: almacenes[0].id } },
+    });
+    if (first && first.stock === stock) return;
+  }
+}
+
+test("R6.16 — al llegar a stock 0 se crea solicitud de reposición automática (PENDIENTE, 5 unidades)", async () => {
   const p = await createProduct(ctx, { stockTienda: 1 });
-  await ctx.prisma.inventory.createMany({
-    data: almacenIds.map((locationId) => ({ productId: p.id, locationId, stock: 10, minStock: 1 })),
-    skipDuplicates: true,
-  });
+  await spreadStockToAlmacenes(p.id, 10);
 
   const res = await postSale(p.id, 1, 100);
   assert.equal(res.status, 201);

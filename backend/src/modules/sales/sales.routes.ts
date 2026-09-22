@@ -254,7 +254,7 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
 // POST — Crear venta con items, pagos y facturación
 router.post("/", async (req: AuthRequest, res: Response) => {
   try {
-    const { items, payments, customerId, customerData, requiereFactura, locationId, seller } = req.body;
+    const { items, payments, customerId, customerData, requiereFactura, locationId, seller, paraQuien, lugarEntrega, datosFactura, formaPago } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "Debe agregar al menos un producto" });
@@ -266,6 +266,27 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 
     if (seller && typeof seller === "string" && !["Vendedor 1", "Vendedor 2", "Vendedor 3"].includes(seller)) {
       return res.status(400).json({ message: "Vendedor inválido. Use: Vendedor 1, Vendedor 2 o Vendedor 3" });
+    }
+
+    // Datos de entrega opcionales (reutiliza las columnas Delivery de Sale, mismas
+    // que en la venta MAYOR/wholesale). Son texto libre: sin reserva ni logística.
+    const textoEntrega = (value: unknown, campo: string, max: number): string | null => {
+      if (value === undefined || value === null) return null;
+      if (typeof value !== "string") {
+        throw new Error(`Campo ${campo} debe ser texto`);
+      }
+      const limpio = value.trim();
+      if (limpio.length > max) {
+        throw new Error(`Campo ${campo} no puede superar ${max} caracteres`);
+      }
+      return limpio || null;
+    };
+    const entregaParaQuien = textoEntrega(paraQuien, "paraQuien", 120);
+    const entregaLugar = textoEntrega(lugarEntrega, "lugarEntrega", 200);
+    const entregaFactura = textoEntrega(datosFactura, "datosFactura", 200);
+    const entregaFormaPago = textoEntrega(formaPago, "formaPago", 20) || (payments.length > 0 ? String(payments[0].method) : null);
+    if (entregaFormaPago && !["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"].includes(entregaFormaPago)) {
+      throw new Error(`Método de pago inválido: ${entregaFormaPago}`);
     }
 
     // Validar y deduplicar ítems (evita sobreventa con productos repetidos)
@@ -388,6 +409,10 @@ router.post("/", async (req: AuthRequest, res: Response) => {
           locationId: userLocationId,
           customerId: finalCustomerId,
           seller: seller || null,
+          paraQuien: entregaParaQuien,
+          lugarEntrega: entregaLugar,
+          datosFactura: entregaFactura,
+          formaPago: entregaFormaPago,
           items: { create: saleItemsData },
           payments: {
             create: payments.map((p: any) => ({

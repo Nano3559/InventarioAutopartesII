@@ -409,3 +409,83 @@ Reglas clave del diseño recomendado:
 ---
 
 *Documento de auditoría (FASE 0). Fin de la fase: no se implementó ninguna funcionalidad. Siguiente paso del plan: FASE 1.*
+
+---
+
+## Anexo A. Estado de implementación posterior a la FASE 0 (WB-1…WB-10, TC-1…TC-6)
+
+Estado al 2026-09-21. El texto anterior es la auditoría base (solo lectura); este anexo registra el avance real posterior:
+
+- **WB-4 / TC-1 / TC-2 / TC-4 / TC-5 (backend visión):** módulo completo en `backend/src/modules/vision/` (contrato, normalize, config `VISION_MODE mock|http`, categorías/aliases, disponibilidad por umbral, compatibilidad por marca/modelo/año, provider mock/http con `AbortSignal.timeout(8000)`, service con serialización pública vs interna) y endpoint `POST /api/vision/detectar` (interno, TIENDA ve solo su sucursal) + endpoints públicos. Rate limits dedicados en `shared/middlewares/rateLimit.ts`. Tests: **58 unit + 38 integración** (incluye 30 unit + 15 itest de visión, con cobertura de rate limit 429) en verde, `tsc` y `npm run build` limpios.
+- **WB-2 / WB-9 (frontend visión):** `CameraCapture` (getUserMedia + canvas → File) y `VisionResultsPanel` (resultados, vehículo, entrega recoger/delivery) creados; `PublicProductsPage` integrado con el botón "Buscar por cámara" y ambos modales. **92 tests Vitest** en verde (69 previos + 23 nuevos de visión: 4 cámara + 8 panel + 4 página + 7 visionApi), `tsc -b` y `npm run build` limpios.
+- **WB-10 (E2E con mock):** ver `docs/FLUJO_VISION_MOCK.md`. Suite de prueba completa con mock: cámara → endpoint público → categoría → catálogo → disponibilidad → selección, con escenarios `default` / `ninguna` / `baja_confianza` / `categoria_desconocida` / `error` / `timeout`.
+- **Pendientes (fuera del alcance de Ross):** dataset e imágenes (CV-1…CV-4), entrenamiento del modelo real y umbral oficial (CV-5/CV-6/hito H2), facial (CV-9/FASE 10). El flujo productivo necesita conectar `VISION_MODE=http` + `VISION_IA_URL` al servicio real una vez exista (Erika).
+
+---
+
+# ANEXO — ESTADO POST-IMPLEMENTACIÓN ROSS
+
+> Auditoría de cierre 2026-09-21. Verifica cada criterio del plan contra el código real (no solo contra tests).
+> Convención de estados: `COMPLETA` / `PARCIAL` / `BLOQUEADA EXTERNA` / `PENDIENTE`. Los hallazgos H1–H15 se clasifican como `RESUELTO` / `MITIGADO` / `PENDIENTE ERIKA` / `PENDIENTE DATOS` / `PENDIENTE EXTERNO` / `FUERA DE ALCANCE ROSS`.
+
+## A. Estado WB (trabajo de Ross)
+
+| ID | Criterio del plan | Evidencia actual | Estado | Falta |
+| -- | ----------------- | ---------------- | ------ | ----- |
+| WB-1 | Relevamiento de arquitectura con inventario de endpoints/modelos por archivo. | `docs/AUDITORIA_IMPLEMENTACION_IA_VISION.md` (secciones 1–31), `docs/STACK_*.md`. | **COMPLETA** | — |
+| WB-2 | Cámara web (getUserMedia HTTPS, fotograma único, permisos, responsive). | `frontend/src/components/camera/CameraCapture.tsx` + 4 tests. | **COMPLETA** | — |
+| WB-3 | Cliente HTTP frontend (multipart, errores, cancelación, DTO). | `frontend/src/services/visionApi.ts`, `frontend/src/types/vision.ts` + 7 tests directos. | **COMPLETA** | — |
+| WB-4 | Endpoints backend adaptadores (validación, proxy IA, timeout, fallback mock). | `backend/src/modules/vision/vision.routes.ts`, `vision.provider.ts`, `vision.config.ts` + 15 itest (400/401/403/422/429/503/504/200, >5 MB). | **COMPLETA** | Retry automático del provider HTTP (el flujo es foto puntual; el timeout de 8 s acota la ventana). |
+| WB-5 | Imagen → categoría → lista de productos del catálogo. | `vision.service.ts` `generarRespuestaVision` + `categoryMapping.ts` (identidad + aliases, sin inventar). | **COMPLETA** | — |
+| WB-6 | Compatibilidad por vehículo con ranking baseline. | `compatibility.ts` (`yearRanges`, score marca/modelo/año, `verificada` solo con evidencia), `base_datos_interna`. | **COMPLETA** (baseline) | Opción 2 completa requiere normalizar datos de vehículo y fuentes externas (H3/PENDIENTE DATOS). |
+| WB-7 | Stock por sucursal (público seguro, interno exacto). | `availability.ts` + serialización pública/interna en `vision.service.ts`; itest ADMIN vs TIENDA. | **COMPLETA** | — |
+| WB-8 | Flujo recogida/delivery (solo integración). | `VisionResultsPanel.tsx` (modalidad + sucursales con stock + cantidad/entrega), `entrega` en la respuesta, borrador público→venta (`saleDraft.ts`) prellenado en `SalesPage` y campos opcionales `paraQuien/lugarEntrega/datosFactura/formaPago` persistidos en `POST /api/sales` (R6.17/R6.18 + tests frontend). | **COMPLETA** | — (decisión: la venta sigue siendo punto de venta autenticado; no se creó e-commerce público, ver AUDITORÍA 13–14). |
+| WB-9 | UX de resultados (carga/vacío/error, no inventar compatibilidad). | `VisionResultsPanel.tsx` + 8 tests. | **COMPLETA** | — |
+| WB-10 | Pruebas E2E con mock del servicio IA. | `docs/FLUJO_VISION_MOCK.md` + suites (backend 96, frontend 92) en verde. | **COMPLETA** | — |
+
+## B. Estado TC (trabajo compartido)
+
+| ID | Criterio del plan | Evidencia actual | Estado | Falta |
+| -- | ----------------- | ---------------- | ------ | ----- |
+| TC-1 | Contrato de detección (DTO) con una sola fuente de verdad y validación. | `backend/src/modules/vision/contract.ts` (runtime validation → 503), tipos espejo `frontend/src/types/vision.ts`. | **COMPLETA** | — |
+| TC-2 | Mocks/stubs deterministas del servicio IA. | `MockVisionProvider` + header `x-vision-mock-scenario` (6 escenarios) + `VISION_MODE`. | **COMPLETA** | — |
+| TC-3 | Pruebas de integración backend con mock. | `vision.routes.itest.ts` (15 tests). | **COMPLETA** | — |
+| TC-4 | Manejo de errores uniforme con códigos. | `vision.errors.ts` (400/422/503/504 + codigo), frontend `CODIGOS_POR_STATUS`. | **COMPLETA** | — |
+| TC-5 | Seguridad transversal de imágenes. | `imageUpload` reutilizado (MIME/5MB/1 archivo, memoria sin archivos temporales), `authenticate`+`requireTiendaLocation`, limiters dedicados. | **COMPLETA** | — |
+| TC-6 | Abstracción de fuentes externas con trazabilidad. | `CompatibilityProvider`/`BaseDatosInternaProvider`/factory + interfaz `ProveedorExternoCompatibilidad` (fuente, fecha, confianza, timeout, cache, fallback); interno trazable (`base_datos_interna`). | **COMPLETA** | Integraciones reales `APIFabricante`/`APIDistribuidor`/`BúsquedaWebControlada` — no existen APIs externas registradas (H3/PENDIENTE EXTERNO). |
+
+## C. Estado hallazgos H1–H15
+
+| # | Sever. | Hallazgo | Estado inicial | Estado actual | Evidencia | Responsable |
+| - | ------ | -------- | ------------- | ------------- | --------- | ----------- |
+| H1 | CRÍTICO | No existe dataset de imágenes de producto. | CRÍTICO | **PENDIENTE DATOS** | Sin subida de imágenes de producto, seeds sin `image`, sin `express.static` (sin cambios). | Erika/Datos |
+| H2 | ALTO | No existe servicio/módulo de visión; hoy solo OCR+texto. | ALTO | **MITIGADO** — módulo de visión completo con proxy/fallback-mock y provider HTTP listo; falta el servicio real (YOLO). | Ross (integración) + Erika (modelo real) |
+| H3 | ALTO | Compatibilidad solo en cadenas libres; sin entidad ni fuentes externas. | ALTO | **MITIGADO** — baseline `base_datos_interna` funcional y trazable; Opción 2 completa pendiente de datos normalizados y APIs reales. | Ross (baseline) + Datos/Externo |
+| H4 | ALTO | Cámara web no implementada (solo `<input type=file>`). | ALTO | **RESUELTO** — `CameraCapture` con `getUserMedia` + canvas → File + estados de permiso. | Ross |
+| H5 | ALTO | Cámara móvil sin captura en vivo (Expo). | ALTO | **PENDIENTE ERIKA** | Mobile sin modificar (responsabilidad de Erika). | Erika |
+| H6 | ALTO | Stock por sucursal no expuesto públicamente. | ALTO | **RESUELTO** — contrato público seguro por umbral (niveles + sucursales TIENDA, nunca stock exacto) en visión; `availability.ts`. | Ross |
+| H7 | ALTO | Rate limiting de visión no definido. | ALTO | **RESUELTO** — `visionPublicLimiter` 5/15 min/IP y `visionAuthenticatedLimiter` 20/15 min/usuario + test 429. | Ross |
+| H8 | MEDIO | Validación heterogénea entre módulos. | MEDIO | **MITIGADO** (visión) — el DTO de visión centraliza con `parseString`/`validate` + validación runtime del contrato; el resto de módulos queda fuera del alcance de Ross. | Ross (visión) |
+| H9 | MEDIO | OCR de un solo punto disputa CPU con futuro servicio IA. | MEDIO | **MITIGADO** — la visión usa provider independiente (mock/http), no comparte el worker ni la cola OCR. | Ross |
+| H10 | MEDIO | Docs desactualizadas: "no hay `vercel.json`". | MEDIO | **RESUELTO** — `docs/STACK_INFRASTRUCTURE.md` corregido (fila Vercel con `vercel.json`). | Ross |
+| H11 | MEDIO | Categorías sin jerarquía y `categoryId` nullable. | MEDIO | **PENDIENTE DATOS** — sin cambios de schema (no autorizado); `categoryMapping` ya excluye productos sin categoría y no inventa equivalencias. | Datos/Erika |
+| H12 | BAJO | CORS restringido; el servicio IA debe ser interno. | BAJO | **RESUELTO** — el backend orquesta backend→IA (nunca pública); CORS sin cambios (correcto). | Ross |
+| H13 | BAJO | `AuditLog`/`Notification` disponibles para trazabilidad. | BAJO | **MITIGADO** — trazabilidad de compatibilidad en la propia respuesta (`fuente`, `consultadoEn`, `metodologia`) en `compatibility.ts`; `AuditLog` no utilizado (sin necesidad demostrada). | Ross |
+| H14 | INFORMATIVO | No hay CI/CD en el repo. | INFORMATIVO | **PENDIENTE EXTERNO** — fuera del alcance de Ross; no se crearon pipelines. | Externo |
+| H15 | INFORMATIVO | Frontend prod en Railway/Vercel HTTPS (requisito cámara). | INFORMATIVO | **RESUELTO** — `vercel.json` + `.env.production`; contexto seguro (HTTPS/localhost) cubierto para `getUserMedia`. | Ross |
+
+## D. Errores encontrados y corregidos en esta ronda de auditoría
+
+1. **Typo en escenario mock** `categoria_desconocida`: "Intrumento raro XXYZ" → "Instrumento desconocido XXYZ" (`vision.provider.ts`).
+2. **`console.error` en `vision.routes.ts`** reemplazado por `logger.error` centralizado (consistencia con el resto del backend; sin exponer stack en logs).
+3. **Falta de cobertura del límite de rate (H7)**: agregado test `público: alcanzado el límite de 5/15 min por IP → 429` en `vision.routes.itest.ts` (itest pasa 15/15).
+4. **`visionApi.ts` sin tests directos (WB-3)**: nueva suite `frontend/src/services/__tests__/visionApi.test.ts` (7 tests: multipart, vehículo, escenario mock, mapeo de errores 422/429/503/504, red) — antes el cliente solo se cubría vía mocks de componente.
+5. Corrección de aserción en test de red de `visionApi` (el diseño previsto devuelve el mensaje genérico "Error al buscar por visión.", no "Intenta nuevamente").
+
+## E. Resultados finales de pruebas (re-ejecutados en esta auditoría)
+
+- Backend: `npx tsc --noEmit` ✅ · `npm test` 58/58 ✅ · `npm run test:integration` 38/38 ✅ (incl. 15 de visión) · `npm run build` ✅.
+- Frontend: `npx tsc -b` ✅ · `npx vitest run` 92/92 ✅ (4 cámara + 8 panel + 4 página + 7 visionApi + 69 previos) · `npm run build` ✅.
+- Gerente: sin cambios de Prisma ni esquema; no aplica `prisma migrate`.
+
+*Fin del anexo. Documento de auditoría (FASE 0) mantiene su contenido histórico; este anexo registra el estado post-implementación de Ross.*
