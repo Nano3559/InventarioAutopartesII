@@ -367,3 +367,80 @@ describe("SalesPage — Calculo de total (E7.6)", () => {
     });
   });
 });
+
+describe("SalesPage — Borrador preparado desde visión (WB-8)", () => {
+  const draftKey = "borrador_venta_vision";
+  const draftVisionRecoger = {
+    origen: "vision",
+    creadoEn: "2026-09-21T00:00:00.000Z",
+    producto: { itemCode: "BAL-002", nombre: "Balatas Delanteras", cantidad: 2 },
+    entrega: { modalidad: "recoger", sucursalId: 1, sucursalNombre: "Tienda Central" },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    mockApiSetup();
+  });
+
+  it("prepara el carrito y el banner desde el borrador (recoger)", async () => {
+    localStorage.setItem(draftKey, JSON.stringify(draftVisionRecoger));
+    renderSales();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Preparado desde búsqueda por visión/)).toBeInTheDocument();
+    });
+
+    // El producto del borrador se agregó a la venta (aparece en el banner y en el carrito,
+// con la cantidad solicitada en el banner)
+    await waitFor(() => {
+      expect(screen.getAllByText("Balatas Delanteras").length).toBeGreaterThanOrEqual(2);
+      expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
+      expect(screen.getByText(/× 2/)).toBeInTheDocument();
+    });
+
+    // La sucursal del borrador queda seleccionada para ADMIN (recoger)
+    expect(screen.getByText(/Recoger en Tienda Central/)).toBeInTheDocument();
+    expect(screen.getByText("Tienda Central")).toBeInTheDocument();
+  });
+
+  it("descartar borrador limpia el banner y el almacenamiento", async () => {
+    localStorage.setItem(draftKey, JSON.stringify(draftVisionRecoger));
+    renderSales();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Preparado desde búsqueda por visión/)).toBeInTheDocument();
+    });
+
+    const descartar = screen.getByRole("button", { name: /Descartar borrador/i });
+    await userEvent.setup().click(descartar);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Preparado desde búsqueda por visión/)).not.toBeInTheDocument();
+    });
+    expect(localStorage.getItem(draftKey)).toBeNull();
+  });
+
+  it("banner de delivery muestra lugar y destinatario del borrador", async () => {
+    localStorage.setItem(
+      draftKey,
+      JSON.stringify({
+        origen: "vision",
+        creadoEn: "2026-09-21T00:00:00.000Z",
+        producto: { itemCode: "BAL-002", nombre: "Balatas Delanteras", cantidad: 1 },
+        entrega: {
+          modalidad: "delivery",
+          sucursalId: null,
+          sucursalNombre: "",
+          lugarEntrega: "Av. Arce 123, La Paz",
+          paraQuien: "Pedro",
+        },
+      })
+    );
+    renderSales();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Entrega a Pedro · Av\. Arce 123, La Paz/)).toBeInTheDocument();
+    });
+  });
+});

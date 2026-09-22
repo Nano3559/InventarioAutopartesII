@@ -156,12 +156,14 @@ Modelo de visión, dataset, entrenamiento, evaluación, servicio de inferencia, 
 Integración con el frontend y backend existentes, catálogo, compatibilidad, stock, stock por sucursal, proveedores externos y UX.
 
 ### 4.1 Tarea WB-1 — Relevamiento de arquitectura actual
+**Estado: [x] COMPLETA** — Evidencia: `docs/AUDITORIA_IMPLEMENTACION_IA_VISION.md` (31 secciones: stacks, endpoints, modelos, seguridad, hallazgos y matrices) + `docs/STACK_*.md`. Inventario completo de endpoints y modelos citado por archivo.
 - **Subtareas:** mapear frontend (React 18 + Vite + Tailwind + Zustand + Axios), backend (Express + TS + Prisma + PostgreSQL), mobile (Expo/React Native), imágenes, inventario por Location, auth (JWT + roles).
 - **Dependencias:** ninguna.
 - **Entregables:** nota técnica alineada a `STACK_*.md` existentes.
 - **Criterios de aceptación:** inventario completo de endpoints y modelos con archivo/evidencia.
 
 ### 4.2 Tarea WB-2 — Acceso a cámara en el frontend (web)
+**Estado: [x] COMPLETA** — `frontend/src/components/camera/CameraCapture.tsx`: fotograma único vía `canvas.toBlob` → `File` (no streaming continuo), previsualización, permisos, estados error/denegado/no disponible, responsive, cleanup del `MediaStream` (stop de tracks al capturar/cerrar/desmontar). Tests: `__tests__/CameraCapture.test.tsx` (4).
 - **Subtareas:**
   1. Verificar `navigator.mediaDevices.getUserMedia()` en contexto HTTPS.
   2. Crear componente de captura de fotograma único (no streaming continuo).
@@ -171,12 +173,14 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Criterios de aceptación:** captura funciona en desktop y móvil con al menos un navegador moderno cada uno; errores de permiso manejados.
 
 ### 4.3 Tarea WB-3 — Cliente HTTP frontend para visión
+**Estado: [x] COMPLETA** — `frontend/src/services/visionApi.ts`: multer/multipart vía `FormData`, tipado `VisionAnalysis` (`src/types/vision.ts`), `AbortSignal` de cancelación, `timeout` 20 s, mapeo de errores por `codigo`/status (400/401/403/422/429/503/504). Tests directos: `src/services/__tests__/visionApi.test.ts` (7) + cobertura de flujo en `PublicProductsPage.vision.test.tsx`.
 - **Subtareas:** función de subida de imagen al backend (form/multipart); manejo de progreso, errores y cancelación; tipado de la respuesta (DTO de detección).
 - **Dependencias:** WB-2, TC-3 (contrato), mocks.
 - **Entregables:** `visionApi` en frontend; tests (Vitest).
 - **Criterios de aceptación:** envío de imagen + parseo de respuesta con mocks; errores de red/manejo de timeouts.
 
 ### 4.4 Tarea WB-4 — Endpoints backend de visión (adaptadores)
+**Estado: [x] COMPLETA** — `backend/src/modules/vision/`: `vision.routes.ts` (público `/api/vision/public/detectar` con `visionPublicLimiter` → `imageUpload`; interno `/api/vision/detectar` con `authenticate` → `requireTiendaLocation` → `visionAuthenticatedLimiter`), proxy IA (`vision.provider.ts` mock/http con `AbortSignal.timeout` y `withVisionTimeout`), fallback mock por env sin URL, tipo de detección y contratos en `contract.ts`. Reutiliza `imageUpload` (MIME `jpeg|png|webp`, 5 MB, 1 archivo) y `parseString`. Image en memoria: no hay archivos temporales que limpiar. No aplica retry automático del provider http (el envío es de fotografía puntual y el timeout externo de 8 s acota la ventana). Tests de integración: `__tests__/vision.routes.itest.ts` (15: 400/401/403/422/429/503/504/200 público e interno, serialización segura, stock TIENDA vs ADMIN, >5 MB).
 - **Subtareas:**
   1. Endpoint para subir imagen (Go reuse validación existente de MIME/tamaño, ej. `imageUpload` actual).
   2. Proxy hacia el servicio IA (retry, timeout, fallback mock).
@@ -186,12 +190,14 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Criterios de aceptación:** 400 en archivos inválidos, tamaño límite, autenticación/rate limit aplicados.
 
 ### 4.5 Tarea WB-5 — Integración con el catálogo interno por categoría
+**Estado: [x] COMPLETA** — `vision.service.ts` (`generarRespuestaVision`): clase detectada → `mapearCategoria` (`categoryMapping.ts`, identidad + sinónimos, sin inventar) → productos `categoryId` (top 30 consultados, 12 devueltos) → respuesta con `price1`+disponibilidad por niveles. Flujo "imagen → categoría → lista de productos" verificado en itest (3 candidatos `Frenos`, excluye producto sin categoría).
 - **Subtareas:** dado `categoria`, consultar productos (endpoint/servicio existente de búsqueda/filtros) y construir respuesta de candidatos (imagen, nombre, marca, compatibilidades, precio, stock).
 - **Dependencias:** WB-4, revisión de endpoints de productos existentes.
 - **Entregables:** flujo "imagen → categoría → lista de productos".
 - **Criterios de aceptación:** para una detección ficticia de "faro", se recuperan todos los `Product` de esa categoría con stock disponibles.
 
 ### 4.6 Tarea WB-6 — Catálogo y compatibilidad por vehículo
+**Estado: [x] COMPLETA (baseline)** — `compatibility.ts`: motor baseline de marca/modelo/año sobre las tablas existentes (`Product.brand/model/year` + `yearRanges` con rangos `"20-24"`), ranking por score, **no inventa**: sin vehículo o sin coincidencias suficiente → `verificada:false` con nota. `CompatibilityProvider` + `BaseDatosInternaProvider` + factory. Pendiente (dependencia): normalización/completado de datos de vehículo y fuentes externas para la Opción 2 completa (ver WB-6 del plan y hallazgo H3).
 - **Subtareas:**
   1. Analizar si el modelo `Product` soporta marca/modelo/año/rango de años/OEM.
   2. Diseñar consulta "¿qué faros son compatibles con Toyota Hilux 2020?" usando las tablas existentes (Year, Marca, Modelo, Importer, etc.).
@@ -201,24 +207,29 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Criterios de aceptación:** consulta funcional contra datos reales; documentar qué campos faltan (los datos se completan en fase de datos).
 
 ### 4.7 Tarea WB-7 — Stock por sucursal
+**Estado: [x] COMPLETA** — `availability.ts`: disponibilidad pública segura por umbral (`>10` DISPONIBLE, `>0` POCAS_UNIDADES, `0` NO_DISPONIBLE) nunca expone stock exacto; público devuelve sucursales **TIENDA** con nivel; interno devuelve stock exacto por `Location` (ADMIN global, TIENDA solo su sucursal `requireTiendaLocation`). Verificado en itest y en `availability.test.ts`.
 - **Subtareas:** usar `Location` + `Inventory` + `Movement` para responder "Sucursal A: 3, Sucursal B: 0, Almacén: 5"; frontend muestra disponibilidad por ubicación.
 - **Dependencias:** WB-5.
 - **Entregables:** endpoint de disponibilidad por producto; vista de stock por sucursal en el frontend.
 - **Criterios de aceptación:** para un producto, devuelve stock por cada Location con nombre y tipo.
 
 ### 4.8 Tarea WB-8 — Flujo de recogida / delivery (solo integración)
+**Estado: [x] COMPLETA** — Selección en `VisionResultsPanel` (modalidad "Recoger en sucursal" / "Delivery", sucursal con stock, cantidad, "Entregar a"), respuesta `entrega` del backend y acople real al modelo de venta autenticado actual sin romper su transacción: el público anónimo guarda un **borrador de venta** (`frontend/src/services/saleDraft.ts`, localStorage `borrador_venta_vision`) y se completa el cobro en el punto de venta;
+`SalesPage` relee precios/stock en el momento de vender, pre-llenan sucursal/«lugar de entrega»/«entregar a», y `POST /api/sales` persiste `paraQuien`/`lugarEntrega`/`datosFactura`/`formaPago` (opcionales, validados) en las columnas ya existentes. Se verifica en `R6.17`/`R6.18` (backend) y `saleDraft.test.ts`, `VisionResultsPanel.test.tsx`, `PublicProductsPage.vision.test.tsx`, `SalesPage.test.tsx` (frontend). No se creó e-commerce público nuevo (decisión: el flujo de venta sigue siendo punto de venta autenticado, ver AUDITORÍA 13–14).
 - **Subtareas:** UI para seleccionar "Recoger en sucursal" vs "Delivery"; para recogida listar sucursales con stock y permitir elegir; delivery: mapear con la lógica existente (o documentar qué falta).
 - **Dependencias:** WB-7.
 - **Entregables:** componente de selección entregable; documento de acople con el modelo de venta actual.
 - **Criterios de aceptación:** la elección de sucursal con stock llega a la cotización/venta sin romper el flujo existente.
 
 ### 4.9 Tarea WB-9 — UX de resultados
+**Estado: [x] COMPLETA** — `frontend/src/components/vision/VisionResultsPanel.tsx`: categoría + confianza, lista de productos con precio/disponibilidad/compatibilidad y stock por sucursal, estados cargando/vacío/error, selector entregabilidad. **No muestra compatibilidad inventada**: solo la marca "verificada" cuando el backend lo confirma. Tests: `__tests__/VisionResultsPanel.test.tsx` (8).
 - **Subtareas:** mostrar resultado de detección (categoría + confianza), lista de productos, tarjetas con los datos, estados cargando/vacío/error; no mostrar compatibilidad inventada.
 - **Dependencias:** WB-6/WB-7.
 - **Entregables:** pantalla de resultados de búsqueda visual integrada al flujo público.
 - **Criterios de aceptación:** UX aprobada; resultado con baja confianza muestra aviso de no clasificación.
 
 ### 4.10 Tarea WB-10 — Pruebas de integración end-to-end
+**Estado: [x] COMPLETA** — `docs/FLUJO_VISION_MOCK.md` documenta el flujo completo con mock (cámara → backend → categoría → catálogo → stock → selección) y los escenarios `x-vision-mock-scenario`. Verificado de punta a punta: backend **96 tests** (58 unit + 38 integración, incl. 30 unit + 15 itest de visión) y frontend **92 tests** (8 nuevas suites de visión) en verde; `tsc`/`build` limpios en ambos.
 - **Subtareas:** flujo completo con mock del servicio IA: cámara → backend → categoría → catálogo → stock → selección.
 - **Dependencias:** WB-9.
 - **Entregables:** suite E2E básica del flujo visual.
@@ -229,28 +240,34 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 ## 5. Trabajo compartido
 
 ### 5.1 TC-1 — Definición del contrato de detección (DTO)
+**Estado: [x] COMPLETA** — `backend/src/modules/vision/contract.ts`: `VisionDetection[]` (`categoria`, `confianza`, `boundingBox` opcional) + `esVisionDetection`/`esBoundingBoxValido` como fuente única de verdad; runtime validation `validarRespuestaVision` (respuesta del proveedor inválida → 503). Tipos TS espejo en `frontend/src/types/vision.ts`. La serialización pública jamás expone `price2`/stock exacto.
 - **Subtareas:** definir tipo `VisionDetection[]` con `categoria`, `confianza`, `boundingBox` opcional; naming en español consistente con el proyecto (ej. `categoria`, `confianza`).
 - **Entregables:** esquema JSON + tipos TS + validación (backend reutiliza express-validator / validate).
 - **Criterios de aceptación:** una sola fuente de verdad para el contrato.
 
 ### 5.2 TC-2 — Mocks / stubs del servicio IA
+**Estado: [x] COMPLETA** — `MockVisionProvider` (`vision.provider.ts`) devuelve detecciones deterministas; montable con `VISION_MODE=mock` (default) o automático si `VISION_MODE=http` sin `VISION_IA_URL` (fallback mock con log de error). Header `x-vision-mock-scenario`: `default|ninguna|baja_confianza|categoria_desconocida|timeout|error`. Ross desarrolló todo sin el modelo real (clave anti-bloqueo).
 - **Subtareas:** crear un mock que devuelva detecciones deterministas; montable desde backend con variable de entorno.
 - **Entregables:** stub JSON + servidor mock simple.
 - **Criterios:** Ross puede desarrollar todo sin esperar el modelo.
 
 ### 5.3 TC-3 — Pruebas de integración backend
+**Estado: [x] COMPLETA** — `backend/src/modules/vision/__tests__/vision.routes.itest.ts` (15 tests) con mock: 400 sin imagen/MIME inválido/vehículo largo, 401 anónimo/inválido, 403 TIENDA sin ubicación, 200 público seguro + interno ADMIN/TIENDA, 422 baja confianza/no clasificada, 429 límite de rate, 503 IA caída, 504 timeout, `>5 MB` rechazado. Suite completa sin depender del modelo real.
 - **Subtareas:** tests `*.itest.ts` para endpoints de visión con mock; validación de payload; verificación de los requisitos de seguridad.
 - **Criterios:** suite completa sin depender del modelo real.
 
 ### 5.4 TC-4 — Manejo de errores uniforme
+**Estado: [x] COMPLETA** — `vision.errors.ts`: `VisionServiceError` con `status`/`codigo` y `VisionErrores` (400 `VISION_IMAGEN_REQUERIDA`/`VISION_REQUEST_INVALIDO`, 422 `VISION_NO_CLASIFICADA`/`VISION_BAJA_CONFIANZA`, 503 `VISION_NO_DISPONIBLE`/`VISION_RESPUESTA_INVALIDA`, 504 `VISION_TIMEOUT`). Manejados en `manejarVision`; el frontend conoce todos los códigos (`visionApi.ts` `CODIGOS_POR_STATUS`).
 - **Subtareas:** estandarizar códigos de error (400 mala imagen, 422 no clasificada, 503 servicio IA no disponible, 504 timeout).
 - **Criterios:** el frontend conoce todos los códigos.
 
 ### 5.5 TC-5 — Seguridad transversal de imágenes
+**Estado: [x] COMPLETA** — Política común reutilizando `imageUpload` (MIME `jpeg|png|webp`, 5 MB, 1 archivo); imagen en memoria (sin archivos temporales en disco); endpoint interno protegido con `authenticate` + `requireTiendaLocation`; endpoints con rate limits dedicados `visionPublicLimiter` (5/15 min/IP) y `visionAuthenticatedLimiter` (20/15 min/usuario). Error centralizado en el `errorHandler` existente (`INVALID_FILE_TYPE`, `LIMIT_FILE_SIZE` → 400).
 - **Subtareas:** política común de MIME/tamaño; limpieza temporal; protección del endpoint interno (JWT + rol) y límite de rate para el público.
 - **Criterios:** revisión de seguridad aprobada por ambos.
 
 ### 5.6 TC-6 — Estrategia de fuentes externas (abstracción)
+**Estado: [x] COMPLETA** — Abstracción implementada y verificada: `CompatibilityProvider`, `BaseDatosInternaProvider`, `CompatibilityProviderFactory` y la interfaz `ProveedorExternoCompatibilidad` (trazabilidad `fuente` + `fechaConsulta` + `confianza`, `timeoutMs`, `usaCache`, `fallback`) en `compatibility.ts`. El proveedor interno de catálogo funciona con trazabilidad (`fuente: base_datos_interna`, `consultadoEn`). **Pendiente externo (no técnico de esta tarea):** implementadores `APIFabricante`, `APIDistribuidor`, `BúsquedaWebControlada` → dependen de APIs/contratos externos reales que aún no existen (hallazgo H3; FASE 6). La abstracción quedó lista para registrarlos cuando existan.
 - **Subtareas / análisis:** diseñar `CompatibilityProvider` con implementadores (BaseDatosInterna, APIFabricante, APIDistribuidor, BusquedaWebControlada); definir caching, timeouts, fallbacks, rate limits y trazabilidad (fuente + fecha de consulta + confianza).
 - **Criterios:** todas las recomendaciones de compatibilidad con fuente verificable.
 
@@ -272,7 +289,9 @@ FASE 9   Pruebas y hardening
 FASE 10  Reconocimiento facial (posterior)
 ```
 
-Nota: esta fase ya corresponde a FASE 0 (plan + auditoría), y no se implementará **ninguna** de las fases 1–10 aún.
+Nota original: esta fase ya corresponde a FASE 0 (plan + auditoría), y no se implementará **ninguna** de las fases 1–10 aún.
+
+**Actualización (2026-09-21, trabajo de Ross, modo mock):** se implementaron las FASE 1–9 del lado de integración **con mock del servicio IA** (cámara web, contrato DTO, mocks, endpoints backend con proxy/fallback-mock, categoría→catálogo, compatibilidad baseline, stock por sucursal seguro, UI recoger/delivery, UX de resultados y suite E2E). Lo que sigue dependiendo de Erika/datos: FASE 2 (servicio IA real Python/OpenCV/YOLO), FASE 3 (dataset y entrenamiento), FASE 6 (fuentes externas reales) y FASE 10 (facial, solo arquitectura). Ver estados `[x]`/`[~]` en WB-1…WB-10 y TC-1…TC-6.
 
 ---
 
@@ -334,5 +353,3 @@ Nota: esta fase ya corresponde a FASE 0 (plan + auditoría), y no se implementar
 | Dependencia de APIs externas | Media | Alto | Abstracción `CompatibilityProvider`; caché; fallback; trazabilidad. |
 
 ---
-
-*Fin del plan de fase 0. La auditoría técnica del repositorio se documenta en `docs/AUDITORIA_IMPLEMENTACION_IA_VISION.md`.*

@@ -12,9 +12,16 @@ import {
   Shield,
   Phone,
   Image as ImageIcon,
+  Camera,
 } from "lucide-react";
 import ProductImage from "../components/public/ProductImage";
 import api from "../services/api";
+import CameraCapture from "../components/camera/CameraCapture";
+import VisionResultsPanel, { VisionVehiculoForm, VisionEntregaSeleccion } from "../components/vision/VisionResultsPanel";
+import { detectarVisionPublica, mensajeErrorVision } from "../services/visionApi";
+import { guardarBorradorVision, BorradorVentaVision } from "../services/saleDraft";
+import { VisionAnalysis } from "../types/vision";
+import toast from "react-hot-toast";
 
 interface ProductCard {
   id: number;
@@ -97,10 +104,70 @@ export default function PublicProductsPage() {
   const [imageResults, setImageResults] = useState<ImageSearchResult[]>([]);
   const [imageSearching, setImageSearching] = useState(false);
 
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [capturaFile, setCapturaFile] = useState<File | null>(null);
+  const [visionResultado, setVisionResultado] = useState<VisionAnalysis | null>(null);
+  const [visionBuscando, setVisionBuscando] = useState(false);
+  const [visionError, setVisionError] = useState<string | null>(null);
+  const [vehiculo, setVehiculo] = useState<VisionVehiculoForm>({ marca: "", modelo: "", anio: "" });
+  const [entrega, setEntrega] = useState<VisionEntregaSeleccion>({ modalidad: "recoger", sucursalId: null });
+
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
   const MAX_SIZE = 5 * 1024 * 1024;
+
+  const buscarPorVision = async (file: File, vehiculoVision?: VisionVehiculoForm) => {
+    setVisionBuscando(true);
+    setVisionError(null);
+    try {
+      const resultado = await detectarVisionPublica(file, {
+        vehiculo: vehiculoVision
+          ? { marca: vehiculoVision.marca || undefined, modelo: vehiculoVision.modelo || undefined, anio: vehiculoVision.anio || undefined }
+          : undefined,
+      });
+      setVisionResultado(resultado);
+      if (resultado.entrega.sucursales.length > 0 && entrega.sucursalId === null) {
+        setEntrega((prev) => ({ ...prev, sucursalId: resultado.entrega.sucursales[0].id }));
+      }
+    } catch (error) {
+      setVisionResultado(null);
+      setVisionError(mensajeErrorVision(error));
+    } finally {
+      setVisionBuscando(false);
+    }
+  };
+
+  const handleCaptura = (file: File) => {
+    setCapturaFile(file);
+    setVisionResultado(null);
+    setVisionError(null);
+    setCameraOpen(false);
+    buscarPorVision(file, vehiculo);
+  };
+
+  const cerrarVision = () => {
+    setCameraOpen(false);
+    setCapturaFile(null);
+    setVisionResultado(null);
+    setVisionError(null);
+  };
+
+  // WB-8: la selección (producto + sucursal con stock + datos de entrega) se
+  // prepara para la venta guardando un borrador que el Punto de Venta consume.
+  const prepararVentaDesdeVision = (borrador: BorradorVentaVision) => {
+    guardarBorradorVision(borrador);
+    setVisionResultado(null);
+    setCapturaFile(null);
+    toast.success("Producto preparado para venta. Completá el cobro en el Punto de Venta.");
+  };
+
+  const repetirFoto = () => {
+    setVisionResultado(null);
+    setVisionError(null);
+    setCapturaFile(null);
+    setCameraOpen(true);
+  };
 
   const searchByImage = async () => {
     if (!imageFile) return;
@@ -345,6 +412,14 @@ export default function PublicProductsPage() {
               {imageFile ? imageFile.name : "Buscar por imagen"}
               <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
             </label>
+            <button
+              onClick={() => setCameraOpen(true)}
+              className="inline-flex items-center gap-2 px-3 py-2.5 bg-dark-800/50 border border-white/[0.06] rounded-xl text-gray-300 text-sm hover:border-primary-500/50 hover:text-white transition-colors"
+              type="button"
+            >
+              <Camera size={16} className="text-primary-400" />
+              Buscar por cámara
+            </button>
             {imageFile && (
               <>
                 <button onClick={searchByImage} disabled={imageSearching}
@@ -529,6 +604,33 @@ export default function PublicProductsPage() {
           </div>
         )}
       </div>
+
+      {/* Modal cámara */}
+      {cameraOpen && (
+        <CameraCapture
+          onCapture={handleCaptura}
+          onClose={() => setCameraOpen(false)}
+          captureLabel="Capturar y buscar"
+        />
+      )}
+
+      {/* Resultados por visión */}
+      {capturaFile && (
+        <VisionResultsPanel
+          nombreFoto={capturaFile.name}
+          resultado={visionResultado}
+          loading={visionBuscando}
+          error={visionError}
+          vehiculo={vehiculo}
+          onVehiculoChange={(campo, valor) => setVehiculo((prev) => ({ ...prev, [campo]: valor }))}
+          onBuscar={() => buscarPorVision(capturaFile, vehiculo)}
+          onRepetirFoto={repetirFoto}
+          onCerrar={cerrarVision}
+          entrega={entrega}
+          onCambiarEntrega={setEntrega}
+          onLlevarAVenta={prepararVentaDesdeVision}
+        />
+      )}
     </div>
   );
 }

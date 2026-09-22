@@ -51,3 +51,26 @@ export const ocrAuthenticatedLimiter: RateLimitRequestHandler = rateLimit({
   },
   message: blocklistJson("Demasiadas búsquedas por imagen. Intente nuevamente en unos minutos."),
 });
+
+// Visión pública: 5 detecciones / 15 minutos / IP. Procesamiento costoso (IA),
+// contador independiente del de OCR para no agotar cuotas entre sí.
+export const visionPublicLimiter: RateLimitRequestHandler = rateLimit({
+  windowMs: WINDOW_MS,
+  limit: 5,
+  standardHeaders,
+  legacyHeaders,
+  message: blocklistJson("Demasiadas búsquedas por visión. Intente nuevamente en unos minutos."),
+});
+
+// Visión autenticada: 20 detecciones / 15 minutos / usuario.
+export const visionAuthenticatedLimiter: RateLimitRequestHandler = rateLimit({
+  windowMs: WINDOW_MS,
+  limit: 20,
+  standardHeaders,
+  legacyHeaders,
+  keyGenerator: (req) => {
+    const userId = (req as any).user?.userId;
+    return userId != null ? String(userId) : "anonymous";
+  },
+  message: blocklistJson("Demasiadas búsquedas por visión. Intente nuevamente en unos minutos."),
+});

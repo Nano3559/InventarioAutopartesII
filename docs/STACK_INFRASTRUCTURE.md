@@ -32,7 +32,7 @@ docker-compose.yml
 | -------- | -------------------------------------------------------- |
 | Neon     | Mencionado en la documentación como hosting de PostgreSQL; no hay configuración Neon en el repositorio. |
 | Railway  | Mencionado como hosting del backend (se indica definir `JWT_SECRET` real allá); no hay configuración Railway en el repositorio. |
-| Vercel   | Mencionado como hosting del frontend; no hay `vercel.json`. |
+| Vercel   | Hosting del frontend confirmado por archivo: `frontend/vercel.json` (`buildCommand: npm run build`, `outputDirectory: dist`, framework `vite`, rewrites SPA). El root del deplob debe ser `frontend/`. |
 | Docker en producción | Solo existe el `docker-compose.yml` para la base de datos local. |
 
 Estos servicios deben tratarse como **supuestos documentales** hasta confirmarlos con configuración o URLs reales de deployment.

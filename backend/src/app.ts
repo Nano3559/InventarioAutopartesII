@@ -26,6 +26,7 @@ import customersRoutes from "./modules/customers/customers.routes";
 import publicRoutes from "./modules/public/public.routes";
 import permissionsRoutes from "./modules/permissions/permissions.routes";
 import notificationsRoutes from "./modules/notifications/notifications.routes";
+import visionRoutes from "./modules/vision/vision.routes";
 
 const app = express();
 
@@ -82,6 +83,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/permissions", permissionsRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/vision", visionRoutes);
 
 // 404 JSON para rutas no definidas dentro de la API
 app.use("/api", (_req, res) => {

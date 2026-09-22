@@ -10,6 +10,11 @@ import { useAuthStore } from "../stores/authStore";
 import ColumnManager from "../components/ui/ColumnManager";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import {
+  leerBorradorVision,
+  limpiarBorradorVision,
+  BorradorVentaVision,
+} from "../services/saleDraft";
 
 const HISTORY_COLUMNS = ["#", "Fecha", "Cliente", "Usuario", "Ubicación", "Vendedor", "Tipo", "Total", "Pagos"];
 const CART_COLUMNS = ["Producto", "Precio", "Cantidad", "Subtotal", "Eliminar"];
@@ -53,6 +58,8 @@ interface SalePayload {
   customerData?: { name: string; nit: string | null; phone: string | null };
   locationId?: number;
   seller?: string;
+  paraQuien?: string;
+  lugarEntrega?: string;
 }
 
 interface SavedSaleItem {
@@ -289,6 +296,83 @@ export default function SalesPage() {
   const cartTotal = cart.reduce((sum, c) => sum + c.unitPrice * c.quantity, 0);
   const cartItemCount = cart.reduce((sum, c) => sum + c.quantity, 0);
 
+  // ==================== BORRADOR VISIÓN -> VENTA ====================
+  // WB-8: la sucursal con stock elegida en el flujo público llega a la venta
+  // sin romper el flujo existente. El borrador sólo contiene transformación
+  // de búsqueda; la venta relee precios/stock reales del producto.
+  const [draftVision, setDraftVision] = useState<BorradorVentaVision | null>(null);
+  const [entregaInfo, setEntregaInfo] = useState({ lugarEntrega: "", paraQuien: "" });
+  const draftAppliedRef = useRef(false);
+
+  useEffect(() => {
+    if (draftAppliedRef.current) return;
+    draftAppliedRef.current = true;
+
+    const b = leerBorradorVision();
+    if (!b || !b.producto.itemCode) return;
+    setDraftVision(b);
+    if (b.entrega.modalidad === "delivery") {
+      setEntregaInfo({ lugarEntrega: b.entrega.lugarEntrega, paraQuien: b.entrega.paraQuien });
+    }
+
+    // Recoger: ADMIN prepara desde la sucursal señalada. TIENDA siempre vende de la suya.
+    if (!isTienda && b.entrega.modalidad === "recoger" && b.entrega.sucursalId) {
+      setSelectedLocationId(b.entrega.sucursalId);
+    }
+
+    const params = new URLSearchParams({ search: b.producto.itemCode, limit: "10" });
+    if (isTienda && user?.locationId) params.set("locationId", String(user.locationId));
+    else if (!isTienda && b.entrega.modalidad === "recoger" && b.entrega.sucursalId) {
+      params.set("locationId", String(b.entrega.sucursalId));
+    }
+
+    api
+      .get(`/products?${params.toString()}`)
+      .then((r) => {
+        const found = (r.data.products || []).find(
+          (p: Product) => p.itemCode === b.producto.itemCode && Number(p.stock) > 0
+        );
+        if (!found) {
+          toast.error("El producto del borrador ya no tiene stock. Agregalo manualmente.");
+          return;
+        }
+        const price2 = Number(found.price2);
+        setCart((prev) => {
+          const existing = prev.find((c) => c.productId === found.id);
+          if (existing) {
+            return prev.map((c) =>
+              c.productId === found.id
+                ? { ...c, quantity: Math.min(c.quantity + b.producto.cantidad, c.availableStock) }
+                : c
+            );
+          }
+          return [
+            ...prev,
+            {
+              productId: found.id,
+              itemCode: found.itemCode,
+              name: found.name,
+              brand: found.brand,
+              unitPrice: price2 > 0 ? price2 : Number(found.price1),
+              priceTier: price2 > 0 ? 2 : 1,
+              price1: Number(found.price1),
+              price2,
+              quantity: Math.min(b.producto.cantidad, Number(found.stock)),
+              availableStock: Number(found.stock),
+            },
+          ];
+        });
+        toast.success("Producto preparado desde búsqueda por visión");
+      })
+      .catch(() => toast.error("No se pudo cargar el producto del borrador"));
+  }, [isTienda, user?.locationId]);
+
+  const descartarDraftVision = () => {
+    limpiarBorradorVision();
+    setDraftVision(null);
+    setEntregaInfo({ lugarEntrega: "", paraQuien: "" });
+  };
+
   // ==================== PAYMENTS ====================
   const openPayment = () => {
     if (cart.length === 0) { toast.error("Agrega productos al carrito primero"); return; }
@@ -352,6 +436,12 @@ export default function SalesPage() {
       if (selectedSeller) {
         payload.seller = selectedSeller;
       }
+      if (entregaInfo.lugarEntrega.trim()) {
+        payload.lugarEntrega = entregaInfo.lugarEntrega.trim();
+      }
+      if (entregaInfo.paraQuien.trim()) {
+        payload.paraQuien = entregaInfo.paraQuien.trim();
+      }
 
       const res = await api.post("/sales", payload);
       const savedItems = (res.data.items || []).map((item: SavedSaleItem) => {
@@ -372,6 +462,11 @@ export default function SalesPage() {
       setShowConfirmed(true);
       setCart([]);
       setSelectedSeller("");
+      if (draftVision) {
+        limpiarBorradorVision();
+        setDraftVision(null);
+        setEntregaInfo({ lugarEntrega: "", paraQuien: "" });
+      }
       toast.success("¡Venta registrada exitosamente!");
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Error al registrar la venta");
@@ -448,6 +543,31 @@ export default function SalesPage() {
           {showHistory ? <><ShoppingCart size={16} /> Nueva Venta</> : <><Clock size={16} /> Historial</>}
         </button>
       </div>
+
+      {/* Banner: borrador preparado desde la búsqueda por visión (WB-8) */}
+      {draftVision && (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between bg-primary-600/10 border border-primary-600/20 rounded-2xl px-4 py-3">
+          <div className="flex items-start gap-3">
+            <Search size={18} className="text-primary-400 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm text-white font-medium">
+                Preparado desde búsqueda por visión · {draftVision.producto.nombre} × {draftVision.producto.cantidad}
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {draftVision.entrega.modalidad === "recoger"
+                  ? `Recoger en ${draftVision.entrega.sucursalNombre}`
+                  : `Entrega a ${draftVision.entrega.paraQuien || "destinatario"} · ${draftVision.entrega.lugarEntrega || "lugar a definir"}`}
+                {isTienda &&
+                  ` · ${draftVision.entrega.modalidad === "recoger" && draftVision.entrega.sucursalId && draftVision.entrega.sucursalId !== user?.locationId ? "se venderá desde tu tienda" : ""}`}
+              </p>
+            </div>
+          </div>
+          <button onClick={descartarDraftVision}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white bg-dark-900/50 border border-dark-700/50 transition-all shrink-0">
+            <X size={14} /> Descartar borrador
+          </button>
+        </div>
+      )}
 
       {/* ============ NEW SALE ============ */}
       {!showHistory && (
@@ -983,6 +1103,29 @@ export default function SalesPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Entrega (preparado desde visión, solo delivery) */}
+              {draftVision?.entrega.modalidad === "delivery" && (
+                <div className="border-t border-dark-700/50 pt-5">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Entrega (opcional)</p>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Lugar de entrega</label>
+                      <input type="text" value={entregaInfo.lugarEntrega}
+                        onChange={(e) => setEntregaInfo((prev) => ({ ...prev, lugarEntrega: e.target.value }))}
+                        placeholder="Dirección o punto de entrega"
+                        className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none placeholder-gray-600" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Entregar a (para quién)</label>
+                      <input type="text" value={entregaInfo.paraQuien}
+                        onChange={(e) => setEntregaInfo((prev) => ({ ...prev, paraQuien: e.target.value }))}
+                        placeholder="Nombre de quien recibe"
+                        className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none placeholder-gray-600" />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Facturación */}
               <div className="border-t border-dark-700/50 pt-5">
