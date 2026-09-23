@@ -1,0 +1,21 @@
+# ===== RepuestoPro Vision IA (FastAPI) — dependencias de runtime =====
+#
+# NOTAS torch / CUDA:
+#   El venv local mantiene torch 2.5.1+cu121 (build CUDA 12.1, GPU RTX 4050).
+#   torch se gestiona por separado y NO se actualiza ni sustituye de forma
+#   automatica desde este archivo. NO ejecutar: pip install --upgrade torch.
+#   equivalente pin (gestionar desde el indice cu121 correspondiente):
+#     torch==2.5.1+cu121
+#
+# Python de referencia: 3.11
+
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+pydantic>=2.7,<3.0
+pydantic-settings>=2.3,<3.0
+python-multipart>=0.0.9,<1.0
+
+opencv-python>=5.0.0,<6.0.0
+ultralytics>=8.4.160,<9.0.0
+Pillow>=12.0.0,<13.0.0
+numpy>=2.0.0,<3.0.0

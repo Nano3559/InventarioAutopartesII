@@ -1,7 +1,9 @@
 import csv
 import hashlib
 import json
+import os
 import shutil
+import tempfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -11,8 +13,9 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[2]
 PROCESSED = ROOT / "ia-service/datasets/processed"
 RAW_ROOT = ROOT / "ia-service/datasets/raw"
-ENGINE_TEMP = Path("C:/Users/MSI/AppData/Local/Temp/opencode/engine-images")
-ENGINE_LABEL_TEMP = Path("C:/Users/MSI/AppData/Local/Temp/opencode/air-labels")
+_TEMP_BASE = Path(os.environ.get("TEMP", tempfile.gettempdir())) / "opencode"
+ENGINE_TEMP = _TEMP_BASE / "engine-images"
+ENGINE_LABEL_TEMP = _TEMP_BASE / "air-labels"
 CONVERTED = ROOT / "ia-service/datasets/converted/headlight"
 DATASET_MANIFEST = ROOT / "ia-service/datasets/dataset_manifest.csv"
 SYNTH_MANIFEST = ROOT / "ia-service/datasets/synthetic/manifests/synthetic_manifest.csv"
