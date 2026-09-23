@@ -31,6 +31,10 @@ async def lifespan(_app: FastAPI):
             "error al cargar el modelo: %s (ver /vision/health)",
             type(exc).__name__,
         )
+    if inference.estado.cargado and settings.warmup:
+        # La inicialización de CUDA/Torch en el primer predict supera el timeout
+        # de 8 s del backend; se absorbe aquí, antes de aceptar tráfico.
+        inference.calentar_modelo()
     log.info(
         "servicio listo | modelLoaded=%s | device=%s",
         inference.estado.cargado,

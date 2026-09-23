@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 import math
 import threading
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -59,6 +60,7 @@ class EstadoModelo:
     cargado: bool = False
     error: str | None = None
     nombre_modelo: str | None = None
+    version_modelo: str | None = None
     clases: int = 0
     device: str | None = None
     modelo: Any = None
@@ -81,9 +83,29 @@ def _nombre_modelo(modelo: YOLO) -> str:
                 base = base[:-3]
             if base.startswith("yolo"):
                 return "YOLO" + base[4:]
-            if base:
+            # Solo valores simples (arquitectura/nombre). Si el campo registra
+            # una ruta (p. ej. los pesos de partida de un reentrenado), no se
+            # expone ese path; se usa el nombre generico del YOLO.
+            if base and not any(ch in base for ch in "/\\:"):
                 return base[0].upper() + base[1:]
     return NOMBRE_MODELO_FALLBACK
+
+
+def _version_modelo(path: Path) -> str:
+    """Etiqueta informativa del checkpoint versionado (p. ej. nombre del run dir).
+
+    Si el peso vive directamente en models/ (checkpoint oficial versionado),
+    usa el nombre del archivo (stem). Si vive dentro de runs/detect/<run>/weights/
+    usa el nombre del run. Mantiene compatibilidad con health sin exponer rutas
+    absolutas ni nombres de archivo internos (véase test_health_no_expone_ruta_modelo).
+    """
+    ruta = path.resolve()
+    if ruta.parent.name == "models":
+        return path.stem
+    nombre_run = ruta.parent.parent.name
+    if nombre_run and nombre_run not in ("weights", "detect", "runs"):
+        return nombre_run
+    return path.stem
 
 
 def _resolver_device(device: str) -> torch.device:
@@ -126,6 +148,7 @@ def cargar_modelo(
             estado.cargado = False
             estado.error = "modelo_no_encontrado"
             estado.nombre_modelo = None
+            estado.version_modelo = None
             estado.clases = 0
             estado.device = None
             estado.modelo = None
@@ -145,13 +168,16 @@ def cargar_modelo(
             estado.cargado = True
             estado.error = None
             estado.nombre_modelo = _nombre_modelo(modelo)
+            estado.version_modelo = _version_modelo(path)
             estado.clases = len(nombres)
             estado.device = str(dispositivo)
             estado.modelo = modelo
             estado.cargas += 1
             _log.info(
-                "modelo cargado: %s | device=%s | clases=%d | cargas=%d",
+                "modelo cargado: %s | version=%s | archivo=%s | device=%s | clases=%d | cargas=%d",
                 estado.nombre_modelo,
+                estado.version_modelo,
+                path.resolve(),
                 estado.device,
                 estado.clases,
                 estado.cargas,
@@ -160,6 +186,7 @@ def cargar_modelo(
             estado.cargado = False
             estado.error = "error_de_carga"
             estado.nombre_modelo = None
+            estado.version_modelo = None
             estado.clases = 0
             estado.device = None
             estado.modelo = None
@@ -181,6 +208,34 @@ def obtener_modelo() -> Any:
 def contador_cargas() -> int:
     """Número de veces que best.pt fue cargado en el proceso (debe ser 1)."""
     return estado.cargas
+
+
+def calentar_modelo() -> None:
+    """Ejecuta una predicción sintética en el arranque (lifespan).
+
+    El primer predict() tras cargar los pesos compila kernels/autotune de CUDA
+    (varios segundos) y supera el timeout de 8 s del backend, aunque la carga
+    del modelo haya sido rápida. Con el warmup esa inicialización ocurre antes
+    de aceptar tráfico y la primera petición real ya encuentra la inferencia en
+    caliente. Tolerante: si falla, el servicio sigue degradado y se reintenta
+    por petición real (quedando a merced del timeout).
+    """
+    if not modelo_cargado():
+        return
+    sintetica = np.zeros((IMGSZ_INFERENCIA, IMGSZ_INFERENCIA, 3), dtype=np.uint8)
+    inicio = time.perf_counter()
+    try:
+        detectar(sintetica)
+        _log.info(
+            "warmup de inferencia completado en %.2f s",
+            time.perf_counter() - inicio,
+        )
+    except Exception:  # noqa: BLE001 - el warmup es best-effort
+        _log.warning(
+            "warmup de inferencia fallido en %.2f s; se reintentará en uso",
+            time.perf_counter() - inicio,
+            exc_info=True,
+        )
 
 
 def decodificar_imagen(contenido: bytes) -> np.ndarray:

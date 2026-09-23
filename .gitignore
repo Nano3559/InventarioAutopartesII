@@ -64,6 +64,8 @@ web-build/
 !/ia-service/datasets/annotation_batch/annotation_batch_manifest.csv
 /ia-service/runs/
 /ia-service/weights/
+/ia-service/artifacts/
+/ia-service/diagnostics/
 /dataset/
 /datasets/
 /runs/
@@ -77,6 +79,8 @@ web-build/
 /ia-service/**/labels/
 *.pt
 *.onnx
+# Única excepción global a *.pt: el checkpoint oficial versionado de ia-service
+!ia-service/models/repuestopro_yolo11n_v3_webcam_robust.pt
 
 # Credenciales y tokens de Kaggle/IA
 **/kaggle.json
