@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--project", default=r"C:/Universidad/Sistemas/9vosemestre/programacion/InventarioAutopartesII/ia-service/runs/detect")
     parser.add_argument("--name", default="repuestopro_sanity")
     parser.add_argument("--seed", type=int, default=20260922)
+    parser.add_argument("--patience", type=int, default=20)
     parser.add_argument("--device", default=0)
     args = parser.parse_args()
 
@@ -32,7 +33,7 @@ def main():
         device=args.device,
         seed=args.seed,
         deterministic=True,
-        patience=0,
+        patience=args.patience,
         plots=True,
         exist_ok=True,
         verbose=True,

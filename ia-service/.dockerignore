@@ -1,0 +1,70 @@
+# ===== RepuestoPro Vision IA — contexto Docker seguro =====
+# El contexto NO debe incluir pesos, dataset, venvs, credenciales ni caches.
+# app/ y requirements.txt se conservan (obligatorio).
+
+# Entornos virtuales
+.venv
+.annotation-venv
+venv
+env
+ENV
+
+# Python intermedio
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Pesos y artefactos de modelo (se montan externamente, jamas en la imagen)
+runs
+weights
+*.pt
+*.onnx
+*.engine
+
+# Datasets y sinteticos
+datasets
+dataset
+outputs
+synthetic
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.bmp
+*.tiff
+
+# Caches y temporales
+.cache
+.eggs
+*.egg-info
+*.log
+*.tmp
+*.bak
+*.orig.*
+.sqlite3
+
+# Git / IDE / docs / scripts de entrenamiento (no van a runtime)
+.git
+.gitignore
+Dockerfile
+.dockerignore
+tests
+docs
+scripts
+tools
+notebooks
+*.md
+
+# Credenciales y tokens (Kaggle / acceso)
+.env
+.env.*
+!.env.example
+kaggle.json
+.kaggle
+**/*access_token*
+**/*access-token*
+*.pem
+*.key
