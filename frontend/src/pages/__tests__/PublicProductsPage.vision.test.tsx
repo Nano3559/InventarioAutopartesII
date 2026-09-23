@@ -109,7 +109,7 @@ describe("PublicProductsPage - Visión por cámara", () => {
     fireEvent.click(screen.getByRole("button", { name: "Buscar por cámara" }));
 
     expect(screen.getByText("Modal cámara simulado")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Capturar y buscar" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Tomar foto" })).toBeInTheDocument();
   });
 
   it("captura la foto, llama detectarVisionPublica y muestra resultados", async () => {
@@ -149,7 +149,7 @@ describe("PublicProductsPage - Visión por cámara", () => {
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Buscar por cámara" }));
-    fireEvent.click(screen.getByRole("button", { name: "Capturar y buscar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tomar foto" }));
 
     await waitFor(() => {
       expect(screen.getByText("Panel resultados simulado")).toBeInTheDocument();
@@ -176,7 +176,7 @@ describe("PublicProductsPage - Visión por cámara", () => {
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Buscar por cámara" }));
-    fireEvent.click(screen.getByRole("button", { name: "Capturar y buscar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tomar foto" }));
 
     await waitFor(() => {
       expect(screen.getByTestId("vision-error")).toHaveTextContent(
@@ -205,7 +205,7 @@ describe("PublicProductsPage - Visión por cámara", () => {
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Buscar por cámara" }));
-    fireEvent.click(screen.getByRole("button", { name: "Capturar y buscar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tomar foto" }));
 
     await waitFor(() => {
       expect(screen.getByText("Panel resultados simulado")).toBeInTheDocument();

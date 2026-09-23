@@ -170,6 +170,17 @@ export async function generarRespuestaVision(opts: OpcionVision): Promise<Vision
   if (detecciones.length === 0) throw VisionErrores.noClasificada();
 
   const top = detecciones.reduce((mejor, actual) => (actual.confianza > mejor.confianza ? actual : mejor));
+  logger.info("[DIAG-VISION] detecciones crudas antes del umbral de confianza.", {
+    proveedor: deteccion.proveedor,
+    total: detecciones.length,
+    detecciones: detecciones.slice(0, 5).map((d) => ({
+      categoria: d.categoria,
+      confianza: d.confianza,
+      boundingBox: d.boundingBox ?? null,
+    })),
+    top: { categoria: top.categoria, confianza: top.confianza, boundingBox: top.boundingBox ?? null },
+    umbral: visionConfig.confianzaMinima,
+  });
   if (top.confianza < visionConfig.confianzaMinima) throw VisionErrores.bajaConfianza();
 
   const categorias = await prisma.category.findMany({ select: { id: true, name: true } });

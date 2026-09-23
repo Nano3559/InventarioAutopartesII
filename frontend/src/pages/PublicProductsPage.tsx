@@ -13,6 +13,7 @@ import {
   Phone,
   Image as ImageIcon,
   Camera,
+  Loader2,
 } from "lucide-react";
 import ProductImage from "../components/public/ProductImage";
 import api from "../services/api";
@@ -42,22 +43,6 @@ interface Filters {
   brands: string[];
   categories: string[];
   qualities: string[];
-}
-
-interface ImageSearchResult {
-  id: number;
-  itemCode: string;
-  name: string;
-  brand: string;
-  model: string;
-  year: string;
-  detail: string | null;
-  detalles: string | null;
-  image: string | null;
-  category: string | null;
-  price1: number;
-  availability: string;
-  score: number;
 }
 
 const bannerSlides = [
@@ -101,8 +86,7 @@ export default function PublicProductsPage() {
   const [category, setCategory] = useState("");
   const [detalles, setDetalles] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imageResults, setImageResults] = useState<ImageSearchResult[]>([]);
-  const [imageSearching, setImageSearching] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const [cameraOpen, setCameraOpen] = useState(false);
   const [capturaFile, setCapturaFile] = useState<File | null>(null);
@@ -138,12 +122,17 @@ export default function PublicProductsPage() {
     }
   };
 
-  const handleCaptura = (file: File) => {
+  const handleCaptura = (file: File, vehiculoModal?: { marca?: string; modelo?: string; anio?: string }) => {
     setCapturaFile(file);
     setVisionResultado(null);
     setVisionError(null);
     setCameraOpen(false);
-    buscarPorVision(file, vehiculo);
+    buscarPorVision(
+      file,
+      vehiculoModal
+        ? { marca: vehiculoModal.marca || "", modelo: vehiculoModal.modelo || "", anio: vehiculoModal.anio || "" }
+        : vehiculo
+    );
   };
 
   const cerrarVision = () => {
@@ -169,31 +158,47 @@ export default function PublicProductsPage() {
     setCameraOpen(true);
   };
 
-  const searchByImage = async () => {
+  const handleImageFileChange = (files: FileList | null) => {
+    const file = files?.[0] ?? null;
+    if (!file) return;
+    if (!ALLOWED_MIME.includes(file.type)) {
+      toast.error("Formato no permitido. Usa JPEG, PNG o WebP.");
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      toast.error("La imagen supera 5 MB. Usa una imagen más pequeña.");
+      return;
+    }
+    setImageFile(file);
+  };
+
+  // Preview con URL.createObjectURL: el cleanup del efecto libera la URL
+  // anterior al cambiar de archivo y al desmontar el componente (sin leaks).
+  useEffect(() => {
+    if (!imageFile) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(imageFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
+
+  const analizarImagen = () => {
     if (!imageFile) return;
-    if (!ALLOWED_MIME.includes(imageFile.type)) {
-      alert("Formato no permitido. Usa JPEG, PNG o WebP.");
-      return;
+    setVisionResultado(null);
+    setVisionError(null);
+    setCapturaFile(imageFile);
+    buscarPorVision(imageFile);
+  };
+
+  const quitarImagen = () => {
+    if (capturaFile === imageFile) {
+      setCapturaFile(null);
+      setVisionResultado(null);
+      setVisionError(null);
     }
-    if (imageFile.size > MAX_SIZE) {
-      alert("La imagen supera 5 MB. Usa una imagen más pequeña.");
-      return;
-    }
-    const data = new FormData();
-    data.append("image", imageFile);
-    try {
-      setImageSearching(true);
-      const res = await api.post("/public/search-image", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setImageResults(res.data.products || []);
-      if (!(res.data.products || []).length) alert("No encontramos productos relacionados con la imagen.");
-    } catch {
-      setImageResults([]);
-      alert("No se pudo buscar la imagen. Intenta nuevamente.");
-    } finally {
-      setImageSearching(false);
-    }
+    setImageFile(null);
   };
 
   useEffect(() => {
@@ -407,11 +412,74 @@ export default function PublicProductsPage() {
             )}
           </div>
           <div className="max-w-2xl mx-auto mt-3 flex flex-wrap items-center justify-center gap-2">
-            <label className="inline-flex items-center gap-2 px-3 py-2.5 bg-dark-800/50 border border-white/[0.06] rounded-xl text-gray-300 text-sm cursor-pointer hover:border-primary-500/50 transition-colors">
-              <ImageIcon size={16} className="text-primary-400" />
-              {imageFile ? imageFile.name : "Buscar por imagen"}
-              <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
-            </label>
+            <input
+              id="buscar-imagen-input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => handleImageFileChange(e.target.files)}
+            />
+            {!imageFile ? (
+              <label
+                htmlFor="buscar-imagen-input"
+                className="inline-flex items-center gap-2 px-3 py-2.5 bg-dark-800/50 border border-white/[0.06] rounded-xl text-gray-300 text-sm cursor-pointer hover:border-primary-500/50 transition-colors"
+              >
+                <ImageIcon size={16} className="text-primary-400" />
+                Buscar por imagen
+              </label>
+            ) : (
+              <div className="w-full flex flex-col items-center gap-3 rounded-xl border border-white/[0.06] bg-dark-800/50 p-4" data-testid="buscar-imagen-preview">
+                <div className="flex items-center gap-4 w-full">
+                  {previewUrl && (
+                    <img
+                      src={previewUrl}
+                      alt={`Vista previa de ${imageFile.name}`}
+                      className="h-24 w-24 shrink-0 object-contain rounded-lg border border-white/[0.06] bg-dark-900/50"
+                      data-testid="buscar-imagen-preview-img"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-white truncate" data-testid="buscar-imagen-filename">{imageFile.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">JPEG, PNG o WebP · máx. 5 MB</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <button
+                    onClick={analizarImagen}
+                    disabled={visionBuscando}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium disabled:opacity-50"
+                    type="button"
+                  >
+                    {visionBuscando ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Analizando...
+                      </>
+                    ) : (
+                      <>
+                        <Search size={16} />
+                        Analizar imagen
+                      </>
+                    )}
+                  </button>
+                  <label
+                    htmlFor="buscar-imagen-input"
+                    className="inline-flex items-center gap-2 px-3 py-2.5 bg-dark-800/60 border border-white/[0.06] rounded-xl text-gray-300 text-sm cursor-pointer hover:text-white hover:border-white/[0.12] transition-colors"
+                  >
+                    Cambiar imagen
+                  </label>
+                  <button
+                    onClick={quitarImagen}
+                    aria-label="Quitar imagen"
+                    className="inline-flex items-center gap-2 p-2.5 text-gray-400 hover:text-white"
+                    title="Quitar imagen"
+                    type="button"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
             <button
               onClick={() => setCameraOpen(true)}
               className="inline-flex items-center gap-2 px-3 py-2.5 bg-dark-800/50 border border-white/[0.06] rounded-xl text-gray-300 text-sm hover:border-primary-500/50 hover:text-white transition-colors"
@@ -420,43 +488,8 @@ export default function PublicProductsPage() {
               <Camera size={16} className="text-primary-400" />
               Buscar por cámara
             </button>
-            {imageFile && (
-              <>
-                <button onClick={searchByImage} disabled={imageSearching}
-                  className="px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium disabled:opacity-50">
-                  {imageSearching ? "Buscando..." : "Buscar"}
-                </button>
-                <button onClick={() => { setImageFile(null); setImageResults([]); }} className="p-2.5 text-gray-400 hover:text-white" title="Limpiar imagen">
-                  <X size={16} />
-                </button>
-              </>
-            )}
-          </div>
+</div>
         </div>
-
-        {imageResults.length > 0 && (
-          <section className="mb-8 bg-dark-800/30 border border-primary-500/20 rounded-2xl p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-white font-semibold">Resultados por imagen</h2>
-              <span className="text-xs text-gray-500">{imageResults.length} coincidencias</span>
-            </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {imageResults.map((product) => (
-                <Link key={product.id} to={`/productos/${product.id}`} className="bg-dark-900/40 border border-white/[0.06] rounded-xl overflow-hidden hover:border-primary-500/40 transition-colors">
-                  <div className="aspect-square flex items-center justify-center p-4 bg-dark-900/50">
-                    <ProductImage image={product.image} category={null} name={product.name} />
-                  </div>
-                  <div className="p-3 space-y-1">
-                    <p className="text-white text-sm font-medium line-clamp-2">{product.name}</p>
-                    <p className="text-xs text-gray-500">{product.brand} · {product.model}</p>
-                    <p className="text-xs text-gray-400">Código: {product.itemCode}</p>
-                    <div className="flex justify-between items-center text-xs pt-1"><span className="text-amber-400">Bs. {Number(product.price1).toFixed(2)}</span><span className={`px-1.5 py-0.5 rounded border text-[10px] font-semibold uppercase ${availabilityColor(product.availability)}`}>{product.availability}</span></div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Filters */}
         <div className="bg-dark-800/30 border border-white/[0.06] rounded-2xl p-4 mb-8">
@@ -610,7 +643,7 @@ export default function PublicProductsPage() {
         <CameraCapture
           onCapture={handleCaptura}
           onClose={() => setCameraOpen(false)}
-          captureLabel="Capturar y buscar"
+          captureLabel="Tomar foto"
         />
       )}
 
