@@ -76,6 +76,16 @@ describe("CameraCapture", () => {
   beforeEach(() => {
     onCapture.mockClear();
     props.onClose.mockClear();
+
+    // jsdom no implementa URL.createObjectURL: se polifillea para la preview.
+    Object.defineProperty(URL, "createObjectURL", {
+      configurable: true,
+      value: vi.fn(() => "blob:mock-captura"),
+    });
+    Object.defineProperty(URL, "revokeObjectURL", {
+      configurable: true,
+      value: vi.fn(),
+    });
   });
 
   afterEach(() => {
@@ -103,7 +113,7 @@ describe("CameraCapture", () => {
     expect(screen.getByRole("button", { name: /reintentar/i })).toBeInTheDocument();
   });
 
-  it("captura la imagen y entrega un archivo a onCapture", async () => {
+  it("captura, muestra la preview real y recién al pulsar Buscar entrega el archivo", async () => {
     mediaExitosa();
     simularVideoListo();
     simularCanvasyVideo();
@@ -113,12 +123,39 @@ describe("CameraCapture", () => {
     const capturar = await screen.findByRole("button", { name: "Capturar pieza" });
     fireEvent.click(capturar);
 
+    const preview = await screen.findByTestId("vision-captura-preview");
+    expect(preview).toBeInTheDocument();
+    expect(screen.getByText("Resolución: 640 × 480")).toBeInTheDocument();
+    expect(onCapture).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("Marca del vehículo"), { target: { value: "Toyota" } });
+    fireEvent.click(screen.getByRole("button", { name: /buscar/i }));
+
     await waitFor(() => {
-      expect(onCapture).toHaveBeenCalled();
+      expect(onCapture).toHaveBeenCalledTimes(1);
     });
     const archivo = onCapture.mock.calls[0][0] as File;
     expect(archivo).toBeInstanceOf(File);
     expect(archivo.type).toBe("image/jpeg");
+    expect(onCapture.mock.calls[0][1]).toEqual({ marca: "Toyota", modelo: undefined, anio: undefined });
+  });
+
+  it("repite la foto y vuelve a la cámara sin entregar el archivo", async () => {
+    mediaExitosa();
+    simularVideoListo();
+    simularCanvasyVideo();
+
+    render(<CameraCapture {...props} />);
+
+    const capturar = await screen.findByRole("button", { name: "Capturar pieza" });
+    fireEvent.click(capturar);
+
+    const repetir = await screen.findByRole("button", { name: /repetir foto/i });
+    fireEvent.click(repetir);
+
+    expect(screen.queryByTestId("vision-captura-preview")).not.toBeInTheDocument();
+    expect(onCapture).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Capturar pieza" })).toBeInTheDocument();
   });
 
   it("cierra la cámara al pulsar el botón de cierre", async () => {

@@ -100,3 +100,6 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 /ia-service/.annotation-venv/
+
+# Artefactos locales de OCR
+eng.traineddata

@@ -1,10 +1,23 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, CameraOff, RefreshCw, X, AlertTriangle, ImageOff } from "lucide-react";
+import { Camera, CameraOff, RefreshCw, X, AlertTriangle, ImageOff, Search } from "lucide-react";
 
 type CameraStatus = "solicitando" | "capturando" | "denegado" | "no_disponible" | "error";
 
+export interface CameraVehiculo {
+  marca?: string;
+  modelo?: string;
+  anio?: string;
+}
+
+interface Captura {
+  file: File;
+  url: string;
+  ancho: number;
+  alto: number;
+}
+
 interface CameraCaptureProps {
-  onCapture: (file: File) => void;
+  onCapture: (file: File, vehiculo?: CameraVehiculo) => void;
   onClose: () => void;
   captureLabel?: string;
 }
@@ -13,8 +26,13 @@ export default function CameraCapture({ onCapture, onClose, captureLabel = "Toma
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const urlRef = useRef<string | null>(null);
   const [status, setStatus] = useState<CameraStatus>("solicitando");
   const [mensaje, setMensaje] = useState<string | null>(null);
+  const [captura, setCaptura] = useState<Captura | null>(null);
+  const [marca, setMarca] = useState("");
+  const [modelo, setModelo] = useState("");
+  const [anio, setAnio] = useState("");
 
   const detenerStream = () => {
     const stream = streamRef.current;
@@ -77,6 +95,7 @@ export default function CameraCapture({ onCapture, onClose, captureLabel = "Toma
       });
     return () => {
       cancelado = true;
+      if (urlRef.current) URL.revokeObjectURL(urlRef.current);
       detenerStream();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,9 +125,31 @@ export default function CameraCapture({ onCapture, onClose, captureLabel = "Toma
         return;
       }
       const file = new File([blob], `captura-vision-${Date.now()}.jpg`, { type: "image/jpeg" });
-      detenerStream();
-      onCapture(file);
+      if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+      const url = URL.createObjectURL(file);
+      urlRef.current = url;
+      // El stream queda activo bajo la preview: "Repetir foto" vuelve a la cámara
+      // sin volver a pedir permiso. Se detiene al cerrar o desmontar el modal.
+      setCaptura({ file, url, ancho: canvas.width, alto: canvas.height });
     }, "image/jpeg", 0.85);
+  };
+
+  const buscar = () => {
+    if (!captura) return;
+    onCapture(captura.file, {
+      marca: marca || undefined,
+      modelo: modelo || undefined,
+      anio: anio || undefined,
+    });
+  };
+
+  const repetir = () => {
+    if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+    urlRef.current = null;
+    setCaptura(null);
+    setMarca("");
+    setModelo("");
+    setAnio("");
   };
 
   const cerrar = () => {
@@ -131,6 +172,15 @@ export default function CameraCapture({ onCapture, onClose, captureLabel = "Toma
 
         <div className="relative aspect-square bg-black">
           <video ref={videoRef} muted playsInline className="w-full h-full object-contain" />
+
+          {captura && (
+            <div className="absolute inset-0 bg-black">
+              <img src={captura.url} alt="Captura de cámara" className="w-full h-full object-contain" data-testid="vision-captura-preview" />
+              <span className="absolute bottom-2 right-2 px-2 py-1 bg-dark-950/80 border border-white/[0.06] text-gray-300 text-[11px] rounded-lg">
+                Resolución: {captura.ancho} × {captura.alto}
+              </span>
+            </div>
+          )}
 
           {status !== "capturando" && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
@@ -177,7 +227,52 @@ export default function CameraCapture({ onCapture, onClose, captureLabel = "Toma
         <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
 
         <div className="p-5">
-          {status === "capturando" ? (
+          {captura ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-2">
+                <input
+                  value={marca}
+                  onChange={(e) => setMarca(e.target.value)}
+                  placeholder="Marca"
+                  aria-label="Marca del vehículo"
+                  className="px-3 py-2.5 bg-dark-800/60 border border-white/[0.06] rounded-xl text-white text-sm placeholder-gray-500 focus:ring-2 focus:ring-primary-500 outline-none w-full"
+                />
+                <input
+                  value={modelo}
+                  onChange={(e) => setModelo(e.target.value)}
+                  placeholder="Modelo"
+                  aria-label="Modelo del vehículo"
+                  className="px-3 py-2.5 bg-dark-800/60 border border-white/[0.06] rounded-xl text-white text-sm placeholder-gray-500 focus:ring-2 focus:ring-primary-500 outline-none w-full"
+                />
+                <input
+                  value={anio}
+                  onChange={(e) => setAnio(e.target.value)}
+                  placeholder="Año"
+                  aria-label="Año del vehículo"
+                  className="px-3 py-2.5 bg-dark-800/60 border border-white/[0.06] rounded-xl text-white text-sm placeholder-gray-500 focus:ring-2 focus:ring-primary-500 outline-none w-full"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={buscar}
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-4 py-3 rounded-xl text-sm font-semibold transition-all"
+                  type="button"
+                >
+                  <Search size={16} /> Buscar
+                </button>
+                <button
+                  onClick={repetir}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-dark-800/60 border border-white/[0.06] text-gray-300 hover:text-white hover:border-white/[0.12] rounded-xl text-sm font-medium transition-all"
+                  type="button"
+                >
+                  <RefreshCw size={16} /> Repetir foto
+                </button>
+              </div>
+              <p className="text-gray-500 text-xs text-center">
+                La foto se usa solo para la búsqueda; no se guarda en el servidor.
+              </p>
+            </div>
+          ) : status === "capturando" ? (
             <div className="space-y-3">
               <button
                 onClick={capturar}
