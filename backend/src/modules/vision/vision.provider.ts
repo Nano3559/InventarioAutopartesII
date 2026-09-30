@@ -69,7 +69,10 @@ export class HttpVisionProvider implements VisionProvider {
 
   private async llamarIA(input: VisionInput): Promise<Response> {
     const url = visionConfig.iaUrl;
-    if (!url) throw VisionErrores.servicioNoDisponible();
+    if (!url) {
+      logger.error("VISIÓN: se requiere IA real pero VISION_IA_URL no esta configurada; se responde 503 sin simular detecciones.");
+      throw VisionErrores.servicioNoDisponible();
+    }
 
     const extension = (input.mimetype.split("/")[1] || "jpg").replace(/[^a-z0-9]/gi, "");
     const nombreArchivo = `vision_${Date.now()}.${extension || "jpg"}`;
@@ -77,9 +80,15 @@ export class HttpVisionProvider implements VisionProvider {
     const form = new FormData();
     form.append("image", new Blob([new Uint8Array(input.buffer)], { type: input.mimetype }), nombreArchivo);
 
+    const headers: Record<string, string> = {};
+    if (visionConfig.iaKey) {
+      headers["X-Vision-Key"] = visionConfig.iaKey;
+    }
+
     return fetch(`${url.replace(/\/$/, "")}/vision/detect`, {
       method: "POST",
       body: form,
+      headers,
       signal: AbortSignal.timeout(visionConfig.timeoutMs),
     });
   }

@@ -207,7 +207,7 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Criterios de aceptación:** consulta funcional contra datos reales; documentar qué campos faltan (los datos se completan en fase de datos).
 
 ### 4.7 Tarea WB-7 — Stock por sucursal
-**Estado: [x] COMPLETA** — `availability.ts`: disponibilidad pública segura por umbral (`>10` DISPONIBLE, `>0` POCAS_UNIDADES, `0` NO_DISPONIBLE) nunca expone stock exacto; público devuelve sucursales **TIENDA** con nivel; interno devuelve stock exacto por `Location` (ADMIN global, TIENDA solo su sucursal `requireTiendaLocation`). Verificado en itest y en `availability.test.ts`.
+**Estado: [x] COMPLETA** — `availability.ts`: disponibilidad segura por umbral (`>10` DISPONIBLE, `>0` POCAS_UNIDADES, `0` NO_DISPONIBLE) nunca expone stock exacto; **interno** devuelve stock exacto por `Location` (ADMIN global, TIENDA solo su sucursal `requireTiendaLocation`) y su desglose `disponibilidadPorSucursal`; **público** devuelve solo el nivel agregado y `disponibilidadPorSucursal` vacío, para no filtrar `locationId`/`nombre`/`tipo` de las sedes a un visitante anónimo. Verificado en itest (`vision.routes.itest.ts`, caso público sin identificadores de sede) y en `availability.test.ts`.
 - **Subtareas:** usar `Location` + `Inventory` + `Movement` para responder "Sucursal A: 3, Sucursal B: 0, Almacén: 5"; frontend muestra disponibilidad por ubicación.
 - **Dependencias:** WB-5.
 - **Entregables:** endpoint de disponibilidad por producto; vista de stock por sucursal en el frontend.
@@ -222,14 +222,14 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Criterios de aceptación:** la elección de sucursal con stock llega a la cotización/venta sin romper el flujo existente.
 
 ### 4.9 Tarea WB-9 — UX de resultados
-**Estado: [x] COMPLETA** — `frontend/src/components/vision/VisionResultsPanel.tsx`: categoría + confianza, lista de productos con precio/disponibilidad/compatibilidad y stock por sucursal, estados cargando/vacío/error, selector entregabilidad. **No muestra compatibilidad inventada**: solo la marca "verificada" cuando el backend lo confirma. Tests: `__tests__/VisionResultsPanel.test.tsx` (8).
+**Estado: [x] COMPLETA** — `frontend/src/components/vision/VisionResultsPanel.tsx`: categoría + confianza, lista de productos con precio/disponibilidad/compatibilidad, estados cargando/vacío/error, selector entregabilidad. El desglose por sede que pinta este panel se alimenta de `disponibilidadPorSucursal`, que el endpoint **interno** sí entrega y el **público ya no** (vacío por seguridad), por lo que en el catálogo anónimo ese bloque no se renderiza. **No muestra compatibilidad inventada**: solo la marca "verificada" cuando el backend lo confirma. Tests: `__tests__/VisionResultsPanel.test.tsx` (8).
 - **Subtareas:** mostrar resultado de detección (categoría + confianza), lista de productos, tarjetas con los datos, estados cargando/vacío/error; no mostrar compatibilidad inventada.
 - **Dependencias:** WB-6/WB-7.
 - **Entregables:** pantalla de resultados de búsqueda visual integrada al flujo público.
 - **Criterios de aceptación:** UX aprobada; resultado con baja confianza muestra aviso de no clasificación.
 
 ### 4.10 Tarea WB-10 — Pruebas de integración end-to-end
-**Estado: [x] COMPLETA** — `docs/FLUJO_VISION_MOCK.md` documenta el flujo completo con mock (cámara → backend → categoría → catálogo → stock → selección) y los escenarios `x-vision-mock-scenario`. Verificado de punta a punta: backend **96 tests** (58 unit + 38 integración, incl. 30 unit + 15 itest de visión) y frontend **92 tests** (8 nuevas suites de visión) en verde; `tsc`/`build` limpios en ambos.
+**Estado: [x] COMPLETA** — `docs/FLUJO_VISION_MOCK.md` documenta el flujo completo con mock (cámara → backend → categoría → catálogo → stock → selección) y los escenarios `x-vision-mock-scenario`. Verificado de punta a punta: backend **131 tests** (76 unit + 55 integración, incl. 40 unit + 15 itest de visión) y frontend **105 tests** en 11 archivos, en verde; `tsc`/`build` limpios en ambos. Cifras re-verificadas el 2026-09-28 (la cifra histórica de esta línea era 96 backend / 92 frontend).
 - **Subtareas:** flujo completo con mock del servicio IA: cámara → backend → categoría → catálogo → stock → selección.
 - **Dependencias:** WB-9.
 - **Entregables:** suite E2E básica del flujo visual.
@@ -246,7 +246,7 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Criterios de aceptación:** una sola fuente de verdad para el contrato.
 
 ### 5.2 TC-2 — Mocks / stubs del servicio IA
-**Estado: [x] COMPLETA** — `MockVisionProvider` (`vision.provider.ts`) devuelve detecciones deterministas; montable con `VISION_MODE=mock` (default) o automático si `VISION_MODE=http` sin `VISION_IA_URL` (fallback mock con log de error). Header `x-vision-mock-scenario`: `default|ninguna|baja_confianza|categoria_desconocida|timeout|error`. Ross desarrolló todo sin el modelo real (clave anti-bloqueo).
+**Estado: [x] COMPLETA** — `MockVisionProvider` (`vision.provider.ts`) devuelve detecciones deterministas; se activa con `VISION_MODE=mock` explícito o, en desarrollo/pruebas, de forma automática cuando no hay `VISION_IA_URL`. **En producción el fallback silencioso a mock quedó ELIMINADO**: `vision.config.ts` (`resolverVisionMode`) resuelve el modo de forma explícita y, si el modo remoto no tiene URL, el provider responde **503 `VISION_NO_DISPONIBLE`** en vez de entregar detecciones simuladas. Header `x-vision-mock-scenario`: `default|ninguna|baja_confianza|categoria_desconocida|timeout|error` (solo en modo mock). Tabla de resolución y pruebas en `docs/FLUJO_VISION_MOCK.md` y `vision.config.test.ts` (10 casos).
 - **Subtareas:** crear un mock que devuelva detecciones deterministas; montable desde backend con variable de entorno.
 - **Entregables:** stub JSON + servidor mock simple.
 - **Criterios:** Ross puede desarrollar todo sin esperar el modelo.
@@ -292,6 +292,53 @@ FASE 10  Reconocimiento facial (posterior)
 Nota original: esta fase ya corresponde a FASE 0 (plan + auditoría), y no se implementará **ninguna** de las fases 1–10 aún.
 
 **Actualización (2026-09-21, trabajo de Ross, modo mock):** se implementaron las FASE 1–9 del lado de integración **con mock del servicio IA** (cámara web, contrato DTO, mocks, endpoints backend con proxy/fallback-mock, categoría→catálogo, compatibilidad baseline, stock por sucursal seguro, UI recoger/delivery, UX de resultados y suite E2E). Lo que sigue dependiendo de Erika/datos: FASE 2 (servicio IA real Python/OpenCV/YOLO), FASE 3 (dataset y entrenamiento), FASE 6 (fuentes externas reales) y FASE 10 (facial, solo arquitectura). Ver estados `[x]`/`[~]` en WB-1…WB-10 y TC-1…TC-6.
+
+**Actualización (2026-09-28, post-integración, CifRAS CORREGIDAS):** FASE 2 está **COMPLETA** en
+`ia-service` (FastAPI + contrato alineado, schemas Pydantic, `/vision/health` público y
+`/vision/detect` + `/vision/classify` protegidos con `X-Vision-Key`; 71 pruebas en verde).
+
+**Corrección de una confusión previa:** el `mAP50 = 0.489` citado en actualizaciones anteriores
+pertenece al **baseline v1** de `CV5_EVALUACION_MODELO_YOLO.md` (P 0.514 / R 0.490 / mAP50 0.489 /
+mAP50-95 0.326 sobre 68 imágenes y 86 boxes). **No es la métrica del modelo desplegado.** El
+checkpoint que se sirve hoy es
+`ia-service/models/repuestopro_yolo11n_v3_webcam_robust.pt` (5 471 507 bytes), evaluado en
+`CV4_MODELO_V3_WEBCAM_ROBUST.md` con **val mAP50 0.741** (91 imágenes) y **test mAP50 0.775** (85
+imágenes).
+
+**FASE 3 sigue PARCIAL, y no por el mAP.** Aunque 0.741/0.775 supera el objetivo nominal de
+CV-4, la evidencia disponible no permite declarar la fase completa:
+
+1. El **test de V3 cubre solo 3 clases** (alternator, radiator, headlight) y el de baseline solo 4.
+2. `brake_pad`, `brake_rotor` y `brake_caliper` **no tienen ground truth auditado**, por lo que
+   nunca pudieron medirse en val/test.
+3. `air_filter` tiene **0 filas de entrenamiento** en V3 (gap heredado de V2) y sin embargo reporta
+   mAP50 0.590 (val) / 0.778 (test). Esa combinación requiere verificación: con cero ejemplos de
+   esa clase no es esperable ese desempeño, y la documentación admite fotos multiclase
+   (`air_filter + alternator + radiator` en la misma imagen), lo que puede contaminar la métrica.
+4. `ia-service/datasets/processed/` (el dataset con los splits 5288/91/85 y 1612/68/68) **no está
+   en el repositorio**: `.gitignore` excluye `ia-service/datasets/*` salvo los tres manifests. Por
+   tanto **las métricas de V3 no son reproducibles desde este repositorio**.
+**Estado real del dataset (verificado en los tres manifests versionados del repo):**
+
+- `dataset_manifest.csv`: **1344 imágenes** de origen en 8 clases (alternator 200, brake_pad 198,
+  brake_rotor 186, brake_caliper 184, radiator 179, oil_filter 179, headlight 169, air_filter 49),
+  de dos fuentes: `gpiosenka/car-parts-40-classes` v3 (1295) y
+  `khaledchawa/car-engine-bay-pictures` v2 (49).
+- `annotation_batch_manifest.csv`: **749 filas** → **700 en `PENDING` con `has_ground_truth=false` y
+  `label_path` vacío**; solo **49 `ANNOTATED`**, todas de `air_filter`.
+- `review_manifest.csv`: 80 filas, las 80 `APPROVED` por revisión visual, pero con
+  `review_label_path` vacío salvo las 10 de `air_filter`.
+
+Es decir: **existe ground truth real para 1 de las 8 clases**. La afirmación anterior de "0
+anotaciones, 100% sin anotación" era incorrecta; la situación real es peor en cobertura pero mejor
+en exactitud. FASE 3 = **PENDIENTE IMPORTANTE** (anotar las 7 clases restantes, reconstruir
+`processed/`, repetir CV-5 sobre las 8 clases y resolver la discrepancia de `air_filter`).
+
+**CV-8 (umbral de confianza oficial) sigue PENDIENTE.** FASE 4 (imagen→categoría→catálogo) queda
+habilitada con provider **HTTP real**, y el mock **ya no es un fallback silencioso en producción**
+(sin `VISION_IA_URL` en modo remoto la API responde 503). Móvil→visión: `ScannerScreen` sigue en
+OCR legacy (`POST /api/products/search-image`, endpoint autenticado) — **PENDIENTE ERIKA**. Ver
+Anexo B de la auditoría.
 
 ---
 

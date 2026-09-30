@@ -78,6 +78,7 @@ export default function PublicProductsPage() {
   const [years, setYears] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
+  const [errorBusqueda, setErrorBusqueda] = useState(false);
 
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("");
@@ -235,6 +236,7 @@ export default function PublicProductsPage() {
 
   useEffect(() => {
     setLoading(true);
+    setErrorBusqueda(false);
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     if (brand) params.set("brand", brand);
@@ -249,6 +251,7 @@ export default function PublicProductsPage() {
         setProducts(res.data.products);
         setTotal(res.data.pagination.total);
       })
+      .catch(() => setErrorBusqueda(true))
       .finally(() => setLoading(false));
   }, [search, brand, model, year, category, detalles]);
 
@@ -587,7 +590,11 @@ export default function PublicProductsPage() {
         ) : products.length === 0 ? (
           <div className="text-center py-20 bg-dark-800/30 border border-white/[0.06] rounded-2xl">
             <Search size={48} className="text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg mb-2">No encontramos productos con estos criterios</p>
+            {errorBusqueda ? (
+              <p className="text-gray-400 text-lg mb-2">Error al cargar los productos. Intenta nuevamente.</p>
+            ) : (
+              <p className="text-gray-400 text-lg mb-2">No encontramos productos con estos criterios</p>
+            )}
             <div className="flex items-center justify-center gap-3 mt-4">
               <button
                 onClick={clearFilters}

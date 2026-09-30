@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize, invalidateRoleCache } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -140,9 +141,7 @@ router.put("/roles/:id/columns", authorize("ADMIN"), async (req: AuthRequest, re
 router.get("/audit", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const { page = "1", limit = "20" } = req.query;
-    const pg = Math.max(1, Number(page) || 1);
-    const take = Math.min(100, Math.max(1, Number(limit) || 20));
-    const skip = (pg - 1) * take;
+    const { page: pg, limit: take, skip } = parsePagination(page, limit, 100);
 
     const [logs, total] = await Promise.all([
       prisma.auditLog.findMany({

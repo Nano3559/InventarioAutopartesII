@@ -36,11 +36,15 @@ export default function PublicProductDetailPage() {
   const { id } = useParams();
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (id) {
+      setLoading(true);
+      setError(false);
       api.get(`/public/products/${id}`)
         .then((res) => setProduct(res.data))
+        .catch(() => setError(true))
         .finally(() => setLoading(false));
     }
   }, [id]);
@@ -49,6 +53,20 @@ export default function PublicProductDetailPage() {
     return (
       <div className="min-h-screen bg-dark-950 flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-2 border-primary-500 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-dark-950 flex items-center justify-center">
+        <div className="text-center">
+          <Search size={48} className="text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-400 text-lg">Error al cargar el producto</p>
+          <Link to="/productos" className="text-primary-400 hover:text-primary-300 text-sm mt-4 inline-block">
+            ← Volver al catálogo
+          </Link>
+        </div>
       </div>
     );
   }

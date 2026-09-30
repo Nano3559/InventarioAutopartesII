@@ -6,10 +6,11 @@ CV-6 Paso 4: POST /vision/classify (clasificación auxiliar = detección princip
 """
 from datetime import datetime, timezone
 import logging
+import secrets
 from typing import Any
 
 import numpy as np
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from starlette.concurrency import run_in_threadpool
 
@@ -23,6 +24,31 @@ router = APIRouter(prefix="/vision", tags=["vision"])
 
 FORMATOS_PERMITIDOS = {"image/jpeg", "image/png", "image/webp"}
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB
+
+
+async def verificar_secreto(x_vision_key: str | None = Header(default=None)) -> None:
+    """Autenticación backend -> servicio (opción B del hardening).
+
+    - Si `VISION_IA_KEY` está definida, TODAS las rutas exigen el header
+      `X-Vision-Key` con ese valor (comparación en tiempo constante sobre bytes,
+      para que un valor no ASCII no provoque un TypeError -> HTTP 500).
+    - Si NO está definida: en development el servicio queda abierto (solo red
+      interna privada) y se advierte al arrancar; en producción se rechaza el
+      tráfico con 503 (fail-closed) en vez de exponer inferencia abierta.
+    """
+    esperado = settings.ia_key
+    if not esperado:
+        if settings.auth_obligatoria:
+            _log.error("VISION_IA_KEY no configurada en produccion: rejecting request (fail-closed)")
+            raise HTTPException(status_code=503, detail="autenticacion_no_configurada")
+        _log.warning("VISION_IA_KEY no configurada: servicio abierto (solo development/red interna)")
+        return
+    if not x_vision_key:
+        _log.warning("peticion rechazada: header X-Vision-Key ausente")
+        raise HTTPException(status_code=401, detail="no_autorizado")
+    if not secrets.compare_digest(x_vision_key.encode("utf-8"), esperado.encode("utf-8")):
+        _log.warning("peticion rechazada: header X-Vision-Key invalido")
+        raise HTTPException(status_code=401, detail="no_autorizado")
 
 
 async def _validar_upload(image: UploadFile) -> bytes:
@@ -101,7 +127,7 @@ def health() -> JSONResponse:
 
 
 @router.post("/detect", response_model=DetectResponse)
-async def detect(image: UploadFile = File(...)):
+async def detect(image: UploadFile = File(...), _auth: None = Depends(verificar_secreto)):
     """Detección de autopartes con YOLO.
 
     Recibe una imagen multipart/form-data en el campo ``image``
@@ -118,7 +144,7 @@ async def detect(image: UploadFile = File(...)):
 
 
 @router.post("/classify", response_model=ClassifyResponse)
-async def classify(image: UploadFile = File(...)):
+async def classify(image: UploadFile = File(...), _auth: None = Depends(verificar_secreto)):
     """Clasificación auxiliar: la detección de MAYOR confianza como clase.
 
     Reutiliza la misma inferencia YOLO de /vision/detect (misma capa de

@@ -4,6 +4,7 @@ import { authenticate, authorizeModule } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parsePositiveInt, parseString } from "../../shared/middlewares/validate";
 import { isPrismaClientError } from "../../shared/utils/errors";
+import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -29,9 +30,7 @@ router.get("/", authorizeModule("movimientos"), async (req: AuthRequest, res: Re
       }
     }
 
-    const pg = Math.max(1, Number(page) || 1);
-    const take = Math.min(100, Math.max(1, Number(limit) || 20));
-    const skip = (pg - 1) * take;
+    const { page: pg, limit: take, skip } = parsePagination(page, limit, 100);
 
     const [movements, total] = await Promise.all([
       prisma.movement.findMany({

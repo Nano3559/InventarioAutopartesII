@@ -111,10 +111,11 @@ export default function SalesPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    api.get("/categories").then((r) => {
-      const list = Array.isArray(r.data) ? r.data : r.data.categories || [];
-      setCategories(list);
-    }).catch(() => {});
+    api.get("/products/filters").then((r) => {
+      setCategories(r.data.categories || []);
+    }).catch(() => {
+      toast.error("Error al cargar las categorías");
+    });
   }, []);
 
   // --- Cart ---

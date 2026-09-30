@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { isPrismaClientError } from "../../shared/utils/errors";
+import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -24,9 +25,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       where.sale = { locationId: req.user.locationId };
     }
 
-    const pg = Math.max(1, Number(page) || 1);
-    const take = Math.min(500, Math.max(1, Number(limit) || 50));
-    const skip = (pg - 1) * take;
+    const { page: pg, limit: take, skip } = parsePagination(page, limit, 500);
 
     const [payments, total] = await Promise.all([
       prisma.payment.findMany({

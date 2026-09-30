@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import type { Server } from "node:http";
 import type { Express } from "express";
+import jwt from "jsonwebtoken";
 
 /**
  * Utilidades compartidas para los tests de integración (*.itest.ts).
@@ -139,4 +140,19 @@ export async function loginAndGetToken(baseUrl: string, email: string, password:
     throw new Error("TESTING: login válido no devolvió un token.");
   }
   return body.token;
+}
+
+/**
+ * Emite un JWT de test con la misma clave que usa la suite, sin pasar por /api/auth/login.
+ *
+ * Existe porque el login tiene rate limit por IP: una suite que crea muchos usuarios
+ * (por ejemplo para probar roles futuros) se topa con 429 y falla por un límite de
+ * seguridad, no por el comportamiento que intenta verificar. No toca el código de
+ * autenticación: firma con el mismo `JWT_SECRET` de `resolveTestEnv`.
+ * El payload replica `AuthPayload` (`userId`, `email`, `role`, `locationId`): es el
+ * identificador que las rutas leen del token, así que un token con otra forma de `id`
+ * haría que `req.user.userId` fuera `undefined` y las consultas por usuario fallaran.
+ */
+export function mintTestToken(payload: { userId: number; email: string; role: string; locationId: number | null }): string {
+  return jwt.sign(payload, process.env.JWT_SECRET as string, { algorithm: "HS256", expiresIn: "1h" });
 }

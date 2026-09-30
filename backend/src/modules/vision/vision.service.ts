@@ -7,6 +7,7 @@ import { visionProvider, withVisionTimeout } from "./vision.provider";
 import { mapearCategoria } from "./categoryMapping";
 import { normalizarTexto } from "./normalize";
 import { availabilityView, DisponibilidadView, SucursalDisponibilidad, StockPorSucursal } from "./availability";
+import { resolveLocationScope, tieneAlcanceGlobal } from "../../shared/utils/scope";
 import { CompatibilityProviderFactory, CompatibilidadConsulta, CompatibilidadProducto, VehiculoQuery } from "./compatibility";
 import { logger } from "../../shared/utils/logger";
 
@@ -100,17 +101,26 @@ interface ProductoConRelation {
   }>;
 }
 
+/**
+ * Inventarios que el usuario puede ver, según el alcance compartido
+ * (`shared/utils/scope.ts`). Reutiliza la MISMA allow-list que search-image para que
+ * visión no tenga una segunda política que pueda divergir.
+ */
 function stockVisible(producto: ProductoConRelation, usuario?: AuthRequest["user"] | null) {
-  if (usuario?.role === "TIENDA" && usuario.locationId != null) {
-    return producto.inventories.filter((inv) => inv.locationId === usuario.locationId);
-  }
-  return producto.inventories;
+  if (tieneAlcanceGlobal(usuario)) return producto.inventories;
+  const locationId = resolveLocationScope(usuario);
+  if (locationId == null) return [];
+  return producto.inventories.filter((inv) => inv.locationId === locationId);
 }
 
-function serializarPublico(producto: ProductoConRelation, compatibilidad: CompatibilidadProducto): CandidatoVisionBase {
-  const stockTotal = producto.inventories.reduce((sum, inv) => sum + inv.stock, 0);
-  const disponibilidad = availabilityView(stockTotal);
-  const disponibilidadPorSucursal = producto.inventories
+/** Disponibilidad agregada de un conjunto de inventarios, con el bucket seguro. */
+function disponibilidadDe(inventarios: ProductoConRelation["inventories"]) {
+  return availabilityView(inventarios.reduce((sum, inv) => sum + inv.stock, 0));
+}
+
+/** Disponibilidad por sucursal TIENDA, limitada a los inventarios visibles. */
+function disponibilidadPorSucursalDe(inventarios: ProductoConRelation["inventories"]) {
+  return inventarios
     .filter((inv) => inv.location.type === "TIENDA")
     .slice(0, MAX_SUCURSALES_POR_CANDIDATO)
     .map((inv) => ({
@@ -119,7 +129,22 @@ function serializarPublico(producto: ProductoConRelation, compatibilidad: Compat
       tipo: inv.location.type,
       ...availabilityView(inv.stock),
     }));
+}
 
+/**
+ * Respuesta PÚBLICA (anónimo). El contrato público solo puede revelar la
+ * disponibilidad agregada (`disponibilidad`, que es un bucket tipo
+ * "DISPONIBLE/ÚLTIMAS_UNIDADES/AGOTADO"), nunca el stock exacto ni las
+ * ubicaciones internas.
+ *
+ * Por eso `disponibilidadPorSucursal` viaja VACÍO: cada entrada de ese arreglo
+ * lleva `locationId`, `nombre` y `tipo` de la sede, que son datos internos de la
+ * operación. Se conserva el campo (en vez de borrarlo) para no romper el tipo
+ * `CandidatoVisionBase` ni a los consumidores del catálogo público, que leen
+ * `disponibilidad` y `precio_unitario`. Es el mismo criterio que aplica
+ * `serializeProductoPublico` de búsqueda por imagen.
+ */
+function serializarPublico(producto: ProductoConRelation, compatibilidad: CompatibilidadProducto): CandidatoVisionBase {
   return {
     id: producto.id,
     itemCode: producto.itemCode,
@@ -131,16 +156,35 @@ function serializarPublico(producto: ProductoConRelation, compatibilidad: Compat
     categoria: producto.category?.name ?? null,
     price1: Number(producto.price1),
     compatibilidad,
-    disponibilidad,
-    disponibilidadPorSucursal,
+    disponibilidad: disponibilidadDe(producto.inventories),
+    disponibilidadPorSucursal: [],
   };
 }
 
+/**
+ * Respuesta interna. Además del stock exacto, se recalculan `disponibilidad` y
+ * `disponibilidadPorSucursal` sobre los inventarios VISIBLES: si se arrastrara el
+ * objeto público y solo se acotara `stockTotal`, un usuario de tienda seguiría
+ * leyendo que hay existencias en otras tiendas, que es exactamente lo que el
+ * aislamiento de
+ * search-image evita. ADMIN/INVENTARIO conservan la vista global (su operación
+ * legítima) porque para ellos `visibles === producto.inventories`.
+ */
 function serializarInterno(producto: ProductoConRelation, compatibilidad: CompatibilidadProducto, usuario?: AuthRequest["user"] | null): CandidatoVisionInterno {
-  const base = serializarPublico(producto, compatibilidad);
   const visibles = stockVisible(producto, usuario);
   return {
-    ...base,
+    id: producto.id,
+    itemCode: producto.itemCode,
+    name: producto.name,
+    brand: producto.brand,
+    model: producto.model,
+    year: producto.year,
+    image: producto.image,
+    categoria: producto.category?.name ?? null,
+    price1: Number(producto.price1),
+    compatibilidad,
+    disponibilidad: disponibilidadDe(visibles),
+    disponibilidadPorSucursal: disponibilidadPorSucursalDe(visibles),
     price2: Number(producto.price2 ?? 0),
     stockTotal: visibles.reduce((sum, inv) => sum + inv.stock, 0),
     stockPorSucursal: visibles.map((inv) => ({

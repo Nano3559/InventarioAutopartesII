@@ -73,6 +73,8 @@ oil_filter, air_filter, radiator, headlight
 | `VISION_DEVICE`        | `0`     | Dispositivo: `"0"` = primera GPU, `"cpu"`, `"cuda:0"`, etc. |
 | `VISION_MAX_IMAGE_PIXELS` | `40000000` | Límite de píxeles por imagen (anti image-bomb). |
 | `VISION_WARMUP`        | `true`  | Predicción sintética al arrancar para calentar CUDA/Torch. |
+| `VISION_IA_KEY`        | (vacío) | Secreto compartido con el backend para el header `X-Vision-Key`. Si se define, `/vision/detect` y `/vision/classify` lo exigen. |
+| `VISION_ENV`           | `development` | Con `production`/`prod` la autenticación pasa a ser obligatoria: sin `VISION_IA_KEY` el servicio falla cerrado (503). |
 
 Ejemplo con override de modelo:
 
@@ -128,8 +130,22 @@ validación de uploads, health y hardening).
 ## Conexión con el backend
 
 El backend Express llama a este servicio (p. ej. `http://localhost:8000`)
-en las rutas `/vision/*`. No requiere token: la confianza mínima de
-producción (`0.55`) la aplica el backend, no este servicio.
+en las rutas `/vision/*`.
+
+La confianza mínima de producción (`0.55`) la aplica el backend, no este servicio.
+
+Autenticación: `/vision/detect` y `/vision/classify` exigen el header
+`X-Vision-Key` cuando `VISION_IA_KEY` está definida (mismo valor en el backend y
+en este servicio). Sin `VISION_IA_KEY`:
+
+- en **development** el servicio responde abierto, y al arrancar registra una
+  advertencia; solo es aceptable en red interna privada;
+- en **production** (`VISION_ENV=production`) la autenticación es obligatoria:
+  si falta el secreto el servicio **falla cerrado** y responde `503` en lugar de
+  exponer inferencia abierta.
+
+`/vision/health` queda siempre abierto a propósito (lo usan sondas y
+balanceadores) y no expone datos sensibles.
 
 ## Estructura de carpetas
 

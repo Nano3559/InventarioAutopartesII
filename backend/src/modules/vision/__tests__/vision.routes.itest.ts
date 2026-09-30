@@ -1,9 +1,13 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
-import bcrypt from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
+// IMPORTANTE: `helpers` debe ser el primer import del proyecto. Importarlo antes
+// de `@prisma/client` hace que este último cargue el `.env` (Neon remoto) y el
+// guardián de `assertLocalTestUrl` aborta la suite. Los imports reales van
+// después a propósito.
 import { startTestServer, TestServer, loginAndGetToken } from "../../../testing/helpers";
 import { seed, cleanup, SeedContext } from "../../../testing/seed";
+import bcrypt from "bcryptjs";
+import { PrismaClient } from "@prisma/client";
 
 /**
  * Búsqueda por visión (rotas /api/vision, modo mock):
@@ -24,6 +28,8 @@ let categoryCreada = false;
 let adminToken: string;
 let tiendaToken: string;
 let tiendaSinUbicacionToken: string;
+let tiendaBToken: string;
+let tiendaBId = 0;
 
 const PASSWORD = "TestPassword123!";
 
@@ -103,10 +109,34 @@ before(async () => {
     },
   });
   tiendaSinUbicacionToken = await loginAndGetToken(server.baseUrl, sinUbicacion.email, PASSWORD);
+
+  // Segunda tienda, para comprobar el aislamiento entre ubicaciones: TIENDA A no debe
+  // ver la disponibilidad de TIENDA B ni del almacén.
+  const tiendaB = await ctx.prisma.location.create({
+    data: { name: `TIENDA-B-${ctx.ns}`, type: "TIENDA" },
+  });
+  tiendaBId = tiendaB.id;
+
+  // 77 unidades en TIENDA B: un valor que no coincide con ninguna otra ubicación, para
+  // que cualquier contaminación en la respuesta sea evidente.
+  await ctx.prisma.inventory.createMany({
+    data: productIds.slice(0, 3).map((productId) => ({ productId, locationId: tiendaB.id, stock: 77, minStock: 1 })),
+  });
+
+  const usuarioTiendaB = await ctx.prisma.user.create({
+    data: {
+      name: "Vendedor tienda B",
+      email: "tienda.b.vision@itest.local",
+      password: hash,
+      roleId: ctx.roleIds.tienda,
+      locationId: tiendaB.id,
+    },
+  });
+  tiendaBToken = await loginAndGetToken(server.baseUrl, usuarioTiendaB.email, PASSWORD);
 });
 
 after(async () => {
-  await ctx.prisma.user.deleteMany({ where: { email: "tienda.noloc.vision@itest.local" } });
+  await ctx.prisma.user.deleteMany({ where: { email: { in: ["tienda.noloc.vision@itest.local", "tienda.b.vision@itest.local"] } } });
   await cleanup(ctx);
   if (categoryCreada) {
     const p = new PrismaClient();
@@ -164,9 +194,19 @@ test("público: detección válida 200 con serialización SEGURA (sin price2/sto
   const sinCategoria = body.candidatos.find((c: any) => c.itemCode === SIN_CATEGORIA.itemCode);
   assert.equal(sinCategoria, undefined, "producto sin categoría queda excluido");
 
-  const hiluxDisponibilidad = hilux.disponibilidadPorSucursal;
-  assert.ok(hiluxDisponibilidad.every((s: any) => typeof s.nivel === "string"), "nivel por sucursal público");
-  assert.ok(hiluxDisponibilidad.every((s: any) => typeof s.stock === "undefined"), "nunca cantidad por sucursal");
+  // La disponibilidad pública es SOLO el bucket agregado: el desglose por sede
+  // (`locationId`, `nombre`, `tipo`) son datos internos de la operación y no
+  // pueden viajar en una respuesta anónima.
+  assert.ok(typeof hilux.disponibilidad.nivel === "string", "el público sí recibe el bucket de disponibilidad");
+  assert.deepEqual(hilux.disponibilidadPorSucursal, [], "el público nunca recibe el desglose por sede");
+
+  // Red de seguridad: ningún candidato público puede traer identificadores de sede.
+  for (const cand of body.candidatos) {
+    assert.equal(cand.locationId, undefined, `${cand.itemCode}: sin locationId`);
+    assert.equal(cand.nombre, undefined, `${cand.itemCode}: sin nombre de sede`);
+    assert.equal(cand.tipo, undefined, `${cand.itemCode}: sin tipo de sede`);
+    assert.ok(!JSON.stringify(cand).includes(`"locationId"`), `${cand.itemCode}: sin locationId en el JSON`);
+  }
 });
 
 test("público: confianza baja → 422 VISION_BAJA_CONFIANZA", async () => {
@@ -237,8 +277,9 @@ test("interno: detección válida 200 con stock exacto y price2 (ADMIN ve global
   const hilux = body.candidatos.find((c: any) => c.itemCode === FRENO_HILUX.itemCode);
   assert.ok(hilux, "candidato Hilux presente");
   assert.equal(hilux.price2, 200000, "price2 visible en modo interno");
-  assert.equal(hilux.stockTotal, FRENO_HILUX.stockTienda + FRENO_HILUX.stockAlmacen, "stock total exacto");
-  assert.equal(hilux.stockPorSucursal.length, 2, "dos sucursales (tienda + almacén)");
+  // TIENDA A + almacén + TIENDA B (creada en el `before` para las pruebas de aislamiento).
+  assert.equal(hilux.stockTotal, FRENO_HILUX.stockTienda + FRENO_HILUX.stockAlmacen + 77, "stock total exacto");
+  assert.equal(hilux.stockPorSucursal.length, 3, "tres sucursales (tienda A + almacén + tienda B)");
 
   const hiluxSuc = hilux.stockPorSucursal.find((s: any) => s.locationId === ctx.locationIds.tienda);
   assert.equal(hiluxSuc.stock, FRENO_HILUX.stockTienda);
@@ -265,6 +306,118 @@ test("interno: TIENDA con ubicación ve SOLO su sucursal (stock total propio)", 
   assert.equal(hilux.stockTotal, FRENO_HILUX.stockTienda, "TIENDA solo suma su propia ubicación");
   assert.equal(hilux.stockPorSucursal.length, 1);
   assert.equal(hilux.stockPorSucursal[0].locationId, ctx.locationIds.tienda);
+});
+
+// El leaks original: `disponibilidad` y `disponibilidadPorSucursal` se arrastraban
+// calculadas sobre el stock GLOBAL (el spread de `serializarPublico`), así que acotar
+// solo `stockTotal` seguía dejando ver que había existencias en otras tiendas.
+test("Aislamiento visión — TIENDA A no recibe disponibilidad de TIENDA B ni del almacén", async () => {
+  const { fd, headers } = fdConImagen();
+  const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+    method: "POST",
+    headers: { ...headers, authorization: `Bearer ${tiendaToken}` },
+    body: fd,
+  });
+  assert.equal(res.status, 200);
+  const body: any = await res.json();
+
+  for (const codigo of [FRENO_HILUX.itemCode, FRENO_COROLLA.itemCode, FRENO_AVEO.itemCode]) {
+    const cand = body.candidatos.find((c: any) => c.itemCode === codigo);
+    assert.ok(cand, `candidato ${codigo} presente`);
+
+    // No puede aparecer la ubicación de la otra tienda.
+    assert.equal(
+      cand.disponibilidadPorSucursal.some((s: any) => s.locationId === tiendaBId),
+      false,
+      `${codigo}: no debe filtrar la disponibilidad de TIENDA B`,
+    );
+    // El almacén se excluye de `disponibilidadPorSucursal` por diseño (solo TIENDA), así
+    // que su ausencia aquí no distingue un bug; lo que sí lo distingue es que la lista
+    // contenga únicamente la tienda propia.
+    assert.equal(
+      cand.disponibilidadPorSucursal.length,
+      1,
+      `${codigo}: una sola sucursal, la propia`,
+    );
+    assert.equal(cand.disponibilidadPorSucursal[0].locationId, ctx.locationIds.tienda);
+
+    // La disponibilidad agregada debe derivarse del stock VISIBLE, no del global.
+    // Umbrales: >10 DISPONIBLE, >0 POCAS_UNIDADES, 0 NO_DISPONIBLE.
+    // Si se calculara sobre el inventario global, el nivel sería DISPONIBLE (el global
+    // supera 10 por el almacén y TIENDA B), delator de que hay stock en terceros.
+    const nivelEsperado = cand.stockTotal > 10 ? "DISPONIBLE" : cand.stockTotal > 0 ? "POCAS_UNIDADES" : "NO_DISPONIBLE";
+    assert.equal(
+      cand.disponibilidad.nivel,
+      nivelEsperado,
+      `${codigo}: la disponibilidad debe derivarse del stock visible, no del global`,
+    );
+    assert.equal(cand.stockPorSucursal.length, 1);
+  }
+});
+
+test("Aislamiento visión — dos tiendas ven inventarios distintos y ninguno el del otro", async () => {
+  const { fd: fdA, headers: headersA } = fdConImagen();
+  const resA = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+    method: "POST",
+    headers: { ...headersA, authorization: `Bearer ${tiendaToken}` },
+    body: fdA,
+  });
+  assert.equal(resA.status, 200);
+  const bodyA: any = await resA.json();
+
+  const { fd: fdB, headers: headersB } = fdConImagen();
+  const resB = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+    method: "POST",
+    headers: { ...headersB, authorization: `Bearer ${tiendaBToken}` },
+    body: fdB,
+  });
+  assert.equal(resB.status, 200);
+  const bodyB: any = await resB.json();
+
+  const hiluxA = bodyA.candidatos.find((c: any) => c.itemCode === FRENO_HILUX.itemCode);
+  const hiluxB = bodyB.candidatos.find((c: any) => c.itemCode === FRENO_HILUX.itemCode);
+  assert.ok(hiluxA && hiluxB);
+
+  assert.equal(hiluxA.stockTotal, FRENO_HILUX.stockTienda, "TIENDA A ve su stock");
+  assert.equal(hiluxB.stockTotal, 77, "TIENDA B ve su stock");
+  assert.notEqual(hiluxA.stockTotal, hiluxB.stockTotal, "cada tienda ve un valor distinto");
+
+  assert.equal(hiluxA.stockPorSucursal[0].locationId, ctx.locationIds.tienda);
+  assert.equal(hiluxB.stockPorSucursal[0].locationId, tiendaBId);
+});
+
+test("Aislamiento visión — ADMIN conserva el alcance global", async () => {
+  const { fd, headers } = fdConImagen();
+  const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+    method: "POST",
+    headers: { ...headers, authorization: `Bearer ${adminToken}` },
+    body: fd,
+  });
+  assert.equal(res.status, 200);
+  const body: any = await res.json();
+
+  const hilux = body.candidatos.find((c: any) => c.itemCode === FRENO_HILUX.itemCode);
+  assert.ok(hilux, "candidato Hilux presente");
+
+  // Global = tienda A + almacén + tienda B.
+  const stockGlobal = FRENO_HILUX.stockTienda + FRENO_HILUX.stockAlmacen + 77;
+  assert.equal(hilux.stockTotal, stockGlobal, "ADMIN suma todas las ubicaciones");
+  assert.equal(hilux.stockPorSucursal.length, 3, "ADMIN ve las tres ubicaciones");
+
+  const idsVistos = hilux.stockPorSucursal.map((s: any) => s.locationId);
+  assert.ok(idsVistos.includes(ctx.locationIds.tienda));
+  assert.ok(idsVistos.includes(ctx.locationIds.almacen));
+  assert.ok(idsVistos.includes(tiendaBId));
+
+  // La disponibilidad global debe seguir reflejando TODO el inventario.
+  assert.equal(hilux.disponibilidad.nivel, "DISPONIBLE");
+  // `disponibilidadPorSucursal` solo incluye ubicaciones TIENDA (el almacén se excluye
+  // por diseño), así que ADMIN debe ver las dos tiendas.
+  assert.equal(hilux.disponibilidadPorSucursal.length, 2, "ADMIN ve la disponibilidad de ambas tiendas");
+  const idsDisponibilidad = hilux.disponibilidadPorSucursal.map((s: any) => s.locationId);
+  assert.ok(idsDisponibilidad.includes(ctx.locationIds.tienda));
+  assert.ok(idsDisponibilidad.includes(tiendaBId));
+  assert.equal(idsDisponibilidad.includes(ctx.locationIds.almacen), false, "el almacén no se publica como sucursal");
 });
 
 test("interno: caso mapa de categoria inexistente → 200 con candidatos vacíos y nota", async () => {

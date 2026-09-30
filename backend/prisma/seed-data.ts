@@ -351,6 +351,14 @@ export async function seedData(prisma: PrismaClient) {
   const requestStatuses: Array<"PENDIENTE" | "RECIBIDO_POR_INVENTARIO" | "PREPARANDO" | "ENTREGADO" | "RECIBIDO_POR_TIENDA" | "CANCELADO"> = ["PENDIENTE", "RECIBIDO_POR_INVENTARIO", "PREPARANDO", "ENTREGADO", "RECIBIDO_POR_TIENDA"];
   const existingRequests = await prisma.productRequest.count();
   if (existingRequests === 0) {
+  // El índice único parcial ProductRequest_solicitud_abierta_unica admite UNA sola
+  // solicitud abierta por (producto, ubicación). Con productos y tiendas al azar, dos
+  // iteraciones podían caer en el mismo par con estado activo y la segunda create
+  // abortaba TODO el seed con P2002, dejando la base a medio sembrar. Se lleva un Set
+  // de pares ya usados y, si se repite, se fuerza un estado terminal; además cada
+  // create se protege por si la base ya tuviera datos.
+  const paresUsados = new Set<string>();
+  let creadas = 0;
   for (let i = 0; i < 25; i++) {
     const prod = createdProducts[Math.floor(Math.random() * createdProducts.length)];
     const tiendaUser = tiendaUsers[Math.floor(Math.random() * 3)];
@@ -358,18 +366,35 @@ export async function seedData(prisma: PrismaClient) {
     const date = new Date(now);
     date.setDate(date.getDate() - Math.floor(Math.random() * 30));
 
-    await prisma.productRequest.create({
-      data: {
-        productId: prod.id,
-        quantity: Math.floor(Math.random() * 20) + 1,
-        requestedById: tiendaUser.id,
-        locationId: tiendaLoc.id,
-        status: requestStatuses[Math.floor(Math.random() * requestStatuses.length)],
-        date,
-      },
-    });
+    const par = `${prod.id}:${tiendaLoc.id}`;
+    let status = requestStatuses[Math.floor(Math.random() * requestStatuses.length)];
+    if (paresUsados.has(par)) {
+      status = "RECIBIDO_POR_TIENDA";
+    } else {
+      paresUsados.add(par);
+    }
+
+    try {
+      await prisma.productRequest.create({
+        data: {
+          productId: prod.id,
+          quantity: Math.floor(Math.random() * 20) + 1,
+          requestedById: tiendaUser.id,
+          locationId: tiendaLoc.id,
+          status,
+          date,
+          // Sin expectedDate el job de reposición nunca la activaría (su filtro es
+          // expectedDate <= now y NULL queda excluido).
+          expectedDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        },
+      });
+      creadas++;
+    } catch (err: any) {
+      if (err?.code === "P2002") continue;
+      throw err;
+    }
   }
-  console.log("25 solicitudes creadas");
+  console.log(`${creadas} solicitudes creadas`);
   } else {
     console.log(`Solicitudes ya existen (${existingRequests}); omitiendo demo.`);
   }

@@ -3,15 +3,17 @@ import { PrismaClient } from "@prisma/client";
 import * as XLSX from "xlsx";
 import { yearRangesOverlap } from "../../utils/yearRanges";
 import { parsePagination } from "../../shared/utils/pagination";
-import { authenticate, authorize, optionalAuth } from "../../shared/middlewares/auth";
+import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import {
   imageUpload,
   procesarBusquedaPorImagen,
+  resolveLocationScope,
   serializeProductoInterno,
 } from "./searchImage.service";
 import { ocrAuthenticatedLimiter } from "../../shared/middlewares/rateLimit";
 import { excelUpload } from "../../shared/utils/upload";
+import { puedeVerCostos, puedeVerPrecioMayorista, alcanceDeFiltro, SIN_ALCANCE } from "../../shared/utils/scope";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -20,7 +22,14 @@ const prisma = new PrismaClient();
 const upload = excelUpload;
 
 // GET / — Listar productos con filtros, búsqueda y paginación
-router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
+//
+// `authenticate` (ya no `optionalAuth`): este es el catálogo INTERNO y devuelve existencias
+// exactas por ubicación. Se comprobó que no hay ningún consumidor anónimo legítimo —los
+// 9 llamadores del panel web y del móvil están tras `ProtectedRoute`/`RoleRoute` o la rama
+// autenticada del `AppNavigator`, y el catálogo público usa `/api/public/products`—, así que
+// mantenerlo anónimo solo exponía la suma de existencias de toda la cadena y permitía
+// sondear el stock de cualquier sede con `?locationId`.
+router.get("/", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const {
       search, brand, manufacturer, model, year, oemCode, factoryCode,
@@ -66,8 +75,26 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
       }
     }
 
+    // Alcance por rol, allow-list (ver shared/utils/scope.ts). Antes se comprobaba
+    // `role === "TIENDA"`, lo que dejaba a cualquier otro rol —incluidos los futuros o
+    // desconocidos— con la vista global de stock cuando no tenía ubicación asignada.
+    //
+    // La ruta exige token, así que `req.user` siempre existe: ya no queda una rama
+    // anónima a la que haya que preservar un comportamiento público previo. El catálogo
+    // público es `/api/public/*`.
+    const alcanceListado = alcanceDeFiltro(req.user);
+    if (alcanceListado === SIN_ALCANCE) {
+      return res.status(403).json({ message: "Usuario sin tienda asignada" });
+    }
+    // `null` = alcance global (solo ADMIN/INVENTARIO); un número = ubicación forzada.
+    const esTienda = alcanceListado !== null;
+
     if (queryLocationId && typeof queryLocationId === "string") {
-      AND.push({ inventories: { some: { locationId: Number(queryLocationId), stock: { gt: 0 } } } });
+      // Un usuario acotado nunca puede sondear el stock de otra ubicación: se fuerza su
+      // propia tienda y se ignora el parámetro (antes `?locationId=<otra tienda>`
+      // funcionaba como oráculo de existencias).
+      const objetivo = esTienda ? alcanceListado : Number(queryLocationId);
+      if (objetivo) AND.push({ inventories: { some: { locationId: objetivo, stock: { gt: 0 } } } });
     }
 
     if (AND.length > 0) where.AND = AND;
@@ -75,7 +102,14 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
     const { skip, take, page: cleanPage } = parsePagination(page, limit);
 
     const hasYearFilter = year && typeof year === "string";
-    const filterLocationId = queryLocationId && typeof queryLocationId === "string" ? Number(queryLocationId) : null;
+    // El stock que se devuelve se calcula sobre UNA ubicación: la del parámetro, o la
+    // propia del TIENDA. Sin esto, un TIENDA recibía la suma de TODAS las ubicaciones
+    // (almacenes y demás tiendas) y con ello la disponibilidad de la cadena.
+    const filterLocationId = esTienda
+      ? alcanceListado
+      : queryLocationId && typeof queryLocationId === "string"
+        ? Number(queryLocationId)
+        : null;
 
     let allProducts = await prisma.product.findMany({
       where,
@@ -92,8 +126,6 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
 
     const total = allProducts.length;
     const products = allProducts.slice(skip, skip + take);
-
-    const isAuth = !!req.user;
 
     const result = products.map((p) => {
       const stock = filterLocationId
@@ -116,12 +148,16 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
         category: p.category?.name || null,
         stock,
       };
-      if (isAuth) {
-        item.price1 = p.price1;
-        item.price2 = p.price2;
-        item.wholesalePrice = p.wholesalePrice;
-        item.cost = p.cost;
-      }
+      item.price1 = p.price1;
+      item.price2 = p.price2;
+      // El precio mayorista es información comercial sensible: antes lo recibía CUALQUIER
+      // usuario autenticado solo por tener sesión. Allow-list en shared/utils/scope.ts.
+      if (puedeVerPrecioMayorista(req.user)) item.wholesalePrice = p.wholesalePrice;
+      // El costo de compra es información financiera interna: /api/costs y
+      // /api/prices ya son solo ADMIN. Aquí se omite en lugar de mandarlo en cero,
+      // que permitiría inferirlo. Allow-list (no `!esTienda`): un rol futuro o
+      // desconocido no debe recibir costos por defecto. Ver shared/utils/scope.ts.
+      if (puedeVerCostos(req.user)) item.cost = p.cost;
       return item;
     });
 
@@ -136,7 +172,9 @@ router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
 });
 
 // GET /filters — Marcas, fabricantes, modelos, años, categorías disponibles
-router.get("/filters", optionalAuth, async (_req: AuthRequest, res: Response) => {
+// Exige token: es el enumerado completo del catálogo interno. El catálogo público tiene su
+// propio `/api/public/filters`, con su propio recorte.
+router.get("/filters", authenticate, async (_req: AuthRequest, res: Response) => {
   try {
     const [brandsRaw, manufacturersRaw, modelsRaw, yearsRaw, categories] = await Promise.all([
       prisma.product.findMany({ select: { brand: true }, orderBy: { brand: "asc" } }),
@@ -159,7 +197,7 @@ router.get("/filters", optionalAuth, async (_req: AuthRequest, res: Response) =>
 });
 
 // GET /:id — Detalle de producto con stock por ubicación
-router.get("/:id", optionalAuth, async (req: AuthRequest, res: Response) => {
+router.get("/:id", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const product = await prisma.product.findUnique({
       where: { id: Number(req.params.id) },
@@ -174,11 +212,15 @@ router.get("/:id", optionalAuth, async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Producto no encontrado" });
     }
 
-    const isAuth = !!req.user;
-    const isTienda = req.user?.role === "TIENDA";
-    const tiendaLocationId = req.user?.locationId || null;
-    const visibleInventories = isTienda && tiendaLocationId
-      ? product.inventories.filter((inv) => inv.locationId === tiendaLocationId)
+    // Allow-list de alcance, igual que en el listado: un rol desconocido sin ubicación
+    // no puede caer en la vista global de inventarios. La ruta exige token, así que
+    // `req.user` siempre existe.
+    const alcanceDetalle = alcanceDeFiltro(req.user);
+    if (alcanceDetalle === SIN_ALCANCE) {
+      return res.status(403).json({ message: "Tu usuario no tiene una tienda asignada" });
+    }
+    const visibleInventories = alcanceDetalle !== null
+      ? product.inventories.filter((inv) => inv.locationId === alcanceDetalle)
       : product.inventories;
     const stockTotal = visibleInventories.reduce((sum, inv) => sum + inv.stock, 0);
 
@@ -212,12 +254,14 @@ router.get("/:id", optionalAuth, async (req: AuthRequest, res: Response) => {
         city: pi.importer.city,
       })),
     };
-    if (isAuth) {
-      response.price1 = product.price1;
-      response.price2 = product.price2;
-      response.wholesalePrice = product.wholesalePrice;
-      response.cost = product.cost;
-    }
+    response.price1 = product.price1;
+    response.price2 = product.price2;
+    // Allow-list: ver `puedeVerPrecioMayorista` en shared/utils/scope.ts.
+    if (puedeVerPrecioMayorista(req.user)) response.wholesalePrice = product.wholesalePrice;
+    // El costo de compra es información financiera interna: /api/costs y /api/prices
+    // ya lo restringen. Se omite en vez de mandarlo en cero. Allow-list, no
+    // `!isTienda`: un rol futuro no debe recibir costos por defecto.
+    if (puedeVerCostos(req.user)) response.cost = product.cost;
     res.json(response);
   } catch (error) {
     console.error("Error al obtener producto:", error);
@@ -364,9 +408,12 @@ router.delete("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest,
 // Orden obligatorio: authenticate → ocrAuthenticatedLimiter → imageUpload → handler.
 // authenticate va ANTES del limiter/usuario para que un request sin token no ejecute OCR
 // ni parseo multipart, y para que req.user.userId identifique el límite por usuario.
+// requireTiendaLocation se aplica SOLO aquí (nunca con router.use): un usuario TIENDA
+// debe tener ubicación asignada para que su stock se pueda acotar a su tienda.
 router.post(
   "/search-image",
   authenticate,
+  requireTiendaLocation,
   ocrAuthenticatedLimiter,
   imageUpload.single("image"),
   async (req: AuthRequest, res: Response) => {
@@ -381,10 +428,17 @@ router.post(
         return res.json({ products: [], message: "No se pudieron extraer palabras clave del nombre o la imagen" });
       }
 
+      // TIENDA solo puede ver el stock y las ubicaciones de SU tienda: ver otras
+      // tiendas o el almacén le permitiría conocer existencias ajenas y derivar
+      // el total de la cadena. ADMIN e INVENTARIO conservan la vista global.
+      const tiendaLocationId = resolveLocationScope(req.user);
+
       res.json({
         query: keywords.join(" "),
         count: results.length,
-        products: results.map(({ producto, score }) => serializeProductoInterno(producto, score)),
+        products: results.map(({ producto, score }) =>
+          serializeProductoInterno(producto, score, tiendaLocationId)
+        ),
       });
     } catch (error) {
       console.error("Error en búsqueda por imagen:", error);

@@ -7,7 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import InventoryScreen from "../screens/InventoryScreen";
 import SalesScreen from "../screens/SalesScreen";
 import ScannerScreen from "../screens/ScannerScreen";
-import { clearSession, getStoredSession, LoginResponse, User } from "../services/api";
+import { clearSession, getStoredSession, setOnUnauthorized, LoginResponse, User } from "../services/api";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +34,8 @@ export default function AppNavigator() {
       setUser(session?.user || null);
       setLoading(false);
     });
+    setOnUnauthorized(() => setUser(null));
+    return () => setOnUnauthorized(null);
   }, []);
 
   const logout = async () => {

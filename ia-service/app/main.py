@@ -35,6 +35,20 @@ async def lifespan(_app: FastAPI):
         # La inicialización de CUDA/Torch en el primer predict supera el timeout
         # de 8 s del backend; se absorbe aquí, antes de aceptar tráfico.
         inference.calentar_modelo()
+    if settings.ia_key:
+        log.info("autenticacion backend->ia-service activa (header X-Vision-Key)")
+    elif settings.es_produccion:
+        # Fail-closed: sin secreto en produccion el servicio rechaza el trafico
+        # con 503 en vez de exponer inferencia abierta.
+        log.error(
+            "VISION_IA_KEY no configurada en produccion: el servicio rechazara todo "
+            "el trafico con 503 hasta que se defina el secreto."
+        )
+    else:
+        log.warning(
+            "VISION_IA_KEY no configurada: el servicio responde sin autenticacion. "
+            "Solo es aceptable en desarrollo/red interna privada."
+        )
     log.info(
         "servicio listo | modelLoaded=%s | device=%s",
         inference.estado.cargado,

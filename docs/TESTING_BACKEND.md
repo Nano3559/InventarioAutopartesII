@@ -1,10 +1,11 @@
 # Testing Backend
 
 Documento oficial de la suite de pruebas del backend de RepuestoPro / Inventario Autopartes II.
-Los valores consignados corresponden al estado validado del repositorio el 2026-09-09 y fueron
-re-verificados al momento de redactar este documento ejecutando los comandos descritos en la
-Sección 4 (unit tests 28/28, tests de integración 23/23, `tsc` con salida 0 y cobertura 79.51 %
-de líneas).
+
+> **Histórico de cifras.** La Sección 2 registra el estado validado el 2026-09-09
+> (28 unit + 23 integración = 51, cobertura 79.51 %). Ese registro se conserva como referencia
+> histórica. La cifra vigente al 2026-09-29 es **99 unit + 127 integración = 226**, con
+> `tsc` sin errores, build sin errores y cobertura 86.58 % de líneas; ver la Sección 18.
 
 Esta suite es el equivalente backend del conjunto de pruebas frontend de la Etapa 7 (E7.1–E7.8)
 registrado por Erika en `PLAN_TRABAJO_ERIKA_ROSS.md`. El repositorio no contiene un documento
@@ -40,6 +41,9 @@ Railway (la propia infraestructura de testing lo impide, ver Sección 14).
 ---
 
 ## 2. Resumen general
+
+> Estado validado el **2026-09-09** (se conserva como histórico; la cifra vigente está en la
+> Sección 18).
 
 | Tipo | Cantidad | Resultado |
 |---|---:|---|
@@ -361,16 +365,17 @@ La reconstrucción verificada del esquema se realizó sobre la **base de datos a
 ```text
 DB vacía (recreada localmente)
 → npx prisma migrate deploy
-→ 6/6 migraciones aplicadas en orden:
+→ 7/7 migraciones aplicadas en orden:
     20260819182416_init
     20260820163545_add_quality_importers
     20260902130000_add_unique_nit
     20260902_add_movement_request_id
     20260909_close_schema_drift
     20260909b_add_etapa8_indexes
+    20260928_request_abierta_unica
 → npx prisma generate
 → npx prisma migrate status  → "Database schema is up to date!"
-→ npm run test:integration    → 23/23 PASS
+→ npm run test:integration    → 127/127 PASS
 ```
 
 Observaciones:
@@ -378,16 +383,48 @@ Observaciones:
 * No se modificó, borró ni reescribió ninguna migración histórica.
 * Los índices de la Etapa 8 (`20260909b_add_etapa8_indexes`) son **aditivos** y fueron aplicados
   correctamente en la reconstrucción.
-* Existe un **residual deliberado** en el enum `RequestStatus`: la migración `close_schema_drift`
-  creó los nuevos estados (`RECIBIDO_POR_INVENTARIO`, `PREPARANDO`, `ENTREGADO`,
-  `RECIBIDO_POR_TIENDA`, `CANCELADO`), pero las variantes legacy (`EN_PREPARACION`, `ENVIADO`,
-  `RECIBIDO`) permanecen en la base. `prisma migrate diff` propone eliminarlas; se optó por
-  **mantenerlas** para no ejecutar una migración destructiva. Por ello **no** se afirma un "drift
-  cero" absoluto: el único diff residual es un cambio destructivo de enum que se descarta a propósito.
+
+### 15.1 Migración `20260928_request_abierta_unica` (índice parcial, no modelado en Prisma)
+
+Esta migración implementa el invariante de negocio **"una sola solicitud activa por producto y
+ubicación"** mediante un único `CREATE UNIQUE INDEX`:
+
+```text
+ProductRequest_solicitud_abierta_unica
+  ON "ProductRequest" ("productId", "locationId")
+  WHERE "status" IN ('PENDIENTE', 'RECIBIDO_POR_INVENTARIO', 'PREPARANDO', 'ENTREGADO')
+```
+
+Reglas operativas obligatorias:
+
+* **Reconstruir la base solo con `npx prisma migrate deploy`.** `db push` genera el DDL desde
+  `schema.prisma` y **no** crea este índice: una base creada con `db push` queda sin la garantía y
+  los `.itest` que afirman `P2002` fallarían de forma confusa.
+* **Evitar `prisma migrate dev` sin verificar antes.** El índice parcial no puede declararse en
+  `schema.prisma` (Prisma no admite `WHERE` en `@@index`), por lo que `migrate dev` podría proponer
+  un `DROP INDEX` de la garantía. Si se necesita verificar el estado, usar en una base **aislada**:
+  `npx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --shadow-database-url <BD_AISLADA>`
+* El predicado del SQL coincide exactamente con `REQUEST_STATUS_ACTIVOS`
+  (`backend/src/utils/replenish.ts`) y con `VALID_STATUSES` (`requests.routes.ts`).
+  `backend/src/modules/requests/__tests__/replenishDuplicados.itest.ts` lee el `migration.sql`
+  desde disco y falla si esa sincronía se rompe.
+* Si se agrega un estado nuevo al enum hay que actualizar **tres** lugares: una migración nueva
+  con `DROP INDEX` + `CREATE INDEX`, `REQUEST_STATUS_ACTIVOS` y `VALID_STATUSES`.
+* No se usa `CONCURRENTLY` a propósito: Prisma envuelve cada migración en una transacción y
+  `CREATE INDEX CONCURRENTLY` no puede ejecutarse dentro de una.
+* Los valores legacy del enum (`EN_PREPARACION`, `ENVIADO`, `RECIBIDO`) quedan **fuera** del
+  predicado. Es coherente con `REQUEST_STATUS_ACTIVOS`, pero significa que una fila en
+  `EN_PREPARACION` no bloquearía una nueva solicitud activa del mismo par. Esas filas están
+  congeladas: el cliente Prisma no puede asignarlas y `VALID_TRANSITIONS` no sale de ellas.
+
+* Existe un **residual deliberado** en el enum `RequestStatus` (ver §15.1): las variantes legacy
+  permanecen en la base porque eliminarlas exigiría una migración destructiva. Por ello **no** se
+  afirma un "drift cero" absoluto.
 * La base remota desplegada actualmente no tiene aún aplicadas las migraciones
-  `20260909_close_schema_drift` ni `20260909b_add_etapa8_indexes`; su aplicación en el entorno de
-  despliegue queda pendiente para el proceso manual de Ross (fuera del alcance de documentación).
-  Los tests siempre se ejecutan únicamente contra la base local aislada.
+  `20260909_close_schema_drift`, `20260909b_add_etapa8_indexes` ni `20260928_request_abierta_unica`;
+  su aplicación en el entorno de despliegue queda pendiente para el proceso manual de Ross
+  (fuera del alcance de documentación). Los tests siempre se ejecutan únicamente contra la base
+  local aislada.
 
 ---
 
@@ -398,14 +435,14 @@ unitaria:
 
 | Métrica | Resultado |
 |---|---:|
-| Lines | 79.51 % |
-| Branches | 87.30 % |
-| Functions | 89.25 % |
+| Lines | 86.58 % |
+| Branches | 90.17 % |
+| Functions | 89.01 % |
 
 La herramienta (`node:test`) reporta estas tres métricas; no reporta `statements`. La cobertura
 abarca los módulos ejercitados por los unitarios: `searchImage.service.ts` (71.97 % líneas),
-`errorHandler.ts` (71.64 %), `validate.ts` (85.37 %), `logger.ts` (100 %), `saleItems.ts` (100 %) y
-`yearRanges.ts` (85.59 %).
+`errorHandler.ts` (71.64 %), `validate.ts` (85.37 %), `logger.ts` (100 %), `saleItems.ts` (100 %),
+`yearRanges.ts` (85.59 %), `scope.ts` (100 %) y `errorDominio.ts` (100 %).
 
 ---
 
@@ -416,61 +453,134 @@ abarca los módulos ejercitados por los unitarios: `searchImage.service.ts` (71.
 ```text
 backend/src/
 ├── modules/
-│   ├── auth/
-│   │   └── __tests__/
-│   │       └── authPermissions.itest.ts            (5)
-│   ├── movements/
-│   │   └── __tests__/
-│   │       └── movements.itest.ts                  (3)
-│   ├── products/
-│   │   └── __tests__/
-│   │       ├── imageUpload.test.ts                 (5)
-│   │       ├── searchImage.serialize.test.ts       (2)
-│   │       └── searchImageRoutes.itest.ts          (4)
-│   ├── returns/
-│   │   └── __tests__/
-│   │       └── returns.itest.ts                    (3)
-│   └── sales/
-│       └── __tests__/
-│           └── sales.itest.ts                      (6)
+│   ├── auth/__tests__/
+│   │   └── authPermissions.itest.ts
+│   ├── movements/__tests__/
+│   │   └── movements.itest.ts
+│   ├── products/__tests__/
+│   │   ├── imageUpload.test.ts
+│   │   ├── productsScope.itest.ts
+│   │   ├── searchImage.serialize.test.ts
+│   │   └── searchImageRoutes.itest.ts
+│   ├── reports/__tests__/
+│   │   └── reports.itest.ts
+│   ├── requests/__tests__/
+│   │   ├── notificaciones.itest.ts
+│   │   └── replenishDuplicados.itest.ts
+│   ├── returns/__tests__/
+│   │   └── returns.itest.ts
+│   ├── sales/__tests__/
+│   │   ├── precioServidor.itest.ts
+│   │   └── sales.itest.ts
+│   └── vision/__tests__/
+│       ├── availability.test.ts
+│       ├── categoryMapping.test.ts
+│       ├── compatibility.test.ts
+│       ├── contract.test.ts
+│       ├── mockProvider.test.ts
+│       ├── vision.config.test.ts
+│       └── vision.routes.itest.ts
 ├── shared/
-│   └── middlewares/__tests__/
-│       ├── validate.test.ts                        (4)
-│       └── permissionCache.itest.ts                (2)
+│   ├── middlewares/__tests__/
+│   │   ├── permissionCache.itest.ts
+│   │   └── validate.test.ts
+│   └── utils/__tests__/
+│       ├── errorDominio.test.ts
+│       ├── rangoFechas.test.ts
+│       └── scope.test.ts
 ├── testing/                     (infraestructura compartida, sin `*.test.*`)
-│   ├── helpers.ts              (servidor de test + seguridad anti-remota + login)
+│   ├── helpers.ts              (servidor de test + seguridad anti-remota + login + mintTestToken)
 │   └── seed.ts                 (siembra/carga/limpieza por namespace)
 └── utils/
     └── __tests__/
-        ├── saleItems.test.ts                       (7)
-        └── yearRanges.test.ts                      (10)
+        ├── saleItems.test.ts
+        └── yearRanges.test.ts
 ```
 
-Recuento por convención de nombres: `*.test.ts` (unitarios) = **28**; `*.itest.ts` (integración)
-= **23**; total = **51**.
+Recuento por convención de nombres: `*.test.ts` (unitarios) = **14**; `*.itest.ts` (integración)
+= **13**; total = **27** archivos. En número de casos: **99 unitarios + 127 de integración = 226**.
 
 ---
 
-## 18. Resultado final
+## 18. Resultado final (cifras vigentes 2026-09-29)
 
 | Práctica | Herramienta | Resultado |
 |---|---|---|
-| TypeScript | `npx tsc --noEmit` | PASS |
-| Unit tests | `npm test` | 28/28 PASS |
-| Integration tests | `npm run test:integration` | 23/23 PASS |
-| Suite completa | `npm run test:all` | 51/51 PASS |
-| Cobertura | `npm run test:coverage` | Lines 79.51 % / Branches 87.30 % / Funcs 89.25 % |
+| TypeScript | `npx tsc --noEmit` | PASS (sin salida) |
+| Unit tests | `npm test` | **99/99 PASS** |
+| Integration tests | `npm run test:integration` | **127/127 PASS** |
+| Suite completa | `npm run test:all` | **99 + 127 = 226/226 PASS** |
+| Cobertura | `npm run test:coverage` | Lines **86.58 %** / Branches **90.17 %** / Funcs **89.01 %** |
 | Build | `npm run build` | PASS |
-| Prisma | `prisma migrate deploy` + `migrate status` (BD aislada) | 6/6 · up to date |
+| Prisma | `prisma migrate deploy` + `migrate status` (BD aislada) | 7/7 · up to date |
+
+### Unitarios por archivo (99)
+
+| Archivo | Tests |
+|---|---:|
+| `src/shared/utils/__tests__/rangoFechas.test.ts` | 12 |
+| `src/modules/vision/__tests__/vision.config.test.ts` | 10 |
+| `src/utils/__tests__/yearRanges.test.ts` | 10 |
+| `src/shared/utils/__tests__/scope.test.ts` | 9 |
+| `src/modules/vision/__tests__/contract.test.ts` | 8 |
+| `src/modules/vision/__tests__/categoryMapping.test.ts` | 8 |
+| `src/modules/vision/__tests__/compatibility.test.ts` | 7 |
+| `src/utils/__tests__/saleItems.test.ts` | 7 |
+| `src/modules/products/__tests__/searchImage.serialize.test.ts` | 7 |
+| `src/modules/products/__tests__/imageUpload.test.ts` | 5 |
+| `src/modules/vision/__tests__/mockProvider.test.ts` | 5 |
+| `src/shared/utils/__tests__/errorDominio.test.ts` | 5 |
+| `src/shared/middlewares/__tests__/validate.test.ts` | 4 |
+| `src/modules/vision/__tests__/availability.test.ts` | 2 |
+
+### Integración por archivo (127)
+
+| Archivo | Tests | Cubre |
+|---|---:|---|
+| `src/modules/vision/__tests__/vision.routes.itest.ts` | 18 | público e interno, 400/401/403/422/429/503/504/200, MIME, >5 MB, serialización, aislamiento de alcance por tienda (TIENDA A no ve B/almacén) |
+| `src/modules/inventory/__tests__/inventory.routes.itest.ts` | 19 | lectura de inventario por allow-list de rol, TIENDA acotado a su ubicación (y sin ampliarlo con `?locationId`), ajuste de stock solo ADMIN+INVENTARIO con TIENDA en 403, política de campos en la respuesta, y regresión de que venta y movimiento siguen moviendo stock |
+| `src/modules/sales/__tests__/precioServidor.itest.ts` | 17 | precio autoritativo NORMAL (`price2` minorista) / MAYORISTA ignora `unitPrice` del cliente; errores de negocio 400 sin traza ni rutas del servidor |
+| `src/modules/products/__tests__/productsScope.itest.ts` | 18 | costos y `wholesalePrice` por allow-list de rol, TIENDA acotado a su ubicación, roles desconocidos con 403, **`/api/products` anónimo → 401** y catálogo público sin token sigue 200 |
+| `src/modules/sales/__tests__/sales.itest.ts` | 10 | R6.6–R6.18, concurrencia de stock, R6.16 multi-almacén |
+| `src/modules/reports/__tests__/reports.itest.ts` | 9 | G7 fallback de costo mensual, J4/J6 rango de fechas y tope 1000, `limit` decimal, `year`/`month` inválidos, intersección de `month` con rango |
+| `src/modules/products/__tests__/searchImageRoutes.itest.ts` | 6 | OCR interno, límites de subida |
+| `src/modules/auth/__tests__/authPermissions.itest.ts` | 5 | permisos por rol y módulo |
+| `src/modules/movements/__tests__/movements.itest.ts` | 3 | movimientos y concurrencia |
+| `src/modules/returns/__tests__/returns.itest.ts` | 3 | devolución válida, límites, incremento de stock |
+| `src/modules/requests/__tests__/notificaciones.itest.ts` | 3 | E5/E7 aviso a INVENTARIO al crear la solicitud |
+| `src/shared/middlewares/__tests__/permissionCache.itest.ts` | 2 | TTL e invalidación de caché de permisos |
+| `src/modules/requests/__tests__/replenishDuplicados.itest.ts` | 14 | ETAPA 8/9: índice parcial `solicitud_abierta_unica`, duplicados y concurrencia de reposición |
+
+### Dos decisiones de infraestructura que hacen la suite determinista
+
+1. **`--test-concurrency=1` en los itests.** Los archivos `*.itest.ts` comparten una única base
+   PostgreSQL local. Con el paralelismo por defecto de `node --test`, el `cleanup` de un archivo
+   borraba usuarios que otro archivo estaba usando para insertar notificaciones, provocando
+   `P2003` y fallos intermitentes. Ahora los itests se ejecutan de uno en uno.
+2. **`DATABASE_URL` local obligatoria.** `src/testing/helpers.ts` aborta la suite si la URL no es
+   `127.0.0.1`/`localhost`. Sin esta variable, la suite de visión falla en lugar de tocar Neon.
+
+### Verificación de estabilidad (3 corridas consecutivas)
+
+La Etapa 9 corroboró la **estabilidad de la suite de integración** con 3 corridas
+consecutivas idénticas sobre la base local aislada: **87/87 PASS** en las tres corridas
+(0 fallos, sin reinicio de la base entre ellas).
+
+En las rondas finales de hardening (precio móvil, scope de visión, allow-lists financieras,
+clasificación de errores y cierre de `/api/products` a usuarios autenticados) se ejecutó **una
+sola** corrida de integración por cada una, al no tocarse la lógica de reposición/concurrencia:
+**127/127 PASS**.
 
 ---
 
 ## 19. Conclusión
 
-El backend de RepuestoPro cuenta con una suite de pruebas permanente de **51 tests**, todos
-aprobados. De ellos, **28 son unitarios** y **23 de integración**. Los tests unitarios garantizan
+El backend de RepuestoPro cuenta con una suite de pruebas permanente de **140 tests**, todos
+aprobados. De ellos, **80 son unitarios** y **60 de integración** (cifras vigentes al 2026-09-28;
+la Sección 2 conserva el histórico de 51). Los tests unitarios garantizan
 la corrección de las operaciones aisladas (rangos de años, normalización de ítems de venta,
-validaciones de entrada, subida de imágenes y serialización segura de resultados). Los tests de
+rangos de fecha de negocio, validaciones de entrada, subida de imágenes y serialización segura de
+resultados). Los tests de
 integración ejercitan la aplicación Express real contra una PostgreSQL aislada local y validan los
 flujos principales: autenticación y permisos por rol/módulo, ventas con descuento de stock y
 múltiples pagos, devoluciones con límite máximo, movimientos de inventario, búsqueda por imagen
@@ -479,7 +589,7 @@ múltiples pagos, devoluciones con límite máximo, movimientos de inventario, b
 Se comprobó de manera explícita la **concurrencia**: ventas y movimientos simultáneos mantienen el
 stock positivo (una operación gana y la otra es rechazada, sin registros duplicados), lo que avala
 el diseño transaccional con bloqueos de fila. La **integridad** de los datos quedó verificada con
-reconstrucción limpia del esquema (6/6 migraciones, estado up to date, con el único residual
+reconstrucción limpia del esquema (7/7 migraciones, estado up to date, con el único residual
 deliberado del enum `RequestStatus`). Con todo lo anterior, la **Etapa 6 (Testing Backend) queda
 cubierta por completo** (matriz R6.1–R6.16 en PASS), el backend compila y buildea sin errores, y
 la suite queda lista para prevenir regresiones en los siguientes cambios.
@@ -494,11 +604,9 @@ comparación se contaron los tests **reales** presentes actualmente en el códig
 
 | Suite | Framework | Tests |
 |---|---|---:|
-| Frontend (Erika) | Vitest | 69 |
-| Backend (Ross) | Node.js `node:test` (nativo) | 51 |
+| Frontend (Erika) | Vitest | 105 |
+| Backend (Ross) | Node.js `node:test` (nativo) | 140 |
 
-> La cifra 69 es la cantidad real encontrada en los archivos de test del frontend al momento de
-> este documento (`LoginPage` 12, `PublicProductsPage` 10, `PublicProductsPage.searchImage` 11,
-> `SalesPage` 12, `services/api` 8, `stores/authStore` 16 = 69); difiere de los 57 registrados en el
-> historial del plan, lo que refleja la adición posterior de pruebas. Ambas suites son
-> independientes y no comparten framework.
+> La cifra 105 del frontend es la cantidad real encontrada en los archivos de test al 2026-09-28
+> (11 archivos, `npm test` con `vitest run`); difiere de los 57 registrados en el historial del
+> plan. Ambas suites son independientes y no comparten framework.

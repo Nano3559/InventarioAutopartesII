@@ -187,32 +187,29 @@ test("R6.18 — campos de entrega opcionales validados (texto y longitud)", asyn
   assert.equal((await malMetodo.json() as any).message, "Método de pago inválido: PAYPAL");
 });
 
-async function spreadStockToAlmacenes(productId: number, stock: number): Promise<void> {
-  // Replenish usa findFirst({type:"ALMACEN"}) sin orden: el producto debe tener stock en el
-  // almacén "escogido". En la BD compartida los namespaces corren en paralelo y sus cleanups
-  // borran ubicaciones en pleno vuelo (FK en createMany), así que reintentamos con una lista
-  // fresca y confirmamos que el primer ALMACEN por id conserva el stock.
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const almacenes = await ctx.prisma.location.findMany({ where: { type: "ALMACEN" }, orderBy: { id: "asc" } });
-    if (almacenes.length === 0) return;
-    try {
-      await ctx.prisma.inventory.createMany({
-        data: almacenes.map((l) => ({ productId, locationId: l.id, stock, minStock: 1 })),
-        skipDuplicates: true,
-      });
-    } catch {
-      continue;
-    }
-    const first = await ctx.prisma.inventory.findUnique({
-      where: { productId_locationId: { productId, locationId: almacenes[0].id } },
-    });
-    if (first && first.stock === stock) return;
-  }
+/**
+ * Reparte stock entre DOS almacenes del propio namespace (3 + 7).
+ *
+ * La reposición suma el stock de TODOS los almacenes, así que el resultado ya no
+ * depende de cuál almacén "toca": es determinista, no requiere reintentos y no
+ * escribe en almacenes de otros namespaces.
+ */
+async function repartirStockEnDosAlmacenes(productId: number, total: number): Promise<void> {
+  const segundo = await ctx.prisma.location.create({
+    data: { name: `ALMACEN-${ctx.ns}-2`, type: "ALMACEN", address: "Zona Test 2" },
+  });
+  await ctx.prisma.inventory.createMany({
+    data: [
+      { productId, locationId: ctx.locationIds.almacen, stock: 3, minStock: 1 },
+      { productId, locationId: segundo.id, stock: total - 3, minStock: 1 },
+    ],
+    skipDuplicates: true,
+  });
 }
 
 test("R6.16 — al llegar a stock 0 se crea solicitud de reposición automática (PENDIENTE, 5 unidades)", async () => {
   const p = await createProduct(ctx, { stockTienda: 1 });
-  await spreadStockToAlmacenes(p.id, 10);
+  await repartirStockEnDosAlmacenes(p.id, 10);
 
   const res = await postSale(p.id, 1, 100);
   assert.equal(res.status, 201);
@@ -230,4 +227,26 @@ test("R6.16 — al llegar a stock 0 se crea solicitud de reposición automática
   assert.equal(res2.status, 201);
   const count = await ctx.prisma.productRequest.count({ where: { productId: pSinAlmacen.id } });
   assert.equal(count, 0, "no debe solicitarse reposición si el almacén no tiene stock");
+});
+
+test("R6.16b — la reposición suma el stock de varios almacenes (no depende de uno arbitrario)", async () => {
+  // Si solo se mirara UN almacén daría 3 < 5 (sin solicitud); sumando los dos,
+  // 3 + 7 = 10 >= 5 (con solicitud). Este caso fallaba de forma intermitente.
+  const p = await createProduct(ctx, { stockTienda: 1 });
+  await repartirStockEnDosAlmacenes(p.id, 10);
+
+  const res = await postSale(p.id, 1, 100);
+  assert.equal(res.status, 201);
+  const request = await ctx.prisma.productRequest.findFirst({
+    where: { productId: p.id, status: "PENDIENTE" },
+  });
+  assert.ok(request, "debe crearse la solicitud aunque el stock esté repartido en dos almacenes");
+});
+
+test("R6.16c — sin ningún almacén con stock suficiente no se crea solicitud", async () => {
+  const p = await createProduct(ctx, { stockTienda: 1, stockAlmacen: 2 });
+  const res = await postSale(p.id, 1, 100);
+  assert.equal(res.status, 201);
+  const count = await ctx.prisma.productRequest.count({ where: { productId: p.id } });
+  assert.equal(count, 0, "2 unidades en almacén < 5 solicitados: no hay reposición");
 });
