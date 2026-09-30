@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import { useAuthStore } from "../stores/authStore";
 import * as XLSX from "xlsx";
 
 interface SalesReport {
@@ -74,7 +75,9 @@ interface MonthlySummary {
 interface MonthlyReport {
   location: { id: number; name: string; type: string };
   summary: { totalSales: number; totalReturns: number; netSales: number; saleCount: number; averagePerSale: number };
-  costs: { productsCost: number; storeCost: number };
+  // Opcional: el backend lo omite para usuarios TIENDA (costos = información
+  // financiera interna). No se manda en cero para que no pueda inferirse.
+  costs?: { productsCost: number; storeCost: number };
   topProducts: { product: { name: string; brand: string }; quantitySold: number; totalRevenue: number }[];
 }
 
@@ -108,6 +111,15 @@ const formatBs = (v: number) =>
   `Bs. ${v.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export default function ReportsPage() {
+  // Costo de mercadería, costo de tienda y utilidad son información financiera
+  // interna: el backend no los envía a TIENDA (ver /reports/monthly). Aquí se
+  // ocultan las columnas y las exportaciones para no sugerir un 0.00 falso.
+  const { user } = useAuthStore();
+  // Allow-list (no "cualquier rol que no sea TIENDA") para coincidir con
+  // ROLES_CON_COSTOS del backend. Mientras el store se rehidrata `user` es null y se
+  // muestra la vista restringida, para no parpadear columnas de costo con 0.00.
+  const puedeVerCostos = !!user && ["ADMIN", "INVENTARIO"].includes(user.role);
+
   const [activeTab, setActiveTab] = useState("ventas");
   const [locations, setLocations] = useState<Location[]>([]);
 
@@ -170,9 +182,15 @@ export default function ReportsPage() {
       if (filterFrom) params.set("startDate", filterFrom);
       if (filterTo) params.set("endDate", filterTo);
       if (filterLocation) params.set("locationId", filterLocation);
+      // Las devoluciones deben respetar el MISMO rango que las ventas; si no,
+      // el diario sumaba devoluciones de cualquier fecha al día actual.
+      const returnParams = new URLSearchParams({ limit: "1000" });
+      if (filterFrom) returnParams.set("startDate", filterFrom);
+      if (filterTo) returnParams.set("endDate", filterTo);
+      if (filterLocation) returnParams.set("locationId", filterLocation);
       const [salesRes, returnsRes] = await Promise.all([
         api.get(`/sales?${params.toString()}`),
-        api.get(`/returns?limit=100${filterLocation ? `&locationId=${filterLocation}` : ""}`),
+        api.get(`/returns?${returnParams.toString()}`),
       ]);
       groupDaily(salesRes.data.sales, returnsRes.data.returns || []);
     } catch {
@@ -630,19 +648,26 @@ export default function ReportsPage() {
             <h3 className="text-white font-medium">Reporte Mensual por Tienda</h3>
             <div className="flex items-center gap-2">
               <button onClick={fetchMonthly} className="p-1.5 text-gray-400 hover:text-white rounded-lg transition-all"><RefreshCw size={14} /></button>
-              <button onClick={() => exportCSV(filteredMonthly.map((m) => ({
+              <button onClick={() => exportCSV(filteredMonthly.map((m) => puedeVerCostos ? ({
                 Tienda: m.location.name, Ventas: m.summary.totalSales, Devoluciones: m.summary.totalReturns,
                 Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
                 "Costo Mercadería": m.costs?.productsCost ?? 0,
                 "Costo Tienda (+10%)": m.costs?.storeCost ?? 0,
                 Utilidad: (m.summary.netSales - (m.costs?.storeCost ?? 0)),
+              }) : ({
+                Tienda: m.location.name, Ventas: m.summary.totalSales, Devoluciones: m.summary.totalReturns,
+                Netas: m.summary.netSales, "N° Ventas": m.summary.saleCount, Promedio: m.summary.averagePerSale,
               })), "reporte_mensual")}
                 className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs transition-all border border-green-600/30">
                 <Download size={14} /> Excel
               </button>
-              <button onClick={() => exportPDF(
+              <button onClick={puedeVerCostos ? () => exportPDF(
                 ["Tienda", "Ventas", "Devoluciones", "Netas", "N° Ventas", "Promedio", "Costo Mercadería", "Costo Tienda", "Utilidad"],
                 filteredMonthly.map((m) => [m.location.name, String(m.summary.totalSales), String(m.summary.totalReturns), String(m.summary.netSales), String(m.summary.saleCount), String(m.summary.averagePerSale), String(m.costs?.productsCost ?? 0), String(m.costs?.storeCost ?? 0), String(m.summary.netSales - (m.costs?.storeCost ?? 0))]),
+                "Reporte Mensual por Tienda", "reporte_mensual"
+              ) : () => exportPDF(
+                ["Tienda", "Ventas", "Devoluciones", "Netas", "N° Ventas", "Promedio"],
+                filteredMonthly.map((m) => [m.location.name, String(m.summary.totalSales), String(m.summary.totalReturns), String(m.summary.netSales), String(m.summary.saleCount), String(m.summary.averagePerSale)]),
                 "Reporte Mensual por Tienda", "reporte_mensual"
               )}
                 className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded-lg text-xs transition-all border border-red-600/30">
@@ -663,14 +688,18 @@ export default function ReportsPage() {
                       <th className="text-right px-4 py-3 text-gray-400 font-medium">Total Ventas</th>
                       <th className="text-right px-4 py-3 text-gray-400 font-medium">Devoluciones</th>
                       <th className="text-right px-4 py-3 text-gray-400 font-medium">Neto</th>
-                      <th className="text-right px-4 py-3 text-amber-400 font-medium">Costo Mercadería</th>
-                      <th className="text-right px-4 py-3 text-red-400 font-medium">Costo Tienda (+10%)</th>
-                      <th className="text-right px-4 py-3 text-green-400 font-medium">Utilidad</th>
+                      {puedeVerCostos && (
+                        <>
+                          <th className="text-right px-4 py-3 text-amber-400 font-medium">Costo Mercadería</th>
+                          <th className="text-right px-4 py-3 text-red-400 font-medium">Costo Tienda (+10%)</th>
+                          <th className="text-right px-4 py-3 text-green-400 font-medium">Utilidad</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
                     {filteredMonthly.length === 0 ? (
-                      <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-500">No hay datos para los filtros seleccionados</td></tr>
+                      <tr><td colSpan={puedeVerCostos ? 8 : 5} className="px-4 py-8 text-center text-gray-500">No hay datos para los filtros seleccionados</td></tr>
                     ) : filteredMonthly.map((m, idx) => {
                       const storeCost = m.costs?.storeCost ?? 0;
                       const utilidad = (m.summary.netSales - storeCost);
@@ -681,9 +710,13 @@ export default function ReportsPage() {
                         <td className="px-4 py-3 text-amber-400 font-medium text-right">{formatBs(m.summary.totalSales)}</td>
                         <td className="px-4 py-3 text-red-400 text-right">{formatBs(m.summary.totalReturns)}</td>
                         <td className="px-4 py-3 text-green-400 font-medium text-right">{formatBs(m.summary.netSales)}</td>
-                        <td className="px-4 py-3 text-amber-400/70 text-right">{formatBs(m.costs?.productsCost ?? 0)}</td>
-                        <td className="px-4 py-3 text-red-400/80 text-right">{formatBs(storeCost)}</td>
-                        <td className="px-4 py-3 text-green-400 font-medium text-right">{formatBs(utilidad)}</td>
+                        {puedeVerCostos && (
+                          <>
+                            <td className="px-4 py-3 text-amber-400/70 text-right">{formatBs(m.costs?.productsCost ?? 0)}</td>
+                            <td className="px-4 py-3 text-red-400/80 text-right">{formatBs(storeCost)}</td>
+                            <td className="px-4 py-3 text-green-400 font-medium text-right">{formatBs(utilidad)}</td>
+                          </>
+                        )}
                       </tr>
                       );
                     })}

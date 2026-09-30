@@ -1,3 +1,5 @@
+import { errorDominio } from "../shared/utils/errorDominio";
+
 export interface RawSaleItem {
   productId?: unknown;
   quantity?: unknown;
@@ -14,12 +16,12 @@ export interface ValidatedSaleItem {
 /**
  * Valida y deduplica los ítems de una venta.
  * Combina cantidades del mismo producto (evita sobreventa con ítems repetidos)
- * y rechaza cantidades/precios no positivos. Lanza Error con mensajes claros
- * (los handlers lo convierten en respuesta 400).
+ * y rechaza cantidades/precios no positivos. Lanza ErrorDominio con mensajes claros
+ * (los handlers los responden como 400); cualquier otro error se trata como interno.
  */
 export function validateAndMergeItems(items: RawSaleItem[]): ValidatedSaleItem[] {
   if (!Array.isArray(items) || items.length === 0) {
-    throw new Error("Debe enviar al menos un ítem (items)");
+    throw errorDominio("Debe enviar al menos un ítem (items)");
   }
 
   const totals = new Map<number, { quantity: number; unitPrice: number }>();
@@ -29,13 +31,13 @@ export function validateAndMergeItems(items: RawSaleItem[]): ValidatedSaleItem[]
     const unitPrice = Number(it.unitPrice || it.wholesalePrice || 0);
 
     if (!Number.isInteger(productId) || productId < 1) {
-      throw new Error("Cada ítem debe tener un productId válido");
+      throw errorDominio("Cada ítem debe tener un productId válido");
     }
     if (!Number.isInteger(quantity) || quantity < 1) {
-      throw new Error(`La cantidad del producto ${productId} debe ser un entero mayor a 0`);
+      throw errorDominio(`La cantidad del producto ${productId} debe ser un entero mayor a 0`);
     }
     if (isNaN(unitPrice) || unitPrice <= 0) {
-      throw new Error(`El precio unitario del producto ${productId} debe ser mayor a 0`);
+      throw errorDominio(`El precio unitario del producto ${productId} debe ser mayor a 0`);
     }
 
     const prev = totals.get(productId);

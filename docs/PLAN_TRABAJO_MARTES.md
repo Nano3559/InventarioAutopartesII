@@ -83,9 +83,15 @@
 - [x] Campo de categorías permitidas por rol (reuso de `columnConfig.__categorias`).
 - [x] `GET /permissions/roles` devuelve `columnConfig` (incluye `__categorias`).
 - [x] Actualizar categorías por rol vía `PUT /permissions/roles/:id/columns`.
-- [ ] **Filtrado backend** de productos por categoría del rol (TIENDA).
+- [x] **Filtrado backend** de productos por categoría del rol (TIENDA).
 
-> **Nota (decisión):** `GET /products` es público y Erika ya filtra en el frontend. El filtrado en el backend requeriría autenticar el GET; se decidió dejar el filtrado frontend por ahora para no arriesgar rupturas. Mejora futura opcional.
+> **Nota (RESUELTO 2026-09-29):** antes `GET /products` era público (`optionalAuth`) y el
+> filtrado por categoría se dejaba en el frontend. Dos cosas quedaron corregidas:
+> 1. `GET /products`, `/products/filters` y `/products/:id` **exigen token**; era el catálogo
+>    interno y devolvía stock global, y `?locationId` permitía sondear cualquier sede. No
+>    había consumidor anónimo legítimo: el catálogo público usa `/api/public/products`.
+> 2. El filtrado por categoría del rol se aplica en backend (`products.routes.ts`, con
+>    `__categorias` de la `RoleModel` del usuario), no solo en la UI.
 
 ### Verificación
 - [x] Como TIENDA devuelve módulos y categorías asignados (login + `GET /permissions/me` verificados con Fernando).

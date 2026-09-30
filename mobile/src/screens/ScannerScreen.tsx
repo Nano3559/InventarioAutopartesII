@@ -18,6 +18,7 @@ interface SearchResult {
 export default function ScannerScreen({ navigation }: any) {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [assetFileName, setAssetFileName] = useState<string | null>(null);
+  const [assetMimeType, setAssetMimeType] = useState<string | null>(null);
   const [assetFileSize, setAssetFileSize] = useState<number | undefined>(undefined);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,10 @@ export default function ScannerScreen({ navigation }: any) {
     webp: "image/webp",
   };
 
-  const getMimeType = (fileName: string | null | undefined, uri: string): string | null => {
+  const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
+
+  const getMimeType = (mimeType: string | null | undefined, fileName: string | null | undefined, uri: string): string | null => {
+    if (mimeType && ALLOWED_MIME.includes(mimeType)) return mimeType;
     if (fileName) {
       const ext = fileName.split(".").pop()?.toLowerCase();
       if (ext && ALLOWED_EXTENSIONS[ext]) return ALLOWED_EXTENSIONS[ext];
@@ -62,6 +66,7 @@ export default function ScannerScreen({ navigation }: any) {
       const asset = result.assets[0];
       setImageUri(asset.uri);
       setAssetFileName(asset.fileName ?? null);
+      setAssetMimeType(asset.mimeType ?? null);
       setAssetFileSize(asset.fileSize);
       setResults([]);
       setError("");
@@ -70,7 +75,7 @@ export default function ScannerScreen({ navigation }: any) {
 
   const searchImage = async () => {
     if (!imageUri) return;
-    const mimeType = getMimeType(assetFileName, imageUri);
+    const mimeType = getMimeType(assetMimeType, assetFileName, imageUri);
     if (!mimeType) {
       setError("Formato no permitido. Usa JPEG, PNG o WebP.");
       return;

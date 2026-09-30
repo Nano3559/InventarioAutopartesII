@@ -4,6 +4,7 @@ import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveDecimal, parsePositiveInt } from "../../shared/middlewares/validate";
 import { isPrismaClientError } from "../../shared/utils/errors";
+import { parsePagination } from "../../shared/utils/pagination";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -74,9 +75,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       ];
     }
 
-    const pg = Math.max(1, Number(page) || 1);
-    const take = Math.min(100, Math.max(1, Number(limit) || 20));
-    const skip = (pg - 1) * take;
+    const { page: pg, limit: take, skip } = parsePagination(page, limit, 100);
 
     const [costs, total] = await Promise.all([
       prisma.cost.findMany({

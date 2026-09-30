@@ -4,6 +4,7 @@ import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parseString } from "../../shared/middlewares/validate";
 import { isPrismaClientError } from "../../shared/utils/errors";
+import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -25,9 +26,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       ];
     }
 
-    const pg = Math.max(1, Number(page) || 1);
-    const take = Math.min(100, Math.max(1, Number(limit) || 50));
-    const skip = (pg - 1) * take;
+    const { page: pg, limit: take, skip } = parsePagination(page, limit, 100);
 
     const [suppliers, total] = await Promise.all([
       prisma.supplier.findMany({

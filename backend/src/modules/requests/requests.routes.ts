@@ -4,6 +4,9 @@ import { authenticate, authorize, requireTiendaLocation } from "../../shared/mid
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt } from "../../shared/middlewares/validate";
 import { isPrismaClientError } from "../../shared/utils/errors";
+import { parsePagination } from "../../shared/utils/pagination";
+import { notificarInventarioSolicitud } from "../../shared/utils/notificarInventario";
+import { nextDayAt8, REQUEST_STATUS_ACTIVOS } from "../../utils/replenish";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -11,7 +14,10 @@ const prisma = new PrismaClient();
 router.use(authenticate);
 router.use(requireTiendaLocation);
 
-const VALID_STATUSES: RequestStatus[] = [
+// Se exporta para que los tests puedan verificar el invariante
+// VALID_STATUSES === REQUEST_STATUS_ACTIVOS + estados terminales (si se agrega un
+// estado nuevo y se olvida la lista de activos, el índice parcial quedaría obsoleto).
+export const VALID_STATUSES: RequestStatus[] = [
   "PENDIENTE", "RECIBIDO_POR_INVENTARIO", "PREPARANDO",
   "ENTREGADO", "RECIBIDO_POR_TIENDA", "CANCELADO",
 ];
@@ -40,9 +46,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       where.locationId = req.user.locationId;
     }
 
-    const pg = Math.max(1, Number(page) || 1);
-    const take = Math.min(100, Math.max(1, Number(limit) || 20));
-    const skip = (pg - 1) * take;
+    const { page: pg, limit: take, skip } = parsePagination(page, limit, 100);
 
     const [requests, total] = await Promise.all([
       prisma.productRequest.findMany({
@@ -130,6 +134,19 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     if (!product) return res.status(404).json({ message: "Producto no encontrado" });
     if (!location) return res.status(404).json({ message: "Ubicación no encontrada" });
 
+    // Una sola solicitud ABIERTA por producto y ubicación (mismo criterio que
+    // aplica el job automático). Se comprueba aquí para dar un 409 con mensaje
+    // claro en vez de depender del índice único parcial, que respondería 500.
+    const yaAbierta = await prisma.productRequest.findFirst({
+      where: { productId, locationId, status: { in: REQUEST_STATUS_ACTIVOS } },
+      select: { id: true, status: true },
+    });
+    if (yaAbierta) {
+      return res.status(409).json({
+        message: `Ya existe una solicitud abierta (#${yaAbierta.id}, estado ${yaAbierta.status}) para este producto en esta ubicación. Cancelá esa solicitud o esperá a que se cierre para poder pedir de nuevo.`,
+      });
+    }
+
     const request = await prisma.productRequest.create({
       data: {
         productId,
@@ -137,6 +154,9 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         locationId,
         requestedById,
         note,
+        // Sin expectedDate el job (expectedDate <= now) nunca activaba la
+        // solicitud: quedaba PENDIENTE sin llegar a RECIBIDO_POR_INVENTARIO.
+        expectedDate: nextDayAt8(),
         history: {
           create: {
             newStatus: "PENDIENTE",
@@ -152,8 +172,26 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       },
     });
 
+    // E5/E7: avisar a INVENTARIO en el momento de crear la solicitud.
+    await notificarInventarioSolicitud(prisma, {
+      requestId: request.id,
+      productName: request.product?.name ?? `Producto #${productId}`,
+      locationName: request.location?.name ?? `Ubicación #${locationId}`,
+      quantity,
+      origen: "Solicitud manual",
+    });
+
     res.status(201).json(request);
   } catch (error: any) {
+    // Carrera con otra creación simultánea: el índice único parcial
+    // (ProductRequest_solicitud_abierta_unica) rechaza la segunda fila. Se traduce a
+    // 409 en vez de dejar un 500 opaco.
+    if (error?.code === "P2002") {
+      return res.status(409).json({
+        message:
+          "Ya existe una solicitud abierta para este producto en esta ubicación. Cancelá esa solicitud o esperá a que se cierre para poder pedir de nuevo.",
+      });
+    }
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
@@ -203,17 +241,26 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
       CANCELADO: "Cancelado",
     };
 
-    const [updated] = await prisma.$transaction([
-      prisma.productRequest.update({
-        where: { id },
+    // Transición ATÓMICA: se relee el estado DENTRO de la transacción y el update se
+    // condiciona a ese estado (updateMany). Antes se validaba contra una lectura
+    //Outside de la transacción y el update solo condicionaba por id, de modo que dos
+    // peticiones concurrentes (p. ej. INVENTARIO avanzando y TIENDA cancelando) pasaban
+    // ambas la validación y la última en commit pisaba a la otra: una solicitud ya
+    // cancelada podía "resucitar" y el RequestHistory quedaba con transiciones
+    // imposibles. Si el estado cambió entre la lectura y el update, count === 0 y se
+    // responde 409 en vez de escribir una transición que no aplica.
+    const updated = await prisma.$transaction(async (tx) => {
+      const actual = await tx.productRequest.findUnique({ where: { id }, select: { status: true } });
+      if (!actual) return { conflicto: "AUSENTE" as const };
+      if (actual.status !== existing.status) return { conflicto: "CAMBIO" as const, status: actual.status };
+
+      const cambios = await tx.productRequest.updateMany({
+        where: { id, status: existing.status },
         data: { status },
-        include: {
-          product: { select: { name: true, itemCode: true } },
-          location: { select: { name: true } },
-          requestedBy: { select: { name: true } },
-        },
-      }),
-      prisma.requestHistory.create({
+      });
+      if (cambios.count !== 1) return { conflicto: "CAMBIO" as const, status: actual.status };
+
+      await tx.requestHistory.create({
         data: {
           requestId: id,
           previousStatus: existing.status,
@@ -221,8 +268,28 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
           userId: req.user?.userId || 0,
           userRole: role,
         },
-      }),
-    ]);
+      });
+
+      return {
+        conflicto: "NINGUNO" as const,
+        dato: await tx.productRequest.findUniqueOrThrow({
+          where: { id },
+          include: {
+            product: { select: { name: true, itemCode: true } },
+            location: { select: { name: true } },
+            requestedBy: { select: { name: true } },
+          },
+        }),
+      };
+    });
+
+    if (updated.conflicto === "AUSENTE") return res.status(404).json({ message: "Solicitud no encontrada" });
+    if (updated.conflicto === "CAMBIO") {
+      return res.status(409).json({
+        message: `La solicitud cambió a "${updated.status}" mientras se procesaba tu petición. Recargá la lista e intentá de nuevo.`,
+      });
+    }
+    const request = updated.dato;
 
     // Notify the requester about status change
     if (existing.requestedById) {
@@ -230,16 +297,22 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
         data: {
           userId: existing.requestedById,
           title: `Solicitud #${id} - ${STATUS_LABELS[status] || status}`,
-          message: `La solicitud del producto "${updated.product?.name}" fue cambiada a "${STATUS_LABELS[status] || status}" por ${updated.requestedBy?.name || "Sistema"}.`,
+          message: `La solicitud del producto "${request.product?.name}" fue cambiada a "${STATUS_LABELS[status] || status}" por ${request.requestedBy?.name || "Sistema"}.`,
           type: status === "CANCELADO" ? "WARNING" : "INFO",
           linkUrl: "/panel/solicitudes",
         },
       });
     }
 
-    res.json(updated);
+    res.json(request);
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
+    // Carrera con otra apertura simultánea del mismo producto/ubicación: el índice
+    // parcial ProductRequest_solicitud_abierta_unica rechaza el update al reabrir una
+    // solicitud. Es un conflicto de negocio, no un fallo del servidor.
+    if (error?.code === "P2002") {
+      return res.status(409).json({ message: "Ya existe una solicitud abierta para este producto en esta ubicación" });
+    }
     console.error("Error al actualizar solicitud:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -264,9 +337,24 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
       }
     }
 
-    await prisma.$transaction([
-      prisma.productRequest.update({ where: { id }, data: { status: "CANCELADO" } }),
-      prisma.requestHistory.create({
+    // Cancelación ATÓMICA: igual que en PUT, el update se condiciona al estado leído
+    // para que un PUT concurrente (p. ej. la tienda confirma recepción mientras se
+    // cancela) no pueda ser sobrescrito ni dejar un previousStatus falso en el historial.
+    const resultado = await prisma.$transaction(async (tx) => {
+      const actual = await tx.productRequest.findUnique({ where: { id }, select: { status: true } });
+      if (!actual) return { conflicto: "AUSENTE" as const };
+      if (actual.status === "RECIBIDO_POR_TIENDA" || actual.status === "CANCELADO") {
+        return { conflicto: "CERRADA" as const, status: actual.status };
+      }
+      if (actual.status !== existing.status) return { conflicto: "CAMBIO" as const, status: actual.status };
+
+      const cambios = await tx.productRequest.updateMany({
+        where: { id, status: existing.status },
+        data: { status: "CANCELADO" },
+      });
+      if (cambios.count !== 1) return { conflicto: "CAMBIO" as const, status: actual.status };
+
+      await tx.requestHistory.create({
         data: {
           requestId: id,
           previousStatus: existing.status,
@@ -274,8 +362,19 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
           userId: req.user?.userId || 0,
           userRole: req.user?.role || "ADMIN",
         },
-      }),
-    ]);
+      });
+      return { conflicto: "NINGUNO" as const };
+    });
+
+    if (resultado.conflicto === "AUSENTE") return res.status(404).json({ message: "Solicitud no encontrada" });
+    if (resultado.conflicto === "CERRADA") {
+      return res.status(400).json({ message: "No se puede cancelar una solicitud ya recibida o cancelada" });
+    }
+    if (resultado.conflicto === "CAMBIO") {
+      return res.status(409).json({
+        message: `La solicitud cambió a "${resultado.status}" mientras se procesaba tu petición. Recargá la lista e intentá de nuevo.`,
+      });
+    }
 
     // Notify the requester about cancellation
     if (existing.requestedById) {

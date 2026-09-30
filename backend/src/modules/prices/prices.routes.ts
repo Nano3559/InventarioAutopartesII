@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize, authorizeModule } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -22,6 +23,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     const margin2 = req.query.margin2 !== undefined ? Number(req.query.margin2) : DEFAULT_MARGIN2;
     const m1 = Number.isFinite(margin1) ? margin1 : DEFAULT_MARGIN1;
     const m2 = Number.isFinite(margin2) ? margin2 : DEFAULT_MARGIN2;
+    const pg = parsePagination(page, limit, 200);
 
     const where: any = {};
     if (search && typeof search === "string") {
@@ -52,8 +54,8 @@ router.get("/", async (req: AuthRequest, res: Response) => {
           costs: { orderBy: { date: "desc" }, include: { supplier: { select: { id: true, name: true } } } },
         },
         orderBy: { name: "asc" },
-        skip: (Math.max(1, Number(page) || 1) - 1) * Math.min(200, Math.max(1, Number(limit) || 20)),
-        take: Math.min(200, Math.max(1, Number(limit) || 20)),
+        skip: pg.skip,
+        take: pg.take,
       }),
       prisma.product.count({ where }),
     ]);
@@ -110,7 +112,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         supplierName: i.supplier?.name || null,
         date: i.date,
       })),
-      pagination: { total, page: Math.max(1, Number(page) || 1), limit: Math.min(200, Math.max(1, Number(limit) || 20)), pages: Math.ceil(total / Math.min(200, Math.max(1, Number(limit) || 20))) },
+      pagination: { total, page: pg.page, limit: pg.take, pages: Math.ceil(total / pg.take) },
     });
   } catch (error) {
     console.error("Error al calcular precios:", error);

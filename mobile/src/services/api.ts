@@ -43,6 +43,14 @@ export const getStoredSession = async (): Promise<{ token: string; user: User } 
   }
 };
 
+type UnauthorizedHandler = () => void;
+
+let onUnauthorized: UnauthorizedHandler | null = null;
+
+export const setOnUnauthorized = (handler: UnauthorizedHandler | null) => {
+  onUnauthorized = handler;
+};
+
 const api = axios.create({
   baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
@@ -61,6 +69,7 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       await clearSession();
+      onUnauthorized?.();
     }
     return Promise.reject(error);
   }

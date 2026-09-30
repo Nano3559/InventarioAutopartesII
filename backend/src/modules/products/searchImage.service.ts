@@ -212,12 +212,37 @@ export function serializeProductoPublico(producto: any, score: number) {
 }
 
 /**
+ * Decide el alcance de ubicación de la serialización interna.
+ *
+ * La política vive en `shared/utils/scope.ts` y es una allow-list (ADMIN/INVENTARIO
+ * tienen vista global; cualquier otro rol queda acotado a su locationId, que es null
+ * si no tiene ubicación asignada). No es "todo lo que no sea TIENDA" porque el nombre
+ * del rol viene de RoleModel.name (tabla data-driven editable): con un deny-list, un
+ * rol futuro sin ubicación recibiría la vista global de stock. Un TIENDA sin ubicación
+ * se rechaza antes con requireTiendaLocation; aquí null significa "sin inventarios
+ * visibles", nunca "vista global".
+ */
+export { ROLES_CON_VISTA_GLOBAL, resolveLocationScope } from "../../shared/utils/scope";
+
+
+/**
  * Serialización para el endpoint interno: conserva el contrato existente
  * (misma forma que consumen el panel y el móvil). El score corresponde al
  * ranking real de coincidencias (el endpoint anterior lo entregaba fijo en 1).
+ *
+ * `locationScope` acota la vista a UNA ubicación. Se usa para usuarios TIENDA:
+ * sin él, `totalStock` y `locations` sumarían el stock de todas las tiendas y del
+ * almacén, lo que filtra existencias de terceros. Con scope, el total y la lista
+ * de ubicaciones reflejan solo la tienda del usuario (mismo nombre de campo, así
+ * que el móvil no necesita cambios). ADMIN/INVENTARIO pasan null y conservan la
+ * vista global, que es su operación legítima.
  */
-export function serializeProductoInterno(producto: any, score: number) {
-  const totalStock = (producto.inventories || []).reduce((sum: number, inv: any) => sum + inv.stock, 0);
+export function serializeProductoInterno(producto: any, score: number, locationScope: number | null = null) {
+  const inventariosVisibles: any[] = locationScope
+    ? (producto.inventories || []).filter((i: any) => i.location?.id === locationScope)
+    : producto.inventories || [];
+
+  const totalStock = inventariosVisibles.reduce((sum: number, inv: any) => sum + inv.stock, 0);
   return {
     id: producto.id,
     itemCode: producto.itemCode,
@@ -230,7 +255,7 @@ export function serializeProductoInterno(producto: any, score: number) {
     image: producto.image,
     score,
     totalStock,
-    locations: (producto.inventories || []).map((i: any) => ({
+    locations: inventariosVisibles.map((i: any) => ({
       name: i.location.name,
       type: i.location.type,
       stock: i.stock,

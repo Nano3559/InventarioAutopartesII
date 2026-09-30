@@ -260,7 +260,8 @@ backend/prisma/seed-data.ts
 
 | Comando                | Descripción                        |
 | ---------------------- | ---------------------------------- |
-| `npm run dev`          | Servidor en desarrollo             |
+| `npm run dev`          | Levanta ia-service (IA) + backend  |
+| `npm run dev:backend`  | Solo el backend Node               |
 | `npm run build`        | Compilar TypeScript                |
 | `npm run start`        | Ejecutar versión compilada         |
 | `npm run prisma:generate` | Generar cliente Prisma          |
@@ -295,6 +296,52 @@ npm test
 
 Las pruebas existentes cubren utilidades y validaciones internas.
 
+## Desarrollo local
+
+### Backend + IA
+
+```powershell
+cd backend
+npm run dev
+```
+
+Ese único comando:
+
+- arranca **ia-service** (FastAPI + YOLO11n real) en el puerto `8000`, dentro de una
+  ventana PowerShell aparte donde se ven los logs del modelo;
+- arranca el **backend Node** en la terminal actual.
+
+Usa el **modelo real**: el backend llama a `ia-service` con `VISION_MODE=http` y
+`VISION_IA_URL=http://127.0.0.1:8000`. No se activa el modo mock.
+
+Requisitos:
+
+- `ia-service/.venv` creado (`py -3.11 -m venv .venv` y
+  `.\.venv\Scripts\python.exe -m pip install -r requirements.txt` dentro de `ia-service/`);
+- `backend/.env` con `VISION_MODE="http"`, `VISION_IA_URL="http://127.0.0.1:8000"` y
+  `VISION_IA_KEY` igual al de `ia-service/.env`;
+- `ia-service/.env` con al menos `VISION_IA_KEY` (mismo valor que en el backend).
+
+Ambos `.env` se leen solos; `dev.ps1` no define ninguna variable ni muestra secretos.
+Si falta alguna, avisa por pantalla indicating el nombre (nunca el valor).
+
+Detalles de comportamiento:
+
+- si `ia-service` ya responde en `/vision/health`, se reutiliza y no se abre una
+  segunda ventana;
+- si el puerto 8000 lo ocupa otro proceso que no es `ia-service`, avisa y **no mata nada**;
+- el backend usa el `PORT` de `backend/.env`; si el puerto está ocupado aparece el
+  `EADDRINUSE` normal, sin cerrar procesos automáticamente;
+- con `Ctrl+C` se detiene el backend y se cierra la ventana de `ia-service` que abrió
+  este script.
+
+El **frontend no se inicia** con este comando. Si lo necesitas, levánzalo aparte:
+
+```powershell
+cd frontend
+npm run dev
+```
+
 ## API
 
 La API utiliza el prefijo `/api`.
@@ -311,14 +358,19 @@ La API utiliza el prefijo `/api`.
 
 | Método | Ruta                    | Autenticación       | Descripción                   |
 | ------ | ----------------------- | ------------------- | ----------------------------- |
-| GET    | `/products`             | Opcional            | Listar productos              |
-| GET    | `/products/filters`     | Opcional            | Filtros de productos          |
-| GET    | `/products/:id`         | Opcional            | Detalle de producto           |
+| GET    | `/products`             | Sí                 | Listar productos              |
+| GET    | `/products/filters`     | Sí                 | Filtros de productos          |
+| GET    | `/products/:id`         | Sí                 | Detalle de producto           |
 | POST   | `/products`             | Admin               | Crear producto                |
 | PUT    | `/products/:id`         | Admin               | Actualizar producto           |
 | DELETE | `/products/:id`         | Admin               | Eliminar producto             |
-| POST   | `/products/search-image`| No                  | Buscar por imagen (OCR)       |
+| POST   | `/products/search-image`| Sí                 | Buscar por imagen (OCR)       |
 | POST   | `/products/import`      | Admin               | Importar desde Excel          |
+
+> Las lecturas de productos son **internas** y exigen token: devuelven existencias por
+> ubicación y precios. El catálogo anónimo del sitio es `/public/products`
+> (ver la sección "Público" más abajo), que expone solo disponibilidad por umbral y nunca
+> costos, stock exacto ni ubicaciones.
 
 ### Inventario
 
@@ -326,7 +378,13 @@ La API utiliza el prefijo `/api`.
 | ------ | ------------------------- | ------------- | ----------------------- |
 | GET    | `/inventory`              | Sí            | Consultar inventario    |
 | GET    | `/inventory/product/:id`  | Sí            | Stock por producto      |
-| PUT    | `/inventory/:id`          | Admin         | Actualizar stock        |
+| PUT    | `/inventory/:id`          | Admin + Inventario | Actualizar stock  |
+
+`/inventory` y `/inventory/product/:id` admiten ADMIN, INVENTARIO y TIENDA; un TIENDA solo
+ve los inventarios de su propia ubicación y no puede ampliarlo con `?locationId`. El ajuste
+de stock es solo para ADMIN e INVENTARIO: un TIENDA lo mueve vendiendo, reposando o
+solicitando, nunca editando el registro. Ninguna de estas rutas devuelve costo de compra ni
+precio mayorista en la lectura.
 
 ### Ubicaciones
 

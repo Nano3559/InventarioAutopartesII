@@ -1,6 +1,8 @@
 import { Router, Response } from "express";
 import { PrismaClient, PaymentMethod } from "@prisma/client";
 import { isPrismaClientError } from "../../shared/utils/errors";
+import { parsePagination } from "../../shared/utils/pagination";
+import { rangoFechasNegocio } from "../../shared/utils/rangoFechas";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt, parsePositiveDecimal, parseString } from "../../shared/middlewares/validate";
@@ -17,11 +19,16 @@ const VALID_METHODS: PaymentMethod[] = ["EFECTIVO", "QR", "TRANSFERENCIA", "CRED
 // GET / — Listar devoluciones con filtros
 router.get("/", async (req: AuthRequest, res: Response) => {
   try {
-    const { saleId, productId, locationId, seller, page = "1", limit = "20" } = req.query;
+    const { saleId, productId, locationId, seller, startDate, endDate, page = "1", limit = "20" } = req.query;
 
     const where: any = {};
     if (saleId && typeof saleId === "string") where.saleId = Number(saleId);
     if (productId && typeof productId === "string") where.productId = Number(productId);
+    // J6: rango por fecha de la devolución. Sin esto el reporte diario sumaba
+    // devoluciones de cualquier fecha (incluso fuera del periodo elegido).
+    // El endDate incluye TODO ese día de negocio (antes cortaba a la medianoche).
+    const rango = rangoFechasNegocio(startDate, endDate);
+    if (rango.gte || rango.lte) where.date = rango;
 
     const user = req.user!;
     const saleFilters: any = {};
@@ -37,9 +44,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       where.sale = saleFilters;
     }
 
-    const pg = Math.max(1, Number(page) || 1);
-    const take = Math.min(100, Math.max(1, Number(limit) || 20));
-    const skip = (pg - 1) * take;
+    // Tope 1000: el reporte diario necesita el periodo completo, no 20 filas.
+    // parsePagination entero-trunca page/limit: sin Math.floor, `?limit=2.7`
+    // llegaba a Prisma como 2.7 y terminaba en 500.
+    const { page: pg, limit: take, skip } = parsePagination(page, limit, 1000);
 
     const [returns, total] = await Promise.all([
       prisma.return.findMany({

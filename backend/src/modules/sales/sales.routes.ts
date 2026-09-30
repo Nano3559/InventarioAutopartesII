@@ -2,10 +2,13 @@ import { Router, Response } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
+import { rangoFechasNegocio } from "../../shared/utils/rangoFechas";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
-import { nextDayAt8 } from "../../utils/replenish";
+import { nextDayAt8, REQUEST_STATUS_ACTIVOS } from "../../utils/replenish";
 import { validateAndMergeItems } from "../../utils/saleItems";
+import { notificarInventarioSolicitud } from "../../shared/utils/notificarInventario";
+import { esErrorDominio, errorDominio } from "../../shared/utils/errorDominio";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -23,13 +26,11 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     if (type && typeof type === "string") where.type = type;
     if (seller && typeof seller === "string") where.seller = seller;
     if (startDate || endDate) {
-      where.saleDate = {};
-      if (startDate && typeof startDate === "string") where.saleDate.gte = new Date(startDate);
-      if (endDate && typeof endDate === "string") {
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        where.saleDate.lte = end;
-      }
+      // Días de negocio (America/La_Paz), no días del servidor: con new Date() el
+      // borde caía en la zona del servidor y una venta de la noche del último día
+      // quedaba fuera del reporte de ese día.
+      const rango = rangoFechasNegocio(startDate, endDate);
+      if (rango.gte || rango.lte) where.saleDate = rango;
     }
 
     const user = req.user!;
@@ -39,7 +40,10 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       where.locationId = Number(locationId);
     }
 
-    const { skip, take, page: cleanPage } = parsePagination(page, limit);
+    // El reporte diario (J4) se arma en el cliente a partir de esta lista y pide
+    // limit=1000: con el tope default de 100 los totales del reporte quedaban
+    // truncados y sin avisar. Tope acotado en 1000, no paginación abierta.
+    const { skip, take, page: cleanPage } = parsePagination(page, limit, 1000);
 
     const [sales, total] = await Promise.all([
       prisma.sale.findMany({
@@ -273,11 +277,11 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     const textoEntrega = (value: unknown, campo: string, max: number): string | null => {
       if (value === undefined || value === null) return null;
       if (typeof value !== "string") {
-        throw new Error(`Campo ${campo} debe ser texto`);
+        throw errorDominio(`Campo ${campo} debe ser texto`);
       }
       const limpio = value.trim();
       if (limpio.length > max) {
-        throw new Error(`Campo ${campo} no puede superar ${max} caracteres`);
+        throw errorDominio(`Campo ${campo} no puede superar ${max} caracteres`);
       }
       return limpio || null;
     };
@@ -286,7 +290,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     const entregaFactura = textoEntrega(datosFactura, "datosFactura", 200);
     const entregaFormaPago = textoEntrega(formaPago, "formaPago", 20) || (payments.length > 0 ? String(payments[0].method) : null);
     if (entregaFormaPago && !["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"].includes(entregaFormaPago)) {
-      throw new Error(`Método de pago inválido: ${entregaFormaPago}`);
+      throw errorDominio(`Método de pago inválido: ${entregaFormaPago}`);
     }
 
     // Validar y deduplicar ítems (evita sobreventa con productos repetidos)
@@ -336,6 +340,34 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       }
     }
 
+    // Se acumulan aquí y se notifica DESPUÉS del commit (ver más abajo): una
+    // notificación es un efecto secundario y no puede abortar una venta válida.
+    const notificaciones: {
+      requestId: number;
+      productName: string;
+      locationName: string;
+      quantity: number;
+      origen: string;
+    }[] = [];
+
+    // Reposición automática "la venta agotó el stock". Se registra DENTRO de la
+    // transacción pero se CREA después del commit, igual que las notificaciones.
+    //
+    // Motivo (ETAPA 9): el índice parcial ProductRequest_solicitud_abierta_unica
+    // garantiza una sola solicitud abierta por producto/ubicación. Si la creación
+    // ocurriera dentro de la transacción de venta, un P2002 por una carrera con
+    // otra creación simultánea abortaría TODA la venta (venta, items, pagos y
+    // descuento de stock) y el punto de venta devolvería 500 por algo que es un
+    // efecto secundario. Fuera de la transacción, la reposición ya confirmada
+    // nunca puede tumbar la venta, y un P2002 solo significa "ya había una
+    // solicitud abierta", que es el resultado correcto.
+    const reposicionesPendientes: {
+      productId: number;
+      quantity: number;
+      locationId: number;
+      requestedById: number;
+    }[] = [];
+
     const result = await prisma.$transaction(async (tx) => {
       let finalCustomerId = customerId || null;
 
@@ -374,31 +406,43 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       for (const item of orderedItems) {
         const product = productById.get(item.productId);
         if (!product) {
-          throw new Error(`Producto con ID ${item.productId} no encontrado`);
+          throw errorDominio(`Producto con ID ${item.productId} no encontrado`);
         }
 
         const locked = lockedStock.get(item.productId);
         const currentStock = locked ? locked.stock : 0;
         if (currentStock < item.quantity) {
-          throw new Error(`Stock insuficiente para "${product.name}". Disponible: ${currentStock}, solicitado: ${item.quantity}`);
+          throw errorDominio(`Stock insuficiente para "${product.name}". Disponible: ${currentStock}, solicitado: ${item.quantity}`);
         }
       }
 
       let totalSale = 0;
-      const saleItemsData = validItems.map((item: any) => {
-        const subtotal = item.quantity * item.unitPrice;
+      const saleItemsData = orderedItems.map((item) => {
+        const product = productById.get(item.productId)!;
+        // Semantica de precios del catalogo (ver prices.routes / InventoryPage):
+        //   price1 = mayorista, price2 = minorista.
+        // La venta NORMAL es venta al publico minorista, por lo que se cobra price2.
+        // Se cae a price1 solo si el producto no tiene minorista definido, para no
+        // bloquear la venta de un producto que solo tenga precio mayorista cargado.
+        const minorista = Number(product.price2);
+        const mayorista = Number(product.price1);
+        const unitPrice = minorista > 0 ? minorista : mayorista;
+        if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
+          throw errorDominio(`El producto "${product.name}" no tiene un precio de venta definido`);
+        }
+        const subtotal = item.quantity * unitPrice;
         totalSale += subtotal;
         return {
           productId: item.productId,
           quantity: item.quantity,
-          unitPrice: item.unitPrice,
+          unitPrice,
           subtotal,
         };
       });
 
       const totalPaid = payments.reduce((sum: number, p: any) => sum + Number(p.amount), 0);
       if (Math.abs(totalPaid - totalSale) > 0.01) {
-        throw new Error(`El total pagado (Bs. ${totalPaid}) no coincide con el total de la venta (Bs. ${totalSale})`);
+        throw errorDominio(`El total pagado (Bs. ${totalPaid}) no coincide con el total de la venta (Bs. ${totalSale})`);
       }
 
       const sale = await tx.sale.create({
@@ -438,33 +482,36 @@ router.post("/", async (req: AuthRequest, res: Response) => {
               where: {
                 productId: item.productId,
                 locationId: userLocationId,
-                status: { in: ["PENDIENTE", "RECIBIDO_POR_INVENTARIO", "PREPARANDO"] },
+                // REQUEST_STATUS_ACTIVOS incluye ENTREGADO: la mercadería ya salió del
+                // almacén pero la tienda aún no la recibió, así que sigue abierta. Con
+                // la lista vieja (sin ENTREGADO) el findFirst no la encontraba y la venta
+                // intentaba abrir una segunda solicitud, que el índice parcial rechaza.
+                status: { in: REQUEST_STATUS_ACTIVOS },
               },
             });
             if (!existing) {
-              const almacen = await tx.location.findFirst({ where: { type: "ALMACEN" } });
-              if (almacen) {
-                const almacenInv = await tx.inventory.findUnique({
-                  where: { productId_locationId: { productId: item.productId, locationId: almacen.id } },
+              // Se suma el stock de TODOS los almacenes: tomar uno solo (findFirst)
+              // hacia que la reposicion dependa de un almacen arbitrario y se pierda
+              // cuando el stock esta repartido entre varios.
+              const inventariosAlmacen = await tx.inventory.findMany({
+                where: { productId: item.productId, location: { type: "ALMACEN" } },
+                select: { stock: true },
+              });
+              const stockEnAlmacenes = inventariosAlmacen.reduce((sum, a) => sum + a.stock, 0);
+              const requestQty = Math.max(item.quantity, 5);
+              if (inventariosAlmacen.length > 0 && stockEnAlmacenes >= requestQty) {
+                reposicionesPendientes.push({
+                  productId: item.productId,
+                  quantity: requestQty,
+                  locationId: userLocationId,
+                  requestedById: user.userId,
                 });
-                const requestQty = Math.max(item.quantity, 5);
-                if (almacenInv && almacenInv.stock >= requestQty) {
-                  await tx.productRequest.create({
-                    data: {
-                      productId: item.productId,
-                      quantity: requestQty,
-                      requestedById: user.userId,
-                      locationId: userLocationId,
-                      status: "PENDIENTE",
-                      expectedDate: nextDayAt8(),
-                    },
-                  });
-                }
               }
             }
           }
         }
       }
+
 
       return {
         ...sale,
@@ -474,15 +521,71 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       };
     }, { timeout: 20000 });
 
+    // Reposición automática DESPUÉS del commit: la venta ya está confirmada, así que un
+    // P2002 (carrera con otra creación simultánea) solo significa "ya había una solicitud
+    // abierta" y se ignora con un log. Nunca responde 500 por la reposición.
+    for (const reposicion of reposicionesPendientes) {
+      try {
+        const created = await prisma.productRequest.create({
+          data: {
+            productId: reposicion.productId,
+            quantity: reposicion.quantity,
+            requestedById: reposicion.requestedById,
+            locationId: reposicion.locationId,
+            status: "PENDIENTE",
+            expectedDate: nextDayAt8(),
+            // Trazabilidad: el job y la ruta manual también registran origen e historial,
+            // así que sin esto esta vía era indistinguible de una solicitud manual y
+            // llegaba con history: [].
+            note: "Reposición automática (la venta agotó el stock)",
+            history: {
+              create: {
+                newStatus: "PENDIENTE",
+                userId: reposicion.requestedById,
+                userRole: user.role,
+              },
+            },
+          },
+        });
+        notificaciones.push({
+          requestId: created.id,
+          productName:
+            (await prisma.product.findUnique({ where: { id: reposicion.productId }, select: { name: true } }))?.name ??
+            `Producto #${reposicion.productId}`,
+          locationName:
+            (await prisma.location.findUnique({ where: { id: reposicion.locationId }, select: { name: true } }))?.name ??
+            `Ubicación #${reposicion.locationId}`,
+          quantity: reposicion.quantity,
+          origen: `Reposición automática (venta agotó el stock de ${user.role})`,
+        });
+      } catch (err: any) {
+        if (err?.code === "P2002") {
+          console.log(
+            `[sales] Ya existe una solicitud abierta para el producto ${reposicion.productId} en la ubicación ${reposicion.locationId}: no se duplica`
+          );
+          continue;
+        }
+        console.error(`[sales] No se pudo crear la reposición del producto ${reposicion.productId}:`, err);
+      }
+    }
+
+    // Notificar fuera de la transacción: si la notificación falla, la venta ya está
+    // confirmada y se responde 201 (el helper tampoco propaga errores).
+    for (const notificacion of notificaciones) {
+      await notificarInventarioSolicitud(prisma, notificacion);
+    }
+
     res.status(201).json(result);
   } catch (error: any) {
-    // Los errores internos de Prisma (timeout, contención, conexión) se ocultan como 500.
-    // Los errores de dominio (stock, total, producto) son mensajes planos y se responden como 400.
-    if (error && isPrismaClientError(error)) {
-      console.error("Error al crear venta:", error);
-      return res.status(500).json({ message: "Error interno del servidor" });
+    // Solo los rechazos de negocio conocidos (ErrorDominio) responden 400 con su
+    // mensaje: son texto escrito por este código, no un detalle del sistema. Cualquier
+    // otro fallo (Prisma, fs, TypeError) se registra y responde 500 genérico, en vez
+    // de devolver error.message al cliente con un 400 engañoso.
+    if (esErrorDominio(error)) {
+      return res.status(400).json({ message: error.message });
     }
-    res.status(400).json({ message: error.message || "Error interno del servidor" });
+    console.error("Error al crear venta:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 

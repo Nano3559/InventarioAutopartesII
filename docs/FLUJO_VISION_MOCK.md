@@ -4,17 +4,38 @@ Sistema: RepuestoPro. Objetivo: verificar el flujo visual (cámara → backend �
 
 ## 1. Modo mock (backend)
 
-El backend arranca en modo mock cuando `VISION_MODE` no es `http` (por defecto):
+La resolución del modo es **explícita** y vive en `backend/src/modules/vision/vision.config.ts`
+(`resolverVisionMode`). La regla es: el mock nunca se activa *en silencio* en producción.
 
-```bash
-VISION_MODE=mock npm run dev   # en backend/.env o como variable de entorno
-```
+| `VISION_MODE` | `VISION_IA_URL` | `NODE_ENV` | Modo resuelto | ¿Requiere IA? |
+| ------------- | --------------- | ---------- | ------------- | ------------- |
+| (sin definir)  | no              | dev/test   | `mock`        | no |
+| (sin definir)  | sí              | cualquiera | `http`        | no (la URL está definida) |
+| `remote`       | no              | **prod**   | `http`        | **sí → 503** |
+| `http`         | no              | cualquiera | `http`        | **sí → 503** |
+| `mock`         | —               | dev/test   | `mock`        | no |
 
-- Log al arranque: `VISIÓN: modo MOCK activo (detecciones simuladas)`.
-- No se conecta a un servicio IA (`VISION_IA_URL` solo se usa en modo `http`).
-- La imagen recibida no se analiza de verdad; el escenario lo decide un header opcional.
+- `remote` es alias de `http`.
+- En **producción**, si el modo resuelto es `http` y falta `VISION_IA_URL`, el provider **no**
+  devuelve detecciones simuladas: lanza `VisionErrores.servicioNoDisponible()` y la API responde
+  **503 `VISION_NO_DISPONIBLE`**. Es un fallo explícito, no un resultado falso.
+- `VISION_MODE=mock` explícito en producción es una opt-in deliberada del operador (queda
+  registrada en el log de arranque); no se activa por ausencia de configuración.
+- En dev/test sin URL se registra un warning de arranque indicando que las detecciones son
+  simuladas:
+
+  ```text
+  VISIÓN: modo MOCK activo (detecciones simuladas, no provienen del modelo).
+  Configure VISION_MODE=http y VISION_IA_URL para usar el modelo real.
+  ```
+
+- El modo `http` envía el secreto al servicio IA en el header `X-Vision-Key`, leído de
+  `VISION_IA_KEY` (mismo nombre en backend y en `ia-service`). Si el servicio IA no tiene el
+  mismo valor configurado, responde 401 y el backend traduce el error.
 
 ### Escenarios por header `x-vision-mock-scenario`
+
+Solo aplican en modo `mock`.
 
 | Header / ausencia | Respuesta | Equivalente real |
 | ----------------- | --------- | ---------------- |
@@ -31,34 +52,58 @@ VISION_MODE=mock npm run dev   # en backend/.env o como variable de entorno
 2. **Llamada** — `detectarVisionPublica(file, { vehiculo })` → `POST /api/vision/public/detectar` (multipart, MIME `jpeg|png|webp`, máx 5 MB).
 3. **Detección** — backend clasifica (mock: según escenario) y mapea la categoría.
 4. **Catálogo** — productos de la categoría rankeados por score (mock: verificación de compatibilidad + orden).
-5. **Disponibilidad** — solo niveles (`DISPONIBLE`/`POCAS_UNIDADES`/`NO_DISPONIBLE`) y sucursales **TIENDA**; nunca stock exacto ni `price2` en el endpoint público.
-6. **Selección** — `VisionResultsPanel` muestra candidatos, confianza, entrega ("Recoger en sucursal" / "Delivery") con sucursales disponibles.
+5. **Disponibilidad** — el endpoint público devuelve **solo el nivel agregado**
+   (`DISPONIBLE`/`POCAS_UNIDADES`/`NO_DISPONIBLE`) calculado sobre el stock total: nunca
+   stock exacto, nunca `price2` y **nunca el desglose por sede** (`disponibilidadPorSucursal`
+   viaja vacío, porque cada entrada lleva `locationId`, `nombre` y `tipo` de la sede, que son
+   datos internos de la operación). El desglose por ubicación y el stock exacto quedan
+   reservados al endpoint interno autenticado.
+6. **Selección** — `VisionResultsPanel` muestra candidatos, confianza, entrega ("Recoger en
+   sucursal" / "Delivery"). Como el público ya no recibe el desglose por sede, los chips
+   "sede: etiqueta" no se renderizan en el catálogo anónimo (el bloque está guardado por
+   `length > 0`); las sedes siguen apareciendo en el selector de entrega, que usa
+   `entrega.sucursales`. Rediseñar ese detalle público es un ítem de coordinación con Erika.
 
 ## 3. Pruebas automatizadas (WB-10)
 
-Backend (mock activo, independiente del modelo):
+Backend (mock activo, independiente del modelo). **Requisito**: `DATABASE_URL` debe apuntar a la
+base local de prueba; el helper `assertLocalTestUrl` aborta la suite si detecta una URL remota
+(Neon) para no ejecutar pruebas destructivas contra producción.
 
 ```bash
 cd backend
 $env:DATABASE_URL = (Get-Content "$env:TEMP\opencode\pgtest\dburl.txt" -Raw).Trim()
-$env:JWT_SECRET = $null
-npm run test          # unit (30 visión + resto de la suite)
-npm run test:integration   # itest: público 400/422/429/503/504/200, interno 401/403/200, MIME inválido, >5 MB
+npm test                  # unitarios
+npm run test:integration  # itest: público 400/422/429/503/504/200, interno 401/403/200, MIME inválido, >5 MB
 npm run test:all
+npm run test:coverage
 ```
 
-Suite completa verificada: **58 unit + 38 integración** en verde (incl. `vision.routes.itest.ts` con cobertura de rate limit 429); `tsc --noEmit` y `npm run build` sin errores.
+Los itests corren con `--test-concurrency=1`: comparten una única base PostgreSQL y el runner de
+Node los ejecutaba en paralelo, lo que producía interferencias entre archivos (un `cleanup` de un
+archivo borraba usuarios que otro estaba usando para insertar notificaciones).
+
+Cifras verificadas en la última corrida completa:
+
+| Comando | Resultado |
+| ------- | --------- |
+| `npx tsc --noEmit` | sin errores |
+| `npm test` | **76 / 76** unitarios |
+| `npm run test:integration` | **55 / 55**, estable en **3 corridas consecutivas** |
+| `npm run test:all` | 76 unit + 55 integración, todo en verde |
+| `npm run test:coverage` | 84.61% líneas, 89.83% ramas, 90.83% funciones |
+| `npm run build` | sin errores |
 
 Frontend (mock en el cliente vía `vi.mock`):
 
 ```bash
 cd frontend
-npx vitest run
+npm test          # vitest run (no interactivo)
 npx tsc -b
 npm run build
 ```
 
-Archivos nuevos (WB-10):
+Archivos de pruebas de visión (frontend):
 
 | Archivo | Cubre |
 | ------- | ----- |
@@ -67,7 +112,10 @@ Archivos nuevos (WB-10):
 | `src/pages/__tests__/PublicProductsPage.vision.test.tsx` | botón "Buscar por cámara", captura → `detectarVisionPublica`, resultados, error traducido, cerrar |
 | `src/services/__tests__/visionApi.test.ts` | FormData multipart, campos vehículo, escenario mock, mapeo de errores 422/429/503/504, error de red |
 
-Suite frontend verificada: **92 tests** en verde (69 previos + 23 de visión); `tsc -b` y `npm run build` sin errores.
+Cifras frontend verificadas: **105 / 105** tests en 11 archivos; `tsc -b` y `build` sin errores.
+El build emite el warning de Vite por un chunk > 500 kB (pendiente de code-splitting) y la
+suite emite avisos `act(...)` de React en `PublicProductsPage` / `LoginPage` / `MemoryRouter`
+(ruido de tests asíncronos, no afectan el resultado).
 
 ## 4. Probar a mano
 
