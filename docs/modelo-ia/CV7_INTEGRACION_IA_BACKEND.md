@@ -70,10 +70,12 @@ Variables de entorno leídas por `backend/src/modules/vision/vision.config.ts`:
 
 | Variable | Default | Uso |
 |---|---|---|
-| `VISION_MODE` | `mock` | `mock` o `http`. Si `VISION_IA_URL` está definida, el modo pasa a `http` automáticamente. |
-| `VISION_IA_URL` | vacío | Base URL del servicio IA, p.ej. `http://127.0.0.1:8000`. |
+| `VISION_IA_URL` | vacío | Base URL del servicio IA, p.ej. `http://127.0.0.1:8000`. **Si falta, la visión responde `503 VISION_NO_DISPONIBLE`**: no hay proveedor simulado en el runtime. |
+| `VISION_IA_KEY` | vacío | Secreto compartido con `ia-service`; se envía en `X-Vision-Key`. Si el servicio exige la clave y no coincide, cada llamada se traduce a `503`. |
 | `VISION_TIMEOUT_MS` | `8000` | Timeout del provider (mínimo 500). |
 | `VISION_CONFIDENCE_MIN` | `0.55` | Umbral de negocio aplicado al candidato de mayor confianza. |
+
+No existe `VISION_MODE`: el proveedor es siempre `HttpVisionProvider` (HTTP real contra `ia-service`). La variable y el `MockVisionProvider` se eliminaron para que ninguna ruta del runtime pueda entregar detecciones inventadas.
 
 Diferenciación importante (dos umbrales distintos):
 
@@ -85,7 +87,6 @@ Nota: `0.55` es el valor actual del backend y NO se define aquí como política 
 En la prueba E2E las variables se inyectaron como temporales de sesión (entorno del proceso backend), sin modificar `.env`:
 
 ```
-VISION_MODE=http
 VISION_IA_URL=http://127.0.0.1:8000
 VISION_TIMEOUT_MS=8000
 VISION_CONFIDENCE_MIN=0.55
@@ -146,7 +147,7 @@ Auditoría previa: el frontend ya consume la respuesta del backend (contrato cam
 Flujo real ejecutado (Paso 3) con los 3 servicios levantados:
 
 - Frontend Vite en `http://localhost:5173`; base URL del API: `VITE_API_URL || "http://localhost:3000/api"` (`services/api.ts`), sin proxy.
-- Backend Express en `http://localhost:3000` con `VISION_MODE=http`; FastAPI en `http://127.0.0.1:8000`.
+- Backend Express en `http://localhost:3000` con `VISION_IA_URL` apuntando a FastAPI; FastAPI en `http://127.0.0.1:8000`.
 - Request A (sin vehículo) → HTTP 200 (~137 ms tras warmup): `proveedor=http`, filtro de aire 0.9703, `Filtros`, 6 candidatos, compatibilidad 0v/6nv.
 - Request B (con `vehiculoMarca=Toyota`, `vehiculoModelo=Corolla`, `vehiculoAnio=2020-2024`) → HTTP 200 (~81 ms): misma detección (la IA no ve el vehículo), categoría igual, candidatos 6, compatibilidad pasa a **1v/5nv**; el primer candidato ("Filtro de Aire Deportivo") reporta coincidencias `marca,modelo,anio`. El vehículo solo afecta compatibilidad/catálogo, no la inferencia.
 - Evidencia: access log de uvicorn registró los POST del backend; respuesta con `proveedor=http`; consumido por el mismo contrato tipado del frontend (test de Vitest `PublicProductsPage.vision.test.tsx` valida el render con datos de la misma forma).
@@ -163,14 +164,20 @@ Limitación de prueba de interfaz: la UI de visión es de captura por cámara (`
 
 Explícito: **YOLO NO determina compatibilidad de vehículo**. La compatibilidad es del backend/catálogo, confirmado en la prueba (misma detección con y sin vehículo).
 
-## 10. Mock vs HTTP
+## 10. Proveedor de visión (HTTP real, sin simulación)
 
-El modo mock se conserva y se usa para desarrollo y tests (rutas, límites, contratos) sin depender de la infraestructura IA:
+> Histórico: este documento comparaba "mock vs HTTP". Ese modo simulado ya no existe.
 
-- Backend en `VISION_MODE=mock` (default): `MockVisionProvider` devuelve escenarios (`default`, `ninguna`, `baja_confianza`, `categoria_desconocida`, `timeout`, `error`) vía header `x-vision-mock-scenario`.
-- Backend en `VISION_MODE=http` (o con `VISION_IA_URL` definida): `HttpVisionProvider` llama a FastAPI real; el header de mock no interviene.
+El backend tiene un único proveedor, `HttpVisionProvider`, que siempre llama a FastAPI real:
 
-Integración real: `http`. Desarrollo/tests: `mock`.
+- Con `VISION_IA_URL` definida: `POST <VISION_IA_URL>/vision/detect` y la respuesta declara `proveedor=http`.
+- Sin `VISION_IA_URL`: **503 `VISION_NO_DISPONIBLE`**. No hay degradación a datos simulados, ni en desarrollo.
+- El cliente no puede forzar un escenario: no existe header de escenario.
+
+Para las pruebas (rutas, límites, contratos) sin depender de la infraestructura IA real se usa un
+doble **exclusivo de tests**: `backend/src/testing/fakeIaServer.ts`, un servidor HTTP local en
+`127.0.0.1` que los tests levantan y configuran por código. Nunca se importa desde la aplicación.
+Ver `docs/FLUJO_VISION_IA.md`.
 
 ## 11. Limitaciones
 

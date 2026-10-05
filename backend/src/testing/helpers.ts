@@ -4,6 +4,7 @@ import path from "node:path";
 import type { Server } from "node:http";
 import type { Express } from "express";
 import jwt from "jsonwebtoken";
+import { startFakeIaServer, FakeIa } from "./fakeIaServer";
 
 /**
  * Utilidades compartidas para los tests de integración (*.itest.ts).
@@ -61,21 +62,41 @@ function resolveDatabaseUrl(): string {
 }
 
 /**
- * Configura el entorno de test (DATABASE_URL y JWT_SECRET) ANTES de que se
- * importe app.ts (que a su vez importa ./config y los routers). Se invoca al
- * importar este módulo; por eso en cada archivo *.itest.ts este es el primer
- * import. Los módulos _real_ app/router se importan de forma diferida.
+ * Levanta el doble de `ia-service` y fija la config de vision de test.
+ *
+ * El runtime no tiene proveedor simulado, asi que los tests apuntan
+ * `VISION_IA_URL` a un servidor HTTP local real. Se arranca una sola vez por
+ * proceso y se comparte mediante `fakeIa()` para que una suite pueda cambiar de
+ * escenario (error, timeout, clave invalida) sin reiniciarlo.
  */
-export function resolveTestEnv(): void {
+let fakeIaPromise: Promise<FakeIa> | null = null;
+
+export function fakeIa(): Promise<FakeIa> {
+  if (!fakeIaPromise) fakeIaPromise = startFakeIaServer();
+  return fakeIaPromise;
+}
+
+/**
+ * Configura el entorno de test (DATABASE_URL, JWT_SECRET y la config de vision)
+ * ANTES de que se importe app.ts (que a su vez importa ./config y los routers).
+ * Los modulos _real_ app/router se importan de forma diferida, asi que alcanza
+ * con que `startTestServer()` la espere.
+ */
+export async function resolveTestEnv(): Promise<void> {
   // Siempre con override: el entorno de test jamás debe firmar con el secreto real.
   process.env.JWT_SECRET = "itest-secret-2f8c1a9d5b7e3f406572";
   process.env.DATABASE_URL = resolveDatabaseUrl();
   if (process.env.JWT_SECRET.length < 16 || RESERVED_JWT.has(process.env.JWT_SECRET)) {
     throw new Error("TESTING: JWT_SECRET de prueba inválido (mínimo 16 caracteres y no reservado).");
   }
-}
 
-resolveTestEnv();
+  // Vision: siempre HTTP real contra el doble local. El timeout se mantiene bajo
+  // para que el escenario de timeout del doble no alargue la suite.
+  const ia = await fakeIa();
+  process.env.VISION_IA_URL = ia.url;
+  process.env.VISION_IA_KEY = "itest-vision-key-3a91c5d7e2b84f06";
+  process.env.VISION_TIMEOUT_MS = "700";
+}
 
 let appSingleton: Express | undefined;
 
@@ -93,6 +114,7 @@ export interface TestServer {
 }
 
 export async function startTestServer(): Promise<TestServer> {
+  await resolveTestEnv();
   const app = await getApp();
   const server: Server = await new Promise((resolve, reject) => {
     const srv = app.listen(0, "127.0.0.1", () => resolve(srv));

@@ -4,6 +4,13 @@ Sistema: RepuestoPro (inventario y ventas de autopartes).
 Base para: `PLAN_IMPLEMENTACION_IA_VISION.md` (FASE 0: plan + auditoría).
 Tipo de auditoría: **solo lectura**. No se ejecutaron migraciones, instalaciones, deploys ni modificaciones de código ni de base de datos.
 
+> **Nota de estado (vigente):** esta auditoría describe el punto de partida, cuando
+> el proveedor de visión simulado (`MockVisionProvider`, `VISION_MODE`) formaba
+> parte del diseño. **Hoy no existe en el runtime**: el único proveedor es
+> `HttpVisionProvider` (HTTP real contra `ia-service`) y, sin `VISION_IA_URL`, la
+> API responde `503 VISION_NO_DISPONIBLE`. Las menciones a "mock" en las secciones
+> siguientes son históricas. Ver `docs/FLUJO_VISION_IA.md`.
+
 ---
 
 ## 1. Resumen ejecutivo
@@ -418,8 +425,8 @@ Estado al 2026-09-21. El texto anterior es la auditoría base (solo lectura); es
 
 - **WB-4 / TC-1 / TC-2 / TC-4 / TC-5 (backend visión):** módulo completo en `backend/src/modules/vision/` (contrato, normalize, config `VISION_MODE` con resolución explícita, categorías/aliases, disponibilidad por umbral, compatibilidad por marca/modelo/año, provider mock/http con `AbortSignal.timeout(8000)`, service con serialización pública vs interna) y endpoint `POST /api/vision/detectar` (interno, TIENDA ve solo su sucursal) + endpoints públicos. Rate limits dedicados en `shared/middlewares/rateLimit.ts`. Tests: **76 unit + 55 integración** (incluye 40 unit + 15 itest de visión, con cobertura de rate limit 429) en verde, `tsc` y `npm run build` limpios.
 - **WB-2 / WB-9 (frontend visión):** `CameraCapture` (getUserMedia + canvas → File) y `VisionResultsPanel` (resultados, vehículo, entrega recoger/delivery) creados; `PublicProductsPage` integrado con el botón "Buscar por cámara" y ambos modales. **92 tests Vitest** en verde (69 previos + 23 nuevos de visión: 4 cámara + 8 panel + 4 página + 7 visionApi), `tsc -b` y `npm run build` limpios.
-- **WB-10 (E2E con mock):** ver `docs/FLUJO_VISION_MOCK.md`. Suite de prueba completa con mock: cámara → endpoint público → categoría → catálogo → disponibilidad → selección, con escenarios `default` / `ninguna` / `baja_confianza` / `categoria_desconocida` / `error` / `timeout`.
-- **Pendientes (fuera del alcance de Ross):** dataset e imágenes (CV-1…CV-4), entrenamiento del modelo real y umbral oficial (CV-5/CV-6/hito H2), facial (CV-9/FASE 10). El flujo productivo necesita conectar `VISION_MODE=http` + `VISION_IA_URL` al servicio real una vez exista (Erika).
+- **WB-10 (E2E con IA):** ver `docs/FLUJO_VISION_IA.md`. Suite de prueba completa: cámara → endpoint público → categoría → catálogo → disponibilidad → selección. El proveedor simulado del runtime se eliminó: las pruebas hablan por HTTP real con un `ia-service` de test (`src/testing/fakeIaServer.ts`) y fijan por código los escenarios `default` / `ninguna` / `baja_confianza` / `categoria_desconocida` / `caida` / `timeout`.
+- **Pendientes (fuera del alcance de Ross):** dataset e imágenes (CV-1…CV-4), entrenamiento del modelo real y umbral oficial (CV-5/CV-6/hito H2), facial (CV-9/FASE 10). El flujo productivo necesita conectar `VISION_IA_URL` al servicio real una vez exista (Erika). Ya no aplica `VISION_MODE=http`: el proveedor es siempre HTTP real.
 
 ---
 
@@ -441,15 +448,15 @@ Estado al 2026-09-21. El texto anterior es la auditoría base (solo lectura); es
 | WB-7 | Stock por sucursal (público seguro, interno exacto). | `availability.ts` + serialización pública/interna en `vision.service.ts`; itest ADMIN vs TIENDA. | **COMPLETA** | — |
 | WB-8 | Flujo recogida/delivery (solo integración). | `VisionResultsPanel.tsx` (modalidad + sucursales con stock + cantidad/entrega), `entrega` en la respuesta, borrador público→venta (`saleDraft.ts`) prellenado en `SalesPage` y campos opcionales `paraQuien/lugarEntrega/datosFactura/formaPago` persistidos en `POST /api/sales` (R6.17/R6.18 + tests frontend). | **COMPLETA** | — (decisión: la venta sigue siendo punto de venta autenticado; no se creó e-commerce público, ver AUDITORÍA 13–14). |
 | WB-9 | UX de resultados (carga/vacío/error, no inventar compatibilidad). | `VisionResultsPanel.tsx` + 8 tests. | **COMPLETA** | — |
-| WB-10 | Pruebas E2E con mock del servicio IA. | `docs/FLUJO_VISION_MOCK.md` + suites (backend 96, frontend 92) en verde. | **COMPLETA** | — |
+| WB-10 | Pruebas E2E del servicio IA por HTTP real. | `docs/FLUJO_VISION_IA.md` + suites (backend 110 unit + 130 itest, frontend 110) en verde. | **COMPLETA** | — |
 
 ## B. Estado TC (trabajo compartido)
 
 | ID | Criterio del plan | Evidencia actual | Estado | Falta |
 | -- | ----------------- | ---------------- | ------ | ----- |
 | TC-1 | Contrato de detección (DTO) con una sola fuente de verdad y validación. | `backend/src/modules/vision/contract.ts` (runtime validation → 503), tipos espejo `frontend/src/types/vision.ts`. | **COMPLETA** | — |
-| TC-2 | Mocks/stubs deterministas del servicio IA. | `MockVisionProvider` + header `x-vision-mock-scenario` (6 escenarios) + `VISION_MODE`. | **COMPLETA** | — |
-| TC-3 | Pruebas de integración backend con mock. | `vision.routes.itest.ts` (15 tests). | **COMPLETA** | — |
+| TC-2 | Dobles deterministas del servicio IA. | Implementado como `MockVisionProvider` + `VISION_MODE`, **luego eliminado del runtime**. Hoy solo existe el doble HTTP de test `src/testing/fakeIaServer.ts`. | **SUPERADA** | El proveedor real es único (`HttpVisionProvider`); sin `VISION_IA_URL` responde 503. |
+| TC-3 | Pruebas de integración backend contra el servicio IA. | `vision.routes.itest.ts`, hoy contra un `ia-service` HTTP de test. | **COMPLETA** | — |
 | TC-4 | Manejo de errores uniforme con códigos. | `vision.errors.ts` (400/422/503/504 + codigo), frontend `CODIGOS_POR_STATUS`. | **COMPLETA** | — |
 | TC-5 | Seguridad transversal de imágenes. | `imageUpload` reutilizado (MIME/5MB/1 archivo, memoria sin archivos temporales), `authenticate`+`requireTiendaLocation`, limiters dedicados. | **COMPLETA** | — |
 | TC-6 | Abstracción de fuentes externas con trazabilidad. | `CompatibilityProvider`/`BaseDatosInternaProvider`/factory + interfaz `ProveedorExternoCompatibilidad` (fuente, fecha, confianza, timeout, cache, fallback); interno trazable (`base_datos_interna`). | **COMPLETA** | Integraciones reales `APIFabricante`/`APIDistribuidor`/`BúsquedaWebControlada` — no existen APIs externas registradas (H3/PENDIENTE EXTERNO). |

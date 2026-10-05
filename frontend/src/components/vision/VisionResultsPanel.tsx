@@ -37,10 +37,15 @@ const disponibilidadClases = (nivel: string) => {
   return "text-gray-400 bg-gray-500/10 border-gray-500/20";
 };
 
-/** Nombre legible del proveedor real que informa el contrato, sin inventarlo en la UI. */
+/**
+ * Nombre legible del proveedor que informa el contrato, sin inventarlo en la UI.
+ *
+ * El backend siempre consulta el modelo real (`ia-service` + YOLO), así que no
+ * existe una etiqueta de simulación: cualquier valor distinto de `http` se
+ * muestra tal cual para no ocultarlo si el contrato cambiara.
+ */
 const ETIQUETA_PROVEEDOR: Record<string, string> = {
   http: "ia-service (modelo real)",
-  mock: "Simulación (mock)",
 };
 
 const etiquetaProveedor = (proveedor: string) => ETIQUETA_PROVEEDOR[proveedor] ?? `Proveedor: ${proveedor}`;
@@ -205,11 +210,7 @@ export default function VisionResultsPanel({
                   </span>
                 )}
                 <span
-                  className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider ${
-                    resultado.proveedor === "mock"
-                      ? "text-yellow-300 bg-yellow-500/10 border-yellow-500/20"
-                      : "text-emerald-300 bg-emerald-500/10 border-emerald-500/20"
-                  }`}
+                  className="text-[11px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider text-emerald-300 bg-emerald-500/10 border-emerald-500/20"
                   title={`Proveedor: ${resultado.proveedor} · v${resultado.version}`}
                 >
                   {etiquetaProveedor(resultado.proveedor)}

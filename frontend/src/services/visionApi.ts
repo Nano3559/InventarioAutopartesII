@@ -53,12 +53,6 @@ function armarFormData(file: File, opts?: VisionRequestOptions): FormData {
   return data;
 }
 
-function armarHeaders(opts?: VisionRequestOptions): Record<string, string> {
-  const headers: Record<string, string> = { "Content-Type": "multipart/form-data" };
-  if (opts?.escenarioMock) headers["x-vision-mock-scenario"] = opts.escenarioMock;
-  return headers;
-}
-
 function extraerErrorVision(error: unknown): VisionApiError {
   const e = error as { response?: { status?: number; data?: { message?: string; codigo?: string } } };
   const status = e?.response?.status || 0;
@@ -70,11 +64,15 @@ function extraerErrorVision(error: unknown): VisionApiError {
 /**
  * Búsqueda por visión pública (sin token). Nunca expone precios internos ni
  * stock exacto (el backend ya serializa la respuesta segura).
+ *
+ * No se envía ningún header de escenario: el backend siempre consulta el modelo
+ * real de `ia-service`, así que el cliente no tiene forma de pedir una detección
+ * simulada. Sin `Content-Type` manual para que axios fije el boundary del
+ * multipart.
  */
 export async function detectarVisionPublica(file: File, opts?: VisionRequestOptions): Promise<VisionAnalysis> {
   try {
     const res = await api.post<VisionAnalysis>("/vision/public/detectar", armarFormData(file, opts), {
-      headers: armarHeaders(opts),
       signal: opts?.signal,
       timeout: 20000,
     });
@@ -91,7 +89,6 @@ export async function detectarVisionPublica(file: File, opts?: VisionRequestOpti
 export async function detectarVisionInterna(file: File, opts?: VisionRequestOptions): Promise<VisionAnalysis> {
   try {
     const res = await api.post<VisionAnalysis>("/vision/detectar", armarFormData(file, opts), {
-      headers: armarHeaders(opts),
       signal: opts?.signal,
       timeout: 20000,
     });

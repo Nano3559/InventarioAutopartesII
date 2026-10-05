@@ -36,7 +36,7 @@ export interface SeedContext {
 export async function seed(ns: string): Promise<SeedContext> {
   // Idempotente: garantiza el entorno de test aunque algún futuro archivo importe
   // a seed.ts antes que helpers.ts.
-  resolveTestEnv();
+  await resolveTestEnv();
   const prisma = new PrismaClient();
 
   const roleIds = {} as SeedContext["roleIds"];

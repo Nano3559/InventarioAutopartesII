@@ -477,8 +477,8 @@ backend/src/
 │       ├── categoryMapping.test.ts
 │       ├── compatibility.test.ts
 │       ├── contract.test.ts
-│       ├── mockProvider.test.ts
 │       ├── vision.config.test.ts
+│       ├── vision.provider.test.ts
 │       └── vision.routes.itest.ts
 ├── shared/
 │   ├── middlewares/__tests__/
@@ -528,7 +528,7 @@ Recuento por convención de nombres: `*.test.ts` (unitarios) = **14**; `*.itest.
 | `src/utils/__tests__/saleItems.test.ts` | 7 |
 | `src/modules/products/__tests__/searchImage.serialize.test.ts` | 7 |
 | `src/modules/products/__tests__/imageUpload.test.ts` | 5 |
-| `src/modules/vision/__tests__/mockProvider.test.ts` | 5 |
+| `src/modules/vision/__tests__/vision.provider.test.ts` | 14 |
 | `src/shared/utils/__tests__/errorDominio.test.ts` | 5 |
 | `src/shared/middlewares/__tests__/validate.test.ts` | 4 |
 | `src/modules/vision/__tests__/availability.test.ts` | 2 |
