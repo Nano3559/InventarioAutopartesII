@@ -114,9 +114,9 @@ describe("PublicProductsPage - Visión por cámara", () => {
 
   it("captura la foto, llama detectarVisionPublica y muestra resultados", async () => {
     const resultado: VisionAnalysis = {
-      version: "mock-1",
-      consultadoEn: "2026-01-01T00:00:00.000Z",
-      proveedor: "mock",
+version: "1.0",
+  consultadoEn: "2026-01-01T00:00:00.000Z",
+  proveedor: "http",
       deteccion: {
         categoria: "freno de tambor",
         confianza: 0.9,
@@ -129,8 +129,8 @@ describe("PublicProductsPage - Visión por cámara", () => {
       candidatos: [],
       compatibilidad: {
         consultada: false,
-        fuente: "mock",
-        metodologia: "mock",
+fuente: "base_datos_interna",
+    metodologia: "baseline-catalog",
         consultadoEn: "2026-01-01T00:00:00.000Z",
         vehiculo: null,
         verificadas: 0,

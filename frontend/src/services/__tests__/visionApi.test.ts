@@ -19,7 +19,7 @@ beforeEach(() => {
 const RESPUESTA_VALIDA: VisionAnalysis = {
   version: "1.0",
   consultadoEn: "2026-01-01T00:00:00.000Z",
-  proveedor: "mock",
+  proveedor: "http",
   deteccion: {
     categoria: "Frenos",
     confianza: 0.94,
@@ -62,20 +62,28 @@ describe("detectarVisionPublica", () => {
     expect(res).toEqual(RESPUESTA_VALIDA);
   });
 
-  it("incluye vehículo y escenario mock en el formulario/headers cuando se pasan", async () => {
+  it("incluye el vehículo en el formulario cuando se pasa", async () => {
     postMock.mockResolvedValue({ data: RESPUESTA_VALIDA });
 
     await detectarVisionPublica(archivo(), {
       vehiculo: { marca: "Toyota", modelo: "Hilux", anio: "2020" },
-      escenarioMock: "default",
     });
 
-    const [url, data, config] = postMock.mock.calls[0];
+    const [url, data] = postMock.mock.calls[0];
     expect(url).toBe("/vision/public/detectar");
     expect(data.get("vehiculoMarca")).toBe("Toyota");
     expect(data.get("vehiculoModelo")).toBe("Hilux");
     expect(data.get("vehiculoAnio")).toBe("2020");
-    expect(config.headers["x-vision-mock-scenario"]).toBe("default");
+  });
+
+  it("no envía ningún header de escenario: el backend siempre consulta el modelo real", async () => {
+    postMock.mockResolvedValue({ data: RESPUESTA_VALIDA });
+
+    await detectarVisionPublica(archivo());
+
+    const [, , config] = postMock.mock.calls[0];
+    const headers = (config.headers ?? {}) as Record<string, string>;
+    expect(Object.keys(headers).map((k) => k.toLowerCase())).not.toContain("x-vision-mock-scenario");
   });
 });
 

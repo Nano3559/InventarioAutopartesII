@@ -55,9 +55,9 @@ import { detectarVisionPublica } from "../../services/visionApi";
 const detectarMock = detectarVisionPublica as ReturnType<typeof vi.fn>;
 
 const resultadoAlternador: VisionAnalysis = {
-  version: "mock-1",
+  version: "1.0",
   consultadoEn: "2026-01-01T00:00:00.000Z",
-  proveedor: "mock",
+  proveedor: "http",
   deteccion: {
     categoria: "alternador",
     confianza: 0.9,
@@ -70,8 +70,8 @@ const resultadoAlternador: VisionAnalysis = {
   candidatos: [],
   compatibilidad: {
     consultada: false,
-    fuente: "mock",
-    metodologia: "mock",
+    fuente: "base_datos_interna",
+    metodologia: "baseline-catalog",
     consultadoEn: "2026-01-01T00:00:00.000Z",
     vehiculo: null,
     verificadas: 0,

@@ -79,7 +79,6 @@ export interface OpcionVision {
   modo: "publico" | "interno";
   usuario?: AuthRequest["user"] | null;
   vehiculo?: VehiculoQuery | null;
-  escenarioMock?: string | null;
 }
 
 interface ProductoConRelation {
@@ -201,10 +200,11 @@ export async function generarRespuestaVision(opts: OpcionVision): Promise<Vision
   const consultadoEn = new Date().toISOString();
 
   const deteccion = await withVisionTimeout(
-    visionProvider.detectar(
-      { buffer: file.buffer, mimetype: file.mimetype, originalName: file.originalname },
-      opts.escenarioMock ?? undefined
-    ),
+    visionProvider.detectar({
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+      originalName: file.originalname,
+    }),
     visionConfig.timeoutMs
   );
 

@@ -8,7 +8,7 @@ evaluado en [CV-5](CV5_EVALUACION_MODELO_YOLO.md) a través de una API HTTP.
 
 El servicio separa la carga del modelo de la aplicación principal: el backend
 de RepuestoPro (responsabilidad de Ross) consumirá este servicio por red en
-CV-7 (`VISION_MODE=http`). En CV-6 el servicio se desarrolló, endureció y
+CV-7 (por HTTP, vía `VISION_IA_URL`). En CV-6 el servicio se desarrolló, endureció y
 preparó para despliegue (Docker), pero **no se integró** todavía.
 
 No se reentrenó el modelo en CV-6: se sirve `best.pt` del baseline sin cambios.
@@ -269,8 +269,7 @@ No se almacenan secretos en la configuración.
 
 ## 16. Integración futura
 
-CV-7 conectará el backend (Ross) mediante `VISION_MODE=http` y
-`VISION_IA_URL`, apuntando a `POST /vision/detect`. El backend ya resuelve el
+CV-7 conectó el backend (Ross) mediante `VISION_IA_URL`, apuntando a `POST /vision/detect`. El backend ya resuelve el
 path `{url}/vision/detect`, envía el campo `image` y valida el contrato
 `detecciones[]/categoria/confianza/boundingBox/consultadoEn`. **El servicio
 aún no está integrado.**

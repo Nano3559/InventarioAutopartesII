@@ -4,6 +4,15 @@ Sistema: RepuestoPro (inventario y ventas de autopartes).
 Documento de planificación y división de tareas para **dos personas**.
 Este documento es la **primera fase** del proyecto de IA. No implementa funcionalidades: planifica.
 
+> **Nota de estado (vigente):** el proveedor de visión simulado que este plan
+> contemplaba (`MockVisionProvider`, `VISION_MODE`, header `x-vision-mock-scenario`)
+> **ya no existe en el runtime**. El único proveedor es `HttpVisionProvider`
+> (HTTP real contra `ia-service`) y, sin `VISION_IA_URL`, la API falla cerrada con
+> `503 VISION_NO_DISPONIBLE`. Los dobles de prueba viven solo en
+> `backend/src/testing/` y se ejercitan por HTTP real. Cualquier mención a "mock"
+> en las secciones siguientes describe el estado histórico de la planificación,
+> no el comportamiento actual. Ver `docs/FLUJO_VISION_IA.md`.
+
 ---
 
 ## 1. Objetivo general
@@ -229,8 +238,8 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Criterios de aceptación:** UX aprobada; resultado con baja confianza muestra aviso de no clasificación.
 
 ### 4.10 Tarea WB-10 — Pruebas de integración end-to-end
-**Estado: [x] COMPLETA** — `docs/FLUJO_VISION_MOCK.md` documenta el flujo completo con mock (cámara → backend → categoría → catálogo → stock → selección) y los escenarios `x-vision-mock-scenario`. Verificado de punta a punta: backend **131 tests** (76 unit + 55 integración, incl. 40 unit + 15 itest de visión) y frontend **105 tests** en 11 archivos, en verde; `tsc`/`build` limpios en ambos. Cifras re-verificadas el 2026-09-28 (la cifra histórica de esta línea era 96 backend / 92 frontend).
-- **Subtareas:** flujo completo con mock del servicio IA: cámara → backend → categoría → catálogo → stock → selección.
+**Estado: [x] COMPLETA** — `docs/FLUJO_VISION_IA.md` documenta el flujo completo contra el modelo real (cámara → backend → `ia-service` → categoría → catálogo → stock → selección). El proveedor simulado del runtime y el header `x-vision-mock-scenario` se eliminaron; las pruebas levantan un `ia-service` HTTP de test (`src/testing/fakeIaServer.ts`) y fijan los escenarios por código. Verificado de punta a punta: backend **240 tests** (110 unit + 130 integración) y frontend **110 tests** en 12 archivos, en verde; `tsc`/`build` limpios en ambos.
+- **Subtareas:** flujo completo con el servicio IA real: cámara → backend → categoría → catálogo → stock → selección.
 - **Dependencias:** WB-9.
 - **Entregables:** suite E2E básica del flujo visual.
 - **Criterios de aceptación:** flujo verificado de punta a punta con el mock; pasos documentados.
@@ -245,10 +254,10 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Entregables:** esquema JSON + tipos TS + validación (backend reutiliza express-validator / validate).
 - **Criterios de aceptación:** una sola fuente de verdad para el contrato.
 
-### 5.2 TC-2 — Mocks / stubs del servicio IA
-**Estado: [x] COMPLETA** — `MockVisionProvider` (`vision.provider.ts`) devuelve detecciones deterministas; se activa con `VISION_MODE=mock` explícito o, en desarrollo/pruebas, de forma automática cuando no hay `VISION_IA_URL`. **En producción el fallback silencioso a mock quedó ELIMINADO**: `vision.config.ts` (`resolverVisionMode`) resuelve el modo de forma explícita y, si el modo remoto no tiene URL, el provider responde **503 `VISION_NO_DISPONIBLE`** en vez de entregar detecciones simuladas. Header `x-vision-mock-scenario`: `default|ninguna|baja_confianza|categoria_desconocida|timeout|error` (solo en modo mock). Tabla de resolución y pruebas en `docs/FLUJO_VISION_MOCK.md` y `vision.config.test.ts` (10 casos).
-- **Subtareas:** crear un mock que devuelva detecciones deterministas; montable desde backend con variable de entorno.
-- **Entregables:** stub JSON + servidor mock simple.
+### 5.2 TC-2 — Dobles de prueba del servicio IA (exclusivos de test)
+**Estado: [x] COMPLETA, luego REVERTIDA en el runtime** —existió un `MockVisionProvider` (`vision.provider.ts`) con detecciones deterministas activable por `VISION_MODE=mock`. **Hoy el runtime no tiene proveedor simulado**: el único proveedor es `HttpVisionProvider`, y `VISION_MODE` se eliminó por completo. Sin `VISION_IA_URL` la visión falla cerrada con **503 `VISION_NO_DISPONIBLE`** en cualquier entorno. Para las pruebas se usa `src/testing/fakeIaServer.ts`, un servidor HTTP real en `127.0.0.1` que solo existe bajo `src/testing/` y nunca se importa desde la aplicación; los escenarios (`default`, `ninguna`, `baja_confianza`, `categoria_desconocida`, `caida`, `timeout`, clave incorrecta) se fijan por código desde el test, no por un header del cliente. Reglas y equivalencias en `docs/FLUJO_VISION_IA.md`, `vision.config.test.ts` (8 casos) y `vision.provider.test.ts` (14 casos).
+- **Subtareas:** ~~crear un mock que devuelva detecciones deterministas~~ → superseded: los dobles viven solo en tests y se ejercitan por HTTP real.
+- **Entregables:** doble HTTP de `ia-service` en `src/testing/` (no stub en el runtime).
 - **Criterios:** Ross puede desarrollar todo sin esperar el modelo.
 
 ### 5.3 TC-3 — Pruebas de integración backend

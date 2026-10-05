@@ -311,14 +311,15 @@ Ese único comando:
   ventana PowerShell aparte donde se ven los logs del modelo;
 - arranca el **backend Node** en la terminal actual.
 
-Usa el **modelo real**: el backend llama a `ia-service` con `VISION_MODE=http` y
-`VISION_IA_URL=http://127.0.0.1:8000`. No se activa el modo mock.
+Usa el **modelo real**: el backend llama siempre a `ia-service` por HTTP usando
+`VISION_IA_URL=http://127.0.0.1:8000`. No existe un modo simulado: si
+`VISION_IA_URL` no está definida, la búsqueda por visión responde `503`.
 
 Requisitos:
 
 - `ia-service/.venv` creado (`py -3.11 -m venv .venv` y
   `.\.venv\Scripts\python.exe -m pip install -r requirements.txt` dentro de `ia-service/`);
-- `backend/.env` con `VISION_MODE="http"`, `VISION_IA_URL="http://127.0.0.1:8000"` y
+- `backend/.env` con `VISION_IA_URL="http://127.0.0.1:8000"` y
   `VISION_IA_KEY` igual al de `ia-service/.env`;
 - `ia-service/.env` con al menos `VISION_IA_KEY` (mismo valor que en el backend).
 

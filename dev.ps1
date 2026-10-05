@@ -7,12 +7,13 @@
 #   1. Valida que exista el venv de ia-service, backend/package.json y app/main.py.
 #   2. Si el puerto 8000 ya responde /vision/health, reutiliza ese ia-service.
 #      Si lo ocupa OTRO proceso, avisa y NO mata nada.
-#   3. Avisa (sin mostrar valores) si falta VISION_MODE / VISION_IA_URL / VISION_IA_KEY
+#   3. Avisa (sin mostrar valores) si falta VISION_IA_URL / VISION_IA_KEY
 #      en backend/.env. No define ninguna variable: la config sale de los .env.
 #   4. Abre una ventana PowerShell nueva con ia-service (FastAPI + YOLO11n).
 #   5. En la terminal actual ejecuta el backend Node (npm run dev:backend).
 #
 # NO inicia el frontend. NO fija VISION_*. NO mata procesos automaticamente.
+# No hay proveedor simulado: sin VISION_IA_URL el backend responde 503.
 
 $ErrorActionPreference = 'Stop'
 
@@ -56,7 +57,7 @@ if (-not (Test-Path -LiteralPath $backendEnv)) {
     Write-Aviso "No existe backend\.env. Copia backend\.env.example y define las variables."
 } else {
     $lineas = Get-Content -LiteralPath $backendEnv
-    foreach ($var in @('VISION_MODE', 'VISION_IA_URL', 'VISION_IA_KEY')) {
+    foreach ($var in @('VISION_IA_URL', 'VISION_IA_KEY')) {
         $coincide = $lineas | Where-Object { $_ -match "^\s*$var\s*=\s*(.+)$" } | Select-Object -First 1
         $valor = $null
         if ($coincide -and $coincide -match "^\s*$var\s*=\s*(.+)$") { $valor = $Matches[1].Trim().Trim('"').Trim("'") }

@@ -4,19 +4,22 @@ import assert from "node:assert/strict";
 // de `@prisma/client` hace que este último cargue el `.env` (Neon remoto) y el
 // guardián de `assertLocalTestUrl` aborta la suite. Los imports reales van
 // después a propósito.
-import { startTestServer, TestServer, loginAndGetToken } from "../../../testing/helpers";
+import { startTestServer, TestServer, loginAndGetToken, fakeIa } from "../../../testing/helpers";
 import { seed, cleanup, SeedContext } from "../../../testing/seed";
+import type { EscenarioIa } from "../../../testing/fakeIaServer";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 
 /**
- * Búsqueda por visión (rotas /api/vision, modo mock):
+ * Búsqueda por visión (rotas /api/vision) contra un `ia-service` real:
  *  - Público: /api/vision/public/detectar sin token, respuestas seguras (sin
  *    price2/stockTotal/stockPorSucursal), 400/422/504 coherentes.
  *  - Interno: /api/vision/detectar exige token; TIENDA sin ubicación → 403;
  *    TIENDA con ubicación ve SOLO su sucursal; ADMIN ve stock global exacto.
- *  - Escenarios mock: default (Frenos 0.94), ninguna, baja_confianza,
- *    categoria_desconocida, error, timeout.
+ *  - El proveedor es SIEMPRE HTTP real: los escenarios (default con Frenos 0.94,
+ *    ninguna, baja_confianza, categoria_desconocida, caida, timeout, clave
+ *    incorrecta) se configuran en el doble `src/testing/fakeIaServer`, nunca con
+ *    una detección inventada en el runtime.
  *  - Sin limiter propio de visión: 12 detecciones públicas consecutivas → todas
  *    200, ninguna 429 (queda solo el `generalLimiter` global de 300/15 min).
  */
@@ -41,19 +44,34 @@ const SIN_CATEGORIA = { itemCode: "VISION-SIN-CATEGORIA", brand: "Toyota", model
 
 let productIds: number[] = [];
 
-function fdConImagen(scenario?: string, vehiculo?: { marca?: string; modelo?: string; anio?: string }): { fd: FormData; headers: Record<string, string> } {
+function fdConImagen(vehiculo?: { marca?: string; modelo?: string; anio?: string }): { fd: FormData } {
   const fd = new FormData();
-  fd.append("image", new Blob([Buffer.from("foto simulada de una pieza")], { type: "image/jpeg" }), "pieza.jpg");
-  const headers: Record<string, string> = {};
-  if (scenario) headers["x-vision-mock-scenario"] = scenario;
+  fd.append("image", new Blob([Buffer.from("bytes de una foto de una pieza")], { type: "image/jpeg" }), "pieza.jpg");
   if (vehiculo) {
     if (vehiculo.marca) fd.append("vehiculoMarca", vehiculo.marca);
     if (vehiculo.modelo) fd.append("vehiculoModelo", vehiculo.modelo);
     if (vehiculo.anio) fd.append("vehiculoAnio", vehiculo.anio);
   }
-  return { fd, headers };
+return { fd };
 }
 
+/**
+ * Fija el comportamiento del doble de `ia-service` para la siguiente petición y
+ * vuelve al escenario por defecto al terminar.
+ *
+ * Antes esto viajaba en un header `x-vision-mock-scenario` que solo tenía efecto
+ * con el proveedor simulado. Como el runtime ya no tiene proveedor simulado, el
+ * escenario se decide aquí, en el test, modulando el servidor HTTP real.
+ */
+async function conEscenarioIa<T>(escenario: EscenarioIa, fn: () => Promise<T>): Promise<T> {
+  const ia = await fakeIa();
+  ia.setEscenario(escenario);
+  try {
+    return await fn();
+  } finally {
+    ia.setEscenario("default");
+  }
+}
 before(async () => {
   server = await startTestServer();
   ctx = await seed("vision");
@@ -167,13 +185,13 @@ test("público: MIME no permitido → 400 (multer)", async () => {
 });
 
 test("público: detección válida 200 con serialización SEGURA (sin price2/stockTotal/stockPorSucursal)", async () => {
-  const { fd, headers } = fdConImagen(undefined, { marca: "Toyota", modelo: "Hilux", anio: "2020" });
-  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", headers, body: fd });
+  const { fd } = fdConImagen({ marca: "Toyota", modelo: "Hilux", anio: "2020" });
+  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
   assert.equal(res.status, 200);
   const body: any = await res.json();
 
   assert.equal(body.version, "1.0");
-  assert.equal(body.proveedor, "mock");
+  assert.equal(body.proveedor, "http");
   assert.equal(body.deteccion.categoria, "Frenos");
   assert.equal(body.deteccion.categoriaMapeada, "Frenos");
   assert.equal(body.categoriaCatalogo.nombre, "Frenos");
@@ -211,40 +229,44 @@ test("público: detección válida 200 con serialización SEGURA (sin price2/sto
 });
 
 test("público: confianza baja → 422 VISION_BAJA_CONFIANZA", async () => {
-  const { fd, headers } = fdConImagen("baja_confianza");
-  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", headers, body: fd });
-  assert.equal(res.status, 422);
-  const body: any = await res.json();
-  assert.equal(body.codigo, "VISION_BAJA_CONFIANZA");
+  await conEscenarioIa("baja_confianza", async () => {
+    const { fd } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
+    assert.equal(res.status, 422);
+    const body: any = await res.json();
+    assert.equal(body.codigo, "VISION_BAJA_CONFIANZA");
+  });
 });
 
 test("público: sin clasificación (ninguna) → 422 VISION_NO_CLASIFICADA", async () => {
-  const { fd, headers } = fdConImagen("ninguna");
-  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", headers, body: fd });
-  assert.equal(res.status, 422);
-  const body: any = await res.json();
-  assert.equal(body.codigo, "VISION_NO_CLASIFICADA");
+  await conEscenarioIa("ninguna", async () => {
+    const { fd } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
+    assert.equal(res.status, 422);
+    const body: any = await res.json();
+    assert.equal(body.codigo, "VISION_NO_CLASIFICADA");
+  });
 });
 
 // El flujo público NO tiene limiter propio: 12 detecciones seguidas deben responder
 // 200 con resultado normal, sin 429. Con el antiguo límite de 5/15 min esta prueba
 // fallaba en la 6.ª llamada, que era exactamente el bloqueo que prolijó durante la demo.
 //
-// NOTA sobre `proveedor`: esta suite corre con el proveedor MOCK a propósito (los
-// escenarios `x-vision-mock-scenario` solo existen en ese modo), así que aquí vale
-// "mock". Lo que se verifica en este test es que la cuota de visión ya no bloquea,
-// no que el proveedor sea el real: eso lo cubren `vision.config.test.ts` (que
-// comprueba que producción NUNCA degrada a mock) y la prueba end-to-end contra la IA.
+// NOTA sobre `proveedor`: esta suite habla con un `ia-service` real (el doble de
+// `src/testing/fakeIaServer`) por HTTP, igual que producción, así que cada respuesta
+// debe declarar `proveedor: "http"`. Lo que se verifica aquí es que la cuota de visión
+// ya no bloquea el flujo; que la respuesta nunca sea una detección simulada lo
+// comprueban `vision.provider.test.ts` y `vision.config.test.ts`.
 // NOTA: node:test ejecuta los tests en orden dentro del archivo; no reordenar.
 test("público: 12 detecciones consecutivas sin 429 (solo el generalLimiter global)", async () => {
   const TOTAL = 12;
   for (let i = 1; i <= TOTAL; i++) {
-    const { fd, headers } = fdConImagen();
-    const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", headers, body: fd });
+    const { fd } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
     assert.notEqual(res.status, 429, `la detección ${i} de ${TOTAL} no debe recibir 429`);
     assert.equal(res.status, 200, `la detección ${i} de ${TOTAL} debe responder 200`);
     const body: any = await res.json();
-    assert.ok(body.proveedor, `la detección ${i} declara proveedor`);
+    assert.equal(body.proveedor, "http", `la detección ${i} declara proveedor http`);
     assert.ok(Array.isArray(body.candidatos), `la detección ${i} devuelve candidatos`);
     assert.equal(body.deteccion.categoria, "Frenos", `la detección ${i} devuelve un resultado real`);
   }
@@ -255,10 +277,10 @@ test("público: 12 detecciones consecutivas sin 429 (solo el generalLimiter glob
 test("interno: 12 detecciones consecutivas con el mismo token sin 429", async () => {
   const TOTAL = 12;
   for (let i = 1; i <= TOTAL; i++) {
-    const { fd, headers } = fdConImagen();
+    const { fd } = fdConImagen();
     const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
       method: "POST",
-      headers: { ...headers, authorization: `Bearer ${adminToken}` },
+      headers: { authorization: `Bearer ${adminToken}` },
       body: fd,
     });
     assert.notEqual(res.status, 429, `la detección interna ${i} de ${TOTAL} no debe recibir 429`);
@@ -314,10 +336,10 @@ test("interno: TIENDA sin ubicación asignada → 403", async () => {
 });
 
 test("interno: detección válida 200 con stock exacto y price2 (ADMIN ve global)", async () => {
-  const { fd, headers } = fdConImagen();
+  const { fd } = fdConImagen();
   const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
     method: "POST",
-    headers: { ...headers, authorization: `Bearer ${adminToken}` },
+    headers: { authorization: `Bearer ${adminToken}` },
     body: fd,
   });
   assert.equal(res.status, 200);
@@ -341,10 +363,10 @@ test("interno: detección válida 200 con stock exacto y price2 (ADMIN ve global
 });
 
 test("interno: TIENDA con ubicación ve SOLO su sucursal (stock total propio)", async () => {
-  const { fd, headers } = fdConImagen();
+  const { fd } = fdConImagen();
   const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
     method: "POST",
-    headers: { ...headers, authorization: `Bearer ${tiendaToken}` },
+    headers: { authorization: `Bearer ${tiendaToken}` },
     body: fd,
   });
   assert.equal(res.status, 200);
@@ -361,10 +383,10 @@ test("interno: TIENDA con ubicación ve SOLO su sucursal (stock total propio)", 
 // calculadas sobre el stock GLOBAL (el spread de `serializarPublico`), así que acotar
 // solo `stockTotal` seguía dejando ver que había existencias en otras tiendas.
 test("Aislamiento visión — TIENDA A no recibe disponibilidad de TIENDA B ni del almacén", async () => {
-  const { fd, headers } = fdConImagen();
+  const { fd } = fdConImagen();
   const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
     method: "POST",
-    headers: { ...headers, authorization: `Bearer ${tiendaToken}` },
+    headers: { authorization: `Bearer ${tiendaToken}` },
     body: fd,
   });
   assert.equal(res.status, 200);
@@ -405,19 +427,19 @@ test("Aislamiento visión — TIENDA A no recibe disponibilidad de TIENDA B ni d
 });
 
 test("Aislamiento visión — dos tiendas ven inventarios distintos y ninguno el del otro", async () => {
-  const { fd: fdA, headers: headersA } = fdConImagen();
+  const { fd: fdA } = fdConImagen();
   const resA = await fetch(`${server.baseUrl}/api/vision/detectar`, {
     method: "POST",
-    headers: { ...headersA, authorization: `Bearer ${tiendaToken}` },
+    headers: { authorization: `Bearer ${tiendaToken}` },
     body: fdA,
   });
   assert.equal(resA.status, 200);
   const bodyA: any = await resA.json();
 
-  const { fd: fdB, headers: headersB } = fdConImagen();
+  const { fd: fdB } = fdConImagen();
   const resB = await fetch(`${server.baseUrl}/api/vision/detectar`, {
     method: "POST",
-    headers: { ...headersB, authorization: `Bearer ${tiendaBToken}` },
+    headers: { authorization: `Bearer ${tiendaBToken}` },
     body: fdB,
   });
   assert.equal(resB.status, 200);
@@ -436,10 +458,10 @@ test("Aislamiento visión — dos tiendas ven inventarios distintos y ninguno el
 });
 
 test("Aislamiento visión — ADMIN conserva el alcance global", async () => {
-  const { fd, headers } = fdConImagen();
+  const { fd } = fdConImagen();
   const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
     method: "POST",
-    headers: { ...headers, authorization: `Bearer ${adminToken}` },
+    headers: { authorization: `Bearer ${adminToken}` },
     body: fd,
   });
   assert.equal(res.status, 200);
@@ -470,42 +492,67 @@ test("Aislamiento visión — ADMIN conserva el alcance global", async () => {
 });
 
 test("interno: caso mapa de categoria inexistente → 200 con candidatos vacíos y nota", async () => {
-  const { fd, headers } = fdConImagen("categoria_desconocida");
-  const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
-    method: "POST",
-    headers: { ...headers, authorization: `Bearer ${adminToken}` },
-    body: fd,
+  await conEscenarioIa("categoria_desconocida", async () => {
+    const { fd } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${adminToken}` },
+      body: fd,
+    });
+    assert.equal(res.status, 200);
+    const body: any = await res.json();
+    assert.equal(body.deteccion.categoriaMapeada, null);
+    assert.equal(body.candidatos.length, 0);
+    assert.equal(body.nota, "La clase detectada no tiene categoría equivalente en el catálogo.");
+    assert.ok(body.entrega.sucursales.length > 0, "lista de sucursales disponible");
   });
-  assert.equal(res.status, 200);
-  const body: any = await res.json();
-  assert.equal(body.deteccion.categoriaMapeada, null);
-  assert.equal(body.candidatos.length, 0);
-  assert.equal(body.nota, "La clase detectada no tiene categoría equivalente en el catálogo.");
-  assert.ok(body.entrega.sucursales.length > 0, "lista de sucursales disponible");
 });
 
-test("interno: IA no disponible → 503 VISION_NO_DISPONIBLE", async () => {
-  const { fd, headers } = fdConImagen("error");
-  const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
-    method: "POST",
-    headers: { ...headers, authorization: `Bearer ${adminToken}` },
-    body: fd,
+test("interno: IA caída → 503 VISION_NO_DISPONIBLE (nunca una detección simulada)", async () => {
+  await conEscenarioIa("caida", async () => {
+    const { fd } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${adminToken}` },
+      body: fd,
+    });
+    assert.equal(res.status, 503);
+    const body: any = await res.json();
+    assert.equal(body.codigo, "VISION_NO_DISPONIBLE");
+    assert.equal(body.deteccion, undefined, "una IA caída no debe devolver detecciones");
   });
-  assert.equal(res.status, 503);
-  const body: any = await res.json();
-  assert.equal(body.codigo, "VISION_NO_DISPONIBLE");
+});
+
+test("interno: la IA rechaza X-Vision-Key → 503 controlado", async () => {
+  const ia = await fakeIa();
+  ia.setClaveEsperada("una-clave-que-el-backend-no-usa");
+  try {
+    const { fd } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${adminToken}` },
+      body: fd,
+    });
+    assert.equal(res.status, 503);
+    const body: any = await res.json();
+    assert.equal(body.codigo, "VISION_NO_DISPONIBLE");
+  } finally {
+    ia.setClaveEsperada(null);
+  }
 });
 
 test("interno: timeout → 504 VISION_TIMEOUT", async () => {
-  const { fd, headers } = fdConImagen("timeout");
-  const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
-    method: "POST",
-    headers: { ...headers, authorization: `Bearer ${adminToken}` },
-    body: fd,
+  await conEscenarioIa("timeout", async () => {
+    const { fd } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${adminToken}` },
+      body: fd,
+    });
+    assert.equal(res.status, 504);
+    const body: any = await res.json();
+    assert.equal(body.codigo, "VISION_TIMEOUT");
   });
-  assert.equal(res.status, 504);
-  const body: any = await res.json();
-  assert.equal(body.codigo, "VISION_TIMEOUT");
 });
 
 test("interno: archivo > 5 MB → 400 antes de consultar al proveedor", async () => {

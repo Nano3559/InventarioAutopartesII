@@ -11,9 +11,9 @@ const vehiculo: VisionVehiculoForm = { marca: "Toyota", modelo: "", anio: "" };
 const entrega: VisionEntregaSeleccion = { modalidad: "recoger", sucursalId: null };
 
 const resultado: VisionAnalysis = {
-  version: "mock-1",
+  version: "1.0",
   consultadoEn: "2026-01-01T00:00:00.000Z",
-  proveedor: "mock",
+  proveedor: "http",
   deteccion: {
     categoria: "freno de tambor",
     confianza: 0.94,
@@ -43,8 +43,8 @@ const resultado: VisionAnalysis = {
   ],
   compatibilidad: {
     consultada: false,
-    fuente: "mock",
-    metodologia: "mock",
+fuente: "base_datos_interna",
+  metodologia: "baseline-catalog",
     consultadoEn: "2026-01-01T00:00:00.000Z",
     vehiculo: null,
     verificadas: 1,

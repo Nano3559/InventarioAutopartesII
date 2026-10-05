@@ -1,5 +1,5 @@
-import { VisionProviderResult, VisionDetection, validarRespuestaVision } from "./contract";
-import { VisionErrores } from "./vision.errors";
+import { VisionProviderResult, validarRespuestaVision } from "./contract";
+import { VisionErrores, VisionServiceError } from "./vision.errors";
 import { visionConfig } from "./vision.config";
 import { logger } from "../../shared/utils/logger";
 
@@ -9,59 +9,20 @@ export interface VisionInput {
   originalName: string;
 }
 
+/**
+ * Proveedor de detecciones.
+ *
+ * Existe una sola implementacion: `HttpVisionProvider`, que llama a `ia-service`
+ * (FastAPI + YOLO) por HTTP real. El runtime no incluye ningun proveedor
+ * simulado; si la IA no esta disponible el endpoint falla cerrado con 503/504 en
+ * lugar de devolver detecciones inventadas.
+ *
+ * Los dobles de prueba viven en `src/testing/` y se ejercitan por HTTP real,
+ * sin reemplazar esta clase en produccion.
+ */
 export interface VisionProvider {
   readonly tipo: string;
-  detectar(input: VisionInput, escenario?: string): Promise<VisionProviderResult>;
-}
-
-const ESCENARIOS_MOCK = new Set(["default", "ninguna", "baja_confianza", "categoria_desconocida", "timeout", "error"]);
-
-const MOCK_DETECCIONES: Record<string, VisionDetection[]> = {
-  default: [
-    { categoria: "Frenos", confianza: 0.94, boundingBox: { x: 0.2, y: 0.3, width: 0.6, height: 0.5 } },
-  ],
-  baja_confianza: [{ categoria: "Frenos", confianza: 0.31 }],
-  categoria_desconocida: [{ categoria: "Instrumento desconocido XXYZ", confianza: 0.9 }],
-  ninguna: [],
-};
-
-export class MockVisionProvider implements VisionProvider {
-  readonly tipo = "mock";
-
-  private sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  async detectar(input: VisionInput, escenario?: string): Promise<VisionProviderResult> {
-    const escenarioValido =
-      visionConfig.modo === "mock" && escenario && ESCENARIOS_MOCK.has(escenario) ? escenario : "default";
-
-    if (escenarioValido === "timeout") {
-      await this.sleep(visionConfig.timeoutMs + 1500);
-      throw VisionErrores.tiempoAgotado();
-    }
-    if (escenarioValido === "error") {
-      await this.sleep(50);
-      throw VisionErrores.servicioNoDisponible();
-    }
-
-    logger.info("Visión (mock): imagen recibida para detección simulada.", {
-      bytes: input.buffer.length,
-      mimetype: input.mimetype,
-      escenario: escenarioValido,
-      sizeOk: input.buffer.length <= 5 * 1024 * 1024,
-    });
-
-    const detecciones = MOCK_DETECCIONES[escenarioValido] ?? MOCK_DETECCIONES.default;
-    const { valida } = validarRespuestaVision(detecciones);
-    if (!valida) throw VisionErrores.respuestaInvalida();
-
-    return {
-      proveedor: "mock",
-      consultadoEn: new Date().toISOString(),
-      detecciones,
-    };
-  }
+  detectar(input: VisionInput): Promise<VisionProviderResult>;
 }
 
 export class HttpVisionProvider implements VisionProvider {
@@ -93,11 +54,14 @@ export class HttpVisionProvider implements VisionProvider {
     });
   }
 
-  async detectar(input: VisionInput, _escenario?: string): Promise<VisionProviderResult> {
+  async detectar(input: VisionInput): Promise<VisionProviderResult> {
     let response: Response;
     try {
       response = await this.llamarIA(input);
     } catch (error) {
+      // `llamarIA` ya lanza errores del dominio (503 sin URL): se respetan tal cual
+      // en vez de reportarlos como fallo de red.
+      if (error instanceof VisionServiceError) throw error;
       if (error instanceof Error) {
         if (error.name === "TimeoutError" || error.name === "AbortError") throw VisionErrores.tiempoAgotado();
       }
@@ -108,6 +72,8 @@ export class HttpVisionProvider implements VisionProvider {
     if (!response.ok) {
       logger.warn(`Visión (http): la IA respondió status=${response.status}.`, { status: response.status });
       if (response.status === 408 || response.status === 504) throw VisionErrores.tiempoAgotado();
+      // 401/403: la IA exige X-Vision-Key y el backend no la envio (o es incorrecta).
+      // Se degrada a 503 controlado, nunca a detecciones simuladas.
       throw VisionErrores.servicioNoDisponible();
     }
 
@@ -150,8 +116,5 @@ export function withVisionTimeout<T>(promise: Promise<T>, ms: number): Promise<T
   });
 }
 
-function crearProvider(): VisionProvider {
-  return visionConfig.modo === "http" ? new HttpVisionProvider() : new MockVisionProvider();
-}
-
-export const visionProvider: VisionProvider = crearProvider();
+/** El proveedor es siempre HTTP real: no hay selector de modo en el runtime. */
+export const visionProvider: VisionProvider = new HttpVisionProvider();

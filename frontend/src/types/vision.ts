@@ -91,6 +91,5 @@ export interface VisionAnalysis {
 
 export interface VisionRequestOptions {
   vehiculo?: VisionVehiculoQuery;
-  escenarioMock?: string;
   signal?: AbortSignal;
 }

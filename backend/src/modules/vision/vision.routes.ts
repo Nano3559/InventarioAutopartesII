@@ -4,21 +4,11 @@ import { authenticate, requireTiendaLocation } from "../../shared/middlewares/au
 import { AuthRequest } from "../../shared/types";
 import { generarRespuestaVision, secureLog, VisionResponse } from "./vision.service";
 import { VisionServiceError, VisionErrores } from "./vision.errors";
-import { visionConfig } from "./vision.config";
 import { VehiculoQuery } from "./compatibility";
 import { parseString } from "../../shared/middlewares/validate";
 import { logger } from "../../shared/utils/logger";
 
 const router = Router();
-
-const ESCENARIOS_MOCK_PERMITIDOS = new Set(["default", "ninguna", "baja_confianza", "categoria_desconocida", "timeout", "error"]);
-
-function leerEscenarioMock(req: Request): string | null {
-  if (visionConfig.modo !== "mock") return null;
-  const raw = req.headers["x-vision-mock-scenario"];
-  if (typeof raw !== "string") return null;
-  return ESCENARIOS_MOCK_PERMITIDOS.has(raw) ? raw : null;
-}
 
 function leerVehiculo(body: any): VehiculoQuery {
   let marca: string | null = null;
@@ -60,8 +50,7 @@ router.post(
   imageUpload.single("image"),
   manejarVision(async (req) => {
     const vehiculo = leerVehiculo(req.body);
-    const escenarioMock = leerEscenarioMock(req);
-    return generarRespuestaVision({ file: req.file!, modo: "publico", vehiculo, escenarioMock });
+    return generarRespuestaVision({ file: req.file!, modo: "publico", vehiculo });
   })
 );
 
@@ -75,13 +64,11 @@ router.post(
   imageUpload.single("image"),
   manejarVision(async (req) => {
     const vehiculo = leerVehiculo(req.body);
-    const escenarioMock = leerEscenarioMock(req);
     return generarRespuestaVision({
       file: req.file!,
       modo: "interno",
       usuario: (req as AuthRequest).user,
       vehiculo,
-      escenarioMock,
     });
   })
 );
