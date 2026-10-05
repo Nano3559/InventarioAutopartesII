@@ -1,7 +1,6 @@
 import { Router, Request, Response } from "express";
 import { imageUpload } from "../products/searchImage.service";
 import { authenticate, requireTiendaLocation } from "../../shared/middlewares/auth";
-import { visionPublicLimiter, visionAuthenticatedLimiter } from "../../shared/middlewares/rateLimit";
 import { AuthRequest } from "../../shared/types";
 import { generarRespuestaVision, secureLog, VisionResponse } from "./vision.service";
 import { VisionServiceError, VisionErrores } from "./vision.errors";
@@ -54,10 +53,10 @@ function manejarVision(run: (req: AuthRequest) => Promise<VisionResponse>) {
 }
 
 // POST /api/vision/public/detectar — Búsqueda por visión sin autenticación.
-// Orden: visonPublicLimiter → imageUpload → handler (mismo patrón que /search-image).
+// Orden: imageUpload → handler. Sin limiter propio: el flujo público se protege con
+// el `generalLimiter` global, la validación MIME y el límite de 5 MB de `imageUpload`.
 router.post(
   "/public/detectar",
-  visionPublicLimiter,
   imageUpload.single("image"),
   manejarVision(async (req) => {
     const vehiculo = leerVehiculo(req.body);
@@ -67,12 +66,12 @@ router.post(
 );
 
 // POST /api/vision/detectar — Búsqueda por visión autenticada (stock exacto, price2).
-// Orden: authenticate → requireTiendaLocation → limiter por usuario → imageUpload → handler.
+// Orden: authenticate → requireTiendaLocation → imageUpload → handler. Sin limiter
+// por usuario: el `generalLimiter` global cubre la cuota y los roles ya restringen el alcance.
 router.post(
   "/detectar",
   authenticate,
   requireTiendaLocation,
-  visionAuthenticatedLimiter,
   imageUpload.single("image"),
   manejarVision(async (req) => {
     const vehiculo = leerVehiculo(req.body);

@@ -16,9 +16,10 @@
 #   como fuente unica de dependencias se usa opencv-python + las 2 libs de
 #   sistema minimas (libgl1, libglib2.0-0). Receta clasica de ultralytics/Docker.
 # - Workers: 1. Cada worker cargaria su propia copia de YOLO en memoria.
-# - Modelo: NO se copia en la imagen. Se monta externamente en /models/best.pt
-#   (VISION_MODEL_PATH). Sin modelo montado, /vision/health responde 503
-#   degradado (correcto).
+# - Modelo: el checkpoint oficial V3 se copia a /models/best.pt. En local se
+#   puede montar externamente (misma ruta), pero en Railway no hay volumen: el
+#   peso viaja en la imagen (esta excepcion mirrors la del .gitignore raiz, que
+#   versiona ese .pt). Sin el, /vision/health responde 503 degradado.
 # ==========================================================================
 
 FROM python:3.11-slim
@@ -61,6 +62,10 @@ RUN groupadd --system vision \
 # Codigo de la app (requiere app/ y requirements.txt; el resto queda fuera).
 COPY --chown=vision:vision app ./app
 
+# Checkpoint oficial V3 -> /models/best.pt (ruta que espera VISION_MODEL_PATH).
+# Es el mismo archivo versionado en el repo; Railway no tiene montaje externo.
+COPY --chown=vision:vision models/repuestopro_yolo11n_v3_webcam_robust.pt /models/best.pt
+
 USER vision
 
 EXPOSE 8000
@@ -70,5 +75,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
     CMD ["python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8000/vision/health', timeout=3).status == 200 else sys.exit(1)"]
 
+# Puerto dinamico de Railway ($PORT) y bind en todas las interfaces.
 # Un solo worker: cada worker cargaria una copia independiente de YOLO.
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD ["sh", "-c", "exec python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
