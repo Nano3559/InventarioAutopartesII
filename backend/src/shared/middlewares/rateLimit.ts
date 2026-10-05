@@ -52,25 +52,10 @@ export const ocrAuthenticatedLimiter: RateLimitRequestHandler = rateLimit({
   message: blocklistJson("Demasiadas búsquedas por imagen. Intente nuevamente en unos minutos."),
 });
 
-// Visión pública: 5 detecciones / 15 minutos / IP. Procesamiento costoso (IA),
-// contador independiente del de OCR para no agotar cuotas entre sí.
-export const visionPublicLimiter: RateLimitRequestHandler = rateLimit({
-  windowMs: WINDOW_MS,
-  limit: 5,
-  standardHeaders,
-  legacyHeaders,
-  message: blocklistJson("Demasiadas búsquedas por visión. Intente nuevamente en unos minutos."),
-});
-
-// Visión autenticada: 20 detecciones / 15 minutos / usuario.
-export const visionAuthenticatedLimiter: RateLimitRequestHandler = rateLimit({
-  windowMs: WINDOW_MS,
-  limit: 20,
-  standardHeaders,
-  legacyHeaders,
-  keyGenerator: (req) => {
-    const userId = (req as any).user?.userId;
-    return userId != null ? String(userId) : "anonymous";
-  },
-  message: blocklistJson("Demasiadas búsquedas por visión. Intente nuevamente en unos minutos."),
-});
+// NOTA: la búsqueda por visión (/api/vision/...) NO tiene limiter propio.
+// Antes aplican 5 detecciones públicas y 20 internas por 15 minutos, lo que
+// bloqueaba al usuario tras unas pocas capturas y hacía pensar que el modelo IA
+// había dejado de funcionar. Ahora el flujo depende únicamente del
+// `generalLimiter` (300 requests / 15 min / IP) que ya protege toda la API.
+// El coste computacional sigue acotado por el límite de 5 MB y la validación
+// MIME de `imageUpload`, y el servicio IA por su propia clave.

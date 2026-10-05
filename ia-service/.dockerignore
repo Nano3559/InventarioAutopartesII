@@ -17,12 +17,18 @@ __pycache__
 .mypy_cache
 .ruff_cache
 
-# Pesos y artefactos de modelo (se montan externamente, jamas en la imagen)
+# Pesos y artefactos de modelo.
+# En local el .pt se monta/copia aparte, pero en Railway NO hay montaje externo:
+# el servicio debe llevar el checkpoint oficial versionado DENTRO de la imagen
+# para que /vision/health responda 200 con modelLoaded=true. Se excluyen el
+# resto de pesos (entrenamientos, onnx, runs) y solo se permite el checkpoint
+# oficial, igual que la excepcion equivalente en el .gitignore de la raiz.
 runs
 weights
 *.pt
 *.onnx
 *.engine
+!models/repuestopro_yolo11n_v3_webcam_robust.pt
 
 # Datasets y sinteticos
 datasets

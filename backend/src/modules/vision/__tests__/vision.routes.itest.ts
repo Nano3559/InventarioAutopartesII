@@ -12,12 +12,13 @@ import { PrismaClient } from "@prisma/client";
 /**
  * Búsqueda por visión (rotas /api/vision, modo mock):
  *  - Público: /api/vision/public/detectar sin token, respuestas seguras (sin
- *    price2/stockTotal/stockPorSucursal), 400/422/429/504 coherentes.
+ *    price2/stockTotal/stockPorSucursal), 400/422/504 coherentes.
  *  - Interno: /api/vision/detectar exige token; TIENDA sin ubicación → 403;
  *    TIENDA con ubicación ve SOLO su sucursal; ADMIN ve stock global exacto.
  *  - Escenarios mock: default (Frenos 0.94), ninguna, baja_confianza,
  *    categoria_desconocida, error, timeout.
- *  - Límite de 5 detecciones públicas y 20 internas por usuario (limiter).
+ *  - Sin limiter propio de visión: 12 detecciones públicas consecutivas → todas
+ *    200, ninguna 429 (queda solo el `generalLimiter` global de 300/15 min).
  */
 
 let server: TestServer;
@@ -146,7 +147,7 @@ after(async () => {
   await server.close();
 });
 
-// ===== Público (exactamente 5 llamadas para no tocar el límite de 5/15min) =====
+// ===== Público =====
 
 test("público: sin imagen → 400 VISION_IMAGEN_REQUERIDA", async () => {
   const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST" });
@@ -225,16 +226,64 @@ test("público: sin clasificación (ninguna) → 422 VISION_NO_CLASIFICADA", asy
   assert.equal(body.codigo, "VISION_NO_CLASIFICADA");
 });
 
-// El límite público es 5/15 min por IP: arriba ya se hicieron exactamente 5 peticiones
-// públicas (400, 400, 200, 422, 422), así que la 6.ª debe responder 429.
+// El flujo público NO tiene limiter propio: 12 detecciones seguidas deben responder
+// 200 con resultado normal, sin 429. Con el antiguo límite de 5/15 min esta prueba
+// fallaba en la 6.ª llamada, que era exactamente el bloqueo que prolijó durante la demo.
+//
+// NOTA sobre `proveedor`: esta suite corre con el proveedor MOCK a propósito (los
+// escenarios `x-vision-mock-scenario` solo existen en ese modo), así que aquí vale
+// "mock". Lo que se verifica en este test es que la cuota de visión ya no bloquea,
+// no que el proveedor sea el real: eso lo cubren `vision.config.test.ts` (que
+// comprueba que producción NUNCA degrada a mock) y la prueba end-to-end contra la IA.
 // NOTA: node:test ejecuta los tests en orden dentro del archivo; no reordenar.
-test("público: alcanzado el límite de 5/15 min por IP → 429", async () => {
-  const { fd, headers } = fdConImagen();
-  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", headers, body: fd });
-  assert.equal(res.status, 429);
-  const body: any = await res.json();
-  assert.equal(body.status, 429);
-  assert.ok(body.message, "mensaje de límite presente");
+test("público: 12 detecciones consecutivas sin 429 (solo el generalLimiter global)", async () => {
+  const TOTAL = 12;
+  for (let i = 1; i <= TOTAL; i++) {
+    const { fd, headers } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", headers, body: fd });
+    assert.notEqual(res.status, 429, `la detección ${i} de ${TOTAL} no debe recibir 429`);
+    assert.equal(res.status, 200, `la detección ${i} de ${TOTAL} debe responder 200`);
+    const body: any = await res.json();
+    assert.ok(body.proveedor, `la detección ${i} declara proveedor`);
+    assert.ok(Array.isArray(body.candidatos), `la detección ${i} devuelve candidatos`);
+    assert.equal(body.deteccion.categoria, "Frenos", `la detección ${i} devuelve un resultado real`);
+  }
+});
+
+// El flujo interno tampoco lleva limiter por usuario: 12 detecciones seguidas con el
+// mismo token deben responder 200 y seguir viendo price2/stockTotal (ámbito ADMIN).
+test("interno: 12 detecciones consecutivas con el mismo token sin 429", async () => {
+  const TOTAL = 12;
+  for (let i = 1; i <= TOTAL; i++) {
+    const { fd, headers } = fdConImagen();
+    const res = await fetch(`${server.baseUrl}/api/vision/detectar`, {
+      method: "POST",
+      headers: { ...headers, authorization: `Bearer ${adminToken}` },
+      body: fd,
+    });
+    assert.notEqual(res.status, 429, `la detección interna ${i} de ${TOTAL} no debe recibir 429`);
+    assert.equal(res.status, 200, `la detección interna ${i} de ${TOTAL} debe responder 200`);
+    const body: any = await res.json();
+    const hilux = body.candidatos.find((c: any) => c.itemCode === FRENO_HILUX.itemCode);
+    assert.ok(hilux, `la detección interna ${i} devuelve el candidato Hilux`);
+    assert.equal(hilux.price2, FRENO_HILUX.price2, `la detección interna ${i} mantiene price2`);
+  }
+});
+
+// El límite de tamaño y el MIME siguen aplicándose en el flujo público ahora que ya no
+// hay quota que los de preceda: 5 MB + 1 y MIME text/plain deben seguir rechazados.
+test("público: las validaciones de upload siguen activas tras quitar el limiter", async () => {
+  const mimeInvalido = new FormData();
+  mimeInvalido.append("image", new Blob([Buffer.from("no soy imagen")], { type: "text/plain" }), "pieza.jpg");
+  const resMime = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: mimeInvalido });
+  assert.equal(resMime.status, 400, "MIME inválido sigue rechazándose con 400");
+  assert.equal((await resMime.json() as any).message, "Tipo de archivo no permitido");
+
+  const grande = new FormData();
+  grande.append("image", new Blob([Buffer.alloc(5 * 1024 * 1024 + 1)], { type: "image/jpeg" }), "grande.jpg");
+  const resGrande = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: grande });
+  assert.equal(resGrande.status, 400, "el archivo > 5 MB sigue rechazándose con 400");
+  assert.equal((await resGrande.json() as any).message, "El archivo excede el tamaño máximo permitido");
 });
 
 // ===== Interno =====
