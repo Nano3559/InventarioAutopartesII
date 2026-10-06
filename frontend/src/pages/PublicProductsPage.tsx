@@ -22,6 +22,8 @@ import VisionResultsPanel, { VisionVehiculoForm, VisionEntregaSeleccion } from "
 import { detectarVisionPublica, mensajeErrorVision, recomendacionesVision } from "../services/visionApi";
 import { guardarBorradorVision, BorradorVentaVision } from "../services/saleDraft";
 import { VisionAnalysis } from "../types/vision";
+import { ReporteCalidad, analizarCalidadImagen } from "../services/imageQuality";
+import { VerificacionMultiVista, combinarDetecciones } from "../services/multiView";
 import toast from "react-hot-toast";
 
 interface ProductCard {
@@ -99,6 +101,14 @@ export default function PublicProductsPage() {
   const [visionBuscando, setVisionBuscando] = useState(false);
   const [visionError, setVisionError] = useState<string | null>(null);
   const [visionRecomendaciones, setVisionRecomendaciones] = useState<string[]>([]);
+  // MODO ESCANEO INTELIGENTE: calidad previa, confirmación multi-vista y
+  // advertencia no bloqueante cuando la foto es claramente mala.
+  const [visionCalidad, setVisionCalidad] = useState<ReporteCalidad | null>(null);
+  const [visionAdvertirCalidad, setVisionAdvertirCalidad] = useState(false);
+  const [visionVerificacion, setVisionVerificacion] = useState<VerificacionMultiVista | null>(null);
+  const [vistaPrimera, setVistaPrimera] = useState<VisionAnalysis | null>(null);
+  const [haySegundaFoto, setHaySegundaFoto] = useState(false);
+  const [busquedaPendiente, setBusquedaPendiente] = useState<{ file: File; vehiculo: VisionVehiculoForm } | null>(null);
   const [vehiculo, setVehiculo] = useState<VisionVehiculoForm>({ marca: "", modelo: "", anio: "" });
   const [entrega, setEntrega] = useState<VisionEntregaSeleccion>({ modalidad: "recoger", sucursalId: null });
 
@@ -126,7 +136,18 @@ export default function PublicProductsPage() {
           ? { marca: vehiculoVision.marca || undefined, modelo: vehiculoVision.modelo || undefined, anio: vehiculoVision.anio || undefined }
           : undefined,
       });
-      setVisionResultado(resultado);
+
+      // Segunda foto: se combinan SOLO las dos detecciones reales de YOLO. No se
+      // promedian confianzas ni se inventa probabilidad (ver services/multiView.ts).
+      if (haySegundaFoto && vistaPrimera) {
+        const verificacion = combinarDetecciones([vistaPrimera.deteccion, resultado.deteccion]);
+        setVisionVerificacion(verificacion);
+        setVisionResultado(verificacion.indiceVistaElegida === 0 ? vistaPrimera : resultado);
+      } else {
+        setVisionVerificacion(null);
+        setVisionResultado(resultado);
+      }
+
       if (resultado.entrega.sucursales.length > 0 && entrega.sucursalId === null) {
         setEntrega((prev) => ({ ...prev, sucursalId: resultado.entrega.sucursales[0].id }));
       }
@@ -139,17 +160,55 @@ export default function PublicProductsPage() {
     }
   };
 
-  const handleCaptura = (file: File, vehiculoModal?: { marca?: string; modelo?: string; anio?: string }) => {
+  const handleCaptura = async (file: File, vehiculoModal?: { marca?: string; modelo?: string; anio?: string }) => {
+    const vehiculoElegido: VisionVehiculoForm = vehiculoModal
+      ? { marca: vehiculoModal.marca || "", modelo: vehiculoModal.modelo || "", anio: vehiculoModal.anio || "" }
+      : vehiculo;
+
     setCapturaFile(file);
     setVisionResultado(null);
     setVisionError(null);
+    setVisionRecomendaciones([]);
     setCameraOpen(false);
-    buscarPorVision(
-      file,
-      vehiculoModal
-        ? { marca: vehiculoModal.marca || "", modelo: vehiculoModal.modelo || "", anio: vehiculoModal.anio || "" }
-        : vehiculo
-    );
+
+    // Medición local (Canvas) sin IA adicional. Se hace ANTES de gastar una
+    // inferencia, así una foto mala se ve antes de que el backend trabaje.
+    const calidad = await analizarCalidadImagen(file);
+    setVisionCalidad(calidad);
+
+    if (calidad?.estado === "mala") {
+      // Advertir antes de buscar, sin bloquear: siempre hay salida hacia adelante.
+      setVisionAdvertirCalidad(true);
+      setBusquedaPendiente({ file, vehiculo: vehiculoElegido });
+      return;
+    }
+
+    buscarPorVision(file, vehiculoElegido);
+  };
+
+  /** El usuario aceptó la foto de baja calidad y manda a buscar igual. */
+  const continuarBusqueda = () => {
+    const pendiente = busquedaPendiente;
+    setVisionAdvertirCalidad(false);
+    setBusquedaPendiente(null);
+    if (pendiente) buscarPorVision(pendiente.file, pendiente.vehiculo);
+  };
+
+  /** El usuario prefiere otra foto: se descarta sin haber consumido inferencia. */
+  const descartarPorCalidad = () => {
+    setVisionAdvertirCalidad(false);
+    setBusquedaPendiente(null);
+    setVisionCalidad(null);
+    repetirFoto();
+  };
+
+  /** Pasa a pedir la segunda foto para confirmar una categoría en zona media. */
+  const pedirSegundaFoto = () => {
+    if (!visionResultado) return;
+    setVistaPrimera(visionResultado);
+    setHaySegundaFoto(true);
+    setVisionVerificacion(null);
+    setCameraOpen(true);
   };
 
   const cerrarVision = () => {
@@ -157,6 +216,12 @@ export default function PublicProductsPage() {
     setCapturaFile(null);
     setVisionResultado(null);
     setVisionError(null);
+    setVisionCalidad(null);
+    setVisionAdvertirCalidad(false);
+    setVisionVerificacion(null);
+    setVistaPrimera(null);
+    setHaySegundaFoto(false);
+    setBusquedaPendiente(null);
   };
 
   // WB-8: la selección (producto + sucursal con stock + datos de entrega) se
@@ -165,6 +230,10 @@ export default function PublicProductsPage() {
     guardarBorradorVision(borrador);
     setVisionResultado(null);
     setCapturaFile(null);
+    setVisionCalidad(null);
+    setVisionVerificacion(null);
+    setVistaPrimera(null);
+    setHaySegundaFoto(false);
     toast.success("Producto preparado para venta. Completá el cobro en el Punto de Venta.");
   };
 
@@ -172,6 +241,10 @@ export default function PublicProductsPage() {
     setVisionResultado(null);
     setVisionError(null);
     setCapturaFile(null);
+    setVisionCalidad(null);
+    setVisionVerificacion(null);
+    setVistaPrimera(null);
+    setHaySegundaFoto(false);
     setCameraOpen(true);
   };
 
@@ -679,9 +752,18 @@ export default function PublicProductsPage() {
           loading={visionBuscando}
           error={visionError}
           recomendaciones={visionRecomendaciones}
+          calidad={visionCalidad}
+          verificacion={visionVerificacion}
+          advertirCalidad={visionAdvertirCalidad}
+          onContinuarDeTodosModos={continuarBusqueda}
+          onDescartarPorCalidad={descartarPorCalidad}
+          onConfirmarConSegundaFoto={pedirSegundaFoto}
           vehiculo={vehiculo}
           onVehiculoChange={(campo, valor) => setVehiculo((prev) => ({ ...prev, [campo]: valor }))}
-          onBuscar={() => buscarPorVision(capturaFile, vehiculo)}
+          onBuscar={() => {
+            setVisionAdvertirCalidad(false);
+            buscarPorVision(capturaFile, vehiculo);
+          }}
           onRepetirFoto={repetirFoto}
           onCerrar={cerrarVision}
           entrega={entrega}

@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Loader2, Camera, RefreshCw, X, PackageSearch, Truck, Store, ShoppingCart, Check, ScanLine, AlertCircle } from "lucide-react";
+import { Loader2, Camera, RefreshCw, X, PackageSearch, Truck, Store, ShoppingCart, Check, ScanLine, AlertCircle, AlertTriangle } from "lucide-react";
 import ProductImage from "../public/ProductImage";
 import { VisionAnalysis, VisionEvidenciaCodigo } from "../../types/vision";
 import { BorradorVentaVision } from "../../services/saleDraft";
+import { ReporteCalidad } from "../../services/imageQuality";
+import { VerificacionMultiVista, debeOfrecerSegundaFoto } from "../../services/multiView";
 import DetectionBox from "./DetectionBox";
+import QualityBadge from "./QualityBadge";
+import ExplainCard from "./ExplainCard";
+import PipelineStrip from "./PipelineStrip";
+import MultiVistaPanel from "./MultiVistaPanel";
 
 export interface VisionVehiculoForm {
   marca: string;
@@ -26,6 +32,16 @@ interface VisionResultsPanelProps {
   error: string | null;
   /** Recomendaciones de captura del 422, si el backend las envió. */
   recomendaciones?: string[];
+  /** Medición de calidad de la foto antes de enviarla al modelo. */
+  calidad?: ReporteCalidad | null;
+  /** true cuando la foto es "mala" y hay que advertir antes de gastar la inferencia. */
+  advertirCalidad?: boolean;
+  onContinuarDeTodosModos?: () => void;
+  onDescartarPorCalidad?: () => void;
+  /** Veredicto multi-vista; null si el usuario no tomó una segunda foto. */
+  verificacion?: VerificacionMultiVista | null;
+  /** Dispara la captura de la segunda foto para confirmar la categoría. */
+  onConfirmarConSegundaFoto?: () => void;
   vehiculo: VisionVehiculoForm;
   onVehiculoChange: (campo: keyof VisionVehiculoForm, valor: string) => void;
   onBuscar: () => void;
@@ -69,6 +85,12 @@ export default function VisionResultsPanel({
   loading,
   error,
   recomendaciones = [],
+  calidad = null,
+  advertirCalidad = false,
+  onContinuarDeTodosModos,
+  onDescartarPorCalidad,
+  verificacion = null,
+  onConfirmarConSegundaFoto,
   vehiculo,
   onVehiculoChange,
   onBuscar,
@@ -82,6 +104,8 @@ export default function VisionResultsPanel({
   const codigosDetectados = resultado?.deteccion.codigosDetectados ?? [];
   const textoDetectado = resultado?.deteccion.textoDetectado ?? [];
   const candidatosConEvidencia = resultado?.candidatos.filter((c) => (c.evidencias?.length ?? 0) > 0).length ?? 0;
+  const ofreceSegundaFoto = resultado ? debeOfrecerSegundaFoto(resultado.deteccion) : false;
+  const hayDobleVista = !!verificacion && verificacion.vistas.length > 1;
 
   // Selección de producto con stock suficiente para preparar la venta (WB-8).
   const [seleccionado, setSeleccionado] = useState<number | null>(null);
@@ -161,6 +185,63 @@ export default function VisionResultsPanel({
             </p>
           )}
 
+          {/* Advertencia previa a la inferencia: se ve cuando la foto es claramente
+              mala. NO bloquea: siempre existe el botón para buscar igual. */}
+          {advertirCalidad && calidad && (
+            <section
+              className="rounded-xl border border-amber-400/40 bg-amber-500/10 p-4"
+              data-testid="vision-aviso-calidad"
+              role="alert"
+            >
+              <div className="flex items-start gap-2.5">
+                <AlertTriangle size={18} className="text-amber-400 shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-amber-300">Esta foto puede reducir la precisión del resultado.</p>
+                  <ul className="mt-2 space-y-1 text-xs text-amber-200/80">
+                    {calidad.problemas.map((p) => (
+                      <li key={p} className="flex gap-1.5">
+                        <span aria-hidden="true">•</span>
+                        <span>{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {calidad.recomendaciones.length > 0 && (
+                    <div className="mt-2.5">
+                      <p className="text-[11px] font-semibold text-amber-200/70 uppercase tracking-wider">Qué hacer</p>
+                      <ul className="mt-1 space-y-1 text-xs text-amber-100/80">
+                        {calidad.recomendaciones.map((r) => (
+                          <li key={r} className="flex gap-1.5">
+                            <span aria-hidden="true">›</span>
+                            <span>{r}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <p className="mt-2.5 text-[11px] text-amber-100/60">
+                    Igual puedes buscar: la calidad es un consejo, no un requisito.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={onContinuarDeTodosModos}
+                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-dark-950 px-4 py-2 rounded-lg text-xs font-semibold transition-colors"
+                >
+                  Buscar de todos modos
+                </button>
+                <button
+                  type="button"
+                  onClick={onDescartarPorCalidad}
+                  className="inline-flex items-center gap-2 text-amber-200 hover:text-white border border-amber-400/40 px-4 py-2 rounded-lg text-xs font-semibold transition-colors"
+                >
+                  <Camera size={13} /> Tomar otra foto
+                </button>
+              </div>
+            </section>
+          )}
+
           <div className="grid sm:grid-cols-[auto_1fr] gap-3 items-start">
             <div className="flex flex-col sm:flex-row gap-2">
               <input
@@ -231,12 +312,20 @@ export default function VisionResultsPanel({
 
           {!loading && !error && resultado && (
             <>
+              {/* 5. UI de demostración: el recorrido completo en una sola tira. */}
+              <PipelineStrip analisis={resultado} deteccion={resultado.deteccion} calidad={calidad} verificacion={verificacion} />
+
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider text-primary-400 bg-primary-500/10 border-primary-500/20">
                   {resultado.deteccion.categoria}
                 </span>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider text-gray-300 bg-gray-500/10 border-gray-500/20">
-                  Confianza {confianza}%
+                {/* La confianza es de YOLO y solo de YOLO. El score de
+                    coincidencia es del motor de catálogo y se muestra abajo. */}
+                <span
+                  className="text-[11px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider text-gray-300 bg-gray-500/10 border-gray-500/20"
+                  title="Confianza emitida por el modelo YOLO. No es el score de coincidencia del catálogo."
+                >
+                  Confianza del modelo {confianza}%
                 </span>
                 {resultado.deteccion.categoriaMapeada && resultado.deteccion.categoriaMapeada !== resultado.deteccion.categoria && (
                   <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border-cyan-500/20">
@@ -251,6 +340,13 @@ export default function VisionResultsPanel({
                 </span>
               </div>
 
+              {/* Veredicto multi-vista y oferta de la segunda foto. */}
+              <MultiVistaPanel
+                verificacion={verificacion}
+                ofrece={ofreceSegundaFoto && !hayDobleVista}
+                onConfirmar={onConfirmarConSegundaFoto}
+              />
+
               {vistaPreviaUrl && (
                 <DetectionBox
                   src={vistaPreviaUrl}
@@ -260,6 +356,8 @@ export default function VisionResultsPanel({
                   confianza={resultado.deteccion.confianza}
                 />
               )}
+
+              <QualityBadge calidad={calidad} />
 
               {(codigosDetectados.length > 0 || textoDetectado.length > 0) && (
                 <div className="bg-dark-800/30 border border-white/[0.06] rounded-xl p-3" data-testid="vision-ocr-evidencia">
@@ -349,6 +447,16 @@ export default function VisionResultsPanel({
                                     Código coincide
                                   </span>
                                 )}
+                                {/* Score de COINCIDENCIA (motor de catálogo: pesos OEM 10,
+                                    fábrica 8, item 6). Jamás se llama "Confianza IA": esa es
+                                    la de YOLO y aparece arriba. */}
+                                <span
+                                  className="text-[10px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider text-indigo-300 bg-indigo-500/10 border-indigo-500/20"
+                                  title="Score de coincidencia del motor de catálogo. Peso OEM=10, fábrica=8, item=6. No es la confianza del modelo YOLO."
+                                  data-testid={`score-${producto.itemCode}`}
+                                >
+                                  Score de coincidencia {producto.scoreEvidencia ?? 0}
+                                </span>
                                 <span className="text-amber-400 text-xs font-semibold ml-auto">Bs. {Number(producto.price1).toFixed(2)}</span>
                               </div>
                               {(producto.evidencias?.length ?? 0) > 0 && (
@@ -373,6 +481,7 @@ export default function VisionResultsPanel({
                             </div>
                           )}
                         </Link>
+                        <ExplainCard candidato={producto} />
                         <div className="mt-2.5 flex justify-end">
                           {seleccionado === producto.id ? (
                             <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-400 bg-green-500/10 border border-green-500/20 px-3 py-1.5 rounded-lg">
@@ -511,7 +620,7 @@ export default function VisionResultsPanel({
             </>
           )}
 
-          {!loading && !error && !resultado && (
+          {!loading && !error && !resultado && !advertirCalidad && (
             <div className="text-center py-10">
               <Camera size={36} className="text-gray-600 mx-auto mb-3" />
               <p className="text-gray-400 text-sm">Tomá una foto de la pieza para buscarla en el catálogo.</p>

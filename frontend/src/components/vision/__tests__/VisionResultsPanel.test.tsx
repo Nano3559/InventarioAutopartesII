@@ -113,9 +113,9 @@ describe("VisionResultsPanel", () => {
   it("muestra candidatos con compatibilidad y disponibilidad", () => {
     renderPanel({ resultado });
 
-    expect(screen.getByText("Confianza 94%")).toBeInTheDocument();
+    expect(screen.getByText("Confianza del modelo 94%")).toBeInTheDocument();
     expect(screen.getByText("Zapata de freno trasera")).toBeInTheDocument();
-    expect(screen.getByText("Disponible")).toBeInTheDocument();
+    expect(screen.getAllByText("Disponible").length).toBeGreaterThan(0);
     expect(screen.getByText("Bs. 120.50")).toBeInTheDocument();
     expect(screen.getByText("1 de 1 candidatos mostrados verifican compatibilidad")).toBeInTheDocument();
   });
