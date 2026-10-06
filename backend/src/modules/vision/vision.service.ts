@@ -6,9 +6,12 @@ import { visionConfig } from "./vision.config";
 import { visionProvider, withVisionTimeout } from "./vision.provider";
 import { mapearCategoria } from "./categoryMapping";
 import { normalizarTexto } from "./normalize";
-import { availabilityView, DisponibilidadView, SucursalDisponibilidad, StockPorSucursal } from "./availability";
+import { availabilityView, DisponibilidadView, SucursalDisponibilidad, StockPorSucursal, SucursalDisponiblePublica, sucursalDisponiblePublica } from "./availability";
 import { resolveLocationScope, tieneAlcanceGlobal } from "../../shared/utils/scope";
 import { CompatibilityProviderFactory, CompatibilidadConsulta, CompatibilidadProducto, VehiculoQuery } from "./compatibility";
+import { EvidenciaCodigo, NivelCoincidencia, ResultadoEvidencias, evaluarYRanquear, extraerCodigos, extraerTokensSignificativos, logEvidenciasGlobales, nivelCoincidenciaDe } from "./hybridEvidence";
+import { resolverClaseVisual } from "./claseVisual";
+import { ocrExtract } from "../../shared/utils/ocr";
 import { logger } from "../../shared/utils/logger";
 
 const prisma = new PrismaClient();
@@ -25,6 +28,10 @@ export interface VisionDeteccionRespuesta {
   confianzaBaja: boolean;
   categoriaMapeada: string | null;
   boundingBox: VisionBoundingBox | null;
+  /** Evidencia OCR (híbrido). Vacío si no se leyó texto utilizable. */
+  textoDetectado: string[];
+  /** Códigos de pieza normalizados leídos del rótulo de la imagen. */
+  codigosDetectados: string[];
 }
 
 export interface CompatibilidadCandidato {
@@ -44,9 +51,35 @@ export interface CandidatoVisionBase {
   image: string | null;
   categoria: string | null;
   price1: number;
+  /**
+   * Puntaje de evidencia OCR de este candidato. Deliberadamente distinto de
+   * `compatibilidad.score`: aquel mide coincidencia de vehículo (marca/modelo/año),
+   * este mide coincidencia de código leído en la foto. 0 = sin evidencia.
+   */
+  scoreEvidencia: number;
+  /** Trazabilidad del puntaje: qué campo coincidió, con qué código y si fue exacta o parcial. */
+  evidencias: EvidenciaCodigo[];
+  /**
+   * Grado de coincidencia real de este candidato con la foto. `categoria` significa
+   * que el único vínculo es compartir categoría con la clase detectada: la interfaz
+   * debe decir eso en lugar de anunciar un score 0.
+   */
+  nivelCoincidencia: NivelCoincidencia;
+  /**
+   * Prioridad 5 del Ranking V2: el nombre del producto corresponde a la pieza que el
+   * modelo detectó (no solo a su categoría).
+   */
+  claseCoincide: boolean;
   compatibilidad: CompatibilidadCandidato;
   disponibilidad: DisponibilidadView;
   disponibilidadPorSucursal: Array<SucursalDisponibilidad>;
+  /**
+   * Desglose PÚBLICO de disponibilidad para recogida, por sucursal TIENDA.
+   * Solo `sucursalId` + `nombre` + bucket seguro (nunca stock, ni `locationId`,
+   * ni `tipo`). Solo presente en modo público: el interno usa el desglose
+   * completo `disponibilidadPorSucursal`/`stockPorSucursal`.
+   */
+  disponibilidadPorSucursalPublica?: Array<SucursalDisponiblePublica>;
 }
 
 export interface CandidatoVisionInterno extends CandidatoVisionBase {
@@ -84,6 +117,8 @@ export interface OpcionVision {
 interface ProductoConRelation {
   id: number;
   itemCode: string;
+  oemCode: string | null;
+  factoryCode: string | null;
   name: string;
   brand: string | null;
   model: string | null;
@@ -131,19 +166,31 @@ function disponibilidadPorSucursalDe(inventarios: ProductoConRelation["inventori
 }
 
 /**
+ * Disponibilidad por sucursal del contrato PÚBLICO. Reutiliza la MISMA regla que
+ * `disponibilidadPorSucursalDe` (solo TIENDAS, bucket seguro), pero emite el DTO
+ * mínimo `SucursalDisponiblePublica` para no exponer datos internos de la sede.
+ */
+function disponibilidadPorSucursalPublicaDe(inventarios: ProductoConRelation["inventories"]): SucursalDisponiblePublica[] {
+  return inventarios
+    .filter((inv) => inv.location.type === "TIENDA")
+    .slice(0, MAX_SUCURSALES_POR_CANDIDATO)
+    .map((inv) => sucursalDisponiblePublica(inv.locationId, inv.location.name, inv.stock));
+}
+
+/**
  * Respuesta PÚBLICA (anónimo). El contrato público solo puede revelar la
- * disponibilidad agregada (`disponibilidad`, que es un bucket tipo
- * "DISPONIBLE/ÚLTIMAS_UNIDADES/AGOTADO"), nunca el stock exacto ni las
+ * disponibilidad por sucursal a través del DTO mínimo `disponibilidadPorSucursalPublica`
+ * (`sucursalId`, `nombre` y el bucket seguro), nunca el stock exacto ni las
  * ubicaciones internas.
  *
- * Por eso `disponibilidadPorSucursal` viaja VACÍO: cada entrada de ese arreglo
- * lleva `locationId`, `nombre` y `tipo` de la sede, que son datos internos de la
- * operación. Se conserva el campo (en vez de borrarlo) para no romper el tipo
- * `CandidatoVisionBase` ni a los consumidores del catálogo público, que leen
- * `disponibilidad` y `precio_unitario`. Es el mismo criterio que aplica
- * `serializeProductoPublico` de búsqueda por imagen.
+ * Por eso el desglose interno `disponibilidadPorSucursal` viaja VACÍO: cada
+ * entrada de ese arreglo lleva `locationId`, `tipo` y `etiqueta`, que son datos
+ * internos de la operación. Se conserva el campo (en vez de borrarlo) para no
+ * romper el tipo `CandidatoVisionBase` ni a los consumidores del catálogo
+ * público, que leen `disponibilidad` y `precio_unitario`. Es el mismo criterio
+ * que aplica `serializeProductoPublico` de búsqueda por imagen.
  */
-function serializarPublico(producto: ProductoConRelation, compatibilidad: CompatibilidadProducto): CandidatoVisionBase {
+function serializarPublico(producto: ProductoConRelation, compatibilidad: CompatibilidadProducto, evidencia: ResultadoEvidencias): CandidatoVisionBase {
   return {
     id: producto.id,
     itemCode: producto.itemCode,
@@ -154,9 +201,14 @@ function serializarPublico(producto: ProductoConRelation, compatibilidad: Compat
     image: producto.image,
     categoria: producto.category?.name ?? null,
     price1: Number(producto.price1),
+    scoreEvidencia: evidencia.score,
+    evidencias: evidencia.evidencias,
+    nivelCoincidencia: nivelCoincidenciaDe(evidencia),
+    claseCoincide: evidencia.claseCoincide,
     compatibilidad,
     disponibilidad: disponibilidadDe(producto.inventories),
     disponibilidadPorSucursal: [],
+    disponibilidadPorSucursalPublica: disponibilidadPorSucursalPublicaDe(producto.inventories),
   };
 }
 
@@ -169,7 +221,12 @@ function serializarPublico(producto: ProductoConRelation, compatibilidad: Compat
  * search-image evita. ADMIN/INVENTARIO conservan la vista global (su operación
  * legítima) porque para ellos `visibles === producto.inventories`.
  */
-function serializarInterno(producto: ProductoConRelation, compatibilidad: CompatibilidadProducto, usuario?: AuthRequest["user"] | null): CandidatoVisionInterno {
+function serializarInterno(
+  producto: ProductoConRelation,
+  compatibilidad: CompatibilidadProducto,
+  evidencia: ResultadoEvidencias,
+  usuario?: AuthRequest["user"] | null
+): CandidatoVisionInterno {
   const visibles = stockVisible(producto, usuario);
   return {
     id: producto.id,
@@ -181,6 +238,10 @@ function serializarInterno(producto: ProductoConRelation, compatibilidad: Compat
     image: producto.image,
     categoria: producto.category?.name ?? null,
     price1: Number(producto.price1),
+    scoreEvidencia: evidencia.score,
+    evidencias: evidencia.evidencias,
+    nivelCoincidencia: nivelCoincidenciaDe(evidencia),
+    claseCoincide: evidencia.claseCoincide,
     compatibilidad,
     disponibilidad: disponibilidadDe(visibles),
     disponibilidadPorSucursal: disponibilidadPorSucursalDe(visibles),
@@ -199,6 +260,12 @@ export async function generarRespuestaVision(opts: OpcionVision): Promise<Vision
   const { file, modo, usuario, vehiculo } = opts;
   const consultadoEn = new Date().toISOString();
 
+  // OCR y visión arrancan a la vez. Tesseract corre en su propio hilo y la llamada al
+  // servicio de visión se pasa esperando la red: solaparlos evita sumar la latencia del
+  // OCR a la del clasificador. `ocrExtract` nunca rechaza, así que un fallo de OCR no
+  // puede tumbar la detección; en ese caso simplemente no hay evidencia de texto.
+  const ocrPendiente = ocrExtract(file.buffer);
+
   const deteccion = await withVisionTimeout(
     visionProvider.detectar({
       buffer: file.buffer,
@@ -207,6 +274,10 @@ export async function generarRespuestaVision(opts: OpcionVision): Promise<Vision
     }),
     visionConfig.timeoutMs
   );
+
+  const textoOcr = await ocrPendiente;
+  const codigosDetectados = extraerCodigos(textoOcr);
+  const textoDetectado = extraerTokensSignificativos(textoOcr);
 
   const { valida, detecciones } = validarRespuestaVision(deteccion.detecciones);
   if (!valida) throw VisionErrores.respuestaInvalida();
@@ -249,22 +320,62 @@ export async function generarRespuestaVision(opts: OpcionVision): Promise<Vision
   if (!categoriaCatalogo) {
     nota = "La clase detectada no tiene categoría equivalente en el catálogo.";
     compatibilidad.nota = "Sin categoría equivalente; no se evaluó compatibilidad.";
+    if (codigosDetectados.length) {
+      // El OCR sí puede identificar la pieza aunque la clase YOLO no tenga categoría.
+      // Se informa el texto leído sin inventar una categoría ni una compatibilidad.
+      nota += ` Se leyó texto en la imagen (${codigosDetectados.join(", ")}), pero sin categoría equivalente en el catálogo no se pudieron contrastar esos códigos.`;
+    }
   } else {
     const products = await prisma.product.findMany({
       where: { categoryId: categoriaCatalogo.id },
-      include: { category: { select: { id: true, name: true } }, inventories: { include: { location: true } } },
+      select: {
+        id: true,
+        itemCode: true,
+        oemCode: true,
+        factoryCode: true,
+        name: true,
+        brand: true,
+        model: true,
+        year: true,
+        image: true,
+        price1: true,
+        price2: true,
+        category: { select: { id: true, name: true } },
+        inventories: { include: { location: true } },
+      },
       orderBy: { name: "asc" },
       take: MAX_PRODUCTOS_CONSULTADOS,
     });
 
     const evaluados = await compatProvider.evaluarCandidatos(products, vehiculo ?? null);
-    const topCandidatos = evaluados.slice(0, MAX_CANDIDATOS_RESPUESTA);
+
+    // Clase visual detectada, resuelta SOLO contra las 8 clases reales del modelo.
+    // Es lo que permite que el Alternador separe al "Alternador" de los demás
+    // productos de "Eléctrico" aunque nadie haya leído un código en la foto.
+    const claseDetectada = resolverClaseVisual(top.categoria);
+
+    // Evidencia por candidato y orden final (Ranking V2: ver evaluarYRanquear).
+    const conEvidencia = evaluarYRanquear(
+      evaluados.map((entry) => ({
+        producto: entry.candidato as unknown as ProductoConRelation,
+        compatibilidad: entry.compatibilidad,
+      })),
+      codigosDetectados,
+      { clase: claseDetectada }
+    );
+
+    const topCandidatos = conEvidencia.slice(0, MAX_CANDIDATOS_RESPUESTA);
+    logEvidenciasGlobales(
+      codigosDetectados,
+      conEvidencia.filter((c) => c.evidencia.evidencias.length).length,
+      conEvidencia.length
+    );
 
     candidatos = topCandidatos.map((entry) => {
-      const producto = entry.candidato as unknown as ProductoConRelation;
+      const producto = entry.producto;
       return modo === "interno"
-        ? serializarInterno(producto, entry.compatibilidad, usuario)
-        : serializarPublico(producto, entry.compatibilidad);
+        ? serializarInterno(producto, entry.compatibilidad, entry.evidencia, usuario)
+        : serializarPublico(producto, entry.compatibilidad, entry.evidencia);
     });
 
     const tieneVehiculo = !!vehiculo && (!!vehiculo.marca || !!vehiculo.modelo || !!vehiculo.anio);
@@ -278,6 +389,9 @@ export async function generarRespuestaVision(opts: OpcionVision): Promise<Vision
 
     if (candidatos.length === 0) {
       nota = "No hay productos publicados en la categoría detectada.";
+    } else if (codigosDetectados.length) {
+      const conCodigo = topCandidatos.filter((c) => c.evidencia.evidencias.length).length;
+      nota = ` Se detectaron ${codigosDetectados.length} código(s) en la imagen y ${conCodigo} de ${topCandidatos.length} candidatos coinciden. La coincidencia de código identifica la pieza; no confirma la compatibilidad con su vehículo.`;
     }
   }
 
@@ -297,6 +411,8 @@ export async function generarRespuestaVision(opts: OpcionVision): Promise<Vision
       confianzaBaja: false,
       categoriaMapeada: nombreCategoriaMapeada,
       boundingBox: top.boundingBox ?? null,
+      textoDetectado,
+      codigosDetectados,
     },
     vehiculo: vehiculo ? { marca: vehiculo.marca ?? null, modelo: vehiculo.modelo ?? null, anio: vehiculo.anio ?? null } : null,
     categoriaCatalogo: categoriaCatalogo ? { id: categoriaCatalogo.id, nombre: categoriaCatalogo.name } : null,

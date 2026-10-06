@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { detectarVisionPublica, detectarVisionInterna, mensajeErrorVision, VisionApiError } from "../visionApi";
+import { detectarVisionPublica, detectarVisionInterna, mensajeErrorVision, recomendacionesVision, VisionApiError } from "../visionApi";
 import { VisionAnalysis } from "../../types/vision";
 
 vi.mock("../api", () => ({
@@ -127,6 +127,29 @@ describe("mapeo de errores", () => {
   it("traduce 503 y 504 a mensajes claros", () => {
     expect(mensajeErrorVision(new VisionApiError(503, "VISION_NO_DISPONIBLE", "x"))).toContain("no está disponible");
     expect(mensajeErrorVision(new VisionApiError(504, "VISION_TIMEOUT", "x"))).toContain("tardó demasiado");
+  });
+
+  it("extrae las recomendaciones de captura que envía el backend en el 422", async () => {
+    postMock.mockRejectedValue({
+      response: {
+        status: 422,
+        data: {
+          codigo: "VISION_NO_CLASIFICADA",
+          message: "La imagen es válida pero no se pudo clasificar la pieza",
+          recomendaciones: ["Encuadra una sola pieza", "Usa fondo liso"],
+        },
+      },
+    });
+
+    const err = await detectarVisionPublica(archivo()).catch((e) => e);
+    expect(recomendacionesVision(err)).toEqual(["Encuadra una sola pieza", "Usa fondo liso"]);
+  });
+
+  it("ignora recomendaciones mal formadas o ausentes", async () => {
+    postMock.mockRejectedValue({ response: { status: 422, data: { codigo: "VISION_NO_CLASIFICADA", recomendaciones: "no-es-lista" } } });
+    const err = await detectarVisionPublica(archivo()).catch((e) => e);
+    expect(recomendacionesVision(err)).toEqual([]);
+    expect(recomendacionesVision(new Error("otro"))).toEqual([]);
   });
 
   it("usa mensaje por defecto ante errores de red sin response", async () => {

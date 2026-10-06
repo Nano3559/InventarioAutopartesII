@@ -296,6 +296,11 @@ Central y exhaustivo: `LIMIT_FILE_SIZE`, `LIMIT_UNEXPECTED_FILE`, `INVALID_FILE_
 
 ## 26. Estado de las fases del plan (0–10)
 
+> **Nota de vigencia (2026-10-06):** esta tabla describe el estado *histórico* de la
+> planificación original, cuando el proveedor de visión aún era simulado. La tabla
+> "estado real" de la sección 28 sustituye a esta para tomar decisiones. Se conserva
+> sin reescribir para no perder el registro.
+
 | Fase | Estado | Observación |
 | ---- | ------ | ----------- |
 | FASE 0 (plan + auditoría) | ✅ Lista | Plan y auditoría publicados (este documento). |
@@ -565,3 +570,62 @@ Cifras vigentes, re-verificadas el **2026-09-29** con el código final de esta r
 * Mobile (flujo OCR legacy, documentado sin cambios): cámara/galería → validación de MIME (`jpeg|png|webp`) y 5 MB → `POST /api/products/search-image` (endpoint **autenticado**, contrato interno con `price1`/`price2`/`totalStock`/`locations`) → resultados. El interceptor de Axios adjunta `Authorization: Bearer`; un 401 limpia sesión y estado React (`setOnUnauthorized` → `setUser(null)` → Login). Nota: `expo-camera` está instalada pero `ScannerScreen` **solo** usa galería (`launchImageLibraryAsync`).
 
 *Fin del Anexo B.*
+
+---
+
+## 28. Estado real verificado (2026-10-06) y alcance del OCR híbrido
+
+Esta sección sustituye a la tabla histórica de la sección 26 para tomar decisiones.
+
+### 28.1 Lo que sí funciona hoy
+
+| Capacidad | Estado | Evidencia |
+| ---- | ---- | ---- |
+| Proveedor de visión real (YOLO11n, sin mocks en runtime) | ✅ Funciona en producción | `POST /api/vision/public/detectar` → 200, `proveedor:"http"` |
+| Búsqueda por imagen con OCR (Tesseract) | ✅ Funciona | Pre-existente, ahora con worker **compartido** |
+| OCR híbrido como evidencia de código en visión | ✅ Implementado en esta ronda | `hybridEvidence.ts`, 22 unitarios |
+| Bounding box dibujado en la interfaz | ✅ Implementado en esta ronda | Antes el backend lo enviaba y la UI lo ignoraba |
+| Ranking explicado con evidencias por candidato | ✅ Implementado en esta ronda | `evaluarYRanquear`, 5 unitarios del ranking |
+| Recomendaciones de captura en 422 | ✅ Implementado en esta ronda | `RECOMENDACIONES_CAPTURA`, aditivo en el body de error |
+
+### 28.2 Rendimiento medido del OCR híbrido
+
+Medido con `backend/scripts/medir-ocr.ts` sobre una fotografía real (120 KB), **no estimado**:
+
+| Medición | Valor |
+| --- | --- |
+| Primera llamada (carga de `eng.traineddata`) | 737 ms |
+| OCR caliente p50 / p95 | 319 ms / 323 ms |
+| Sobrecosto en la latencia percibida del request | **+0 ms** (queda oculto tras la espera de `ia-service`, ~2.7 s) |
+| RSS antes → después de cargar Tesseract | 75 MB → 200 MB |
+
+Riesgo registrado: las llamadas al OCR se serializan sobre un único worker. Bajo
+peticiones concurrentes el OCR podría volverse el cuello de botella; con carga de un
+solo usuario no se observa.
+
+### 28.3 Lo que sigue bloqueado y por qué
+
+| Fase | Estado | Motivo |
+| ---- | ---- | ---- |
+| FASE 2–9 (entrenamiento/evaluación) | 🔴 Bloqueada | No existen imágenes, bounding boxes, `processed_v3` ni test congelado. Solo hay 3 CSV de metadatos. |
+| FASE 12 (V4) | 🔴 Bloqueada | Requiere las métricas de V3 y de V4 sobre el mismo ground truth. |
+| Umbral por clase (mAP por clase, P/R) | 🔴 Bloqueada | Exige curvas calculadas sobre datos reales. El `0.55` actual es un valor único heredado, **no calibrado**. |
+
+**Búsqueda definitiva en el historial Git:** en *todo* el historial lo único versionado
+del dataset son los 3 CSV (`dataset_manifest.csv`, `annotation_batch_manifest.csv`,
+`review_manifest.csv`). No existe ningún `dataset.yaml`, labels, carpeta `processed*`
+ni checkpoint anterior a V3. El dataset nunca estuvo en el repositorio.
+
+**Pesos de la evidencia de código (`oemCode` 10 / `factoryCode` 8 / `itemCode` 6 /
+parcial 3):** están documentados como **provisionales**. Son un orden razonable por
+autoridad del campo, no un valor calibrado. Calibrarlos requiere ground truth.
+
+### 28.4 Garantías de seguridad del híbrido
+
+Estas reglas están cubiertas por tests y no deben relajarse:
+
+1. El OCR **nunca** marca `compatibilidad.verificada`.
+2. La compatibilidad verificada **siempre** ordena por encima de la coincidencia de código.
+3. Una coincidencia parcial se reporta como `parcial`, nunca como exacta.
+4. Si el OCR falla, la detección por categoría sigue funcionando (`ocrExtract` no lanza).
+5. La respuesta pública sigue sin exponer `price2`, stock exacto ni datos de sede (afirmado en `vision.routes.itest.ts`).

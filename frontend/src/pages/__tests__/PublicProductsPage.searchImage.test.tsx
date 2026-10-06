@@ -17,6 +17,7 @@ vi.mock("../../services/visionApi", () => ({
     const e = error as { message?: string };
     return e?.message ?? "Error inesperado";
   }),
+  recomendacionesVision: vi.fn(() => [] as string[]),
 }));
 
 vi.mock("react-hot-toast", () => ({

@@ -246,6 +246,9 @@ test("público: detección válida 200 con serialización SEGURA (sin price2/sto
   assert.ok(!raw.includes('"price2"'), "nunca expone price2");
   assert.ok(!raw.includes('"stockTotal"'), "nunca expone stockTotal");
   assert.ok(!raw.includes('"stockPorSucursal"'), "nunca expone stockPorSucursal");
+  assert.ok(!raw.includes('"wholesalePrice"'), "nunca expone precio mayorista");
+  assert.ok(!raw.includes('"cost"'), "nunca expone costo");
+  assert.ok(!raw.includes('"minStock"'), "nunca expone stock mínimo");
 
   const hilux = body.candidatos.find((c: any) => c.itemCode === FRENO_HILUX.itemCode);
   assert.ok(hilux, "candidato Hilux presente");
@@ -258,16 +261,37 @@ test("público: detección válida 200 con serialización SEGURA (sin price2/sto
   const sinCategoria = body.candidatos.find((c: any) => c.itemCode === SIN_CATEGORIA.itemCode);
   assert.equal(sinCategoria, undefined, "producto sin categoría queda excluido");
 
-  // La disponibilidad pública es SOLO el bucket agregado: el desglose por sede
-  // (`locationId`, `nombre`, `tipo`) son datos internos de la operación y no
-  // pueden viajar en una respuesta anónima.
+  // La disponibilidad agregada sigue siendo SOLO el bucket; el desglose interno
+  // (`disponibilidadPorSucursal` con `locationId`/`tipo`/`etiqueta`) nunca viaja.
   assert.ok(typeof hilux.disponibilidad.nivel === "string", "el público sí recibe el bucket de disponibilidad");
-  assert.deepEqual(hilux.disponibilidadPorSucursal, [], "el público nunca recibe el desglose por sede");
+  assert.deepEqual(hilux.disponibilidadPorSucursal, [], "el público nunca recibe el desglose interno por sede");
+
+  // El desglose PÚBLICO usa el DTO mínimo (`disponibilidadPorSucursalPublica`):
+  // solo sucursales TIENDA y solo sucursalId + nombre + nivel.
+  assert.ok(Array.isArray(hilux.disponibilidadPorSucursalPublica), "el público recibe el desglose seguro por sede");
+  assert.equal(hilux.disponibilidadPorSucursalPublica.length, 2, "dos sucursales TIENDA (A y B)");
+  const idsPublicos = hilux.disponibilidadPorSucursalPublica.map((s: any) => s.sucursalId);
+  assert.ok(idsPublicos.includes(ctx.locationIds.tienda), "incluye TIENDA A (stock 5)");
+  assert.ok(idsPublicos.includes(tiendaBId), "incluye TIENDA B (stock 77)");
+  assert.equal(idsPublicos.includes(ctx.locationIds.almacen), false, "el almacén nunca es punto de recogida público");
+
+  const tiendaAPublica = hilux.disponibilidadPorSucursalPublica.find((s: any) => s.sucursalId === ctx.locationIds.tienda);
+  assert.equal(tiendaAPublica.nivel, "POCAS_UNIDADES", "stock 5 → bucket 'Pocas unidades', jamás la cifra");
+  const tiendaBPublica = hilux.disponibilidadPorSucursalPublica.find((s: any) => s.sucursalId === tiendaBId);
+  assert.equal(tiendaBPublica.nivel, "DISPONIBLE", "stock 77 → bucket 'Disponible', jamás la cifra");
+
+  for (const s of hilux.disponibilidadPorSucursalPublica) {
+    assert.deepEqual(Object.keys(s).sort(), ["nivel", "nombre", "sucursalId"], "DTO público mínimo sin internals");
+    assert.equal(s.stock, undefined, `${s.nombre}: sin stock`);
+    assert.equal(s.locationId, undefined, `${s.nombre}: sin locationId`);
+    assert.equal(s.tipo, undefined, `${s.nombre}: sin tipo`);
+    assert.equal(s.minStock, undefined, `${s.nombre}: sin minStock`);
+  }
 
   // Red de seguridad: ningún candidato público puede traer identificadores de sede.
   for (const cand of body.candidatos) {
     assert.equal(cand.locationId, undefined, `${cand.itemCode}: sin locationId`);
-    assert.equal(cand.nombre, undefined, `${cand.itemCode}: sin nombre de sede`);
+    assert.equal(cand.nombre, undefined, `${cand.itemCode}: sin nombre de sede a nivel raíz`);
     assert.equal(cand.tipo, undefined, `${cand.itemCode}: sin tipo de sede`);
     assert.ok(!JSON.stringify(cand).includes(`"locationId"`), `${cand.itemCode}: sin locationId en el JSON`);
   }
@@ -280,7 +304,52 @@ test("público: confianza baja → 422 VISION_BAJA_CONFIANZA", async () => {
     assert.equal(res.status, 422);
     const body: any = await res.json();
     assert.equal(body.codigo, "VISION_BAJA_CONFIANZA");
+    // Baja confianza es el caso donde más ayuda al usuario: explica cómo mejorar la foto.
+    assert.ok(Array.isArray(body.recomendaciones) && body.recomendaciones.length > 0, "baja confianza debe recomendar cómo capturar");
   });
+});
+
+test("público: el contrato híbrido expone evidences de OCR sin romper nada previo", async () => {
+  const { fd } = fdConImagen({ marca: "Toyota", modelo: "Hilux", anio: "2020" });
+  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
+  assert.equal(res.status, 200);
+  const body: any = await res.json();
+
+  // Evidencia OCR a nivel de detección: siempre presente, puede venir vacía.
+  assert.ok(Array.isArray(body.deteccion.textoDetectado), "textoDetectado siempre es un arreglo");
+  assert.ok(Array.isArray(body.deteccion.codigosDetectados), "codigosDetectados siempre es un arreglo");
+
+  // Evidencia por candidato: score + trazabilidad. 0 significa "sin evidencia".
+  for (const cand of body.candidatos) {
+    assert.equal(typeof cand.scoreEvidencia, "number", `${cand.itemCode}: scoreEvidencia numérico`);
+    assert.ok(Array.isArray(cand.evidencias), `${cand.itemCode}: evidencias es un arreglo`);
+    for (const ev of cand.evidencias) {
+      assert.ok(["oemCode", "factoryCode", "itemCode"].includes(ev.campo), "campo de evidencia válido");
+      assert.ok(["exacta", "parcial"].includes(ev.tipo), "tipo de evidencia válido");
+      assert.equal(typeof ev.peso, "number");
+      assert.ok(!("verificada" in ev), "la evidencia OCR nunca declara compatibilidad verificada");
+    }
+  }
+});
+
+test("público: la evidencia de código no puede cambiar una compatibilidad no verificada", async () => {
+  const { fd } = fdConImagen({ marca: "Toyota", modelo: "Hilux", anio: "2020" });
+  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
+  const body: any = await res.json();
+
+  // Aunque un candidato acumule evidencia de código, `verificada` solo depende de
+  // marca/modelo/año contra el catálogo. Es la garantía de que no se inventa
+  // compatibilidad a partir de un texto leído con OCR.
+  for (const cand of body.candidatos) {
+    if (cand.scoreEvidencia > 0) {
+      const marca = cand.brand?.toLowerCase() ?? "";
+      const modelo = cand.model?.toLowerCase() ?? "";
+      const coincide = marca.includes("toyota") && modelo.includes("hilux");
+      if (!coincide) {
+        assert.equal(cand.compatibilidad.verificada, false, `${cand.itemCode}: evidencia sin verificación de vehículo`);
+      }
+    }
+  }
 });
 
 test("público: sin clasificación (ninguna) → 422 VISION_NO_CLASIFICADA", async () => {
@@ -290,6 +359,11 @@ test("público: sin clasificación (ninguna) → 422 VISION_NO_CLASIFICADA", asy
     assert.equal(res.status, 422);
     const body: any = await res.json();
     assert.equal(body.codigo, "VISION_NO_CLASIFICADA");
+    // Recomendaciones de captura: el 422 debe decir CÓMO tomar la foto, no solo
+    // que falló. Sin esto el usuario no sabe qué corregir.
+    assert.ok(Array.isArray(body.recomendaciones), "el 422 debe incluir recomendaciones");
+    assert.ok(body.recomendaciones.length >= 3, "debe incluir varias recomendaciones accionables");
+    assert.ok(body.recomendaciones.every((r: unknown) => typeof r === "string" && r.length > 0));
   });
 });
 

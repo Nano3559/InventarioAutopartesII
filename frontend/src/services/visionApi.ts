@@ -4,12 +4,15 @@ import { VisionAnalysis, VisionRequestOptions } from "../types/vision";
 export class VisionApiError extends Error {
   readonly status: number;
   readonly codigo?: string;
+  /** Recomendaciones de captura que envía el backend en los 422 de clasificación. */
+  readonly recomendaciones: string[];
 
-  constructor(status: number, codigo: string | undefined, message: string) {
+  constructor(status: number, codigo: string | undefined, message: string, recomendaciones: string[] = []) {
     super(message);
     this.name = "VisionApiError";
     this.status = status;
     this.codigo = codigo;
+    this.recomendaciones = recomendaciones;
   }
 }
 
@@ -42,6 +45,17 @@ export function mensajeErrorVision(error: unknown): string {
   return "No se pudo buscar por visión. Intenta nuevamente.";
 }
 
+/**
+ * Recomendaciones de captura del error de visión, si el backend las envió.
+ *
+ * El 422 de "no clasificada" o "baja confianza" sin decir CÓMO tomar la foto deja al
+ * usuario sin forma de corregirla, que es justo el caso donde más ayuda hacen.
+ */
+export function recomendacionesVision(error: unknown): string[] {
+  if (error instanceof VisionApiError) return error.recomendaciones;
+  return [];
+}
+
 function armarFormData(file: File, opts?: VisionRequestOptions): FormData {
   const data = new FormData();
   data.append("image", file);
@@ -54,11 +68,15 @@ function armarFormData(file: File, opts?: VisionRequestOptions): FormData {
 }
 
 function extraerErrorVision(error: unknown): VisionApiError {
-  const e = error as { response?: { status?: number; data?: { message?: string; codigo?: string } } };
+  const e = error as {
+    response?: { status?: number; data?: { message?: string; codigo?: string; recomendaciones?: unknown } };
+  };
   const status = e?.response?.status || 0;
   const codigo = e?.response?.data?.codigo || CODIGOS_POR_STATUS[status];
   const mensaje = e?.response?.data?.message || (codigo && MENSAJES[codigo]) || "Error al buscar por visión.";
-  return new VisionApiError(status, codigo, mensaje);
+  const crudo = e?.response?.data?.recomendaciones;
+  const recomendaciones = Array.isArray(crudo) ? crudo.filter((r): r is string => typeof r === "string") : [];
+  return new VisionApiError(status, codigo, mensaje, recomendaciones);
 }
 
 /**

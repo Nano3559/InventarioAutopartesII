@@ -34,7 +34,12 @@ function manejarVision(run: (req: AuthRequest) => Promise<VisionResponse>) {
       res.json(resultado);
     } catch (error) {
       if (error instanceof VisionServiceError) {
-        return res.status(error.status).json({ message: error.message, codigo: error.codigo });
+        return res.status(error.status).json({
+          message: error.message,
+          codigo: error.codigo,
+          // Aditivo: solo los 422 de clasificación adjuntan recomendaciones de captura.
+          ...(error.payload ?? {}),
+        });
       }
       logger.error("Error interno en búsqueda por visión.", { error: (error as Error)?.message });
       res.status(500).json({ message: "Error interno del servidor" });
