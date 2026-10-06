@@ -14,7 +14,7 @@ import type { VisionDeteccionRespuesta } from "../types/vision";
 
 export type EstadoConfirmacion = "confirmado" | "inconsistente" | "no_confirmado";
 
-export type EtiquetaConfirmacion = "Confirmado por 2 imágenes" | "No confirmado" | "Resultados inconsistentes";
+export type EtiquetaConfirmacion = "Confirmado por 2 imágenes" | "Identificación no confirmada" | "Resultados inconsistentes";
 
 export interface VerificacionMultiVista {
   estado: EstadoConfirmacion;
@@ -71,10 +71,10 @@ function etiquetaLegible(deteccion: VisionDeteccionRespuesta): string {
 /**
  * Aplica la regla de combinación sobre las detecciones reales.
  *
- *   1 vista                      → No confirmado
+ *   1 vista                      → Identificación no confirmada
  *   2 vistas, misma categoría    → Confirmado por 2 imágenes
  *   2 vistas, categorías         → Resultados inconsistentes
- *   2 vistas, una sin clasificar → No confirmado (se conserva la otra)
+ *   2 vistas, una sin clasificar → Identificación no confirmada (se conserva la otra)
  */
 export function combinarDetecciones(vistas: VisionDeteccionRespuesta[]): VerificacionMultiVista {
   const limpias = vistas.filter(Boolean).slice(0, 2);
@@ -82,7 +82,7 @@ export function combinarDetecciones(vistas: VisionDeteccionRespuesta[]): Verific
   if (limpias.length === 0) {
     return {
       estado: "no_confirmado",
-      etiqueta: "No confirmado",
+      etiqueta: "Identificación no confirmada",
       detalle: "No hay detecciones para comparar.",
       categoriaElegida: null,
       indiceVistaElegida: -1,
@@ -97,7 +97,7 @@ export function combinarDetecciones(vistas: VisionDeteccionRespuesta[]): Verific
     const unica = limpias[0];
     return {
       estado: "no_confirmado",
-      etiqueta: "No confirmado",
+      etiqueta: "Identificación no confirmada",
       detalle: `Resultado de una sola imagen (${etiquetaLegible(unica)}). Tomá otra foto para confirmarlo.`,
       categoriaElegida: etiquetaLegible(unica),
       indiceVistaElegida: 0,
@@ -119,7 +119,7 @@ export function combinarDetecciones(vistas: VisionDeteccionRespuesta[]): Verific
     const sinClasificar = ca ? "la segunda" : "la primera";
     return {
       estado: "no_confirmado",
-      etiqueta: "No confirmado",
+      etiqueta: "Identificación no confirmada",
       detalle: `La detección de ${sinClasificar} no pudo clasificar la pieza, así que se conserva ${etiquetaLegible(clasificada)} de la otra foto sin confirmar.`,
       categoriaElegida: etiquetaLegible(clasificada),
       indiceVistaElegida: indice,

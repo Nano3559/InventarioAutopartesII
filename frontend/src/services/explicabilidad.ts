@@ -24,10 +24,13 @@ const ETIQUETA_CAMPO: Record<string, string> = {
   itemCode: "Código de pieza",
 };
 
-/** Motivos a favor: categoría visual y evidencia de código leída por OCR. */
+/** Motivos a favor: tipo de pieza, categoría visual y evidencia de código leída por OCR. */
 function motivosCoincidencia(candidato: VisionCandidatoPublico): MotivoCandidato[] {
   const motivos: MotivoCandidato[] = [];
 
+  if (candidato.claseCoincide) {
+    motivos.push({ tipo: "ok", texto: "Tipo de pieza coincide" });
+  }
   if (candidato.categoria) {
     motivos.push({ tipo: "ok", texto: "Categoría visual coincide" });
   }
@@ -58,10 +61,14 @@ function motivosDisponibilidad(candidato: VisionCandidatoPublico): MotivoCandida
 }
 
 /** Avisos: límites honestos del resultado. */
-function motivosAviso(candidato: VisionCandidatoPublico): MotivoCandidato[] {
+function motivosAviso(candidato: VisionCandidatoPublico, hayVehiculo: boolean): MotivoCandidato[] {
   const avisos: MotivoCandidato[] = [];
 
-  if (!candidato.compatibilidad.verificada) {
+  // Con vehículo: aviso breve por tarjeta ("⚠ No verificada"). Sin vehículo el
+  // aviso NO se repite en cada producto: la UI lo globaliza con la llamada a
+  // acción "Agrega tu vehículo para verificar compatibilidad" (ver
+  // VisionResultsPanel). Repetirlo en N cards sería ruido, no información.
+  if (!candidato.compatibilidad.verificada && hayVehiculo) {
     avisos.push({ tipo: "aviso", texto: "Compatibilidad no verificada: no se comprobó contra tu vehículo" });
   }
   if (!candidato.evidencias?.length) {
@@ -74,9 +81,23 @@ function motivosAviso(candidato: VisionCandidatoPublico): MotivoCandidato[] {
   return avisos;
 }
 
+export interface OpcionesExplicacion {
+  /** false cuando la búsqueda no incluyó vehículo: la compatibilidad no se evaluó. */
+  hayVehiculo?: boolean;
+}
+
 /** Lista completa de "¿Por qué aparece este producto?". */
-export function explicarCandidato(candidato: VisionCandidatoPublico): MotivoCandidato[] {
-  return [...motivosCoincidencia(candidato), ...motivosVehiculo(candidato), ...motivosDisponibilidad(candidato), ...motivosAviso(candidato)];
+export function explicarCandidato(
+  candidato: VisionCandidatoPublico,
+  opciones?: OpcionesExplicacion
+): MotivoCandidato[] {
+  const hayVehiculo = opciones?.hayVehiculo ?? true;
+  return [
+    ...motivosCoincidencia(candidato),
+    ...motivosVehiculo(candidato),
+    ...motivosDisponibilidad(candidato),
+    ...motivosAviso(candidato, hayVehiculo),
+  ];
 }
 
 function capitalizar(texto: string): string {

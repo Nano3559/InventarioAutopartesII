@@ -35,6 +35,23 @@ export interface SucursalDisponibilidad {
   etiqueta: string;
 }
 
+/**
+ * Disponibilidad POR SUCURSAL del contrato PÚBLICO (recogida). Es el equivalente
+ * mínimo y seguro del desglose interno: nombre de la sucursal + bucket de
+ * disponibilidad. JAMÁS lleva stock, `locationId`, `tipo` ni `etiqueta`.
+ */
+export interface SucursalDisponiblePublica {
+  sucursalId: number;
+  nombre: string;
+  nivel: AvailabilityLevel;
+}
+
+/** Convierte un inventario a su bucket público de recogida (sin stock). */
+export function sucursalDisponiblePublica(sucursalId: number, nombre: string, stock: number): SucursalDisponiblePublica {
+  const { nivel } = availabilityView(stock);
+  return { sucursalId, nombre, nivel };
+}
+
 export interface StockPorSucursal {
   locationId: number;
   nombre: string;

@@ -221,6 +221,54 @@ Regla de diseño: **una línea sin respaldo es peor que no tener línea.** Si el
 
 ---
 
+## 6.1 Experiencia de usuario final (UX del escaneo)
+
+Decisión de producto única para todo el modo: **nunca se imprime `n/d`**. Si un dato no se pudo producir, se dice explícitamente lo que sí se sabe o se omite.
+
+### La calidad se mide en TODOS los paths
+
+Causa raíz corregida: el flujo de **subir archivo** (`analizarImagen` en `PublicProductsPage.tsx`) no medía calidad — solo la cámara. Por eso una foto subida por archivo mostraba *"Calidad n/d"*. Hoy ambos caminos pasan por el mismo helper `analizarYBuscar(file, vehiculo)`, que:
+
+1. resetea el aviso y la búsqueda pendiente anteriores (no se arrastra la métrica de otra foto);
+2. mide con `analizarCalidadImagen`;
+3. si el veredicto es `mala`, advierte **antes** de gastar la inferencia, sin bloquear (`Buscar igualmente` / `Tomar otra foto`).
+
+El estado multi-vista (`haySegundaFoto`/`vistaPrimera`) queda intacto: la segunda foto sigue confirmando contra la primera.
+
+### Jerarquía del panel
+
+- **Desktop:** dos columnas (`lg:grid-cols-[42%_1fr]`). Izquierda la foto con su *bounding box*; derecha la identificación (Pieza identificada con Confianza del modelo, Categoría, Proveedor, OCR, Calidad y Vehículo opcional). **Mobile:** apilado, identificación primero.
+- **Vehículo como bloque propio** debajo del resultado principal: "¿Para qué vehículo lo buscas?" con `marca + modelo + año`. El botón **"Verificar compatibilidad"** se habilita solo con los tres campos; mientras faltan, se muestra la ayuda: *"La foto identifica la pieza sin depender del vehículo, pero la compatibilidad solo se confirma si indicás marca, modelo y año."*
+- **Mejores coincidencias:** Top 3 con la primera destacada y etiquetada **"Mejor coincidencia"**. El resto queda en `Ver otros N resultados` / `Mostrar menos`.
+- **Footer sticky** que solo ofrece `Tomar otra foto` y `Cerrar`.
+
+### Copy honesto de compatibilidad
+
+| Situación | Chip por tarjeta | Global |
+|---|---|---|
+| verificada | `✓ Compatible` | conteo `X de N ...` |
+| con vehículo, sin verificar | `⚠ No verificada` | idem |
+| sin vehículo | `Vehículo no indicado` | **"Agrega tu vehículo para verificar compatibilidad."** |
+
+Sin vehículo el aviso **no se repite por tarjeta** (sería ruido): la llamada a la acción es única y global (`explicabilidad.ts` solo emite el aviso por candidato cuando `hayVehiculo`).
+
+### Score y evidencia
+
+- El chip con evidencia de código dice **"Coincidencia por código"** (el número vive en el `title`, nunca se anuncia un score 0). `claseCoincide` → *"Coincidencia por tipo de pieza"*; si nada, *"Coincidencia por categoría"*.
+- El tooltip separa las dos fuentes: *"Este score corresponde al motor de búsqueda del catálogo. No es la confianza del modelo de IA."*
+- `ExplainCard` muestra 2 motivos a la vista y el resto tras `Ver evidencias (N)`.
+
+### Detalles colapsables
+
+- **OCR:** resumen `OCR · N código(s) detectado(s)` + `Ver códigos`, colapsado por defecto (el contenido sigue en el DOM para los tests).
+- **Pipeline técnico:** `Ver detalles del análisis` (antes "Ver proceso de análisis") cierra la tira Foto → Control de calidad → YOLO → OCR → Catálogo → Compatibilidad → Disponibilidad. Sin medición de calidad el paso se rotula **"Control de calidad · no medido"**.
+
+### Aterrizaje a la venta
+
+El bloque autónomo "¿Cómo la recibís?" desapareció: Modalidad, Sucursal, Cantidad y (en delivery) Lugar/Entregar a viven dentro de **"Preparar venta"**, que aparece solo al seleccionar un candidato.
+
+---
+
 ## 7. Limitaciones (decir esto en la defensa es parte de la defensa)
 
 1. **No hay dataset ni ground truth.** En todo el historial Git de este repositorio solo existen tres CSV de metadatos de anotación, sin imágenes ni labels. No se pueden calcular confusion matrix, P/R ni mAP nuevos.
@@ -231,6 +279,33 @@ Regla de diseño: **una línea sin respaldo es peor que no tener línea.** Si el
 6. **El OCR identifica, no certifica compatibilidad.**
 7. **La latencia:** el OCR en caliente suma en torno a `319 ms` (p50) en una foto de 120 KB, pero corre en paralelo con el clasificador, por lo que sobre el request completo el costo adicional medido fue de `0 ms`. Un solo worker compartido puede convertirse en cuello de botella bajo concurrencia alta. La calidad de imagen se mide en el navegador y no agrega latencia de red.
 8. **El modelo sigue siendo V3.** No se modificó ni se reclama superioridad de ninguna versión V4, porque no hay con qué demostrarla.
+
+---
+
+## 8A. Disponibilidad por sucursal (recoger) en la UX compacta
+
+**Fuente única y contrato público seguro.** Cada candidato lleva la disponibilidad por sucursal derivada del mismo origen que el flujo interno (`backend/src/modules/vision/availability.ts`), pero el endpoint público **no reabre** `disponibilidadPorSucursal` (sigue llegando `[]`). Se expone un DTO mínimo y específico:
+
+```json
+"disponibilidadPorSucursalPublica": [
+  { "sucursalId": 101, "nombre": "Tienda 1", "nivel": "DISPONIBLE" }
+]
+```
+
+- `nivel`: `DISPONIBLE` (>10 unidades) · `POCAS_UNIDADES` (>0) · `NO_DISPONIBLE` (0).
+- **Solo** sucursales de tipo `TIENDA` son puntos de recogida; un almacén jamás aparece como opción de recoger.
+- **El público nunca ve** el número exacto de unidades, `totalStock`, `locations`, inventarios internos ni campos financieros (`minStock`, costos, `price2`). El bucket es el máximo detalle.
+- El contrato interno (`disponibilidadPorSucursal` + `stockPorSucursal`) no cambia y el serializador interno no emite el campo público.
+
+**Comportamiento de la UI compacta** (`frontend/src/components/vision/DisponibilidadSucursales.tsx` + panel):
+
+- Cada card muestra una sección **DISPONIBILIDAD** propia (hasta 3 sucursales, con glifo 🟢/🟡/⚪ y su estado). Si hay más de 3, un botón "Ver todas las sucursales (N)" expande; sin sucursales de recogida, "No disponible para recogida actualmente."
+- El bloque "Preparar venta" solo aparece al pulsar **"Seleccionar para venta"** en la card. No vuelve el bloque largo global de rondas anteriores.
+- En **recoger**, el selector lista solo sucursales válidas (nivel ≠ `NO_DISPONIBLE`) y auto-prefiere la primera; en **delivery** no hay selector de sucursal.
+- La cantidad se ajusta con stepper (− +). El botón final es **"Continuar con venta"**. La UI de recogida evita la palabra "stock" (usa "disponible / sucursal"); la etiqueta de estado global que manda el backend (p. ej. "Sin stock") se muestra solo como estado del producto, nunca como cantidad.
+- El `saleDraft` (localStorage `borrador_venta_vision`) conserva `itemCode`, `modalidad`, `sucursalId` y `sucursalNombre` exactamente como lo espera SalesPage (WB-8); delivery guarda `lugarEntrega`/`paraQuien` sin sucursal.
+
+**Pruebas:** `frontend/src/components/vision/__tests__/VisionResultsPanel.disponibilidad.test.tsx` (3 sucursales, estados 🟢🟡⚪, nunca stock numérico, selector solo válidas, conserva sucursalId, delivery sin sucursal, independencia compatibilidad/disponibilidad, Top 3, expandir, caso vacío). En backend: `availability.test.ts` y `vision.routes.itest.ts` verifican el DTO mínimo, los buckets y que el almacén no sea punto de recogida.
 
 ---
 
@@ -287,10 +362,12 @@ La tira de chips superior (`PipelineStrip`) muestra este recorrido con valores r
 | `frontend/src/components/vision/ExplainCard.tsx` | "¿Por qué aparece este producto?" |
 | `frontend/src/components/vision/PipelineStrip.tsx` | tira del recorrido |
 | `frontend/src/components/vision/DetectionBox.tsx` | bounding box |
+| `frontend/src/components/vision/DisponibilidadSucursales.tsx` | sección de disponibilidad por sucursal (pública) |
 | `frontend/src/components/vision/VisionResultsPanel.tsx` | integración |
 | `frontend/src/pages/PublicProductsPage.tsx` | flujo de captura, calidad y 2.ª foto |
 | `backend/src/shared/utils/ocr.ts` | worker Tesseract compartido |
+| `backend/src/modules/vision/availability.ts` | única fuente de disponibilidad, buckets y DTO público |
 | `backend/src/modules/vision/hybridEvidence.ts` | pesos, evidencia y ranking |
 | `backend/src/modules/vision/vision.service.ts` | orquestación del pipeline |
 
-Tests: `frontend/src/services/__tests__/{imageQuality,multiView,explicabilidad}.test.ts` y `frontend/src/components/vision/__tests__/VisionResultsPanel.escaneo.test.tsx`.
+Tests: `frontend/src/services/__tests__/{imageQuality,multiView,explicabilidad}.test.ts` y `frontend/src/components/vision/__tests__/VisionResultsPanel.{escaneo,hibrido,ranking,ux,disponibilidad}.test.tsx` (más `frontend/src/pages/__tests__/PublicProductsPage.vision.test.tsx`).

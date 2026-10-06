@@ -6,10 +6,11 @@ import { visionConfig } from "./vision.config";
 import { visionProvider, withVisionTimeout } from "./vision.provider";
 import { mapearCategoria } from "./categoryMapping";
 import { normalizarTexto } from "./normalize";
-import { availabilityView, DisponibilidadView, SucursalDisponibilidad, StockPorSucursal } from "./availability";
+import { availabilityView, DisponibilidadView, SucursalDisponibilidad, StockPorSucursal, SucursalDisponiblePublica, sucursalDisponiblePublica } from "./availability";
 import { resolveLocationScope, tieneAlcanceGlobal } from "../../shared/utils/scope";
 import { CompatibilityProviderFactory, CompatibilidadConsulta, CompatibilidadProducto, VehiculoQuery } from "./compatibility";
-import { EvidenciaCodigo, ResultadoEvidencias, evaluarYRanquear, extraerCodigos, extraerTokensSignificativos, logEvidenciasGlobales } from "./hybridEvidence";
+import { EvidenciaCodigo, NivelCoincidencia, ResultadoEvidencias, evaluarYRanquear, extraerCodigos, extraerTokensSignificativos, logEvidenciasGlobales, nivelCoincidenciaDe } from "./hybridEvidence";
+import { resolverClaseVisual } from "./claseVisual";
 import { ocrExtract } from "../../shared/utils/ocr";
 import { logger } from "../../shared/utils/logger";
 
@@ -58,9 +59,27 @@ export interface CandidatoVisionBase {
   scoreEvidencia: number;
   /** Trazabilidad del puntaje: qué campo coincidió, con qué código y si fue exacta o parcial. */
   evidencias: EvidenciaCodigo[];
+  /**
+   * Grado de coincidencia real de este candidato con la foto. `categoria` significa
+   * que el único vínculo es compartir categoría con la clase detectada: la interfaz
+   * debe decir eso en lugar de anunciar un score 0.
+   */
+  nivelCoincidencia: NivelCoincidencia;
+  /**
+   * Prioridad 5 del Ranking V2: el nombre del producto corresponde a la pieza que el
+   * modelo detectó (no solo a su categoría).
+   */
+  claseCoincide: boolean;
   compatibilidad: CompatibilidadCandidato;
   disponibilidad: DisponibilidadView;
   disponibilidadPorSucursal: Array<SucursalDisponibilidad>;
+  /**
+   * Desglose PÚBLICO de disponibilidad para recogida, por sucursal TIENDA.
+   * Solo `sucursalId` + `nombre` + bucket seguro (nunca stock, ni `locationId`,
+   * ni `tipo`). Solo presente en modo público: el interno usa el desglose
+   * completo `disponibilidadPorSucursal`/`stockPorSucursal`.
+   */
+  disponibilidadPorSucursalPublica?: Array<SucursalDisponiblePublica>;
 }
 
 export interface CandidatoVisionInterno extends CandidatoVisionBase {
@@ -147,17 +166,29 @@ function disponibilidadPorSucursalDe(inventarios: ProductoConRelation["inventori
 }
 
 /**
+ * Disponibilidad por sucursal del contrato PÚBLICO. Reutiliza la MISMA regla que
+ * `disponibilidadPorSucursalDe` (solo TIENDAS, bucket seguro), pero emite el DTO
+ * mínimo `SucursalDisponiblePublica` para no exponer datos internos de la sede.
+ */
+function disponibilidadPorSucursalPublicaDe(inventarios: ProductoConRelation["inventories"]): SucursalDisponiblePublica[] {
+  return inventarios
+    .filter((inv) => inv.location.type === "TIENDA")
+    .slice(0, MAX_SUCURSALES_POR_CANDIDATO)
+    .map((inv) => sucursalDisponiblePublica(inv.locationId, inv.location.name, inv.stock));
+}
+
+/**
  * Respuesta PÚBLICA (anónimo). El contrato público solo puede revelar la
- * disponibilidad agregada (`disponibilidad`, que es un bucket tipo
- * "DISPONIBLE/ÚLTIMAS_UNIDADES/AGOTADO"), nunca el stock exacto ni las
+ * disponibilidad por sucursal a través del DTO mínimo `disponibilidadPorSucursalPublica`
+ * (`sucursalId`, `nombre` y el bucket seguro), nunca el stock exacto ni las
  * ubicaciones internas.
  *
- * Por eso `disponibilidadPorSucursal` viaja VACÍO: cada entrada de ese arreglo
- * lleva `locationId`, `nombre` y `tipo` de la sede, que son datos internos de la
- * operación. Se conserva el campo (en vez de borrarlo) para no romper el tipo
- * `CandidatoVisionBase` ni a los consumidores del catálogo público, que leen
- * `disponibilidad` y `precio_unitario`. Es el mismo criterio que aplica
- * `serializeProductoPublico` de búsqueda por imagen.
+ * Por eso el desglose interno `disponibilidadPorSucursal` viaja VACÍO: cada
+ * entrada de ese arreglo lleva `locationId`, `tipo` y `etiqueta`, que son datos
+ * internos de la operación. Se conserva el campo (en vez de borrarlo) para no
+ * romper el tipo `CandidatoVisionBase` ni a los consumidores del catálogo
+ * público, que leen `disponibilidad` y `precio_unitario`. Es el mismo criterio
+ * que aplica `serializeProductoPublico` de búsqueda por imagen.
  */
 function serializarPublico(producto: ProductoConRelation, compatibilidad: CompatibilidadProducto, evidencia: ResultadoEvidencias): CandidatoVisionBase {
   return {
@@ -172,9 +203,12 @@ function serializarPublico(producto: ProductoConRelation, compatibilidad: Compat
     price1: Number(producto.price1),
     scoreEvidencia: evidencia.score,
     evidencias: evidencia.evidencias,
+    nivelCoincidencia: nivelCoincidenciaDe(evidencia),
+    claseCoincide: evidencia.claseCoincide,
     compatibilidad,
     disponibilidad: disponibilidadDe(producto.inventories),
     disponibilidadPorSucursal: [],
+    disponibilidadPorSucursalPublica: disponibilidadPorSucursalPublicaDe(producto.inventories),
   };
 }
 
@@ -206,6 +240,8 @@ function serializarInterno(
     price1: Number(producto.price1),
     scoreEvidencia: evidencia.score,
     evidencias: evidencia.evidencias,
+    nivelCoincidencia: nivelCoincidenciaDe(evidencia),
+    claseCoincide: evidencia.claseCoincide,
     compatibilidad,
     disponibilidad: disponibilidadDe(visibles),
     disponibilidadPorSucursal: disponibilidadPorSucursalDe(visibles),
@@ -313,14 +349,19 @@ export async function generarRespuestaVision(opts: OpcionVision): Promise<Vision
 
     const evaluados = await compatProvider.evaluarCandidatos(products, vehiculo ?? null);
 
-    // Evidencia OCR por candidato y orden final combinado (ver evaluarYRanquear:
-    // compatibilidad verificada > evidencia de código > puntaje de compatibilidad).
+    // Clase visual detectada, resuelta SOLO contra las 8 clases reales del modelo.
+    // Es lo que permite que el Alternador separe al "Alternador" de los demás
+    // productos de "Eléctrico" aunque nadie haya leído un código en la foto.
+    const claseDetectada = resolverClaseVisual(top.categoria);
+
+    // Evidencia por candidato y orden final (Ranking V2: ver evaluarYRanquear).
     const conEvidencia = evaluarYRanquear(
       evaluados.map((entry) => ({
         producto: entry.candidato as unknown as ProductoConRelation,
         compatibilidad: entry.compatibilidad,
       })),
-      codigosDetectados
+      codigosDetectados,
+      { clase: claseDetectada }
     );
 
     const topCandidatos = conEvidencia.slice(0, MAX_CANDIDATOS_RESPUESTA);

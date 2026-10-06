@@ -16,46 +16,47 @@ const TEXTO_ESTADO: Record<string, string> = {
 };
 
 /**
- * Tira compacta que hace visible el pipeline de la demo en una sola pasada:
- * foto → bbox → YOLO → OCR → calidad → candidatos → evidencias → stock.
+ * Recorrido del análisis, pensado para explicación técnica:
+ * Foto → Control de calidad → YOLO → OCR → Catálogo → Compatibilidad → Disponibilidad.
  *
- * Un solo renglón de chips. No reemplaza a los componentes, solo resume el
- * recorrido para que el docente pueda seguirlo sin que le cuenten pasos sueltos.
+ * La página lo envuelve en un `<details>` colapsado por defecto ("Ver detalles
+ * del análisis"): no ocupa el encabezado principal, solo se abre quien quiere
+ * seguir los pasos de la defensa.
  */
 export default function PipelineStrip({ analisis, deteccion, calidad, verificacion }: Props) {
   const codigos = deteccion.codigosDetectados ?? [];
-  const hayEvidencia = analisis.candidatos.some((c) => (c.evidencias?.length ?? 0) > 0);
   const hayDisponibles = analisis.candidatos.some((c) => c.disponibilidad?.nivel !== "NO_DISPONIBLE");
+  const compatOk = (analisis.compatibilidad.verificadas ?? 0) > 0;
 
   const etapas: Array<{ etiqueta: string; estado: "ok" | "parcial" | "vacio" }> = [
     { etiqueta: "Foto", estado: "ok" },
-    { etiqueta: deteccion.boundingBox ? "BoundingBox" : "Imagen completa", estado: deteccion.boundingBox ? "ok" : "parcial" },
+    {
+      // Nunca "n/d": si la medición no se pudo hacer se dice explícitamente.
+      etiqueta: calidad ? `Control de calidad · ${TEXTO_ESTADO[calidad.estado]}` : "Control de calidad · no medido",
+      estado: calidad ? (calidad.estado === "buena" ? "ok" : "parcial") : "vacio",
+    },
     {
       etiqueta: `YOLO · ${Math.round(deteccion.confianza * 100)}%`,
       estado: deteccion.confianzaBaja ? "parcial" : "ok",
     },
     { etiqueta: codigos.length ? `OCR · ${codigos.length} código(s)` : "OCR · sin códigos", estado: codigos.length ? "ok" : "vacio" },
-    {
-      etiqueta: calidad ? `Calidad · ${TEXTO_ESTADO[calidad.estado]}` : "Calidad · n/d",
-      estado: calidad ? (calidad.estado === "buena" ? "ok" : "parcial") : "vacio",
-    },
     { etiqueta: `${analisis.candidatos.length} candidato(s)`, estado: analisis.candidatos.length ? "ok" : "vacio" },
-    { etiqueta: hayEvidencia ? "Evidencias" : "Sin evidencias", estado: hayEvidencia ? "ok" : "vacio" },
-    { etiqueta: hayDisponibles ? "Disponible" : "Sin stock", estado: hayDisponibles ? "ok" : "parcial" },
+    { etiqueta: compatOk ? "Compatibilidad · verificada" : "Compatibilidad · no evaluada", estado: compatOk ? "ok" : "parcial" },
+    { etiqueta: hayDisponibles ? "Disponibilidad · disponible" : "Disponibilidad · sin stock", estado: hayDisponibles ? "ok" : "parcial" },
   ];
 
   const badgeEstado = (estado: "ok" | "parcial" | "vacio") =>
     estado === "ok"
-      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
       : estado === "parcial"
-        ? "bg-amber-50 text-amber-700 border-amber-200"
-        : "bg-slate-100 text-slate-500 border-slate-200";
+        ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
+        : "border-white/[0.06] bg-white/[0.03] text-gray-500";
 
   return (
     <nav aria-label="Pipeline del análisis" className="flex flex-wrap items-center gap-1.5">
       {etapas.map((e, i) => (
         <span key={e.etiqueta} className="flex items-center gap-1.5">
-          {i > 0 && <span className="text-[10px] text-slate-300">→</span>}
+          {i > 0 && <span className="text-[10px] text-gray-600">→</span>}
           <span
             className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${badgeEstado(e.estado)}`}
             data-estado={e.estado}
@@ -67,16 +68,16 @@ export default function PipelineStrip({ analisis, deteccion, calidad, verificaci
 
       {verificacion?.estado === "confirmado" && (
         <>
-          <span className="text-[10px] text-slate-300">→</span>
-          <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
+          <span className="text-[10px] text-gray-600">→</span>
+          <span className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">
             Confirmado con 2 ángulos
           </span>
         </>
       )}
       {verificacion?.estado === "inconsistente" && (
         <>
-          <span className="text-[10px] text-slate-300">→</span>
-          <span className="rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+          <span className="text-[10px] text-gray-600">→</span>
+          <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
             Resultados inconsistentes
           </span>
         </>

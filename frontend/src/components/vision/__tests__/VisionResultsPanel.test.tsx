@@ -31,22 +31,23 @@ const resultado: VisionAnalysis = {
       brand: "Bosch",
       model: "Corolla",
       year: "2018",
-      image: "freno.jpg",
+image: "freno.jpg",
       categoria: "frenos",
       price1: 120.5,
+      nivelCoincidencia: "fuerte",
+      claseCoincide: false,
       compatibilidad: { verificada: true, score: 8, coincidencias: ["freno"], nota: "" },
       disponibilidad: { nivel: "DISPONIBLE", etiqueta: "Disponible" },
-      disponibilidadPorSucursal: [
-        { locationId: 1, nombre: "Tienda Norte", tipo: "TIENDA", nivel: "DISPONIBLE", etiqueta: "Disponible" },
-      ],
+      disponibilidadPorSucursal: [],
+      disponibilidadPorSucursalPublica: [{ sucursalId: 1, nombre: "Tienda Norte", nivel: "DISPONIBLE" }],
     },
   ],
   compatibilidad: {
     consultada: false,
-fuente: "base_datos_interna",
-  metodologia: "baseline-catalog",
+    fuente: "base_datos_interna",
+    metodologia: "baseline-catalog",
     consultadoEn: "2026-01-01T00:00:00.000Z",
-    vehiculo: null,
+    vehiculo: { marca: "Toyota", modelo: "Corolla", anio: "2018" },
     verificadas: 1,
     noVerificadas: 0,
     nota: "",
@@ -91,7 +92,6 @@ describe("VisionResultsPanel", () => {
   it("muestra indicador de carga mientras busca", () => {
     renderPanel({ loading: true });
     expect(screen.getByText("Analizando imagen...")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /buscando/i })).toBeDisabled();
   });
 
   it("muestra el error y permite repetir la foto", () => {
@@ -104,7 +104,7 @@ describe("VisionResultsPanel", () => {
 
   it("notifica onVehiculoChange al editar los campos del vehículo", () => {
     const onVehiculoChange = vi.fn();
-    renderPanel({ onVehiculoChange });
+    renderPanel({ resultado, onVehiculoChange });
 
     fireEvent.change(screen.getByLabelText("Marca del vehículo"), { target: { value: "Honda" } });
     expect(onVehiculoChange).toHaveBeenCalledWith("marca", "Honda");
@@ -113,30 +113,40 @@ describe("VisionResultsPanel", () => {
   it("muestra candidatos con compatibilidad y disponibilidad", () => {
     renderPanel({ resultado });
 
-    expect(screen.getByText("Confianza del modelo 94%")).toBeInTheDocument();
+    expect(screen.getByTestId("vision-confianza-modelo").textContent).toBe("94%");
+    expect(screen.getByText("Pieza identificada")).toBeInTheDocument();
     expect(screen.getByText("Zapata de freno trasera")).toBeInTheDocument();
     expect(screen.getAllByText("Disponible").length).toBeGreaterThan(0);
     expect(screen.getByText("Bs. 120.50")).toBeInTheDocument();
-    expect(screen.getByText("1 de 1 candidatos mostrados verifican compatibilidad")).toBeInTheDocument();
+    expect(screen.getByText(/1 de 1 candidatos verifican compatibilidad con Toyota Corolla 2018/)).toBeInTheDocument();
   });
 
   it("muestra selector de entrega con sucursales y notifica el cambio", () => {
     const onCambiarEntrega = vi.fn();
     renderPanel({ resultado, onCambiarEntrega });
 
+    fireEvent.click(screen.getByRole("button", { name: "Seleccionar para venta" }));
+
     expect(screen.getByLabelText("Modalidad de entrega")).toBeInTheDocument();
     expect(screen.getByLabelText("Sucursal de entrega")).toBeInTheDocument();
-    expect(screen.getByText("Tienda Norte")).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Tienda Norte" })).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Modalidad de entrega"), { target: { value: "delivery" } });
     expect(onCambiarEntrega).toHaveBeenCalledWith({ modalidad: "delivery", sucursalId: null });
   });
 
-  it("ejecuta onBuscar al presionar Buscar", () => {
+  it("ejecuta onBuscar al verificar compatibilidad con vehículo completo", () => {
     const onBuscar = vi.fn();
-    renderPanel({ onBuscar });
-    fireEvent.click(screen.getByRole("button", { name: "Buscar" }));
+    renderPanel({ resultado, onBuscar, vehiculo: { marca: "Toyota", modelo: "Corolla", anio: "2018" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verificar compatibilidad" }));
     expect(onBuscar).toHaveBeenCalled();
+  });
+
+  it("deshabilita 'Verificar compatibilidad' sin marca, modelo y año completos", () => {
+    const onBuscar = vi.fn();
+    renderPanel({ resultado, onBuscar, vehiculo: { marca: "Toyota", modelo: "", anio: "" } });
+    expect(screen.getByRole("button", { name: "Verificar compatibilidad" })).toBeDisabled();
+    expect(screen.getByTestId("vision-vehiculo-ayuda")).toBeInTheDocument();
   });
 
   it("cierra el panel al presionar el botón de cerrar", () => {
@@ -154,8 +164,9 @@ describe("VisionResultsPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Seleccionar para venta" }));
     expect(screen.getByText("Seleccionado")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Cantidad a preparar"), { target: { value: "3" } });
-    fireEvent.click(screen.getByRole("button", { name: "Preparar venta" }));
+    fireEvent.click(screen.getByRole("button", { name: "Aumentar cantidad" }));
+    fireEvent.click(screen.getByRole("button", { name: "Aumentar cantidad" }));
+    fireEvent.click(screen.getByRole("button", { name: "Continuar con venta" }));
 
     expect(onLlevarAVenta).toHaveBeenCalledTimes(1);
     const borrador = onLlevarAVenta.mock.calls[0][0];
@@ -176,7 +187,7 @@ describe("VisionResultsPanel", () => {
 
     fireEvent.change(screen.getByLabelText("Lugar de entrega"), { target: { value: "Zona Sur, La Paz" } });
     fireEvent.change(screen.getByLabelText("Entregar a"), { target: { value: "María" } });
-    fireEvent.click(screen.getByRole("button", { name: "Preparar venta" }));
+    fireEvent.click(screen.getByRole("button", { name: "Continuar con venta" }));
 
     const borrador = onLlevarAVenta.mock.calls[0][0];
     expect(borrador.entrega).toEqual({
@@ -196,9 +207,8 @@ describe("VisionResultsPanel", () => {
         {
           ...resultado.candidatos[0],
           disponibilidad: { nivel: "NO_DISPONIBLE", etiqueta: "Sin stock" },
-          disponibilidadPorSucursal: [
-            { locationId: 1, nombre: "Tienda Norte", tipo: "TIENDA", nivel: "NO_DISPONIBLE", etiqueta: "Sin stock" },
-          ],
+          disponibilidadPorSucursal: [],
+          disponibilidadPorSucursalPublica: [{ sucursalId: 1, nombre: "Tienda Norte", nivel: "NO_DISPONIBLE" }],
         },
       ],
     };
@@ -206,7 +216,7 @@ describe("VisionResultsPanel", () => {
     renderPanel({ resultado: sinStockResultado, onLlevarAVenta });
 
     fireEvent.click(screen.getByRole("button", { name: "Seleccionar para venta" }));
-    expect(screen.getByText("Sin sucursales con stock")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Preparar venta" })).toBeDisabled();
+    expect(screen.getByText("Sin sucursales disponibles")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Continuar con venta" })).toBeDisabled();
   });
 });

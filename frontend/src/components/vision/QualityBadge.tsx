@@ -1,76 +1,131 @@
+import { useState } from "react";
+import { Camera, AlertTriangle } from "lucide-react";
 import type { ReporteCalidad } from "../../services/imageQuality";
 
-const ESTILO_ESTADO: Record<ReporteCalidad["estado"], { chip: string; punto: string; texto: string }> = {
-  buena: { chip: "bg-emerald-50 text-emerald-700 border-emerald-200", punto: "bg-emerald-500", texto: "Buena" },
-  regular: { chip: "bg-amber-50 text-amber-700 border-amber-200", punto: "bg-amber-500", texto: "Regular" },
-  mala: { chip: "bg-red-50 text-red-700 border-red-200", punto: "bg-red-500", texto: "Mala" },
+const ESTILO_ESTADO: Record<ReporteCalidad["estado"], { chip: string; texto: string; expande: boolean }> = {
+  buena: { chip: "border-emerald-500/30 bg-emerald-500/10", texto: "Calidad buena", expande: false },
+  regular: { chip: "border-amber-500/30 bg-amber-500/10", texto: "Calidad regular", expande: true },
+  mala: { chip: "border-red-500/30 bg-red-500/10", texto: "La imagen puede reducir la precisión", expande: true },
 };
 
 interface Props {
   calidad: ReporteCalidad | null;
+  /** Permite ofrecer "Tomar otra foto" cuando la foto es claramente mala. */
+  onRepetirFoto?: () => void;
+  /** Re-lanza la búsqueda con la misma foto ("Buscar igualmente"). Solo aplica a mala. */
+  onBuscarIgualmente?: () => void;
 }
 
 /**
- * Aviso de calidad previo a la búsqueda. Nunca bloquea: informa el veredicto y
- * deja que el usuario decida. Los números se muestran como dato medido, sin
- * inventar un "score de IA".
+ * Veredicto de calidad compacto del MODO ESCANEO INTELIGENTE:
+ *   - buena:   "🟢 Calidad buena" (una sola línea, sin botones).
+ *   - regular: "🟡 Calidad regular" + [Ver recomendaciones].
+ *   - mala:    "🔴 La imagen puede reducir la precisión" + [Tomar otra foto]
+ *              y [Buscar igualmente].
+ *
+ * Las métricas (brillo, nitidez, resolución) solo se muestran al expandir el
+ * detalle: son para la defensa, no para la UX primaria. Sin medición real no se
+ * dibuja nada: jamás "n/d".
  */
-export default function QualityBadge({ calidad }: Props) {
+export default function QualityBadge({ calidad, onRepetirFoto, onBuscarIgualmente }: Props) {
+  const [abierto, setAbierto] = useState(false);
   if (!calidad) return null;
+
   const estilo = ESTILO_ESTADO[calidad.estado];
-  const lado = Math.min(calidad.resolucion.ancho, calidad.resolucion.alto);
+  const mala = calidad.estado === "mala";
+
+  if (calidad.estado === "buena") {
+    return (
+      <section
+        className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 ${estilo.chip}`}
+        aria-label="Calidad de la imagen"
+        data-testid="vision-calidad-badge"
+      >
+        <span aria-hidden="true">🟢</span>
+        <p className="text-xs font-semibold text-emerald-300">Calidad buena</p>
+      </section>
+    );
+  }
 
   return (
-    <section className={`rounded-xl border p-3 ${estilo.chip}`} aria-label="Calidad de la imagen">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className={`inline-block h-2 w-2 rounded-full ${estilo.punto}`} aria-hidden="true" />
-        <h3 className="text-sm font-semibold">Calidad de la foto: {estilo.texto}</h3>
-        {calidad.estado !== "buena" && (
-          <span className="text-xs font-medium">Esta foto puede reducir la precisión del resultado.</span>
+    <section
+      className={`rounded-xl border p-3.5 ${estilo.chip}`}
+      aria-label="Calidad de la imagen"
+      data-testid="vision-calidad-badge"
+    >
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+        <span aria-hidden="true">{mala ? "🔴" : "🟡"}</span>
+        <p className={`text-xs font-semibold ${mala ? "text-red-300" : "text-amber-300"}`}>{estilo.texto}</p>
+        {estilo.expande && (
+          <button
+            type="button"
+            onClick={() => setAbierto((v) => !v)}
+            aria-expanded={abierto}
+            className="ml-auto inline-flex items-center text-[11px] font-semibold text-gray-400 hover:text-white transition-colors"
+          >
+            {abierto ? "Ocultar" : "Ver recomendaciones"}
+          </button>
+        )}
+        {mala && onRepetirFoto && (
+          <button
+            type="button"
+            onClick={onRepetirFoto}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-[11px] font-semibold text-red-300 hover:bg-red-500/20 transition-colors"
+          >
+            <Camera size={12} /> Tomar otra foto
+          </button>
+        )}
+        {mala && onBuscarIgualmente && (
+          <button
+            type="button"
+            onClick={onBuscarIgualmente}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold text-gray-300 hover:text-white transition-colors"
+          >
+            Buscar igualmente
+          </button>
         )}
       </div>
 
-      <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] opacity-90">
-        <div className="flex gap-1">
-          <dt>Brillo</dt>
-          <dd className="font-mono font-semibold">{Math.round(calidad.brillo * 100)}%</dd>
+      {abierto && (
+        <div className="mt-2.5 space-y-1.5">
+          {calidad.problemas.length > 0 && (
+            <ul className="space-y-0.5 text-[11px] text-white/80" data-testid="calidad-problemas">
+              {calidad.problemas.map((p) => (
+                <li key={p} data-testid="calidad-problema" className="flex gap-1.5">
+                  <AlertTriangle size={11} className="shrink-0 mt-0.5 text-white/40" />
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {calidad.recomendaciones.length > 0 && (
+            <ul className="space-y-0.5 text-[11px] text-white/70">
+              {calidad.recomendaciones.map((r) => (
+                <li key={r}>› {r}</li>
+              ))}
+            </ul>
+          )}
+          <dl className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-white/60">
+            <div className="flex gap-1">
+              <dt>Brillo</dt>
+              <dd className="font-mono font-semibold">{Math.round(calidad.brillo * 100)}%</dd>
+            </div>
+            <div className="flex gap-1">
+              <dt>Nitidez</dt>
+              <dd className="font-mono font-semibold">{calidad.nitidez.toFixed(4)}</dd>
+            </div>
+            <div className="flex gap-1">
+              <dt>Resolución</dt>
+              <dd className="font-mono font-semibold">
+                {calidad.resolucion.ancho}×{calidad.resolucion.alto}
+              </dd>
+            </div>
+            <div className="flex gap-1">
+              <dt>Tamaño</dt>
+              <dd className="font-mono font-semibold">{Math.round(calidad.bytesArchivo / 1024)} KB</dd>
+            </div>
+          </dl>
         </div>
-        <div className="flex gap-1">
-          <dt>Nitidez</dt>
-          <dd className="font-mono font-semibold">{calidad.nitidez.toFixed(4)}</dd>
-        </div>
-        <div className="flex gap-1">
-          <dt>Resolución</dt>
-          <dd className="font-mono font-semibold">
-            {calidad.resolucion.ancho}×{calidad.resolucion.alto}
-          </dd>
-        </div>
-        <div className="flex gap-1">
-          <dt>Lado menor</dt>
-          <dd className="font-mono font-semibold">{lado} px</dd>
-        </div>
-        <div className="flex gap-1">
-          <dt>Tamaño</dt>
-          <dd className="font-mono font-semibold">{Math.round(calidad.bytesArchivo / 1024)} KB</dd>
-        </div>
-      </dl>
-
-      {calidad.problemas.length > 0 && (
-        <ul className="mt-2 space-y-0.5 text-[11px] opacity-90" aria-label="Motivos del veredicto">
-          {calidad.problemas.map((p) => (
-            <li key={p} data-testid="calidad-problema">
-              <span className="opacity-70">•</span> {p}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {calidad.recomendaciones.length > 0 && (
-        <ul className="mt-2 space-y-0.5 text-[11px] opacity-90">
-          {calidad.recomendaciones.map((r) => (
-            <li key={r}>• {r}</li>
-          ))}
-        </ul>
       )}
     </section>
   );

@@ -171,8 +171,18 @@ export default function PublicProductsPage() {
     setVisionRecomendaciones([]);
     setCameraOpen(false);
 
+    await analizarYBuscar(file, vehiculoElegido);
+  };
+
+  /** Prepara el archivo (cámara o upload) y arranca la búsqueda por visión. */
+  const analizarYBuscar = async (file: File, vehiculoElegido: VisionVehiculoForm) => {
     // Medición local (Canvas) sin IA adicional. Se hace ANTES de gastar una
     // inferencia, así una foto mala se ve antes de que el backend trabaje.
+    // Esta fase NO toca el estado multi-vista: la segunda foto debe conservar
+    // `haySegundaFoto`/`vistaPrimera` para confirmar (o desmentir) la primera.
+    setVisionAdvertirCalidad(false);
+    setBusquedaPendiente(null);
+
     const calidad = await analizarCalidadImagen(file);
     setVisionCalidad(calidad);
 
@@ -274,12 +284,15 @@ export default function PublicProductsPage() {
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);
 
-  const analizarImagen = () => {
+  const analizarImagen = async () => {
     if (!imageFile) return;
     setVisionResultado(null);
     setVisionError(null);
+    setVisionRecomendaciones([]);
     setCapturaFile(imageFile);
-    buscarPorVision(imageFile);
+    // Mismo flujo de calidad que la cámara: la medición aplica a TODO archivo, no
+    // solo a la captura. Antes esta ruta mostraba "Calidad n/d" en el panel.
+    await analizarYBuscar(imageFile, vehiculo);
   };
 
   const quitarImagen = () => {

@@ -32,11 +32,12 @@ const resultado: VisionAnalysis = {
       image: "freno.jpg",
       categoria: "frenos",
       price1: 120.5,
+      nivelCoincidencia: "fuerte",
+      claseCoincide: false,
       compatibilidad: { verificada: true, score: 8, coincidencias: ["freno"], nota: "" },
       disponibilidad: { nivel: "DISPONIBLE", etiqueta: "Disponible" },
-      disponibilidadPorSucursal: [
-        { locationId: 1, nombre: "Tienda Norte", tipo: "TIENDA", nivel: "DISPONIBLE", etiqueta: "Disponible" },
-      ],
+      disponibilidadPorSucursal: [],
+      disponibilidadPorSucursalPublica: [{ sucursalId: 1, nombre: "Tienda Norte", nivel: "DISPONIBLE" }],
     },
   ],
   compatibilidad: {
@@ -121,10 +122,11 @@ describe("VisionResultsPanel — evidencia OCR y bounding box", () => {
     expect(screen.getByTestId("vision-ocr-evidencia").textContent?.toLowerCase()).toContain("no confirma");
   });
 
-  it("etiqueta la evidencia del candidato con el nombre del código legible", () => {
+it("etiqueta la evidencia del candidato con el nombre del código legible", () => {
     renderPanel({ resultado: resultadoHibrido });
-    expect(screen.getByTestId("evidencia-FRN-001").textContent).toContain("Código coincide");
-    expect(screen.getByText(/Código OEM: 90915-YZZD2/)).toBeTruthy();
+    const chip = screen.getByTestId("evidencia-FRN-001");
+    expect(chip.textContent).toContain("Código coincide");
+    expect(chip.getAttribute("title")).toContain("Código OEM: 90915-YZZD2");
   });
 
   it("explica el criterio de orden del ranking", () => {

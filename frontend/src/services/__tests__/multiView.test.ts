@@ -51,20 +51,20 @@ describe("multiView — combinación de dos detecciones REALES", () => {
     expect(r.detalle).toMatch(/air_filter/);
   });
 
-  it("una de las dos no clasifica → No confirmado y se conserva la otra", () => {
+  it("una de las dos no clasifica → Identificación no confirmada y se conserva la otra", () => {
     const r = combinarDetecciones([deteccion("radiator", 0.64), deteccion("", 0)]);
 
     expect(r.estado).toBe("no_confirmado");
-    expect(r.etiqueta).toBe("No confirmado");
+    expect(r.etiqueta).toBe("Identificación no confirmada");
     expect(r.categoriaElegida).toBe("radiator");
     expect(r.detalle).toMatch(/sin confirmar/);
   });
 
-  it("una sola foto → No confirmado", () => {
+  it("una sola foto → Identificación no confirmada", () => {
     const r = combinarDetecciones([deteccion("brake_pad", 0.7)]);
 
     expect(r.estado).toBe("no_confirmado");
-    expect(r.etiqueta).toBe("No confirmado");
+    expect(r.etiqueta).toBe("Identificación no confirmada");
     expect(r.detalle).toMatch(/otra foto/i);
   });
 

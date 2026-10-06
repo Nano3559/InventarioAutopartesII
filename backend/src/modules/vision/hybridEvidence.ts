@@ -1,4 +1,5 @@
 import { logger } from "../../shared/utils/logger";
+import { ClaseVisual, coincideClaseVisual } from "./claseVisual";
 
 /**
  * Evidencias de OCR para el pipeline híbrido de visión (YOLO + códigos).
@@ -21,6 +22,10 @@ import { logger } from "../../shared/utils/logger";
  *
  * Una coincidencia parcial (un código contiene al otro) vale menos y se reporta
  * como `parcial` para que la interfaz pueda mostrar el grado real de certeza.
+ *
+ * Además del código, este módulo evalúa la prioridad 5 del Ranking V2: si el
+ * nombre del producto corresponde a la clase que el modelo detectó. Ver
+ * `claseVisual.ts` para el catálogo de clases reales y la derivación de términos.
  */
 
 export interface EvidenciaCodigo {
@@ -31,15 +36,42 @@ export interface EvidenciaCodigo {
   peso: number;
 }
 
+/** Qué campos del producto coincidieron de forma EXACTA con un código leído. */
+export interface ExactaPorCampo {
+  oem: boolean;
+  factory: boolean;
+  item: boolean;
+}
+
+/**
+ * Grado de coincidencia del candidato con la foto, para que la interfaz no
+ * muestre "score 0" cuando la única señal real es la categoría.
+ *
+ * - `fuerte`   → hubo coincidencia EXACTA de código (prioridades 2-4).
+ * - `media`    → hubo evidencia parcial de código, o el nombre coincide con la
+ *                clase visual detectada (prioridad 5).
+ * - `categoria`→ ninguna de las anteriores: el candidato está aquí solo porque
+ *                comparte categoría con la clase detectada (prioridad 7).
+ */
+export type NivelCoincidencia = "fuerte" | "media" | "categoria";
+
 export interface ResultadoEvidencias {
   score: number;
   evidencias: EvidenciaCodigo[];
+  exactaPorCampo: ExactaPorCampo;
+  /** Prioridad 5: el nombre del producto corresponde a la pieza detectada. */
+  claseCoincide: boolean;
 }
 
 export interface ProductoEvidencia {
   oemCode: string | null;
   factoryCode: string | null;
   itemCode: string;
+  /**
+   * Nombre libre del producto. Opcional porque el matching de códigos no lo
+   * necesita; lo consume únicamente la prioridad 5 del Ranking V2.
+   */
+  name?: string;
 }
 
 /** Longitud mínima para que un código (ya unido) se considere válido. */
@@ -171,13 +203,21 @@ function relacion(a: string, b: string): "exacta" | "parcial" | null {
 }
 
 /**
- * Evalúa un producto contra los códigos leídos.
+ * Evalúa un producto contra la foto: códigos legibles en el rótulo (OCR) y
+ * coincidencia con la clase visual detectada por el modelo.
  * El orden de campos (oemCode → factoryCode → itemCode) determina qué evidencia se
  * reporta primero cuando un mismo código coincide en varios campos del mismo producto.
  */
-export function evaluarEvidenciasCodigo(producto: ProductoEvidencia, codigos: string[]): ResultadoEvidencias {
+export function evaluarEvidenciasCodigo(
+  producto: ProductoEvidencia,
+  codigos: string[],
+  clase?: ClaseVisual | null
+): ResultadoEvidencias {
+  const claseCoincide = coincideClaseVisual(producto.name, clase ?? null);
+  const exactaPorCampo: ExactaPorCampo = { oem: false, factory: false, item: false };
+
   const evidencias: EvidenciaCodigo[] = [];
-  if (!codigos.length) return { score: 0, evidencias };
+  if (!codigos.length) return { score: 0, evidencias, exactaPorCampo, claseCoincide };
 
   let score = 0;
   const campos: Array<{ campo: keyof ProductoEvidencia; valor: string | null; peso: number }> = [
@@ -194,6 +234,11 @@ export function evaluarEvidenciasCodigo(producto: ProductoEvidencia, codigos: st
       if (!tipo) continue;
       const pesoFinal = tipo === "exacta" ? peso : PESOS_CODIGO.parcial;
       score += pesoFinal;
+      if (tipo === "exacta") {
+        if (campo === "oemCode") exactaPorCampo.oem = true;
+        else if (campo === "factoryCode") exactaPorCampo.factory = true;
+        else exactaPorCampo.item = true;
+      }
       evidencias.push({
         campo: campo as EvidenciaCodigo["campo"],
         codigoProducto: valor,
@@ -208,7 +253,24 @@ export function evaluarEvidenciasCodigo(producto: ProductoEvidencia, codigos: st
   }
 
   evidencias.sort((a, b) => b.peso - a.peso);
-  return { score, evidencias: evidencias.slice(0, MAX_EVIDENCIAS) };
+  return {
+    score,
+    evidencias: evidencias.slice(0, MAX_EVIDENCIAS),
+    exactaPorCampo,
+    claseCoincide,
+  };
+}
+
+/**
+ * Traduce la evidencia de un candidato al grado que la interfaz debe mostrar.
+ * Evita que un producto que solo está en la lista por compartir categoría
+ * anuncie un "score de coincidencia 0".
+ */
+export function nivelCoincidenciaDe(evidencia: ResultadoEvidencias): NivelCoincidencia {
+  const { oem, factory, item } = evidencia.exactaPorCampo;
+  if (oem || factory || item) return "fuerte";
+  if (evidencia.evidencias.length > 0 || evidencia.claseCoincide) return "media";
+  return "categoria";
 }
 
 /** Resumen legible de las coincidencias para la interfaz y los logs. */
@@ -231,32 +293,75 @@ export interface CandidatoEvaluado<T, C extends CompatibilidadOrdenable = Compat
   evidencia: ResultadoEvidencias;
 }
 
+/** Contexto de la foto que el ranking necesita más allá de los códigos. */
+export interface ContextoRanking {
+  /** Clase detectada por YOLO, ya resuelta contra las clases reales del modelo. */
+  clase?: ClaseVisual | null;
+}
+
 /**
- * Calcula la evidencia OCR de cada candidato y devuelve el ranking final.
+ * Ranking V2: orden estricto por prioridades, comparado como tupla lexicográfica
+ * (se mira el primer criterio que difiere y ahí se decide; no se promedia nada).
  *
- * Regla de orden, en este orden y sin excepciones:
- *   1. compatibilidad verificada (marca + modelo + año confirmados)
- *   2. evidencia de código leída en la foto
- *   3. puntaje de compatibilidad
+ *   1. compatibilidad de vehículo VERIFICADA
+ *   2. código OEM exacto
+ *   3. código de fábrica exacto
+ *   4. itemCode exacto
+ *   –  fuerza de la evidencia de código: refina 2-4 separando la coincidencia
+ *      parcial (3) de la inexistente (0). Sin esto la evidencia parcial se
+ *      perdería y sería un retroceso funcional.
+ *   5. nombre/tipo de producto coincide con la clase YOLO
+ *   6. marca/modelo/año proporcionados (`compatibilidad.score`)
+ *   7. coincidencia solamente por categoría → es el caso residual: todo lo anterior
+ *      empatado, así que solo decide el orden estable de entrada (que ya llega
+ *      ordenado por nombre desde la consulta).
  *
  * El punto 1 va primero a propósito: un `oemCode` exacto leído en la etiqueta sube
  * mucho en el ranking, pero NO puede desplazar a un producto verificado contra el
  * vehículo del usuario, porque el código identifica la pieza y no demuestra que sea
  * la correcta para ese auto. Prometer lo contrario sería inventar compatibilidad.
+ *
+ * En el ejemplo "alternador" sin vehículo y sin OCR, todos los candidatos de
+ * "Eléctrico" empatan en 1-4 y 6; la prioridad 5 es lo único que separa al
+ * Alternador de Foco/Marcha/Sensor.
+ */
+function claveRanking<T, C extends CompatibilidadOrdenable>(entry: CandidatoEvaluado<T, C>): number[] {
+  const { evidencia, compatibilidad } = entry;
+  const { oem, factory, item } = evidencia.exactaPorCampo;
+  return [
+    compatibilidad.verificada ? 1 : 0,
+    oem ? 1 : 0,
+    factory ? 1 : 0,
+    item ? 1 : 0,
+    evidencia.score,
+    evidencia.claseCoincide ? 1 : 0,
+    compatibilidad.score,
+  ];
+}
+
+function compararClaves(a: number[], b: number[]): number {
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return b[i] - a[i];
+  }
+  return 0;
+}
+
+/**
+ * Calcula la evidencia de cada candidato y devuelve el ranking final (V2).
+ * `Array.prototype.sort` es estable, así que los empates mantienen el orden de
+ * entrada — que `vision.service.ts` recibe ya ordenado por nombre.
  */
 export function evaluarYRanquear<T extends ProductoEvidencia, C extends CompatibilidadOrdenable>(
   evaluados: Array<{ producto: T; compatibilidad: C }>,
-  codigos: string[]
+  codigos: string[],
+  contexto?: ContextoRanking
 ): Array<CandidatoEvaluado<T, C>> {
+  const clase = contexto?.clase ?? null;
   return evaluados
-    .map((entry) => ({ ...entry, evidencia: evaluarEvidenciasCodigo(entry.producto, codigos) }))
-    .sort((a, b) => {
-      if (b.compatibilidad.verificada !== a.compatibilidad.verificada) {
-        return b.compatibilidad.verificada ? 1 : -1;
-      }
-      if (b.evidencia.score !== a.evidencia.score) return b.evidencia.score - a.evidencia.score;
-      return b.compatibilidad.score - a.compatibilidad.score;
-    });
+    .map((entry) => ({ ...entry, evidencia: evaluarEvidenciasCodigo(entry.producto, codigos, clase) }))
+    .map((entry) => ({ entry, clave: claveRanking(entry) }))
+    .sort((a, b) => compararClaves(a.clave, b.clave))
+    .map((x) => x.entry);
 }
 
 /**

@@ -6,9 +6,11 @@ import {
   evaluarYRanquear,
   extraerCodigos,
   extraerTokensSignificativos,
+  nivelCoincidenciaDe,
   normalizarCodigo,
   resumirEvidencias,
 } from "../hybridEvidence";
+import { resolverClaseVisual } from "../claseVisual";
 
 test("normalizarCodigo ignora guiones, espacios y mayúsculas", () => {
   assert.equal(normalizarCodigo("90915-yzzd2"), "90915YZZD2");
@@ -199,4 +201,166 @@ test("ranking: no reordena la entrada del llamador (sin mutación)", () => {
   const copia = entrada.map((e) => ({ ...e }));
   evaluarYRanquear(entrada, ["90915YZZD2"]);
   assert.deepEqual(entrada, copia, "evaluarYRanquear no debe mutar el array recibido");
+});
+
+// --- Ranking V2: prioridades estrictas ---
+
+const CANDIDATO = (name: string, itemCode: string, oemCode: string | null = null, factoryCode: string | null = null) => ({
+  name,
+  itemCode,
+  oemCode,
+  factoryCode,
+});
+
+const SIN_COMPAT = { verificada: false, score: 0 };
+
+test("V2 exactaPorCampo registra qué campo coincidió exactamente", () => {
+  const producto = CANDIDATO("Alternador", "SKU-1", "90915-YZZD2", "ABC-999");
+  const soloOem = evaluarEvidenciasCodigo(producto, ["90915YZZD2"]);
+  assert.deepEqual(soloOem.exactaPorCampo, { oem: true, factory: false, item: false });
+
+  const dos = evaluarEvidenciasCodigo(producto, ["90915YZZD2", "ABC999"]);
+  assert.deepEqual(dos.exactaPorCampo, { oem: true, factory: true, item: false });
+
+  const parcial = evaluarEvidenciasCodigo(producto, ["90915Y"]);
+  assert.deepEqual(parcial.exactaPorCampo, { oem: false, factory: false, item: false }, "la parcial no es exacta");
+
+  const ninguno = evaluarEvidenciasCodigo(producto, []);
+  assert.deepEqual(ninguno.exactaPorCampo, { oem: false, factory: false, item: false });
+});
+
+test("V2: sin vehículo y sin OCR, la clase YOLO separa al Alternador del resto de Eléctrico", () => {
+  // Caso real reportado: la categoría "Eléctrico" devolvía Foco, Marcha, Sensor y
+  // Módulo antes que el Alternador, porque todos empataban en score 0.
+  const clase = resolverClaseVisual("alternador");
+  const candidatos = [
+    CANDIDATO("Foco Halógeno H4 12V", "SKU-FOCO"),
+    CANDIDATO("Foco LED H7 24V", "SKU-FOCO2"),
+    CANDIDATO("Alternador Toyota Hilux 100A", "SKU-ALT"),
+    CANDIDATO("Marcha de Arranque 1.8kW", "SKU-MARCHA"),
+    CANDIDATO("Módulo de Encendido", "SKU-MOD"),
+    CANDIDATO("Sensor MAP Bosch", "SKU-MAP"),
+    CANDIDATO("Sensor de Oxígeno", "SKU-O2"),
+  ].map((producto) => ({ producto, compatibilidad: SIN_COMPAT }));
+
+  const r = evaluarYRanquear(candidatos, [], { clase });
+
+  assert.equal(r[0].producto.name, "Alternador Toyota Hilux 100A", "la pieza detectada debe ir primera");
+  assert.equal(r[0].evidencia.claseCoincide, true);
+  assert.equal(r[0].evidencia.score, 0, "sin OCR no hay score de código");
+  assert.equal(nivelCoincidenciaDe(r[0].evidencia), "media", "coincidencia por tipo, no por categoría");
+  assert.ok(
+    r.slice(1).every((c) => !c.evidencia.claseCoincide),
+    "los demás solo pueden estar por categoría"
+  );
+  assert.ok(r.slice(1).every((c) => nivelCoincidenciaDe(c.evidencia) === "categoria"));
+});
+
+test("V2: la prioridad 5 no le gana a las prioridades 2-4 (código exacto)", () => {
+  const clase = resolverClaseVisual("alternador");
+  const r = evaluarYRanquear(
+    [
+      { producto: CANDIDATO("Alternador Genérico", "SKU-ALT"), compatibilidad: SIN_COMPAT },
+      { producto: CANDIDATO("Módulo de Encendido", "SKU-MOD", "90915YZZD2"), compatibilidad: SIN_COMPAT },
+    ],
+    ["90915YZZD2"],
+    { clase }
+  );
+  assert.equal(r[0].producto.itemCode, "SKU-MOD", "el OEM exacto (prioridad 2) va antes que la clase (5)");
+  assert.equal(nivelCoincidenciaDe(r[0].evidencia), "fuerte");
+});
+
+test("V2: prioridad 2 > 3 > 4 estricta, aunque el puntaje total sea menor", () => {
+  // OEM solo (10) le gana a fábrica+item (14): la jerarquía es estricta, no se promedia.
+  const r = evaluarYRanquear(
+    [
+      { producto: CANDIDATO("A", "SKU-ITEM", null, "FAB-1"), compatibilidad: SIN_COMPAT },
+      { producto: CANDIDATO("B", "SKU-OEM", "90915YZZD2"), compatibilidad: SIN_COMPAT },
+    ],
+    ["90915YZZD2", "FAB1", "SKUITEM"],
+    {}
+  );
+  assert.equal(r[0].producto.itemCode, "SKU-OEM", "prioridad 2 (OEM exacto) por encima de 3 y 4");
+  assert.equal(r[1].producto.itemCode, "SKU-ITEM");
+  assert.ok(
+    r[1].evidencia.score > r[0].evidencia.score,
+    "el perdedor acumula más puntos (fábrica+item) pero pierde la jerarquía"
+  );
+});
+
+test("V2: fábrica exacto (3) le gana a itemCode exacto (4)", () => {
+  const r = evaluarYRanquear(
+    [
+      { producto: CANDIDATO("A", "SKU-ITEM", null, null), compatibilidad: SIN_COMPAT },
+      { producto: CANDIDATO("B", "SKU-OTHER", null, "FAB-1"), compatibilidad: SIN_COMPAT },
+    ],
+    ["FAB1", "SKUITEM"],
+    {}
+  );
+  assert.equal(r[0].producto.itemCode, "SKU-OTHER", "prioridad 3 por encima de la 4");
+});
+
+test("V2: la compatibilidad verificada (prioridad 1) sigue ganándolo todo", () => {
+  const clase = resolverClaseVisual("alternador");
+  const r = evaluarYRanquear(
+    [
+      { producto: CANDIDATO("Alternador Toyota", "SKU-ALT", "90915YZZD2"), compatibilidad: SIN_COMPAT },
+      { producto: CANDIDATO("Foco Halógeno", "SKU-FOCO"), compatibilidad: { verificada: true, score: 12 } },
+    ],
+    ["90915YZZD2"],
+    { clase }
+  );
+  assert.equal(r[0].producto.itemCode, "SKU-FOCO", "verificada desplaza al OEM exacto y a la clase");
+});
+
+test("V2: la coincidencia de clase separa empatados pero no desplaza a la compatibilidad", () => {
+  const clase = resolverClaseVisual("faro");
+  const r = evaluarYRanquear(
+    [
+      { producto: CANDIDATO("Faro LED H7", "SKU-FARO"), compatibilidad: SIN_COMPAT },
+      { producto: CANDIDATO("Parachoques delantero", "SKU-PAR"), compatibilidad: { verificada: false, score: 3 } },
+    ],
+    [],
+    { clase }
+  );
+  assert.equal(r[0].producto.itemCode, "SKU-FARO", "prioridad 5 por encima de la 6");
+});
+
+test("V2 sin contexto de clase mantiene el comportamiento anterior (prioridad 7 residual)", () => {
+  const r = evaluarYRanquear(
+    [
+      { producto: CANDIDATO("Foco Halógeno", "SKU-FOCO"), compatibilidad: SIN_COMPAT },
+      { producto: CANDIDATO("Alternador Toyota", "SKU-ALT"), compatibilidad: SIN_COMPAT },
+    ],
+    [],
+    {}
+  );
+  assert.ok(r.every((c) => !c.evidencia.claseCoincide), "sin clase no puede haber prioridad 5");
+  assert.ok(r.every((c) => nivelCoincidenciaDe(c.evidencia) === "categoria"));
+  assert.deepEqual(
+    r.map((c) => c.producto.itemCode),
+    ["SKU-FOCO", "SKU-ALT"],
+    "el orden estable de entrada se conserva"
+  );
+});
+
+test("nivelCoincidenciaDe clasifica fuerte / media / categoria", () => {
+  const exacta = evaluarEvidenciasCodigo(CANDIDATO("A", "SKU-1", "90915YZZD2"), ["90915YZZD2"]);
+  assert.equal(nivelCoincidenciaDe(exacta), "fuerte");
+
+  const parcial = evaluarEvidenciasCodigo(CANDIDATO("A", "SKU-1", "90915YZZD2"), ["90915Y"]);
+  assert.equal(nivelCoincidenciaDe(parcial), "media");
+
+  const porClase = evaluarEvidenciasCodigo(
+    CANDIDATO("Alternador Toyota", "SKU-1"),
+    [],
+    resolverClaseVisual("alternador")
+  );
+  assert.equal(nivelCoincidenciaDe(porClase), "media");
+  assert.equal(porClase.claseCoincide, true);
+  assert.equal(porClase.score, 0);
+
+  const soloCategoria = evaluarEvidenciasCodigo(CANDIDATO("Sensor MAP", "SKU-1"), []);
+  assert.equal(nivelCoincidenciaDe(soloCategoria), "categoria");
+  assert.equal(soloCategoria.claseCoincide, false);
 });

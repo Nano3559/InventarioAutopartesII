@@ -44,6 +44,17 @@ export interface VisionDisponibilidadSucursal extends VisionDisponibilidadView {
   tipo: string;
 }
 
+/**
+ * Disponibilidad POR SUCURSAL del contrato PÚBLICO (recogida). DTO mínimo y
+ * seguro: nombre de la sucursal + bucket de disponibilidad. Nunca lleva stock,
+ * `locationId`, `tipo` ni `etiqueta` (ver disponibilidadPorSucursalPublica).
+ */
+export interface VisionDisponibilidadSucursalPublica {
+  sucursalId: number;
+  nombre: string;
+  nivel: VisionAvailabilityLevel;
+}
+
 export interface VisionCompatibilidadCandidato {
   verificada: boolean;
   score: number;
@@ -66,10 +77,24 @@ export interface VisionCandidatoPublico {
    * coincidencia de vehículo, este coincidencia de código leído en la foto.
    */
   scoreEvidencia?: number;
+  /**
+   * Grado de coincidencia real de este candidato con la foto. `categoria` significa
+   * que el único vínculo es compartir categoría con la clase detectada: la interfaz
+   * debe decir "Coincidencia por categoría" en lugar de anunciar un score 0.
+   */
+  nivelCoincidencia: "fuerte" | "media" | "categoria";
+  /** Prioridad 5 del Ranking V2: el nombre del producto corresponde a la pieza detectada. */
+  claseCoincide: boolean;
   evidencias?: VisionEvidenciaCodigo[];
   compatibilidad: VisionCompatibilidadCandidato;
   disponibilidad: VisionDisponibilidadView;
   disponibilidadPorSucursal: VisionDisponibilidadSucursal[];
+  /**
+   * Desglose PÚBLICO de disponibilidad para recogida, por sucursal TIENDA.
+   * Solo sucursalId + nombre + bucket seguro. Puede venir vacío/ausente cuando
+   * no hay sucursal de recogida para el producto.
+   */
+  disponibilidadPorSucursalPublica?: VisionDisponibilidadSucursalPublica[];
 }
 
 export interface VisionCompatibilidadConsulta {

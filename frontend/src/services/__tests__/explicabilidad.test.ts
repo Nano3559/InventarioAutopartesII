@@ -13,6 +13,8 @@ function candidato(overrides: Partial<VisionCandidatoPublico> = {}): VisionCandi
     image: null,
     categoria: "brake_rotor",
     price1: 450,
+    nivelCoincidencia: "categoria",
+    claseCoincide: false,
     compatibilidad: { verificada: false, score: 0, coincidencias: [], nota: "" },
     disponibilidad: { nivel: "NO_DISPONIBLE", etiqueta: "Sin stock" },
     disponibilidadPorSucursal: [],
@@ -84,10 +86,26 @@ describe("explicabilidad — evidencia real, sin campos sin respaldo", () => {
     expect(r.map((m) => m.texto)).toContain("Disponible");
   });
 
+  it("agrega 'Tipo de pieza coincide' cuando el ranking V2 detectó la clase visual", () => {
+    const r = explicarCandidato(
+      candidato({ claseCoincide: true, nivelCoincidencia: "media", scoreEvidencia: 0, evidencias: [] })
+    );
+
+    expect(r.map((m) => m.texto)).toContain("Tipo de pieza coincide");
+    expect(r.map((m) => m.texto)).toContain("Categoría visual coincide");
+  });
+
+  it("sin vehículo no repite el aviso en cada producto: la UI lo globaliza", () => {
+    const r = explicarCandidato(candidato({ evidencias: [], scoreEvidencia: 0 }), { hayVehiculo: false });
+
+    expect(r.filter((m) => m.texto.startsWith("Compatibilidad no")).length).toBe(0);
+  });
+
   it("no inventa ninguna línea sin fuente real", () => {
     const r = explicarCandidato(candidato());
     const permitidas = [
       "Categoría visual coincide",
+      "Tipo de pieza coincide",
       "Código OEM exacto: ",
       "Código OEM parcial: ",
       "Código de fábrica exacto: ",
