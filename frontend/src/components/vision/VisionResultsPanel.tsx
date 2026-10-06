@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Loader2, Camera, RefreshCw, X, PackageSearch, Truck, Store, ShoppingCart, Check } from "lucide-react";
+import { Loader2, Camera, RefreshCw, X, PackageSearch, Truck, Store, ShoppingCart, Check, ScanLine, AlertCircle } from "lucide-react";
 import ProductImage from "../public/ProductImage";
-import { VisionAnalysis } from "../../types/vision";
+import { VisionAnalysis, VisionEvidenciaCodigo } from "../../types/vision";
 import { BorradorVentaVision } from "../../services/saleDraft";
+import DetectionBox from "./DetectionBox";
 
 export interface VisionVehiculoForm {
   marca: string;
@@ -18,9 +19,13 @@ export interface VisionEntregaSeleccion {
 
 interface VisionResultsPanelProps {
   nombreFoto?: string;
+  /** URL de la foto capturada, para dibujar el bounding box sobre la imagen real. */
+  vistaPreviaUrl?: string | null;
   resultado: VisionAnalysis | null;
   loading: boolean;
   error: string | null;
+  /** Recomendaciones de captura del 422, si el backend las envió. */
+  recomendaciones?: string[];
   vehiculo: VisionVehiculoForm;
   onVehiculoChange: (campo: keyof VisionVehiculoForm, valor: string) => void;
   onBuscar: () => void;
@@ -30,6 +35,13 @@ interface VisionResultsPanelProps {
   onCambiarEntrega: (seleccion: VisionEntregaSeleccion) => void;
   onLlevarAVenta: (borrador: BorradorVentaVision) => void;
 }
+
+/** Etiqueta legible del campo de código; el backend manda el nombre crudo. */
+const ETIQUETA_CAMPO: Record<VisionEvidenciaCodigo["campo"], string> = {
+  oemCode: "Código OEM",
+  factoryCode: "Código de fábrica",
+  itemCode: "Código de item",
+};
 
 const disponibilidadClases = (nivel: string) => {
   if (nivel === "DISPONIBLE") return "text-green-400 bg-green-500/10 border-green-500/20";
@@ -52,9 +64,11 @@ const etiquetaProveedor = (proveedor: string) => ETIQUETA_PROVEEDOR[proveedor] ?
 
 export default function VisionResultsPanel({
   nombreFoto,
+  vistaPreviaUrl,
   resultado,
   loading,
   error,
+  recomendaciones = [],
   vehiculo,
   onVehiculoChange,
   onBuscar,
@@ -65,6 +79,9 @@ export default function VisionResultsPanel({
   onLlevarAVenta,
 }: VisionResultsPanelProps) {
   const confianza = resultado ? Math.round(resultado.deteccion.confianza * 100) : 0;
+  const codigosDetectados = resultado?.deteccion.codigosDetectados ?? [];
+  const textoDetectado = resultado?.deteccion.textoDetectado ?? [];
+  const candidatosConEvidencia = resultado?.candidatos.filter((c) => (c.evidencias?.length ?? 0) > 0).length ?? 0;
 
   // Selección de producto con stock suficiente para preparar la venta (WB-8).
   const [seleccionado, setSeleccionado] = useState<number | null>(null);
@@ -181,7 +198,24 @@ export default function VisionResultsPanel({
 
           {error && (
             <div className="flex items-start justify-between gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-              <p className="text-red-300 text-sm">{error}</p>
+              <div className="min-w-0">
+                <p className="text-red-300 text-sm">{error}</p>
+                {recomendaciones.length > 0 && (
+                  <div className="mt-2.5" data-testid="vision-recomendaciones">
+                    <p className="text-[11px] font-semibold text-red-200/80 flex items-center gap-1.5">
+                      <AlertCircle size={12} /> Para mejorar la foto:
+                    </p>
+                    <ul className="mt-1.5 space-y-1">
+                      {recomendaciones.map((recomendacion) => (
+                        <li key={recomendacion} className="text-xs text-red-200/80 flex gap-1.5">
+                          <span aria-hidden="true">·</span>
+                          <span>{recomendacion}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
               <button onClick={onRepetirFoto} className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-500/20 text-red-200 text-xs rounded-lg hover:bg-red-500/30" type="button">
                 <Camera size={13} /> Otra foto
               </button>
@@ -217,6 +251,39 @@ export default function VisionResultsPanel({
                 </span>
               </div>
 
+              {vistaPreviaUrl && (
+                <DetectionBox
+                  src={vistaPreviaUrl}
+                  alt={`Foto analizada: ${resultado.deteccion.categoria}`}
+                  boundingBox={resultado.deteccion.boundingBox}
+                  categoria={resultado.deteccion.categoria}
+                  confianza={resultado.deteccion.confianza}
+                />
+              )}
+
+              {(codigosDetectados.length > 0 || textoDetectado.length > 0) && (
+                <div className="bg-dark-800/30 border border-white/[0.06] rounded-xl p-3" data-testid="vision-ocr-evidencia">
+                  <p className="text-[11px] font-semibold text-gray-400 flex items-center gap-1.5 uppercase tracking-wider">
+                    <ScanLine size={12} /> Texto leído en la foto
+                  </p>
+                  {codigosDetectados.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5" data-testid="vision-codigos">
+                      {codigosDetectados.map((codigo) => (
+                        <span key={codigo} className="text-[11px] font-mono px-2 py-0.5 rounded-md border text-cyan-300 bg-cyan-500/10 border-cyan-500/20">
+                          {codigo}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {textoDetectado.length > 0 && (
+                    <p className="mt-2 text-[11px] text-gray-500 leading-relaxed">{textoDetectado.join(" · ")}</p>
+                  )}
+                  <p className="mt-2 text-[11px] text-gray-600">
+                    El código ayuda a identificar la pieza; no confirma por sí solo que sea compatible con tu vehículo.
+                  </p>
+                </div>
+              )}
+
               {resultado.candidatos.length === 0 ? (
                 <div className="text-center py-10 bg-dark-800/30 border border-white/[0.06] rounded-2xl">
                   <PackageSearch size={40} className="text-gray-600 mx-auto mb-3" />
@@ -232,6 +299,12 @@ export default function VisionResultsPanel({
                       </span></span>
                     )}
                     {resultado.compatibilidad.nota ? <p className="mt-1 italic text-gray-600">{resultado.compatibilidad.nota}</p> : null}
+                    {candidatosConEvidencia > 0 && (
+                      <p className="mt-1 text-gray-600" data-testid="vision-ranking-nota">
+                        {candidatosConEvidencia} de {resultado.candidatos.length} candidatos coinciden con un código leído en la foto. El orden prioriza la
+                        compatibilidad verificada con tu vehículo; la coincidencia de código solo ordena los restantes.
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid gap-3">
@@ -267,8 +340,27 @@ export default function VisionResultsPanel({
                                 }`} title={producto.compatibilidad.nota}>
                                   {producto.compatibilidad.verificada ? "Compatibilidad verificada" : "Compatibilidad no verificada"}
                                 </span>
+                                {(producto.evidencias?.length ?? 0) > 0 && (
+                                  <span
+                                    className="text-[10px] font-semibold px-2 py-0.5 rounded-md border uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border-cyan-500/20"
+                                    title={producto.evidencias!.map((e) => `${ETIQUETA_CAMPO[e.campo]}: ${e.codigoProducto} (${e.tipo})`).join(" · ")}
+                                    data-testid={`evidencia-${producto.itemCode}`}
+                                  >
+                                    Código coincide
+                                  </span>
+                                )}
                                 <span className="text-amber-400 text-xs font-semibold ml-auto">Bs. {Number(producto.price1).toFixed(2)}</span>
                               </div>
+                              {(producto.evidencias?.length ?? 0) > 0 && (
+                                <ul className="mt-1.5 space-y-0.5">
+                                  {producto.evidencias!.map((evidencia) => (
+                                    <li key={`${evidencia.campo}-${evidencia.codigoDetectado}`} className="text-[11px] text-cyan-300/80 font-mono">
+                                      {ETIQUETA_CAMPO[evidencia.campo]}: {evidencia.codigoProducto}
+                                      <span className="text-gray-500"> ({evidencia.tipo})</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
                             </div>
                           </div>
                           {producto.disponibilidadPorSucursal.length > 0 && (

@@ -19,7 +19,7 @@ import ProductImage from "../components/public/ProductImage";
 import api from "../services/api";
 import CameraCapture from "../components/camera/CameraCapture";
 import VisionResultsPanel, { VisionVehiculoForm, VisionEntregaSeleccion } from "../components/vision/VisionResultsPanel";
-import { detectarVisionPublica, mensajeErrorVision } from "../services/visionApi";
+import { detectarVisionPublica, mensajeErrorVision, recomendacionesVision } from "../services/visionApi";
 import { guardarBorradorVision, BorradorVentaVision } from "../services/saleDraft";
 import { VisionAnalysis } from "../types/vision";
 import toast from "react-hot-toast";
@@ -91,9 +91,14 @@ export default function PublicProductsPage() {
 
   const [cameraOpen, setCameraOpen] = useState(false);
   const [capturaFile, setCapturaFile] = useState<File | null>(null);
+  // URL de la foto capturada: la necesita el panel de resultados para dibujar el
+  // bounding box del modelo sobre la imagen real. Es un objeto distinto de
+  // `imageFile` cuando la foto viene de la cámara, por eso necesita su propio estado.
+  const [capturaPreviewUrl, setCapturaPreviewUrl] = useState<string | null>(null);
   const [visionResultado, setVisionResultado] = useState<VisionAnalysis | null>(null);
   const [visionBuscando, setVisionBuscando] = useState(false);
   const [visionError, setVisionError] = useState<string | null>(null);
+  const [visionRecomendaciones, setVisionRecomendaciones] = useState<string[]>([]);
   const [vehiculo, setVehiculo] = useState<VisionVehiculoForm>({ marca: "", modelo: "", anio: "" });
   const [entrega, setEntrega] = useState<VisionEntregaSeleccion>({ modalidad: "recoger", sucursalId: null });
 
@@ -101,6 +106,16 @@ export default function PublicProductsPage() {
 
   const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
   const MAX_SIZE = 5 * 1024 * 1024;
+
+  useEffect(() => {
+    if (!capturaFile) {
+      setCapturaPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(capturaFile);
+    setCapturaPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [capturaFile]);
 
   const buscarPorVision = async (file: File, vehiculoVision?: VisionVehiculoForm) => {
     setVisionBuscando(true);
@@ -118,6 +133,7 @@ export default function PublicProductsPage() {
     } catch (error) {
       setVisionResultado(null);
       setVisionError(mensajeErrorVision(error));
+      setVisionRecomendaciones(recomendacionesVision(error));
     } finally {
       setVisionBuscando(false);
     }
@@ -658,9 +674,11 @@ export default function PublicProductsPage() {
       {capturaFile && (
         <VisionResultsPanel
           nombreFoto={capturaFile.name}
+          vistaPreviaUrl={capturaPreviewUrl}
           resultado={visionResultado}
           loading={visionBuscando}
           error={visionError}
+          recomendaciones={visionRecomendaciones}
           vehiculo={vehiculo}
           onVehiculoChange={(campo, valor) => setVehiculo((prev) => ({ ...prev, [campo]: valor }))}
           onBuscar={() => buscarPorVision(capturaFile, vehiculo)}

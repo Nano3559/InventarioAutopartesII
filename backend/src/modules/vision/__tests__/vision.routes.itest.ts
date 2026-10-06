@@ -280,7 +280,52 @@ test("público: confianza baja → 422 VISION_BAJA_CONFIANZA", async () => {
     assert.equal(res.status, 422);
     const body: any = await res.json();
     assert.equal(body.codigo, "VISION_BAJA_CONFIANZA");
+    // Baja confianza es el caso donde más ayuda al usuario: explica cómo mejorar la foto.
+    assert.ok(Array.isArray(body.recomendaciones) && body.recomendaciones.length > 0, "baja confianza debe recomendar cómo capturar");
   });
+});
+
+test("público: el contrato híbrido expone evidences de OCR sin romper nada previo", async () => {
+  const { fd } = fdConImagen({ marca: "Toyota", modelo: "Hilux", anio: "2020" });
+  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
+  assert.equal(res.status, 200);
+  const body: any = await res.json();
+
+  // Evidencia OCR a nivel de detección: siempre presente, puede venir vacía.
+  assert.ok(Array.isArray(body.deteccion.textoDetectado), "textoDetectado siempre es un arreglo");
+  assert.ok(Array.isArray(body.deteccion.codigosDetectados), "codigosDetectados siempre es un arreglo");
+
+  // Evidencia por candidato: score + trazabilidad. 0 significa "sin evidencia".
+  for (const cand of body.candidatos) {
+    assert.equal(typeof cand.scoreEvidencia, "number", `${cand.itemCode}: scoreEvidencia numérico`);
+    assert.ok(Array.isArray(cand.evidencias), `${cand.itemCode}: evidencias es un arreglo`);
+    for (const ev of cand.evidencias) {
+      assert.ok(["oemCode", "factoryCode", "itemCode"].includes(ev.campo), "campo de evidencia válido");
+      assert.ok(["exacta", "parcial"].includes(ev.tipo), "tipo de evidencia válido");
+      assert.equal(typeof ev.peso, "number");
+      assert.ok(!("verificada" in ev), "la evidencia OCR nunca declara compatibilidad verificada");
+    }
+  }
+});
+
+test("público: la evidencia de código no puede cambiar una compatibilidad no verificada", async () => {
+  const { fd } = fdConImagen({ marca: "Toyota", modelo: "Hilux", anio: "2020" });
+  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
+  const body: any = await res.json();
+
+  // Aunque un candidato acumule evidencia de código, `verificada` solo depende de
+  // marca/modelo/año contra el catálogo. Es la garantía de que no se inventa
+  // compatibilidad a partir de un texto leído con OCR.
+  for (const cand of body.candidatos) {
+    if (cand.scoreEvidencia > 0) {
+      const marca = cand.brand?.toLowerCase() ?? "";
+      const modelo = cand.model?.toLowerCase() ?? "";
+      const coincide = marca.includes("toyota") && modelo.includes("hilux");
+      if (!coincide) {
+        assert.equal(cand.compatibilidad.verificada, false, `${cand.itemCode}: evidencia sin verificación de vehículo`);
+      }
+    }
+  }
 });
 
 test("público: sin clasificación (ninguna) → 422 VISION_NO_CLASIFICADA", async () => {
@@ -290,6 +335,11 @@ test("público: sin clasificación (ninguna) → 422 VISION_NO_CLASIFICADA", asy
     assert.equal(res.status, 422);
     const body: any = await res.json();
     assert.equal(body.codigo, "VISION_NO_CLASIFICADA");
+    // Recomendaciones de captura: el 422 debe decir CÓMO tomar la foto, no solo
+    // que falló. Sin esto el usuario no sabe qué corregir.
+    assert.ok(Array.isArray(body.recomendaciones), "el 422 debe incluir recomendaciones");
+    assert.ok(body.recomendaciones.length >= 3, "debe incluir varias recomendaciones accionables");
+    assert.ok(body.recomendaciones.every((r: unknown) => typeof r === "string" && r.length > 0));
   });
 });
 

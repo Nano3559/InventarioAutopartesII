@@ -13,12 +13,24 @@ export interface VisionVehiculoQuery {
   anio?: string;
 }
 
+export interface VisionEvidenciaCodigo {
+  campo: "oemCode" | "factoryCode" | "itemCode";
+  codigoProducto: string;
+  codigoDetectado: string;
+  tipo: "exacta" | "parcial";
+  peso: number;
+}
+
 export interface VisionDeteccionRespuesta {
   categoria: string;
   confianza: number;
   confianzaBaja: boolean;
   categoriaMapeada: string | null;
   boundingBox: VisionBoundingBox | null;
+  /** Evidencia OCR (híbrido). Vacío si no se leyó texto utilizable. */
+  textoDetectado?: string[];
+  /** Códigos de pieza normalizados leídos del rótulo de la imagen. */
+  codigosDetectados?: string[];
 }
 
 export interface VisionDisponibilidadView {
@@ -49,6 +61,12 @@ export interface VisionCandidatoPublico {
   image: string | null;
   categoria: string | null;
   price1: number;
+  /**
+   * Puntaje de evidencia OCR. Distinto de `compatibilidad.score`: aquel mide
+   * coincidencia de vehículo, este coincidencia de código leído en la foto.
+   */
+  scoreEvidencia?: number;
+  evidencias?: VisionEvidenciaCodigo[];
   compatibilidad: VisionCompatibilidadCandidato;
   disponibilidad: VisionDisponibilidadView;
   disponibilidadPorSucursal: VisionDisponibilidadSucursal[];

@@ -17,6 +17,7 @@ vi.mock("../../services/visionApi", () => ({
     const e = error as { message?: string };
     return e?.message ?? "Error inesperado";
   }),
+  recomendacionesVision: vi.fn(() => [] as string[]),
 }));
 
 vi.mock("react-hot-toast", () => ({
@@ -83,6 +84,16 @@ describe("PublicProductsPage - Visión por cámara", () => {
     vi.clearAllMocks();
     localStorage.clear();
     vi.spyOn(window, "alert").mockImplementation(() => {});
+    // jsdom no implementa URL.createObjectURL: la página crea una URL de objeto para
+    // la foto capturada, que el panel usa para dibujar el bounding box.
+    Object.defineProperty(URL, "createObjectURL", {
+      configurable: true,
+      value: vi.fn(() => "blob:mock-captura-vision"),
+    });
+    Object.defineProperty(URL, "revokeObjectURL", {
+      configurable: true,
+      value: vi.fn(),
+    });
     const api = (await import("../../services/api")).default;
     const apiGet = api.get as ReturnType<typeof vi.fn>;
     apiGet.mockImplementation((url: string) => {

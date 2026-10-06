@@ -244,6 +244,60 @@ Integración con el frontend y backend existentes, catálogo, compatibilidad, st
 - **Entregables:** suite E2E básica del flujo visual.
 - **Criterios de aceptación:** flujo verificado de punta a punta con el mock; pasos documentados.
 
+### 4.11 Tarea WB-11 — OCR híbrido: códigos de pieza como evidencia de identificación
+
+**Estado: [x] COMPLETA** — El OCR (Tesseract) estaba implementado para la búsqueda por imagen pero la búsqueda por visión lo ignoraba: solo clasificaba por categoría. Ahora el mismo OCR lee el rótulo de la foto y usa los códigos como **evidencia de identificación** de la pieza.
+
+- `backend/src/shared/utils/ocr.ts`: worker Tesseract **único y compartido** por ambos flujos. Se extrajo de `products/searchImage.service.ts` para no cargar dos copias del modelo en el mismo proceso. `ocrExtract` **nunca lanza**: si el OCR falla, la detección visual sigue funcionando.
+- `backend/src/modules/vision/hybridEvidence.ts`: extracción de códigos (`extraerCodigos`), tokens de texto (`extraerTokensSignificativos`) y ponderación por campo.
+- `vision.service.ts`: lanza el OCR **en paralelo** con la llamada a `ia-service` y rankea con los códigos detectados.
+- **Pesos** (documentados como *provisionales*): `oemCode` 10 > `factoryCode` 8 > `itemCode` 6; coincidencia parcial 3 y solo si el fragmento tiene ≥6 caracteres.
+- **Normalización** de códigos: sin guiones/espacios y en mayúsculas, para que `90915-YZZD2`, `90915 YZZD2` y `90915YZZD2` comparen igual.
+- Contrato aditivo: `deteccion.textoDetectado`, `deteccion.codigosDetectados` y, por candidato, `scoreEvidencia` + `evidencias[{campo, codigoProducto, codigoDetectado, tipo, peso}]`.
+
+**Reglas de seguridad de la funcionalidad (inviolables):**
+
+- El OCR **nunca** marca `compatibilidad.verificada`. El código identifica la pieza; no demuestra que sea la correcta para un vehículo. Solo lo hace la coincidencia de marca/modelo/año contra el catálogo.
+- El ranking pone la **compatibilidad verificada por encima de la coincidencia de código**: un `oemCode` exacto leído en la etiqueta no puede desplazar a un producto verificado contra el vehículo del usuario.
+- Una coincidencia parcial se reporta como `parcial`, con menor peso, nunca como exacta.
+- La UI lo dice explícitamente: el código ayuda a identificar la pieza, no confirma compatibilidad.
+
+- **Criterios de aceptación:** evidencia trazable por candidato; fallback a YOLO-only si el OCR falla; sin datos y sin métricas inventadas.
+- **Tests:** `hybridEvidence.test.ts` (22 unitarios: normalización, extracción, pesos, ranking, no-mutación, garantía de no-verificación).
+
+### 4.12 Tarea WB-12 — Bounding box en la interfaz + ranking explicado
+
+**Estado: [x] COMPLETA** — Antes el backend ya enviaba `boundingBox` pero **la interfaz nunca lo dibujaba**.
+
+- `frontend/src/components/vision/DetectionBox.tsx`: overlay sobre la foto real con la caja, la categoría y la confianza. El `boundingBox` llega **normalizado (0..1)**, no en píxeles, por eso se posiciona con porcentajes.
+- Detalle de maquetado: la imagen se renderiza con `w-full h-auto` y **sin `object-contain`**, para que el contenedor la envuelva exactamente. Con `object-contain` sobre un contenedor de otra proporción la caja caería desplazada.
+- `VisionResultsPanel`: muestra los códigos leídos, el detalle de evidencia por candidato (`Código OEM`, `Código de fábrica`, `Código de item`) y una nota que **explica el criterio de orden** ("el orden prioriza la compatibilidad verificada; la coincidencia de código solo ordena los restantes").
+- Tipos espejo en `frontend/src/types/vision.ts` (`VisionEvidenciaCodigo`, `textoDetectado`, `codigosDetectados`, `scoreEvidencia`, `evidencias`).
+- **Tests:** `DetectionBox.test.tsx` (5: porcentajes, redondeo, sin caja, coordenadas fuera de rango, caja degenerada) y `VisionResultsPanel.hibrido.test.tsx` (9).
+
+### 4.13 Tarea WB-13 — Recomendaciones de captura en baja confianza / sin clasificación
+
+**Estado: [x] COMPLETA** — Un 422 que solo dice "no se pudo clasificar" deja al usuario sin forma de corregir la foto, que es justo el caso donde más ayuda hacen.
+
+- `RECOMENDACIONES_CAPTURA` en `vision.errors.ts`: mensajes accionables y verificables a simple vista (encuadre, fondo, luz, rótulo legible, sin borrosidad). No prometen una mejora medible porque **el umbral aún no está calibrado**.
+- `VisionServiceError` admite un `payload` opcional; `vision.routes.ts` lo adjunta al body. Es **aditivo**: los errores sin payload devuelven el mismo body de siempre.
+- Frontend: `recomendacionesVision(error)` en `visionApi.ts` y bloque de lista en el panel.
+
+### 4.14 Tarea WB-14 — Rendimiento del OCR híbrido
+
+**Estado: [x] COMPLETA** — Métricas reales medidas con `backend/scripts/medir-ocr.ts` sobre una fotografía real (`%TEMP%\opencode\vision-test\cand1.jpg`, 120 KB), no estimadas:
+
+| Medición | Valor |
+| --- | --- |
+| Primera llamada (carga de `eng.traineddata`) | 737 ms |
+| OCR caliente p50 / p95 (5 iteraciones) | 319 ms / 323 ms |
+| Sobrecosto en la latencia del request | **+0 ms** |
+| RSS antes / después de cargar Tesseract | 75 MB → 200 MB |
+
+- **Por qué +0 ms:** el OCR arranca en paralelo con la llamada a `ia-service` (~2.7 s en producción, medido), así que queda oculto tras la espera de red. En serie habría costado +319 ms.
+- El peso de YOLO corre en `ia-service`, **otro proceso/host**: el OCR no compite por CPU con la inferencia.
+- **Riesgo documentado:** las llamadas al OCR se serializan sobre un único worker. Con peticiones concurrentes el OCR sí podría pasar a ser el cuello de botella; con carga de un solo usuario no se observa.
+
 ---
 
 ## 5. Trabajo compartido
