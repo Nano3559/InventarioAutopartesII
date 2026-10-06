@@ -184,6 +184,51 @@ test("público: MIME no permitido → 400 (multer)", async () => {
   assert.equal(body.message, "Tipo de archivo no permitido");
 });
 
+test("público: multipart real en el campo 'image' llega a multer (req.file presente)", async () => {
+  // Regresión 400 "Debe subir una imagen": el cliente debe enviar el archivo
+  // como multipart en la clave `image`. Aquí se valida el contrato completo,
+  // incluidos los bytes reales del archivo (no solo el status).
+  const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0xff, 0xd9]);
+  const fd = new FormData();
+  fd.append("image", new Blob([jpeg], { type: "image/jpeg" }), "captura.jpg");
+
+  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
+
+  // Si multer no vio el archivo, la respuesta sería 400 VISION_IMAGEN_REQUERIDA.
+  assert.notEqual(res.status, 400, "el archivo en el campo 'image' no debe producir 400");
+  const body: any = await res.json();
+  assert.notEqual(body.codigo, "VISION_IMAGEN_REQUERIDA");
+  // El proveedor real/fake recibió la imagen: la petición llegó más allá de multer.
+  assert.equal(body.proveedor, "http");
+  assert.ok(body.deteccion, "el proveedor devolvió una detección a partir de los bytes recibidos");
+});
+
+test("público: body JSON serializado no cuenta como imagen → 400 VISION_IMAGEN_REQUERIDA", async () => {
+  // Documenta por qué el cliente NO debe enviar el FormData como
+  // `Content-Type: application/json`: en ese caso los bytes se pierden.
+  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: {} }),
+  });
+  assert.equal(res.status, 400);
+  const body: any = await res.json();
+  assert.equal(body.codigo, "VISION_IMAGEN_REQUERIDA");
+});
+
+test("público: el campo multipart debe llamarse exactamente 'image'", async () => {
+  // Contrato único: con otro nombre de campo multer rechaza la petición
+  // (LIMIT_UNEXPECTED_FILE) y el handler nunca ve un archivo.
+  const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0xff, 0xd9]);
+  const fd = new FormData();
+  fd.append("archivo", new Blob([jpeg], { type: "image/jpeg" }), "captura.jpg");
+
+  const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
+  assert.equal(res.status, 400, "un campo distinto de 'image' no puede llegar al proveedor");
+  const body: any = await res.json();
+  assert.notEqual(body.codigo, "VISION_IMAGEN_REQUERIDA");
+});
+
 test("público: detección válida 200 con serialización SEGURA (sin price2/stockTotal/stockPorSucursal)", async () => {
   const { fd } = fdConImagen({ marca: "Toyota", modelo: "Hilux", anio: "2020" });
   const res = await fetch(`${server.baseUrl}/api/vision/public/detectar`, { method: "POST", body: fd });
