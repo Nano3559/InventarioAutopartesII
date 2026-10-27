@@ -1,3 +1,4 @@
+import { assertDemoDatabase } from "../src/shared/utils/demoSafety";
 import { PrismaClient } from "@prisma/client";
 
 export const productSeed = [
@@ -117,6 +118,7 @@ export const importersSeed = [
 ];
 
 export async function seedData(prisma: PrismaClient) {
+  assertDemoDatabase(process.env.DATABASE_URL);
   console.log("=== Sembrando datos completos para dashboard ===");
 
   const admin = await prisma.user.findUnique({ where: { email: "admin@inventario.com" } });

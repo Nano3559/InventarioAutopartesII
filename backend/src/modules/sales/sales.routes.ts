@@ -1,14 +1,20 @@
-import { Router, Response } from "express";
+import { saleCustomer } from "../../shared/utils/saleCustomer";
+import { escapeHtml } from "../../shared/utils/html";
+import { saleValidation } from "../../shared/middlewares/saleValidation";
+import { Router, Response, NextFunction } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
 import { rangoFechasNegocio } from "../../shared/utils/rangoFechas";
-import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
+import { authorizeModule, authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8, REQUEST_STATUS_ACTIVOS } from "../../utils/replenish";
 import { validateAndMergeItems } from "../../utils/saleItems";
 import { notificarInventarioSolicitud } from "../../shared/utils/notificarInventario";
 import { esErrorDominio, errorDominio } from "../../shared/utils/errorDominio";
+
+import { salePrice, lineSubtotal, money, validatePayments } from "../../shared/utils/pricing";
+import { saleLocation } from "../../shared/utils/saleLocation";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -16,6 +22,10 @@ const prisma = new PrismaClient();
 router.use(authenticate);
 router.use(requireTiendaLocation);
 router.use(authorize("ADMIN", "TIENDA"));
+router.use((req, res, next) => {
+  const noteOrDetail = req.method === "GET" && /^\/\d+(\/nota)?\/?$/.test(req.path);
+  return authorizeModule(noteOrDetail ? ["ventas", "ventas-mayor"] : req.method === "GET" && req.query.type === "MAYOR" ? "ventas-mayor" : "ventas")(req, res, next);
+});
 
 // GET / — Listar ventas con filtros
 router.get("/", async (req: AuthRequest, res: Response) => {
@@ -86,7 +96,7 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
         user: { select: { id: true, name: true } },
         location: { select: { id: true, name: true, address: true } },
         customer: true,
-        items: { include: { product: true } },
+        items: { include: { product: { select: { id: true, name: true, itemCode: true, brand: true, model: true, year: true, price1: true } } } },
         payments: true,
         returns: true,
       },
@@ -95,6 +105,9 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
     if (!sale) {
       return res.status(404).json({ message: "Venta no encontrada" });
     }
+    let moduleAllowed = false;
+    await authorizeModule(sale.type === "MAYOR" ? "ventas-mayor" : "ventas")(req, res, () => { moduleAllowed = true; });
+    if (!moduleAllowed) return;
 
     const noteUser = req.user!;
     if (noteUser.role === "TIENDA" && noteUser.locationId && sale.locationId !== noteUser.locationId) {
@@ -102,7 +115,7 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
     }
 
     const totalReturned = sale.returns.reduce((sum, r) => sum + Number(r.amount), 0);
-    const totalPaid = sale.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const totalPaid = sale.payments.filter((p) => p.method !== "CREDITO").reduce((sum, p) => sum + Number(p.amount), 0);
 
     const paymentMethods = sale.payments.map((p) => `${p.method}: Bs. ${Number(p.amount).toFixed(2)}`).join(" | ");
 
@@ -123,6 +136,8 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
     .customer { background: #f5f5f5; padding: 6px 8px; border-radius: 4px; margin-bottom: 8px; font-size: 10px; }
     table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
     th, td { padding: 3px 5px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; }
+    td { overflow-wrap: anywhere; word-break: break-word; }
+    tr { break-inside: avoid; }
     th { background: #f0f0f0; font-weight: bold; }
     .text-right { text-align: right; }
     .text-center { text-align: center; }
@@ -139,33 +154,33 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
   <div class="header">
     <h2>RepuestoPro</h2>
     <p>Sistema de Inventario y Ventas</p>
-    <p>${sale.location?.name || "Tienda"}</p>
+    <p>${escapeHtml(sale.location?.name || "Tienda")}</p>
   </div>
 
   <div class="info">
     <div><strong>NOTA DE VENTA #${sale.id}</strong></div>
-    <div class="text-right">${new Date(sale.saleDate).toLocaleDateString("es-BO")} ${new Date(sale.saleDate).toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" })}</div>
+    <div class="text-right">${new Date(sale.saleDate).toLocaleDateString("es-BO", { timeZone: "America/La_Paz" })} ${new Date(sale.saleDate).toLocaleTimeString("es-BO", { timeZone: "America/La_Paz", hour: "2-digit", minute: "2-digit" })}</div>
   </div>
   <div class="info">
     <div>Tipo: <strong>${sale.type === "MAYOR" ? "VENTA POR MAYOR" : "VENTA NORMAL"}</strong></div>
-    <div class="text-right">Atendido por: ${sale.user.name}${(sale as any).seller ? ` (${(sale as any).seller})` : ""}</div>
+    <div class="text-right">Atendido por: ${escapeHtml(sale.user.name)}${(sale as any).seller ? ` (${escapeHtml((sale as any).seller)})` : ""}</div>
   </div>
 
   ${sale.customer ? `
   <div class="customer">
-    <strong>Cliente:</strong> ${sale.customer.name}
-    ${sale.customer.nit ? ` | NIT/CI: ${sale.customer.nit}` : ""}
-    ${sale.customer.phone ? ` | Tel: ${sale.customer.phone}` : ""}
+    <strong>Cliente:</strong> ${escapeHtml(sale.customer.name)}
+    ${sale.customer.nit ? ` | NIT/CI: ${escapeHtml(sale.customer.nit)}` : ""}
+    ${sale.customer.phone ? ` | Tel: ${escapeHtml(sale.customer.phone)}` : ""}
   </div>
   ` : ""}
 
-  ${(sale.type === "MAYOR" && (sale.paraQuien || sale.lugarEntrega || sale.datosFactura || sale.formaPago)) ? `
+  ${(sale.paraQuien || sale.lugarEntrega || sale.datosFactura || sale.formaPago) ? `
   <div class="customer">
     <strong>Datos de entrega:</strong><br>
-    ${sale.paraQuien ? `<span>Para: ${sale.paraQuien}</span><br>` : ""}
-    ${sale.lugarEntrega ? `<span>Lugar: ${sale.lugarEntrega}</span><br>` : ""}
-    ${sale.datosFactura ? `<span>Factura: ${sale.datosFactura}</span><br>` : ""}
-    ${sale.formaPago ? `<span>Forma de pago: ${sale.formaPago}</span><br>` : ""}
+    ${sale.paraQuien ? `<span>Para: ${escapeHtml(sale.paraQuien)}</span><br>` : ""}
+    ${sale.lugarEntrega ? `<span>Lugar: ${escapeHtml(sale.lugarEntrega)}</span><br>` : ""}
+    ${sale.datosFactura ? `<span>Factura: ${escapeHtml(sale.datosFactura)}</span><br>` : ""}
+    ${sale.formaPago ? `<span>Forma de pago: ${escapeHtml(sale.formaPago)}</span><br>` : ""}
   </div>
   ` : ""}
 
@@ -182,7 +197,7 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
       ${sale.items.map((item) => `
       <tr>
         <td class="text-center">${item.quantity}</td>
-        <td>${item.product.name}<br><small style="color:#999">${item.product.brand} · ${item.product.itemCode}</small></td>
+        <td>${escapeHtml(item.product.name)}<br><small style="color:#999">${escapeHtml(item.product.brand)} · ${escapeHtml(item.product.itemCode)}</small></td>
         <td class="text-right">Bs. ${Number(item.unitPrice).toFixed(2)}</td>
         <td class="text-right">Bs. ${Number(item.subtotal).toFixed(2)}</td>
       </tr>
@@ -227,7 +242,7 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
         user: { select: { id: true, name: true } },
         location: { select: { id: true, name: true } },
         customer: true,
-        items: { include: { product: true } },
+        items: { include: { product: { select: { id: true, name: true, itemCode: true, brand: true, model: true, year: true, price1: true } } } },
         payments: true,
         returns: true,
       },
@@ -236,6 +251,9 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
     if (!sale) {
       return res.status(404).json({ message: "Venta no encontrada" });
     }
+    let moduleAllowed = false;
+    await authorizeModule(sale.type === "MAYOR" ? "ventas-mayor" : "ventas")(req, res, () => { moduleAllowed = true; });
+    if (!moduleAllowed) return;
 
     const detailUser = req.user!;
     if (detailUser.role === "TIENDA" && detailUser.locationId && sale.locationId !== detailUser.locationId) {
@@ -256,7 +274,10 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
 });
 
 // POST — Crear venta con items, pagos y facturación
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", saleValidation, (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.body.items?.some((i: { priceMode?: string }) => i.priceMode === "POR_MAYOR")) return authorizeModule("ventas-mayor")(req, res, next);
+  next();
+}, async (req: AuthRequest, res: Response) => {
   try {
     const { items, payments, customerId, customerData, requiereFactura, locationId, seller, paraQuien, lugarEntrega, datosFactura, formaPago } = req.body;
 
@@ -266,10 +287,6 @@ router.post("/", async (req: AuthRequest, res: Response) => {
 
     if (!payments || !Array.isArray(payments) || payments.length === 0) {
       return res.status(400).json({ message: "Debe registrar al menos un pago" });
-    }
-
-    if (seller && typeof seller === "string" && !["Vendedor 1", "Vendedor 2", "Vendedor 3"].includes(seller)) {
-      return res.status(400).json({ message: "Vendedor inválido. Use: Vendedor 1, Vendedor 2 o Vendedor 3" });
     }
 
     // Datos de entrega opcionales (reutiliza las columnas Delivery de Sale, mismas
@@ -297,26 +314,10 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     const validItems = validateAndMergeItems(items);
 
     const user = req.user!;
-    let userLocationId: number;
-
-    if (user.role === "TIENDA") {
-      userLocationId = user.locationId!;
-      if (!userLocationId) {
-        return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
-      }
-      if (locationId && Number(locationId) !== userLocationId) {
-        return res.status(403).json({ message: "No puede vender productos de otra tienda" });
-      }
-    } else {
-      userLocationId = locationId ? Number(locationId) : user.locationId!;
-      if (!userLocationId) {
-        const tienda = await prisma.location.findFirst({ where: { type: "TIENDA" } });
-        if (!tienda) {
-          return res.status(400).json({ message: "No hay tiendas configuradas en el sistema" });
-        }
-        userLocationId = tienda.id;
-      }
+    if (user.role === "TIENDA" && locationId !== undefined && Number(locationId) !== user.locationId) {
+      return res.status(403).json({ message: "No puede vender productos de otra tienda" });
     }
+    const userLocationId = await saleLocation(prisma, user, locationId, false);
 
     // C2: validar que el vendedor pertenezca a la tienda, solo si es un usuario registrado.
     // Los vendedores genéricos ("Vendedor 1/2/3") o libres se aceptan como texto.
@@ -329,16 +330,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       }
     }
 
-    const validMethods = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];
-    for (const p of payments) {
-      if (!validMethods.includes(p.method)) {
-        return res.status(400).json({ message: `Método de pago inválido: ${p.method}` });
-      }
-      const amount = Number(p.amount);
-      if (!Number.isFinite(amount) || amount < 0) {
-        return res.status(400).json({ message: "El monto de pago debe ser un número mayor o igual a 0" });
-      }
-    }
+    const acceptedPayments = validatePayments(payments);
 
     // Se acumulan aquí y se notifica DESPUÉS del commit (ver más abajo): una
     // notificación es un efecto secundario y no puede abortar una venta válida.
@@ -369,23 +361,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     }[] = [];
 
     const result = await prisma.$transaction(async (tx) => {
-      let finalCustomerId = customerId || null;
-
-      if (customerData && !finalCustomerId) {
-        const { name, nit, phone } = customerData;
-        if (name) {
-          let customer;
-          if (nit) {
-            customer = await tx.customer.findFirst({ where: { nit } });
-          }
-          if (!customer) {
-            customer = await tx.customer.create({
-              data: { name, nit: nit || null, phone: phone || null },
-            });
-          }
-          finalCustomerId = customer.id;
-        }
-      }
+      const finalCustomerId = await saleCustomer(tx, customerId, customerData);
       // R4: bloqueo de fila pesimista (FOR UPDATE) sobre el inventario antes de validar y
       // descontar (misma mecánica que movements). Todas las filas se bloquean en un único
       // query con ORDER BY id: los locks se toman en orden determinista y sin ventana entre
@@ -419,19 +395,9 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       let totalSale = 0;
       const saleItemsData = orderedItems.map((item) => {
         const product = productById.get(item.productId)!;
-        // Semantica de precios del catalogo (ver prices.routes / InventoryPage):
-        //   price1 = mayorista, price2 = minorista.
-        // La venta NORMAL es venta al publico minorista, por lo que se cobra price2.
-        // Se cae a price1 solo si el producto no tiene minorista definido, para no
-        // bloquear la venta de un producto que solo tenga precio mayorista cargado.
-        const minorista = Number(product.price2);
-        const mayorista = Number(product.price1);
-        const unitPrice = minorista > 0 ? minorista : mayorista;
-        if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
-          throw errorDominio(`El producto "${product.name}" no tiene un precio de venta definido`);
-        }
-        const subtotal = item.quantity * unitPrice;
-        totalSale += subtotal;
+        const unitPrice = salePrice(product, item.priceMode);
+        const subtotal = lineSubtotal(item.quantity, unitPrice);
+        totalSale = money(totalSale + subtotal, "Total de venta");
         return {
           productId: item.productId,
           quantity: item.quantity,
@@ -440,7 +406,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         };
       });
 
-      const totalPaid = payments.reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+      const totalPaid = acceptedPayments.reduce((sum, p) => money(sum + p.amount, "Total de pagos", true), 0);
       if (Math.abs(totalPaid - totalSale) > 0.01) {
         throw errorDominio(`El total pagado (Bs. ${totalPaid}) no coincide con el total de la venta (Bs. ${totalSale})`);
       }
@@ -452,14 +418,14 @@ router.post("/", async (req: AuthRequest, res: Response) => {
           userId: user.userId,
           locationId: userLocationId,
           customerId: finalCustomerId,
-          seller: seller || null,
+          seller: textoEntrega(seller, "seller", 120),
           paraQuien: entregaParaQuien,
           lugarEntrega: entregaLugar,
           datosFactura: entregaFactura,
           formaPago: entregaFormaPago,
           items: { create: saleItemsData },
           payments: {
-            create: payments.map((p: any) => ({
+            create: acceptedPayments.map((p) => ({
               method: p.method,
               amount: Number(p.amount),
             })),

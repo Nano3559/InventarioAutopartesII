@@ -1,3 +1,6 @@
+import { errorDominio } from "../../shared/utils/errorDominio";
+import { money, validatePriceConfiguration } from "../../shared/utils/pricing";
+import { esErrorDominio } from "../../shared/utils/errorDominio";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize, authorizeModule } from "../../shared/middlewares/auth";
@@ -9,18 +12,25 @@ const prisma = new PrismaClient();
 
 router.use(authenticate);
 router.use(authorize("ADMIN"));
+router.use(authorizeModule("precios"));
 
 // Márgenes por defecto para los precios:
-//   Precio 1 = mayorista (margen menor), Precio 2 = minorista (margen mayor)
-const DEFAULT_MARGIN1 = 25; // % margen mayorista
-const DEFAULT_MARGIN2 = 45; // % margen minorista
+//   margin1 calcula POR MAYOR y margin2 calcula POR MENOR. price2 queda legacy.
+const DEFAULT_MARGIN1 = 25; // % sobre costo para POR MAYOR
+const DEFAULT_MARGIN2 = 45; // % sobre costo para POR MENOR
+const margin = (value: unknown, fallback: number) => {
+  if (value === undefined) return fallback;
+  const n = Number(value);
+  if (typeof value === "boolean" || value === null || value === "" || !Number.isFinite(n) || n < 0 || n > 200) throw errorDominio("El margen debe estar entre 0 y 200");
+  return n;
+};
 
 // GET / — Calcular precios desde costo con márgenes configurables y filtro por factura
 router.get("/", async (req: AuthRequest, res: Response) => {
   try {
     const { search, costId, page = "1", limit = "20" } = req.query;
-    const margin1 = req.query.margin1 !== undefined ? Number(req.query.margin1) : DEFAULT_MARGIN1;
-    const margin2 = req.query.margin2 !== undefined ? Number(req.query.margin2) : DEFAULT_MARGIN2;
+    const margin1 = margin(req.query.margin1, DEFAULT_MARGIN1);
+    const margin2 = margin(req.query.margin2, DEFAULT_MARGIN2);
     const m1 = Number.isFinite(margin1) ? margin1 : DEFAULT_MARGIN1;
     const m2 = Number.isFinite(margin2) ? margin2 : DEFAULT_MARGIN2;
     const pg = parsePagination(page, limit, 200);
@@ -51,7 +61,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       prisma.product.findMany({
         where,
         include: {
-          costs: { orderBy: { date: "desc" }, include: { supplier: { select: { id: true, name: true } } } },
+          costs: { orderBy: [{ date: "desc" }, { id: "desc" }], include: { supplier: { select: { id: true, name: true } } } },
         },
         orderBy: { name: "asc" },
         skip: pg.skip,
@@ -62,8 +72,8 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
     const prices = products.map((p) => {
       const latestCost = p.costs[0]?.costPrice ? Number(p.costs[0].costPrice) : p.cost ? Number(p.cost) : 0;
-      const precioMayorista = Number((latestCost * (1 + m1 / 100)).toFixed(2)); // Precio 1
-      const precioMinorista = Number((latestCost * (1 + m2 / 100)).toFixed(2)); // Precio 2
+      const suggestedWholesale = Number((latestCost * (1 + m1 / 100)).toFixed(2)); // POR MAYOR
+      const suggestedRetail = Number((latestCost * (1 + m2 / 100)).toFixed(2)); // POR MENOR
 
       return {
         id: p.id,
@@ -74,6 +84,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
         years: p.year,
         detail: p.detail || "",
         cost: latestCost,
+        suggestions: [20, 30, 40, 50, 60, 70, 80].map((percentage) => ({ percentage, price: Number((latestCost * (1 + percentage / 100)).toFixed(2)) })),
         costs: p.costs.map((c) => ({
           id: c.id,
           costPrice: Number(c.costPrice),
@@ -81,11 +92,11 @@ router.get("/", async (req: AuthRequest, res: Response) => {
           invoiceUrl: c.invoiceUrl || null,
           date: c.date,
         })),
-        precioMayorista,
-        precioMinorista,
-        currentPrice1: p.price1 ? Number(p.price1) : 0,
-        currentPrice2: p.price2 ? Number(p.price2) : 0,
-        wholesalePrice: p.wholesalePrice ? Number(p.wholesalePrice) : 0,
+        suggestedWholesale,
+        suggestedRetail,
+        retailPrice: p.price1 ? Number(p.price1) : 0,
+        
+        wholesalePrice: p.wholesalePrice ? Number(p.wholesalePrice) : null,
         costId: p.costs[0]?.id ?? null,
         costDate: p.costs[0]?.date ?? null,
         invoiceUrl: p.costs[0]?.invoiceUrl ?? null,
@@ -94,7 +105,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
     // Lista de facturas/costos disponibles para el filtro
     const invoices = await prisma.cost.findMany({
-      orderBy: { date: "desc" },
+      orderBy: [{ date: "desc" }, { id: "desc" }],
       distinct: ["invoiceUrl"],
       take: 50,
       include: { product: { select: { itemCode: true, name: true } }, supplier: { select: { name: true } } },
@@ -115,6 +126,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: pg.page, limit: pg.take, pages: Math.ceil(total / pg.take) },
     });
   } catch (error) {
+    if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
     console.error("Error al calcular precios:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -130,19 +142,16 @@ router.put("/:productId", authorizeModule("precios"), async (req: AuthRequest, r
       return res.status(400).json({ message: "El campo wholesalePrice es obligatorio" });
     }
 
-    const price = Number(wholesalePrice);
-    if (isNaN(price) || price <= 0) {
-      return res.status(400).json({ message: "El precio por mayor debe ser un número mayor a 0" });
-    }
-
-    const product = await prisma.product.findUnique({ where: { id: Number(productId) } });
-    if (!product) return res.status(404).json({ message: "Producto no encontrado" });
-
-    const updated = await prisma.product.update({
-      where: { id: Number(productId) },
-      data: { wholesalePrice: price },
-      select: { id: true, name: true, itemCode: true, wholesalePrice: true },
+    const price = money(wholesalePrice, "Precio por mayor");
+    const updated = await prisma.$transaction(async (tx) => {
+      const id = Number(productId);
+      await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${id} FOR UPDATE`;
+      const product = await tx.product.findUnique({ where: { id } });
+      if (!product) return null;
+      validatePriceConfiguration({ ...product, wholesalePrice: price });
+      return tx.product.update({ where: { id }, data: { wholesalePrice: price }, select: { id: true, name: true, itemCode: true, wholesalePrice: true } });
     });
+    if (!updated) return res.status(404).json({ message: "Producto no encontrado" });
 
     res.json({
       id: updated.id,
@@ -151,18 +160,19 @@ router.put("/:productId", authorizeModule("precios"), async (req: AuthRequest, r
       wholesalePrice: Number(updated.wholesalePrice),
     });
   } catch (error) {
+    if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
     console.error("Error al actualizar precio:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 
-// POST /apply — Aplicar Precio 1 (mayorista) y Precio 2 (minorista) calculados desde el costo con márgenes
+// POST /apply — Aplicar POR MENOR y POR MAYOR calculados desde el costo con márgenes
 // Opcional: filtrar por factura (costId) para aplicar solo a los productos de esa factura
 router.post("/apply", authorizeModule("precios"), async (req: AuthRequest, res: Response) => {
   try {
     const { margin1, margin2, costId } = req.body;
-    const m1 = Number.isFinite(Number(margin1)) ? Number(margin1) : DEFAULT_MARGIN1;
-    const m2 = Number.isFinite(Number(margin2)) ? Number(margin2) : DEFAULT_MARGIN2;
+    const m1 = margin(margin1, DEFAULT_MARGIN1);
+    const m2 = margin(margin2, DEFAULT_MARGIN2);
     if (m1 < 0 || m2 < 0) return res.status(400).json({ message: "Los márgenes deben ser mayores o iguales a 0" });
 
     const where: any = {};
@@ -176,21 +186,28 @@ router.post("/apply", authorizeModule("precios"), async (req: AuthRequest, res: 
 
     const products = await prisma.product.findMany({
       where,
-      include: { costs: { orderBy: { date: "desc" }, take: 1 } },
+      include: { costs: { orderBy: [{ date: "desc" }, { id: "desc" }], take: 1 } },
     });
 
-    let updated = 0;
-    for (const p of products) {
-      const cost = p.costs[0]?.costPrice ? Number(p.costs[0].costPrice) : p.cost ? Number(p.cost) : 0;
-      if (cost <= 0) continue;
-      const price1 = Number((cost * (1 + m1 / 100)).toFixed(2));
-      const price2 = Number((cost * (1 + m2 / 100)).toFixed(2));
-      await prisma.product.update({ where: { id: p.id }, data: { price1, price2 } });
-      updated++;
-    }
+    const updated = await prisma.$transaction(async (tx) => {
+      let count = 0;
+      for (const ref of [...products].sort((a, b) => a.id - b.id)) {
+        await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${ref.id} FOR UPDATE`;
+        const p = await tx.product.findUniqueOrThrow({ where: { id: ref.id }, include: { costs: { orderBy: [{ date: "desc" }, { id: "desc" }], take: 1 } } });
+        const cost = Number(p.costs[0]?.costPrice ?? p.cost ?? 0);
+        if (cost <= 0) continue;
+        const wholesalePrice = money(cost * (1 + m1 / 100), "Precio por mayor");
+        const price1 = money(cost * (1 + m2 / 100), "Precio por menor");
+        validatePriceConfiguration({ ...p, cost, price1, wholesalePrice });
+        await tx.product.update({ where: { id: p.id }, data: { price1, wholesalePrice } });
+        count++;
+      }
+      return count;
+    }, { timeout: 20000 });
 
     res.json({ updated, margin1: m1, margin2: m2, costId: costId ? Number(costId) : null });
   } catch (error: any) {
+    if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
     console.error("Error al aplicar precios:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -199,12 +216,12 @@ router.post("/apply", authorizeModule("precios"), async (req: AuthRequest, res: 
 // GET /export — Exportar precios a CSV
 router.get("/export", async (req: AuthRequest, res: Response) => {
   try {
-    const margin1 = Number.isFinite(Number(req.query.margin1)) ? Number(req.query.margin1) : DEFAULT_MARGIN1;
-    const margin2 = Number.isFinite(Number(req.query.margin2)) ? Number(req.query.margin2) : DEFAULT_MARGIN2;
+    const margin1 = margin(req.query.margin1, DEFAULT_MARGIN1);
+    const margin2 = margin(req.query.margin2, DEFAULT_MARGIN2);
 
     const products = await prisma.product.findMany({
       where: { cost: { not: null } },
-      include: { costs: { orderBy: { date: "desc" }, take: 1 } },
+      include: { costs: { orderBy: [{ date: "desc" }, { id: "desc" }], take: 1 } },
       orderBy: { name: "asc" },
     });
 
@@ -218,9 +235,10 @@ router.get("/export", async (req: AuthRequest, res: Response) => {
         years: p.year,
         detail: p.detail || "",
         cost: Number(cost.toFixed(2)),
-        precioMayorista: Number((cost * (1 + margin1 / 100)).toFixed(2)),
-        precioMinorista: Number((cost * (1 + margin2 / 100)).toFixed(2)),
-        wholesalePrice: p.wholesalePrice ? Number(p.wholesalePrice) : 0,
+        retailPrice: Number(p.price1),
+        suggestedWholesale: Number((cost * (1 + margin1 / 100)).toFixed(2)),
+        suggestedRetail: Number((cost * (1 + margin2 / 100)).toFixed(2)),
+        wholesalePrice: p.wholesalePrice ? Number(p.wholesalePrice) : null,
       };
     });
 
@@ -232,12 +250,13 @@ router.get("/export", async (req: AuthRequest, res: Response) => {
       return s;
     };
 
-    const header = ["Codigo Fabrica", "Nombre", "Marca", "Modelo", "Año", "Detalle", "Costo", "Precio 1 (Mayorista)", "Precio 2 (Minorista)", "Precio Mayor"];
-    const csvLines = [header, ...rows.map((r) => [r.itemCode, r.name, r.brand, r.model, r.years, r.detail, r.cost, r.precioMayorista, r.precioMinorista, r.wholesalePrice].map(esc))];
+    const header = ["Codigo Fabrica", "Nombre", "Marca", "Modelo", "Año", "Detalle", "Costo", "Por mayor sugerido", "Por menor sugerido", "Por menor", "Por mayor"];
+    const csvLines = [header, ...rows.map((r) => [r.itemCode, r.name, r.brand, r.model, r.years, r.detail, r.cost, r.suggestedWholesale, r.suggestedRetail, r.retailPrice, r.wholesalePrice].map(esc))];
     const csv = "\uFEFF" + csvLines.map((l) => l.join(",")).join("\r\n");
 
     res.json({ data: rows, total: rows.length, csv });
   } catch (error) {
+    if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
     console.error("Error al exportar precios:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }

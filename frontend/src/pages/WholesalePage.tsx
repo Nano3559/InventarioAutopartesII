@@ -1,3 +1,5 @@
+import { saveSalePdf } from "../utils/salePdf";
+import { formatBusinessDate } from "../utils/businessDate";
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   TrendingUp, Plus, Minus, Trash2, X, Search, FileText,
@@ -5,8 +7,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+import { useAuthStore } from "../stores/authStore";
 
 interface WholesaleItem {
   productId: number; itemCode: string; name: string; brand: string;
@@ -37,6 +38,10 @@ interface WholesaleImportResult {
 }
 
 export default function WholesalePage() {
+  const { user } = useAuthStore();
+  const [locations, setLocations] = useState<{ id: number; name: string; type: string }[]>([]);
+  const [locationId, setLocationId] = useState<number | "">(user?.locationId || "");
+  useEffect(() => { api.get("/locations").then((r) => setLocations(Array.isArray(r.data) ? r.data : r.data.locations || [])).catch(() => toast.error("No se pudieron cargar ubicaciones")); }, []);
   const [sales, setSales] = useState<WholesaleSale[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -110,7 +115,8 @@ export default function WholesalePage() {
 
   const addItem = (p: ProductResult) => {
     if (items.find((i) => i.productId === p.id)) { toast.error("Producto ya agregado"); return; }
-    const price = p.wholesalePrice || p.price1;
+    const price = Number(Number(p.wholesalePrice).toFixed(2));
+    if (!Number.isFinite(price) || price <= 0 || price > p.price1) { toast.error("Configura el precio por mayor del producto"); return; }
     setItems((prev) => [...prev, {
       productId: p.id, itemCode: p.itemCode, name: p.name, brand: p.brand,
       model: p.model, year: p.year, detail: p.detail,
@@ -124,13 +130,10 @@ export default function WholesalePage() {
     setItems((prev) => prev.map((i) => i.productId === productId ? { ...i, quantity: qty, subtotal: qty * i.unitPrice } : i));
   };
 
-  const updatePrice = (productId: number, price: number) => {
-    setItems((prev) => prev.map((i) => i.productId === productId ? { ...i, unitPrice: price, subtotal: i.quantity * price } : i));
-  };
-
   const removeItem = (productId: number) => setItems((prev) => prev.filter((i) => i.productId !== productId));
 
   const openConfirm = () => {
+    if (!locationId) { toast.error("Selecciona el origen del inventario"); return; }
     if (!items.length) { toast.error("Agrega al menos un producto"); return; }
     if (!clientName.trim()) { toast.error("Ingresa el nombre del cliente"); return; }
     setShowConfirm(true);
@@ -139,18 +142,19 @@ export default function WholesalePage() {
   const confirmSale = async () => {
     try {
       const payload = {
+        locationId,
         customerData: { name: clientName, nit: facturaNIT || null },
         paraQuien: pedido,
         lugarEntrega: finalDeliveryPlace,
         items: items.map((i) => ({
           productId: i.productId,
           quantity: i.quantity,
-          unitPrice: i.unitPrice,
+          priceMode: "POR_MAYOR",
         })),
         payments: [{ method: paymentMethod, amount: total }],
       };
       const response = await api.post("/wholesale", payload);
-      setLastWholesaleSale({ id: response.data.id, saleDate: response.data.createdAt || new Date().toISOString(), total: Number(response.data.total) || total, items: [...items], clientName, pedido, deliveryPlace: finalDeliveryPlace, paymentMethod, facturaNIT });
+      setLastWholesaleSale({ id: response.data.id, saleDate: response.data.saleDate || response.data.createdAt || new Date().toISOString(), total: Number(response.data.total) || total, items: items.map((item) => { const accepted = response.data.items.find((i: { productId: number }) => i.productId === item.productId); return { ...item, unitPrice: Number(accepted.unitPrice), subtotal: Number(accepted.subtotal) }; }), clientName, pedido, deliveryPlace: finalDeliveryPlace, paymentMethod, facturaNIT });
       toast.success("Venta por mayor registrada");
       setShowConfirm(false);
       setShowForm(false);
@@ -187,41 +191,28 @@ export default function WholesalePage() {
     }
   };
 
-  const printNota = (sale: WholesaleSale) => {
+  const printNota = async (sale: WholesaleSale) => {
     const win = window.open("", "_blank");
     if (!win) return;
-    win.document.write(`<html><head><title>Nota de Venta #${sale.id}</title>
-      <style>body{font-family:Arial,sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}th{background:#f0f0f0}h1{font-size:18px}.total{font-size:16px;font-weight:bold;text-align:right;margin-top:10px}</style></head><body>
-      <h1>RepuestoPro - Nota de Venta Mayorista</h1>
-      <p><b>Fecha:</b> ${new Date(sale.saleDate).toLocaleDateString("es-BO")} | <b>ID:</b> #${sale.id}</p>
-       <p><b>Cliente:</b> ${sale.customer?.name || "N/A"} | <b>Lugar:</b> ${sale.lugarEntrega || sale.location?.name || "N/A"}</p>
-       ${sale.paraQuien ? `<p><b>Para quién:</b> ${sale.paraQuien}</p>` : ""}
-       ${sale.datosFactura ? `<p><b>Factura/NIT:</b> ${sale.datosFactura}</p>` : ""}
-       ${sale.formaPago ? `<p><b>Forma de pago:</b> ${sale.formaPago}</p>` : ""}
-      <p><b>Vendedor:</b> ${sale.user?.name || "N/A"}</p>
-      <table><thead><tr><th>Código</th><th>Producto</th><th>Marca</th><th>Modelo</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody>
-      ${sale.items.map((i) => `<tr><td>${i.product.itemCode}</td><td>${i.product.name}</td><td>${i.product.brand}</td><td>${i.product.model}</td><td>${i.quantity}</td><td>${formatBs(Number(i.unitPrice))}</td><td>${formatBs(Number(i.subtotal))}</td></tr>`).join("")}
-      </tbody></table>
-      <p class="total">TOTAL: ${formatBs(Number(sale.total))}</p>
-      <p><b>Pagos:</b> ${sale.payments.map((p) => `${p.method}: ${formatBs(Number(p.amount))}`).join(", ")}</p>
-      </body></html>`);
-    win.document.close(); win.print();
+    try {
+      const response = await api.get(`/sales/${sale.id}/nota`);
+      win.document.write(response.data);
+      win.document.close();
+      win.print();
+    } catch {
+      win.close();
+      toast.error("No se pudo generar la nota de venta");
+    }
   };
 
-  const formatDate = (d: string) => new Date(d).toLocaleDateString("es-BO", { day: "2-digit", month: "short", year: "numeric" });
+  const formatDate = (d: string) => formatBusinessDate(d, { day: "2-digit", month: "short", year: "numeric" });
 
   const downloadPDF = async () => {
     const el = document.getElementById(showReceipt ? "wholesale-receipt-modal" : "wholesale-confirm-modal");
     if (!el) return;
     toast.loading("Generando PDF...", { id: "wpdf" });
     try {
-      const canvas = await html2canvas(el, { scale: 2, backgroundColor: "#151a22" });
-      const img = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const imgHeight = (canvas.height * pageWidth) / canvas.width;
-      pdf.addImage(img, "PNG", 0, 0, pageWidth, imgHeight);
-      pdf.save(`venta-mayorista-${lastWholesaleSale?.id || "cotizacion"}.pdf`);
+      await saveSalePdf(el, `venta-mayorista-${lastWholesaleSale?.id || "cotizacion"}.pdf`);
       toast.success("PDF descargado", { id: "wpdf" });
     } catch {
       toast.error("Error al generar PDF", { id: "wpdf" });
@@ -313,6 +304,12 @@ export default function WholesalePage() {
           </div>
 
           <div className="p-4 space-y-4">
+            <label className="block text-sm text-gray-300">Origen del inventario
+              <select aria-label="Origen del inventario" value={locationId} disabled={user?.role === "TIENDA"} onChange={(e) => { setLocationId(Number(e.target.value) || ""); setItems([]); }} className="ml-2 bg-dark-800 p-2 rounded-lg">
+                <option value="">Selecciona una ubicación</option>
+                {locations.filter((l) => user?.role !== "TIENDA" || l.id === user.locationId).map((l) => <option key={l.id} value={l.id}>{l.name} ({l.type})</option>)}
+              </select>
+            </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Nombre del cliente *</label>
@@ -376,7 +373,7 @@ export default function WholesalePage() {
                         <p className="text-white text-sm">{p.name}</p>
                         <p className="text-gray-400 text-xs">{p.brand} | {p.itemCode} | {p.model}</p>
                       </div>
-                      <span className="text-amber-400 text-sm font-medium">{formatBs(p.wholesalePrice || p.price1)}</span>
+                      <span className="text-amber-400 text-sm font-medium">{formatBs(p.wholesalePrice || 0)}</span>
                     </button>
                   ))}
                 </div>
@@ -420,8 +417,7 @@ export default function WholesalePage() {
                           </div>
                         </td>
                         <td className="px-3 py-2 text-right">
-                          <input type="number" value={item.unitPrice} onChange={(e) => updatePrice(item.productId, Number(e.target.value))}
-                            className="w-20 px-2 py-1 bg-dark-800 border border-dark-700 rounded-lg text-white text-xs text-right focus:outline-none focus:border-primary-500" />
+                          <span className="text-white text-sm">{formatBs(item.unitPrice)}</span>
                         </td>
                         <td className="px-3 py-2 text-amber-400 font-medium text-right">{formatBs(item.subtotal)}</td>
                         <td className="px-3 py-2 text-center">

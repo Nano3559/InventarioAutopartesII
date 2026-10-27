@@ -41,6 +41,7 @@ async function postMovement(productId: number, quantity: number): Promise<Respon
       toLocationId: ctx.locationIds.tienda,
       quantity,
       observation: "Movimiento de prueba",
+      operationId: crypto.randomUUID(),
     },
     token
   );
@@ -97,4 +98,19 @@ test("R6.12 — dos movimientos concurrentes que agotarían el origen: exactamen
 
   const count = await ctx.prisma.movement.count({ where: { productId: p.id } });
   assert.equal(count, 1, "solo debe registrarse un movimiento");
+});
+test("entrega de solicitud mueve stock una vez y recepción no duplica ingreso", async () => {
+  const p = await createProduct(ctx, { stockAlmacen: 10, stockTienda: 0 });
+  const request = await ctx.prisma.productRequest.create({ data: { productId: p.id, quantity: 3, locationId: ctx.locationIds.tienda, requestedById: ctx.users.tienda.userId, status: "PREPARANDO" } });
+  const headers = { "content-type": "application/json", authorization: `Bearer ${token}` };
+  const deliver = () => fetch(`${server.baseUrl}/api/requests/${request.id}`, { method: "PUT", headers, body: JSON.stringify({ status: "ENTREGADO", fromLocationId: ctx.locationIds.almacen }) });
+  assert.equal((await deliver()).status, 200);
+  assert.equal(await stock(p.id, ctx.locationIds.almacen), 7);
+  assert.equal(await stock(p.id, ctx.locationIds.tienda), 3);
+  assert.equal((await deliver()).status, 400);
+  const tokenTienda = await loginAndGetToken(server.baseUrl, ctx.users.tienda.email, ctx.users.tienda.password);
+  const receive = await fetch(`${server.baseUrl}/api/requests/${request.id}`, { method: "PUT", headers: { ...headers, authorization: `Bearer ${tokenTienda}` }, body: JSON.stringify({ status: "RECIBIDO_POR_TIENDA" }) });
+  assert.equal(receive.status, 200);
+  assert.equal(await stock(p.id, ctx.locationIds.tienda), 3);
+  assert.equal(await ctx.prisma.movement.count({ where: { requestId: request.id } }), 1);
 });

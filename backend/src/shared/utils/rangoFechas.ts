@@ -153,3 +153,10 @@ export function validarMesNegocio(mes: unknown): { anio: number; mes: number } |
 }
 
 export { ZONA_NEGOCIO };
+
+/** Clave calendario de negocio, independiente de la zona del servidor. */
+export function fechaNegocio(value: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA_NEGOCIO, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(value);
+  const get = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)!.value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}

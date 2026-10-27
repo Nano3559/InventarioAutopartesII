@@ -9,9 +9,10 @@ import * as XLSX from "xlsx";
 interface PriceRow {
   id: number; itemCode: string; productName: string; brand: string;
   model: string; years: string; detail: string;
-  cost: number; precioMayorista: number; precioMinorista: number;
-  currentPrice1: number; currentPrice2: number;
+  cost: number; suggestedWholesale: number; suggestedRetail: number;
+  retailPrice: number;
   wholesalePrice: number;
+  suggestions?: { percentage: number; price: number }[];
 }
 
 interface PriceExportRow {
@@ -22,9 +23,11 @@ interface PriceExportRow {
   years: string;
   detail: string;
   cost: number;
-  precioMayorista: number;
-  precioMinorista: number;
+  suggestedWholesale: number;
+  suggestedRetail: number;
   wholesalePrice: number;
+  retailPrice?: number;
+  suggestions?: { percentage: number; price: number }[];
 }
 
 interface Invoice {
@@ -100,8 +103,8 @@ export default function PricesPage() {
       const rows = data.map((r: PriceExportRow) => ({
         "Código Fábrica": r.itemCode, Producto: r.name, Marca: r.brand, Modelo: r.model,
         Años: r.years, Detalle: r.detail, "Costo (Bs.)": r.cost,
-        "Precio 1 (Mayorista)": r.precioMayorista, "Precio 2 (Minorista)": r.precioMinorista,
-        "Precio Mayor": r.wholesalePrice,
+        "Por mayor sugerido": r.suggestedWholesale, "Por menor sugerido": r.suggestedRetail,
+        "Por menor": r.retailPrice, "Por mayor": r.wholesalePrice,
       }));
       const sheet = XLSX.utils.json_to_sheet(rows);
       const book = XLSX.utils.book_new();
@@ -116,7 +119,7 @@ export default function PricesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Precios</h1>
-          <p className="text-gray-400 text-sm mt-1">Cálculo desde el costo: Precio 1 (mayorista) y Precio 2 (minorista) con márgenes configurables</p>
+          <p className="text-gray-400 text-sm mt-1">POR MENOR y POR MAYOR desde el costo. Las sugerencias se aplican solo al confirmar.</p>
         </div>
         <div className="flex gap-2">
           <button onClick={fetchPrices}
@@ -133,12 +136,12 @@ export default function PricesPage() {
       {/* Config: filtro por factura + márgenes configurables */}
       <div className="bg-dark-800/50 border border-dark-700/50 rounded-2xl p-4 grid grid-cols-1 md:grid-cols-4 gap-3">
         <div className="md:col-span-2">
-          <label className="block text-xs text-gray-400 mb-1.5">Factura / Archivo importado</label>
+          <label className="block text-xs text-gray-400 mb-1.5">Costo / producto de factura</label>
           <div className="relative">
             <FileText size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <select value={costId} onChange={(e) => setCostId(e.target.value)}
               className="w-full pl-9 pr-3 py-2.5 bg-dark-900/50 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 appearance-none">
-              <option value="">Todas las facturas (todo el inventario)</option>
+              <option value="">Todos los productos con costo</option>
               {invoices.map((i) => (
                 <option key={i.id} value={i.id}>
                   {i.invoiceUrl} · {i.productName} · {i.supplierName || "s/proveedor"}
@@ -148,12 +151,12 @@ export default function PricesPage() {
           </div>
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1.5">Margen Precio 1 (%) — mayorista</label>
+          <label className="block text-xs text-gray-400 mb-1.5">Margen POR MAYOR (%)</label>
           <input type="number" min="0" value={margin1} onChange={(e) => setMargin1(e.target.value)}
             className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1.5">Margen Precio 2 (%) — minorista</label>
+          <label className="block text-xs text-gray-400 mb-1.5">Margen POR MENOR (%)</label>
           <input type="number" min="0" value={margin2} onChange={(e) => setMargin2(e.target.value)}
             className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
         </div>
@@ -189,10 +192,10 @@ export default function PricesPage() {
                     <th className="text-left px-3 py-3 text-gray-400 font-medium">Marca</th>
                     <th className="text-left px-3 py-3 text-gray-400 font-medium">Modelo</th>
                     <th className="text-right px-3 py-3 text-gray-400 font-medium">Costo (Bs.)</th>
-                    <th className="text-right px-3 py-3 text-primary-400 font-medium">Precio 1 (Mayorista)</th>
-                    <th className="text-right px-3 py-3 text-blue-400 font-medium">Precio 2 (Minorista)</th>
-                    <th className="text-right px-3 py-3 text-green-400 font-medium">Actual P1</th>
-                    <th className="text-right px-3 py-3 text-cyan-400 font-medium">Actual P2</th>
+                    <th className="text-right px-3 py-3 text-primary-400 font-medium">POR MAYOR sugerido</th>
+                    <th className="text-right px-3 py-3 text-blue-400 font-medium">POR MENOR sugerido</th>
+                    <th className="text-right px-3 py-3 text-green-400 font-medium">POR MENOR actual</th>
+                    <th className="text-right px-3 py-3 text-gray-400">Por mayor actual</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -201,14 +204,14 @@ export default function PricesPage() {
                   ) : prices.map((p) => (
                     <tr key={p.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
                       <td className="px-3 py-3 text-gray-300 font-mono text-xs">{p.itemCode}</td>
-                      <td className="px-3 py-3 text-white font-medium">{p.productName}</td>
+                      <td className="px-3 py-3 text-white font-medium">{p.productName}<div className="text-xs text-gray-400">{p.suggestions?.map((v) => `+${v.percentage}%: ${formatBs(v.price)}`).join(" · ")}</div></td>
                       <td className="px-3 py-3 text-gray-300">{p.brand}</td>
                       <td className="px-3 py-3 text-gray-300">{p.model}</td>
                       <td className="px-3 py-3 text-amber-400 font-medium text-right">{formatBs(p.cost)}</td>
-                      <td className="px-3 py-3 text-primary-400 font-medium text-right">{formatBs(p.precioMayorista)}</td>
-                      <td className="px-3 py-3 text-blue-400 font-medium text-right">{formatBs(p.precioMinorista)}</td>
-                      <td className="px-3 py-3 text-green-400 text-right text-xs">{formatBs(p.currentPrice1)}</td>
-                      <td className="px-3 py-3 text-cyan-400 text-right text-xs">{formatBs(p.currentPrice2)}</td>
+                      <td className="px-3 py-3 text-primary-400 font-medium text-right">{formatBs(p.suggestedWholesale)}</td>
+                      <td className="px-3 py-3 text-blue-400 font-medium text-right">{formatBs(p.suggestedRetail)}</td>
+                      <td className="px-3 py-3 text-green-400 text-right text-xs">{formatBs(p.retailPrice)}</td>
+                      <td className="px-3 py-3 text-right text-gray-300">{p.wholesalePrice ? formatBs(p.wholesalePrice) : "Sin configurar"}</td>
                     </tr>
                   ))}
                 </tbody>

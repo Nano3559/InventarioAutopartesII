@@ -1,3 +1,5 @@
+import { formatBusinessDateTime } from "../utils/businessDate";
+import { formatBusinessDate } from "../utils/businessDate";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Send, Plus, X, RefreshCw, ChevronDown, ChevronLeft, ChevronRight,
@@ -62,6 +64,7 @@ export default function RequestsPage() {
   const isInventario = role === "INVENTARIO" || role === "ADMIN";
   const isTienda = role === "TIENDA" || role === "ADMIN";
 
+  const [originWarehouse, setOriginWarehouse] = useState("");
   const [requests, setRequests] = useState<RequestRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -107,7 +110,7 @@ export default function RequestsPage() {
   const fetchLocations = useCallback(async () => {
     try {
       const res = await api.get("/locations");
-      setLocations(res.data);
+      setLocations(Array.isArray(res.data) ? res.data : res.data.locations || []);
     } catch { /* ignore */ }
   }, []);
 
@@ -191,7 +194,7 @@ export default function RequestsPage() {
 
   const changeStatus = async (id: number, newStatus: string) => {
     try {
-      await api.put(`/requests/${id}`, { status: newStatus });
+      await api.put(`/requests/${id}`, { status: newStatus, ...(newStatus === "ENTREGADO" ? { fromLocationId: Number(originWarehouse) } : {}) });
       toast.success(`Estado cambiado a ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
       fetchRequests();
     } catch (err: any) {
@@ -201,6 +204,12 @@ export default function RequestsPage() {
 
   return (
     <div className="space-y-6">
+      {isInventario && <label className="block text-sm text-gray-300">Almacén para entregar solicitudes
+        <select value={originWarehouse} onChange={(e) => setOriginWarehouse(e.target.value)} className="ml-2 bg-dark-800 p-2 rounded-lg">
+          <option value="">Seleccione almacén</option>
+          {locations.filter((l) => l.type === "ALMACEN").map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+        </select>
+      </label>}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Solicitudes</h1>
@@ -268,7 +277,7 @@ export default function RequestsPage() {
                   return (
                     <tr key={r.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30 transition-colors">
                       <td className="px-4 py-3 text-gray-400">{r.id}</td>
-                      <td className="px-4 py-3 text-gray-300">{new Date(r.date).toLocaleDateString("es-BO")}</td>
+                      <td className="px-4 py-3 text-gray-300">{formatBusinessDate(r.date)}</td>
                       <td className="px-4 py-3">
                         <p className="text-white font-medium">{r.product.name}</p>
                         <p className="text-xs text-gray-500">{r.product.itemCode}</p>
@@ -477,7 +486,7 @@ export default function RequestsPage() {
                             )}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {h.userRole} · {new Date(h.createdAt).toLocaleString("es-BO")}
+                            {h.userRole} · {formatBusinessDateTime(h.createdAt)}
                           </p>
                         </div>
                       </div>

@@ -86,7 +86,7 @@ export const authorize = (...roles: string[]) => {
   };
 };
 
-export const authorizeModule = (module: string) => {
+export const authorizeModule = (module: string | readonly string[]) => {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({ message: "No autenticado" });
@@ -109,7 +109,8 @@ export const authorizeModule = (module: string) => {
 
       if (cached.name === "ADMIN") return next();
 
-      if (!cached.permissions.includes(module)) {
+      const requested = typeof module === "string" ? [module] : module;
+      if (!requested.some((m) => cached.permissions.includes(m) || (m === "inventario" && cached.permissions.includes("productos")))) {
         return res.status(403).json({ message: `No tiene acceso al módulo: ${module}` });
       }
 

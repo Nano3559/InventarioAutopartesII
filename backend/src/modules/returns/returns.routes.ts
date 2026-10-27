@@ -1,9 +1,11 @@
+import { incrementStock } from "../../shared/utils/stock";
+import { money } from "../../shared/utils/pricing";
 import { Router, Response } from "express";
 import { PrismaClient, PaymentMethod } from "@prisma/client";
 import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
 import { rangoFechasNegocio } from "../../shared/utils/rangoFechas";
-import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
+import { authorizeModule, authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt, parsePositiveDecimal, parseString } from "../../shared/middlewares/validate";
 
@@ -13,6 +15,7 @@ const prisma = new PrismaClient();
 router.use(authenticate);
 router.use(requireTiendaLocation);
 router.use(authorize("ADMIN", "TIENDA"));
+router.use(authorizeModule("devoluciones"));
 
 const VALID_METHODS: PaymentMethod[] = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];
 
@@ -108,7 +111,7 @@ router.get("/sale/:saleId", async (req: AuthRequest, res: Response) => {
     const sale = await prisma.sale.findUnique({
       where: { id: saleId },
       include: {
-        items: { include: { product: true } },
+        items: { include: { product: { select: { id: true, name: true, itemCode: true, brand: true, price1: true } } } },
         customer: true,
         payments: true,
         returns: true,
@@ -156,40 +159,14 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ message: "No puede devolver productos de una venta de otra tienda" });
     }
 
-    const saleItem = sale.items.find((i) => i.productId === productId);
-    if (!saleItem) return res.status(400).json({ message: "El producto no pertenece a esta venta" });
-    if (quantity > saleItem.quantity) {
-      return res.status(400).json({ message: `La cantidad a devolver (${quantity}) excede la vendida (${saleItem.quantity})` });
-    }
-
-    // Impedir devolver la misma cantidad dos veces (suma devoluciones previas)
-    const previousReturns = await prisma.return.findMany({
-      where: { saleId, productId },
-      select: { quantity: true },
-    });
-    const alreadyReturned = previousReturns.reduce((sum, r) => sum + r.quantity, 0);
-    if (alreadyReturned + quantity > saleItem.quantity) {
-      const remaining = saleItem.quantity - alreadyReturned;
-      return res.status(400).json({
-        message: `Ya se devolvieron ${alreadyReturned} de ${saleItem.quantity} unidades. Máximo adicional: ${Math.max(remaining, 0)}.`,
-      });
-    }
-
-    // El monto debe coincidir con el precio vendido × cantidad
-    const expectedAmount = Number(saleItem.unitPrice) * quantity;
-    if (Math.abs(amount - expectedAmount) > 0.01) {
-      return res.status(400).json({
-        message: `El monto devuelto (Bs. ${amount}) no coincide con el precio vendido de la cantidad a devolver (Bs. ${expectedAmount.toFixed(2)})`,
-      });
-    }
-
     const returned = await prisma.$transaction(async (tx) => {
       // R4: serializar devoluciones del mismo producto dentro de la misma venta bloqueando
       // la(s) fila(s) del SaleItem (FOR UPDATE). Sin este lock, dos devoluciones concurrentes
       // de un mismo producto podrían leer la misma suma previa y devolver más de lo vendido.
       // La cantidad vendida se relee dentro de la transacción a partir de las filas bloqueadas.
-      const lockedItems = await tx.$queryRaw<{ id: number; quantity: number }[]>`
-        SELECT id, quantity FROM "SaleItem"
+      await tx.$queryRaw`SELECT id FROM "Sale" WHERE id = ${saleId} FOR UPDATE`;
+      const lockedItems = await tx.$queryRaw<{ id: number; quantity: number; unitPrice: unknown }[]>`
+        SELECT id, quantity, "unitPrice" FROM "SaleItem"
         WHERE "saleId" = ${saleId} AND "productId" = ${productId}
         FOR UPDATE`;
 
@@ -199,9 +176,10 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       const soldQuantity = lockedItems.reduce((sum, i) => sum + i.quantity, 0);
 
       // Re-chequeo de la suma de devoluciones previas dentro de la transacción (atómico).
+      if (quantity > soldQuantity) throw new Error(`La cantidad a devolver (${quantity}) excede la vendida (${soldQuantity})`);
       const previousReturns = await tx.return.findMany({
         where: { saleId, productId },
-        select: { quantity: true },
+        select: { quantity: true, amount: true },
       });
       const alreadyReturned = previousReturns.reduce((sum, r) => sum + r.quantity, 0);
       if (alreadyReturned + quantity > soldQuantity) {
@@ -209,17 +187,17 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         throw new Error(`Ya se devolvieron ${alreadyReturned} de ${soldQuantity} unidades. Máximo adicional: ${Math.max(remaining, 0)}.`);
       }
 
+      const soldAmount = lockedItems.reduce((sum, item) => sum + item.quantity * Number(item.unitPrice), 0);
+      const alreadyRefunded = previousReturns.reduce((sum, r) => sum + Number(r.amount), 0);
+      // Sin saleItemId en Return, se asigna proporcionalmente el valor histórico del producto.
+      // El total acumulado redondeado conserva exactamente el valor al devolver todo.
+      const expectedAmount = money(soldAmount * (alreadyReturned + quantity) / soldQuantity - alreadyRefunded, "Monto a devolver");
+      if (Math.abs(amount - expectedAmount) > 0.01) throw new Error(`El monto devuelto (Bs. ${amount}) no coincide con el precio vendido de la cantidad a devolver (Bs. ${expectedAmount.toFixed(2)})`);
+      if (alreadyRefunded + expectedAmount - soldAmount > 0.01) throw new Error("El reembolso acumulado excede el valor vendido");
       const ret = await tx.return.create({
-        data: { saleId, productId, reason: reason!, quantity, amount, method },
+        data: { saleId, productId, reason: reason!, quantity, amount: expectedAmount, method },
       });
-      // El increment es atómico en PostgreSQL: devoluciones concurrentes nunca pierden stock.
-      // Se usa upsert (INSERT ... ON CONFLICT DO UPDATE) que resuelve concurrentemente la
-      // creación o el incremento de la fila sin riesgo de conflicto de unicidad (P2002).
-      await tx.inventory.upsert({
-        where: { productId_locationId: { productId, locationId: sale.locationId } },
-        update: { stock: { increment: quantity } },
-        create: { productId, locationId: sale.locationId, stock: quantity, minStock: 1 },
-      });
+      await incrementStock(tx, productId, sale.locationId, quantity);
       return ret;
     }, { timeout: 20000 });
 

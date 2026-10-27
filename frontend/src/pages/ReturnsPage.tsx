@@ -1,3 +1,4 @@
+import { formatBusinessDate } from "../utils/businessDate";
 import { useState, useEffect, useCallback } from "react";
 import {
   Search, RotateCcw, RefreshCw, ChevronDown,
@@ -16,7 +17,7 @@ interface Sale {
     product: { id: number; name: string; itemCode: string; brand: string; price1: string };
   }[];
   payments: { id: number; method: string; amount: number }[];
-  returns: { id: number; quantity: number; productId: number }[];
+  returns: { id: number; quantity: number; productId: number; amount: number }[];
 }
 
 interface ReturnRecord {
@@ -33,7 +34,7 @@ interface RecentSale {
   items: { id: number; productId: number; quantity: number; unitPrice: number; subtotal: number;
     product: { id: number; name: string; itemCode: string; brand: string; price1: string } }[];
   payments: { id: number; method: string; amount: number }[];
-  returns: { id: number; quantity: number; productId: number }[];
+  returns: { id: number; quantity: number; productId: number; amount: number }[];
   seller: string | null;
 }
 
@@ -105,7 +106,16 @@ export default function ReturnsPage() {
       setSelectedItem(null);
       setReason(""); setQuantity(""); setAmount(""); setMethod("EFECTIVO");
       const res = await api.get(`/returns/sale/${searchIdVal.trim()}`);
-      setSale(res.data);
+      const grouped = new Map<number, Sale["items"][number]>();
+      for (const item of res.data.items as Sale["items"]) {
+        const old = grouped.get(item.productId);
+        if (old) {
+          old.quantity += item.quantity;
+          old.subtotal = Number(old.subtotal) + Number(item.subtotal);
+          old.unitPrice = old.subtotal / old.quantity;
+        } else grouped.set(item.productId, { ...item, subtotal: Number(item.subtotal), unitPrice: Number(item.unitPrice) });
+      }
+      setSale({ ...res.data, items: [...grouped.values()] });
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Venta no encontrada");
       setSale(null);
@@ -114,6 +124,12 @@ export default function ReturnsPage() {
     }
   };
 
+  const quote = (item: Sale["items"][number], qty: number) => {
+    const previous = (sale?.returns || []).filter((r) => r.productId === item.productId);
+    const returned = previous.reduce((sum, r) => sum + r.quantity, 0);
+    const refunded = previous.reduce((sum, r) => sum + Number(r.amount), 0);
+    return (Math.round((Number(item.subtotal) * (returned + qty) / item.quantity - refunded) * 100) / 100).toFixed(2);
+  };
   const selectItem = (item: Sale["items"][0]) => {
     const alreadyReturned = (sale?.returns || [])
       .filter((r) => r.productId === item.productId)
@@ -125,7 +141,7 @@ export default function ReturnsPage() {
     }
     setSelectedItem(item.productId);
     setQuantity(String(maxQty));
-    setAmount(String(Number(item.unitPrice) * maxQty));
+    setAmount(quote(item, maxQty));
   };
 
   const handleReturn = async () => {
@@ -151,7 +167,16 @@ export default function ReturnsPage() {
       setSelectedItem(null);
       setReason(""); setQuantity(""); setAmount(""); setMethod("EFECTIVO");
       const res = await api.get(`/returns/sale/${sale.id}`);
-      setSale(res.data);
+      const grouped = new Map<number, Sale["items"][number]>();
+      for (const item of res.data.items as Sale["items"]) {
+        const old = grouped.get(item.productId);
+        if (old) {
+          old.quantity += item.quantity;
+          old.subtotal = Number(old.subtotal) + Number(item.subtotal);
+          old.unitPrice = old.subtotal / old.quantity;
+        } else grouped.set(item.productId, { ...item, subtotal: Number(item.subtotal), unitPrice: Number(item.unitPrice) });
+      }
+      setSale({ ...res.data, items: [...grouped.values()] });
       fetchReturns();
       fetchRecentSales();
     } catch (err: any) {
@@ -209,7 +234,7 @@ export default function ReturnsPage() {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-white font-medium">Venta #{rs.id}</p>
                     <p className="text-xs text-gray-500">
-                      {new Date(rs.saleDate).toLocaleDateString("es-BO")} · {rs.location.name}
+                      {formatBusinessDate(rs.saleDate)} · {rs.location.name}
                       {rs.seller && <span className="ml-1 text-primary-400">· {rs.seller}</span>}
                     </p>
                   </div>
@@ -251,7 +276,7 @@ export default function ReturnsPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-white font-semibold">Venta #{sale.id}</h3>
-              <p className="text-gray-400 text-sm">{new Date(sale.saleDate).toLocaleDateString("es-BO")} · {sale.location.name} · {sale.type}</p>
+              <p className="text-gray-400 text-sm">{formatBusinessDate(sale.saleDate)} · {sale.location.name} · {sale.type}</p>
             </div>
             <div className="text-right">
               <p className="text-white font-semibold">{formatBs(Number(sale.total))}</p>
@@ -288,12 +313,12 @@ export default function ReturnsPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-xs text-gray-400 mb-1">Cantidad *</label>
-                  <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} min="1"
+                  <input type="number" value={quantity} onChange={(e) => { setQuantity(e.target.value); const item = sale.items.find((i) => i.productId === selectedItem); if (item) setAmount(quote(item, Number(e.target.value))); }} min="1"
                     className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                 </div>
                 <div>
                   <label className="block text-xs text-gray-400 mb-1">Monto (Bs.) *</label>
-                  <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} min="0" step="0.01"
+                  <input type="number" value={amount} readOnly min="0" step="0.01"
                     className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                 </div>
                 <div className="relative">
@@ -368,7 +393,7 @@ export default function ReturnsPage() {
                 {returns.map((r) => (
                   <tr key={r.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30 transition-colors">
                     <td className="px-4 py-3 text-gray-400">{r.id}</td>
-                    <td className="px-4 py-3 text-gray-300">{new Date(r.date).toLocaleDateString("es-BO")}</td>
+                    <td className="px-4 py-3 text-gray-300">{formatBusinessDate(r.date)}</td>
                     <td className="px-4 py-3 text-white">{r.product.name}</td>
                     <td className="px-4 py-3 text-gray-400">#{r.saleId}</td>
                     <td className="px-4 py-3 text-gray-400 text-xs">{r.sale?.seller || "—"}</td>

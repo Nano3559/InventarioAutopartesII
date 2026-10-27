@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authenticate, authorize, authorizeModule } from "../../shared/middlewares/auth";
 import { parseId, parseString } from "../../shared/middlewares/validate";
 import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
@@ -9,6 +9,8 @@ const router = Router();
 const prisma = new PrismaClient();
 
 router.use(authenticate);
+router.use(authorize("ADMIN", "TIENDA"));
+router.use(authorizeModule(["ventas", "ventas-mayor"]));
 
 // GET / — Listar clientes con búsqueda
 router.get("/", async (req: Request, res: Response) => {

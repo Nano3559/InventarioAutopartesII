@@ -52,13 +52,13 @@ const mockCategories = [{ id: 1, name: "Motor" }, { id: 2, name: "Frenos" }];
 const mockProduct1 = {
   id: 10, itemCode: "FILT-001", manufacturer: "Bosch", name: "Filtro de Aceite",
   brand: "Bosch", model: "Universal", year: "2020-2024", price1: "25.00", price2: "35.00",
-  wholesalePrice: null, stock: 10, category: "Motor", image: null, oemCode: "OEM-001",
+  wholesalePrice: "20.00", stock: 10, category: "Motor", image: null, oemCode: "OEM-001",
 };
 
 const mockProduct2 = {
   id: 20, itemCode: "BAL-002", manufacturer: "TRW", name: "Balatas Delanteras",
   brand: "TRW", model: "Sedan", year: "2018-2023", price1: "45.00", price2: "55.00",
-  wholesalePrice: null, stock: 3, category: "Frenos", image: null, oemCode: null,
+  wholesalePrice: "20.00", stock: 3, category: "Frenos", image: null, oemCode: null,
 };
 
 function mockApiSetup() {
@@ -101,20 +101,20 @@ async function searchFor(user: ReturnType<typeof userEvent.setup>, productName: 
   }, { timeout: 5000 });
 }
 
-/** Click the first "Mayorista" button in search results */
-async function addProductMayorista(user: ReturnType<typeof userEvent.setup>) {
-  const buttons = screen.getAllByRole("button", { name: /Mayorista/i });
+/** Click the first "POR MENOR" button in search results */
+async function addProductPrice1(user: ReturnType<typeof userEvent.setup>) {
+  const buttons = screen.getAllByRole("button", { name: /POR MENOR/i });
   await user.click(buttons[0]);
 }
 
 /** Search and add a product that's already in cart (increments quantity) */
-async function searchAndAddMayorista(user: ReturnType<typeof userEvent.setup>, productName: string) {
+async function searchAndAddPrice1(user: ReturnType<typeof userEvent.setup>, productName: string) {
   const searchInput = screen.getByPlaceholderText(/Buscar producto/i);
   // Clear existing text first (addToCart clears search, but just in case)
   await user.clear(searchInput);
   await user.type(searchInput, productName);
-  // Wait for debounce + API + re-render: Mayorista: button appears in search results
-  const btn = await screen.findByRole("button", { name: /Mayorista:/i }, { timeout: 5000 });
+  // Wait for debounce + API + re-render: POR MENOR: button appears in search results
+  const btn = await screen.findByRole("button", { name: /POR MENOR:/i }, { timeout: 5000 });
   await user.click(btn);
 }
 
@@ -135,7 +135,7 @@ describe("SalesPage — Carrito (E7.5)", () => {
     const user = userEvent.setup();
     renderSales();
     await searchFor(user, "Filtro de Aceite");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
 
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
@@ -147,7 +147,7 @@ describe("SalesPage — Carrito (E7.5)", () => {
     renderSales();
 
     await searchFor(user, "Filtro de Aceite");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
     });
@@ -175,7 +175,7 @@ describe("SalesPage — Carrito (E7.5)", () => {
     renderSales();
 
     await searchFor(user, "Filtro de Aceite");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
     });
@@ -197,7 +197,7 @@ describe("SalesPage — Carrito (E7.5)", () => {
     renderSales();
 
     await searchFor(user, "Balatas Delanteras");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
 
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
@@ -226,7 +226,7 @@ describe("SalesPage — Carrito (E7.5)", () => {
     renderSales();
 
     await searchFor(user, "Filtro de Aceite");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
     });
@@ -244,15 +244,15 @@ describe("SalesPage — Carrito (E7.5)", () => {
     renderSales();
 
     await searchFor(user, "Filtro de Aceite");
-    // Product 1: price1=25 (Mayorista), price2=35 (Minorista)
-    await addProductMayorista(user);
+    // Product 1: price1=25 (POR MENOR), price2=35 (POR MAYOR)
+    await addProductPrice1(user);
 
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
     });
 
-    // In the cart table, look for Mayorista/Minorista tier buttons
-    // Default added with Mayorista tier (price1=25)
+    // In the cart table, look for POR MENOR/POR MAYOR tier buttons
+    // Default added with POR MENOR tier (price1=25)
     // Verify the price cell shows the unit price
     const allTexts = document.body.textContent || "";
     // The formatBs output for 25 is "Bs. 25,00" (es-BO locale)
@@ -280,13 +280,13 @@ describe("SalesPage — Calculo de total (E7.6)", () => {
     renderSales();
 
     await searchFor(user, "Filtro de Aceite");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
 
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
     });
 
-    // The cart should display unit price; price1=25 for Mayorista tier
+    // The cart should display unit price; price1=25 for POR MENOR tier
     const bodyText = document.body.textContent || "";
     expect(bodyText).toContain("25");
   });
@@ -297,13 +297,13 @@ describe("SalesPage — Calculo de total (E7.6)", () => {
 
     // Add product1 (price1=25)
     await searchFor(user, "Filtro de Aceite");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
     });
 
     // addToCart clears search, so type new search and add product2
-    await searchAndAddMayorista(user, "Balatas Delanteras");
+    await searchAndAddPrice1(user, "Balatas Delanteras");
 
     // total = 25 + 45 = 70
     await waitFor(() => {
@@ -319,7 +319,7 @@ describe("SalesPage — Calculo de total (E7.6)", () => {
     renderSales();
 
     await searchFor(user, "Filtro de Aceite");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
 
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
@@ -349,21 +349,21 @@ describe("SalesPage — Calculo de total (E7.6)", () => {
     renderSales();
 
     await searchFor(user, "Filtro de Aceite");
-    await addProductMayorista(user);
+    await addProductPrice1(user);
 
     await waitFor(() => {
       expect(screen.getByText("1 producto(s) en carrito")).toBeInTheDocument();
     });
 
-    // Switch to Minorista (price2=35) in the cart
-    const minoristaBtns = screen.getAllByText("Minorista");
+    // Switch to POR MAYOR (price2=35) in the cart
+    const minoristaBtns = screen.getAllByText("POR MAYOR");
     if (minoristaBtns.length > 0) {
       await user.click(minoristaBtns[minoristaBtns.length - 1]);
     }
 
     await waitFor(() => {
       const bodyText = document.body.textContent || "";
-      expect(bodyText).toContain("35");
+      expect(bodyText).toContain("20");
     });
   });
 });
@@ -442,5 +442,46 @@ describe("SalesPage — Borrador preparado desde visión (WB-8)", () => {
     await waitFor(() => {
       expect(screen.getByText(/Entrega a Pedro · Av\. Arce 123, La Paz/)).toBeInTheDocument();
     });
+  });
+});
+
+describe("SalesPage — contrato de precio y ubicación PRE-H4", () => {
+  beforeEach(() => { vi.clearAllMocks(); localStorage.clear(); mockApiSetup(); });
+  it("envía el nivel y cantidad, sin unitPrice controlado por cliente", async () => {
+    const user = userEvent.setup();
+    renderSales();
+    const location = await screen.findByDisplayValue("Seleccionar tienda");
+    await user.selectOptions(location, "1");
+    await searchFor(user, "Filtro de Aceite");
+    await addProductPrice1(user);
+    await user.click(screen.getByRole("button", { name: /Cobrar/ }));
+    await user.click(screen.getByRole("button", { name: "Confirmar Venta" }));
+    await waitFor(() => expect(mockedApiPost).toHaveBeenCalled());
+    const payload = mockedApiPost.mock.calls[0][1];
+    expect(payload.locationId).toBe(1);
+    expect(payload.items).toEqual([{ productId: 10, quantity: 1, priceMode: "POR_MENOR" }]);
+    expect(payload.payments[0].amount).toBe(25);
+  });
+  it("no ignora el modo elegido al agregar un producto que ya está en el carrito", async () => {
+    const user = userEvent.setup();
+    renderSales();
+    await searchFor(user, "Filtro de Aceite");
+    await addProductPrice1(user);
+    await searchFor(user, "Filtro de Aceite");
+    await user.click(await screen.findByRole("button", { name: /POR MAYOR:/ }));
+    expect(mockedToastError).toHaveBeenCalledWith("El producto ya usa otro modo. Cámbielo en su fila del carrito");
+    expect(screen.queryByText(/Precio 1|Precio 2|PRICE1|PRICE2/)).not.toBeInTheDocument();
+    const qtySpan = document.querySelector("table tbody tr td:nth-child(3) span");
+    expect(qtySpan?.textContent).toBe("1");
+  });
+  it("ADMIN no confirma una venta sin elegir tienda", async () => {
+    const user = userEvent.setup();
+    renderSales();
+    await searchFor(user, "Filtro de Aceite");
+    await addProductPrice1(user);
+    await user.click(screen.getByRole("button", { name: /Cobrar/ }));
+    await user.click(screen.getByRole("button", { name: "Confirmar Venta" }));
+    expect(mockedApiPost).not.toHaveBeenCalled();
+    expect(mockedToastError).toHaveBeenCalledWith("Selecciona una tienda para la venta");
   });
 });

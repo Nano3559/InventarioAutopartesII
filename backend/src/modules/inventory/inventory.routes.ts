@@ -1,6 +1,9 @@
+import { parseId } from "../../shared/middlewares/validate";
+import { errorDominio, esErrorDominio } from "../../shared/utils/errorDominio";
+import { MAX_QUANTITY } from "../../shared/utils/pricing";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
+import { authorizeModule, authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import {
   UsuarioConAlcance,
@@ -21,6 +24,7 @@ router.use(requireTiendaLocation);
 // toda la cadena solo por tener sesión. TIENDA se conserva: consultar el stock de su
 // tienda es su flujo funcional. Ver ROLES_CON_INVENTARIO en shared/utils/scope.ts.
 router.use(authorize(...ROLES_CON_INVENTARIO));
+router.use(authorizeModule("inventario"));
 
 /**
  * Columnas de Product que el módulo de inventario necesita mostrar.
@@ -189,56 +193,38 @@ router.get("/product/:productId", async (req: AuthRequest, res: Response) => {
 // flujos de venta, reposición y devolución, no editando el registro a mano.
 router.put("/:id", authorize(...ROLES_QUE_AJUSTAN_INVENTARIO), async (req: AuthRequest, res: Response) => {
   try {
-    const id = Number(req.params.id);
+    const id = parseId(req.params.id);
     const { stock, minStock, reasonType, reason } = req.body;
 
-    const existing = await prisma.inventory.findUnique({ where: { id } });
-    if (!existing) {
-      return res.status(404).json({ message: "Registro de inventario no encontrado" });
-    }
-
-    const data: any = {};
-    let stockChanged = false;
-    if (stock != null) {
-      const s = Number(stock);
-      if (!Number.isInteger(s) || s < 0) {
-        return res.status(400).json({ message: "El stock debe ser un entero mayor o igual a 0" });
+    const updated = await prisma.$transaction(async (tx) => {
+      const rows = await tx.$queryRaw<{ id: number }[]>`SELECT id FROM "Inventory" WHERE id = ${id} FOR UPDATE`;
+      if (!rows.length) return null;
+      const existing = await tx.inventory.findUniqueOrThrow({ where: { id } });
+      const data: { stock?: number; minStock?: number } = {};
+      const validStock = (v: unknown) => typeof v !== "boolean" && v !== null && v !== "" && Number.isInteger(Number(v)) && Number(v) >= 0 && Number(v) <= MAX_QUANTITY;
+      if (stock !== undefined) {
+        if (!validStock(stock)) throw errorDominio("El stock debe ser un entero válido mayor o igual a 0");
+        if (!validStock(req.body.expectedStock)) throw errorDominio("Envíe expectedStock con el stock leído antes del ajuste");
+        if (Number(req.body.expectedStock) !== existing.stock) return { conflict: true as const };
+        data.stock = Number(stock);
       }
-      data.stock = s;
-      stockChanged = s !== existing.stock;
-    }
-    if (minStock != null) {
-      const m = Number(minStock);
-      if (!Number.isInteger(m) || m < 0) {
-        return res.status(400).json({ message: "El stock mínimo debe ser un entero mayor o igual a 0" });
+      if (minStock !== undefined) {
+        if (!validStock(minStock)) throw errorDominio("El stock mínimo debe ser un entero válido mayor o igual a 0");
+        data.minStock = Number(minStock);
       }
-      data.minStock = m;
-    }
-
-    const validReasons = ["COMPRA", "AJUSTE", "DEVOLUCION", "MERMA"];
-    if (reasonType != null && reasonType !== "" && !validReasons.includes(reasonType)) {
-      return res.status(400).json({ message: "El motivo debe ser COMPRA, AJUSTE, DEVOLUCION o MERMA" });
-    }
-    if (stockChanged && (!reasonType || reasonType === "")) {
-      return res.status(400).json({ message: "Selecciona el motivo del ajuste de stock (COMPRA, AJUSTE, DEVOLUCION o MERMA)" });
-    }
-
-    const updated = await prisma.inventory.update({
-      where: { id },
-      data,
-      include: { product: PRODUCTO_CON_FINANZEROS, location: UBICACION_INVENTARIO },
-    });
-
-    await prisma.auditLog.create({
-      data: {
-        userId: req.user!.userId,
-        action: "UPDATE_INVENTORY",
-        targetType: "INVENTORY",
-        targetId: id,
+      const validReasons = ["COMPRA", "AJUSTE", "DEVOLUCION", "MERMA"];
+      if (reasonType && !validReasons.includes(reasonType)) throw errorDominio("El motivo debe ser COMPRA, AJUSTE, DEVOLUCION o MERMA");
+      if (data.stock !== undefined && data.stock !== existing.stock && !reasonType) throw errorDominio("Selecciona el motivo del ajuste de stock (COMPRA, AJUSTE, DEVOLUCION o MERMA)");
+      const changed = await tx.inventory.update({ where: { id }, data, include: { product: PRODUCTO_CON_FINANZEROS, location: UBICACION_INVENTARIO } });
+      await tx.auditLog.create({ data: {
+        userId: req.user!.userId, action: "UPDATE_INVENTORY", targetType: "INVENTORY", targetId: id,
         oldValue: { stock: existing.stock, minStock: existing.minStock },
-        newValue: { stock: updated.stock, minStock: updated.minStock, reasonType: reasonType || null, reason: reason || null },
-      },
+        newValue: { stock: changed.stock, minStock: changed.minStock, reasonType: reasonType || null, reason: typeof reason === "string" ? reason.slice(0, 500) : null },
+      } });
+      return changed;
     });
+    if (!updated) return res.status(404).json({ message: "Registro de inventario no encontrado" });
+    if ("conflict" in updated) return res.status(409).json({ message: "El stock cambió. Recargue el inventario antes de ajustar" });
 
     // Antes devolvía el registro crudo con `product: true`, es decir el Product
     // completo (price1, price2, costo y cualquier campo futuro). Ahora pasa por la
@@ -246,6 +232,7 @@ router.put("/:id", authorize(...ROLES_QUE_AJUSTAN_INVENTARIO), async (req: AuthR
     // `wholesalePrice` se conceden por rol, igual que en /api/products.
     res.json(serializarInventario(updated as unknown as FilaInventario, req.user, true));
   } catch (error) {
+    if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
     console.error("Error al actualizar inventario:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }

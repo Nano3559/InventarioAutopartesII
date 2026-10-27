@@ -1,3 +1,4 @@
+import { formatBusinessDate, formatBusinessTime } from "../utils/businessDate";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   ArrowLeftRight, Search, Plus, X, ChevronDown, ChevronLeft, ChevronRight,
@@ -34,6 +35,7 @@ export default function MovementsPage() {
   const [toLocationId, setToLocationId] = useState("");
   const [quantity, setQuantity] = useState("");
   const [observation, setObservation] = useState("");
+  const operationId = useRef(crypto.randomUUID());
   const [submitting, setSubmitting] = useState(false);
   const [productStock, setProductStock] = useState<{ total: number; byLocation: { location: string; stock: number }[] } | null>(null);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -58,7 +60,7 @@ export default function MovementsPage() {
   const fetchLocations = useCallback(async () => {
     try {
       const res = await api.get("/locations");
-      setLocations(res.data.locations || []);
+      setLocations(Array.isArray(res.data) ? res.data : res.data.locations || []);
     } catch { /* ignore */ }
   }, []);
 
@@ -131,6 +133,7 @@ export default function MovementsPage() {
     try {
       setSubmitting(true);
       await api.post("/movements", {
+        operationId: operationId.current,
         productId: selectedProduct.id,
         fromLocationId: Number(fromLocationId),
         toLocationId: Number(toLocationId),
@@ -147,6 +150,7 @@ export default function MovementsPage() {
   };
 
   const resetForm = () => {
+    operationId.current = crypto.randomUUID();
     setSelectedProduct(null);
     setProductSearch("");
     setFromLocationId("");
@@ -264,9 +268,9 @@ export default function MovementsPage() {
                     <tr key={m.id} className="border-b border-dark-700/30 last:border-0 hover:bg-dark-900/30">
                       <td className="px-4 py-3 text-gray-400">{m.id}</td>
                       <td className="px-4 py-3 text-gray-300 text-xs">
-                        {new Date(m.date).toLocaleDateString("es-BO")}{" "}
+                        {formatBusinessDate(m.date)}{" "}
                         <span className="text-gray-500">
-                          {new Date(m.date).toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" })}
+                          {formatBusinessTime(m.date, { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -318,7 +322,7 @@ export default function MovementsPage() {
                     <div className="flex items-center gap-2 text-xs text-gray-500">
                       <span className="font-mono">#{m.id}</span>
                       <span>·</span>
-                      <span>{new Date(m.date).toLocaleDateString("es-BO")}</span>
+                      <span>{formatBusinessDate(m.date)}</span>
                     </div>
                     <span className="px-2.5 py-0.5 bg-primary-600/10 border border-primary-600/20 text-primary-400 text-xs font-medium rounded-full">
                       x{m.quantity}

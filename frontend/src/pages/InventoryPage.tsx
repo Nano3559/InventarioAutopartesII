@@ -78,7 +78,7 @@ const emptyForm: FormData = {
 
 const ALL_COLUMNS = [
   "ID", "Fabricante", "Producto", "Marca", "Modelo", "Año", "Detalles",
-  "Cód. OEM", "Cód. Fábrica", "Proveedor", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones",
+  "Cód. OEM", "Cód. Fábrica", "Proveedor", "Imagen", "POR MENOR", "POR MAYOR", "Stock", "Acciones",
 ];
 
 function getStoredColumns(): string[] | null {
@@ -130,7 +130,7 @@ export default function InventoryPage() {
   const [showStockModal, setShowStockModal] = useState<number | null>(null);
   const [stockData, setStockData] = useState<StockData | null>(null);
   const [stockLoading, setStockLoading] = useState(false);
-  const [stockEdits, setStockEdits] = useState<Record<number, { stock: string; minStock: string; reasonType: string; reason: string }>>({});
+  const [stockEdits, setStockEdits] = useState<Record<number, { stock: string; expectedStock: number; minStock: string; reasonType: string; reason: string }>>({});
   const [stockSaving, setStockSaving] = useState(false);
 
   const [showImportModal, setShowImportModal] = useState(false);
@@ -222,7 +222,7 @@ export default function InventoryPage() {
       const payload = {
         ...form,
         price1: Number(form.price1),
-        price2: form.price2 ? Number(form.price2) : Number(form.price1),
+        price2: form.price2 ? Number(form.price2) : 0,
         wholesalePrice: form.wholesalePrice ? Number(form.wholesalePrice) : null,
         cost: form.cost ? Number(form.cost) : null,
         categoryId: form.categoryId ? Number(form.categoryId) : null,
@@ -264,9 +264,9 @@ export default function InventoryPage() {
       setStockLoading(true);
       const res = await api.get(`/inventory/product/${productId}`);
       setStockData(res.data);
-      const edits: Record<number, { stock: string; minStock: string; reasonType: string; reason: string }> = {};
+      const edits: Record<number, { stock: string; expectedStock: number; minStock: string; reasonType: string; reason: string }> = {};
       (res.data.locations || []).forEach((loc: InventoryLocation) => {
-        edits[loc.id] = { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
+        edits[loc.id] = { stock: String(loc.stock), expectedStock: loc.stock, minStock: String(loc.minStock), reasonType: "", reason: "" };
       });
       setStockEdits(edits);
     } catch {
@@ -290,6 +290,7 @@ export default function InventoryPage() {
       setStockSaving(true);
       await api.put(`/inventory/${invId}`, {
         stock: Number(edit.stock),
+        expectedStock: edit.expectedStock,
         minStock: Number(edit.minStock),
         reasonType: edit.reasonType,
         reason: edit.reason || null,
@@ -297,9 +298,9 @@ export default function InventoryPage() {
       toast.success("Stock ajustado");
       const res = await api.get(`/inventory/product/${showStockModal}`);
       setStockData(res.data);
-      const edits: Record<number, { stock: string; minStock: string; reasonType: string; reason: string }> = {};
+      const edits: Record<number, { stock: string; expectedStock: number; minStock: string; reasonType: string; reason: string }> = {};
       (res.data.locations || []).forEach((loc: InventoryLocation) => {
-        edits[loc.id] = { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
+        edits[loc.id] = { stock: String(loc.stock), expectedStock: loc.stock, minStock: String(loc.minStock), reasonType: "", reason: "" };
       });
       setStockEdits(edits);
       fetchProducts();
@@ -348,7 +349,7 @@ export default function InventoryPage() {
       case "Marca": return <td key={column} className="px-4 py-3 text-gray-300">{p.brand}</td>;
       case "Modelo": return <td key={column} className="px-4 py-3 text-gray-300">{p.model}</td>;
       case "Año": return <td key={column} className="px-4 py-3 text-gray-400">{p.year}</td>;
-      case "Detalles": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.detalles || p.detail || "—"}</td>;
+      case "Detalles": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.detail || p.detalles || "—"}</td>;
       case "Cód. OEM": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.oemCode || "—"}</td>;
       case "Cód. Fábrica": return <td key={column} className="px-4 py-3 text-gray-400 text-xs">{p.factoryCode || "—"}</td>;
       case "Proveedor": return <td key={column} className="px-4 py-3 text-gray-300 text-xs">{p.supplierName || "—"}</td>;
@@ -360,8 +361,8 @@ export default function InventoryPage() {
           </button>
         </td>
       );
-      case "Precio 1": return <td key={column} className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>;
-      case "Precio 2": return <td key={column} className="px-4 py-3 text-right text-blue-400">{formatCurrency(p.price2)}</td>;
+      case "POR MENOR": return <td key={column} className="px-4 py-3 text-right text-green-400 font-medium">{formatCurrency(p.price1)}</td>;
+      case "POR MAYOR": return <td key={column} className="px-4 py-3 text-right text-blue-400">{p.wholesalePrice ? formatCurrency(p.wholesalePrice) : "Sin configurar"}</td>;
       case "Stock": return <td key={column} className="px-4 py-3 text-center"><span className={`px-2 py-0.5 text-xs font-medium rounded-full ${p.stock === 0 ? "bg-red-500/10 text-red-400" : p.stock <= 5 ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400"}`}>{p.stock}</span></td>;
       case "Acciones": return <td key={column} className="px-4 py-3"><div className="flex items-center justify-center gap-1"><button onClick={() => navigate(`/panel/inventario/${p.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all" title="Ver detalle"><Eye size={16} /></button>{canEdit && <><button onClick={() => openEdit(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all" title="Editar"><Pencil size={16} /></button><button onClick={() => setShowDeleteConfirm(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Eliminar"><Trash2 size={16} /></button></>}<button onClick={() => openStock(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all" title="Ver stock por ubicación"><Package size={16} /></button></div></td>;
       default: return null;
@@ -475,7 +476,7 @@ export default function InventoryPage() {
                 <thead>
                   <tr className="text-gray-500 border-b border-dark-700/50">
                     {visibleColumns.map((col) => {
-                      const align = ["Precio 1", "Precio 2"].includes(col) ? "text-right" : ["Imagen", "Stock", "Acciones"].includes(col) ? "text-center" : "text-left";
+                      const align = ["POR MENOR", "POR MAYOR"].includes(col) ? "text-right" : ["Imagen", "Stock", "Acciones"].includes(col) ? "text-center" : "text-left";
                       return (
                         <th key={col} className={`${align} px-4 py-3 font-medium`}>{col}</th>
                       );
@@ -587,9 +588,8 @@ export default function InventoryPage() {
               <div className="border-t border-dark-700/50 pt-4">
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Precios (Bs.)</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Field label="Precio Mayorista (Bs.) *" value={form.price1} onChange={(v) => setField("price1", v)} type="number" />
-                    <Field label="Precio Minorista (Bs.)" value={form.price2} onChange={(v) => setField("price2", v)} type="number" />
-                  <Field label="Precio Mayor" value={form.wholesalePrice} onChange={(v) => setField("wholesalePrice", v)} type="number" />
+                    <Field label="POR MENOR (Bs.) *" value={form.price1} onChange={(v) => setField("price1", v)} type="number" />
+                  <Field label="POR MAYOR (Bs.)" value={form.wholesalePrice} onChange={(v) => setField("wholesalePrice", v)} type="number" />
                   <Field label="Costo" value={form.cost} onChange={(v) => setField("cost", v)} type="number" />
                 </div>
               </div>
@@ -688,7 +688,7 @@ export default function InventoryPage() {
                   </div>
                   <div className="space-y-3">
                     {stockData.locations.map((loc: InventoryLocation) => {
-                      const edit = stockEdits[loc.id] || { stock: String(loc.stock), minStock: String(loc.minStock), reasonType: "", reason: "" };
+                      const edit = stockEdits[loc.id] || { stock: String(loc.stock), expectedStock: loc.stock, minStock: String(loc.minStock), reasonType: "", reason: "" };
                       return (
                         <div key={loc.locationId} className="p-3 bg-dark-900/50 rounded-xl border border-dark-700/30">
                           <div className="flex items-center justify-between mb-2">
@@ -778,7 +778,7 @@ export default function InventoryPage() {
             <div className="p-5 space-y-4">
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
                 <p className="text-blue-400 text-xs font-medium mb-1">Columnas aceptadas:</p>
-       <p className="text-gray-400 text-xs">Codigo fabrica, Descripcion, Fabricante, Marca, Modelo, Años, Detalle, Codigo OEM, Codigo fabrica, Categoría, Precio 1, Precio 2, Precio mayor, Costo, Stock, Detalles</p>
+       <p className="text-gray-400 text-xs">Codigo fabrica, Descripcion, Fabricante, Marca, Modelo, Años, Detalle, Codigo OEM, Codigo fabrica, Categoría, Por menor, Por mayor, Costo, Stock, Detalles</p>
               </div>
                 {!importResult ? (
                   <div className="space-y-3">

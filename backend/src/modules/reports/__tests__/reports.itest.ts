@@ -258,3 +258,21 @@ test("el listado de ventas combina month con startDate/endDate sin ampliar el ra
   const ids = res.body.sales.map((s: any) => s.id);
   assert.ok(!ids.includes(venta), "combinar month con un rango posterior no debe ampliar el reporte");
 });
+
+test("reporte diario agrega más de 1000 ventas y separa productos de igual nombre por ID", async () => {
+  const a = await createProduct(ctx);
+  const b = await createProduct(ctx);
+  await ctx.prisma.product.update({ where: { id: b.id }, data: { name: a.name } });
+  const date = new Date("2025-02-01T03:30:00.000Z"); // 31 de enero en La Paz.
+  await ctx.prisma.sale.createMany({ data: Array.from({ length: 1005 }, () => ({ total: 100, type: "NORMAL" as const, userId: ctx.users.tienda.userId, locationId: ctx.locationIds.tienda, saleDate: date })) });
+  const sales = await ctx.prisma.sale.findMany({ where: { userId: ctx.users.tienda.userId, saleDate: date }, select: { id: true } });
+  await ctx.prisma.saleItem.createMany({ data: sales.map((s, i) => ({ saleId: s.id, productId: i % 2 ? a.id : b.id, quantity: 1, unitPrice: 100, subtotal: 100 })) });
+  const { status, body } = await getJson("/api/reports/daily?startDate=2025-01-31&endDate=2025-01-31");
+  assert.equal(status, 200);
+  const day = body.groups[0];
+  assert.equal(day.date, "2025-01-31");
+  assert.equal(day.saleCount, 1005);
+  assert.equal(day.total, 100500);
+  assert.equal(day.stores[0].products.length, 2);
+  assert.notEqual(day.stores[0].products[0].productId, day.stores[0].products[1].productId);
+});

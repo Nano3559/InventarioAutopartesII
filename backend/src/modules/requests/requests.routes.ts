@@ -1,6 +1,8 @@
+import { moveStock } from "../../shared/utils/moveStock";
+import { esErrorDominio } from "../../shared/utils/errorDominio";
 import { Router, Response } from "express";
 import { PrismaClient, RequestStatus } from "@prisma/client";
-import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
+import { authorizeModule, authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt } from "../../shared/middlewares/validate";
 import { isPrismaClientError } from "../../shared/utils/errors";
@@ -13,6 +15,7 @@ const prisma = new PrismaClient();
 
 router.use(authenticate);
 router.use(requireTiendaLocation);
+router.use(authorizeModule("solicitudes"));
 
 // Se exporta para que los tests puedan verificar el invariante
 // VALID_STATUSES === REQUEST_STATUS_ACTIVOS + estados terminales (si se agrega un
@@ -260,6 +263,12 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
       });
       if (cambios.count !== 1) return { conflicto: "CAMBIO" as const, status: actual.status };
 
+      if (status === "ENTREGADO") {
+        const fromLocationId = parsePositiveInt(req.body.fromLocationId, "Almacén de origen");
+        const origin = await tx.location.findUnique({ where: { id: fromLocationId } });
+        if (!origin || origin.type !== "ALMACEN") throw new Error("Seleccione un almacén de origen válido para entregar");
+        await moveStock(tx, { productId: existing.productId, fromLocationId, toLocationId: existing.locationId, quantity: existing.quantity, userId: req.user!.userId, requestId: id, observation: `Entrega de solicitud #${id}` });
+      }
       await tx.requestHistory.create({
         data: {
           requestId: id,
@@ -306,6 +315,7 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
 
     res.json(request);
   } catch (error: any) {
+    if (esErrorDominio(error) || (error instanceof Error && /Almacén de origen|almacén de origen|Stock insuficiente/.test(error.message))) return res.status(400).json({ message: error.message });
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
     // Carrera con otra apertura simultánea del mismo producto/ubicación: el índice
     // parcial ProductRequest_solicitud_abierta_unica rechaza el update al reabrir una
@@ -325,7 +335,7 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
     const existing = await prisma.productRequest.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Solicitud no encontrada" });
 
-    if (existing.status === "RECIBIDO_POR_TIENDA" || existing.status === "CANCELADO") {
+    if (existing.status === "ENTREGADO" || existing.status === "RECIBIDO_POR_TIENDA" || existing.status === "CANCELADO") {
       return res.status(400).json({ message: "No se puede cancelar una solicitud ya recibida o cancelada" });
     }
 
@@ -343,7 +353,7 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
     const resultado = await prisma.$transaction(async (tx) => {
       const actual = await tx.productRequest.findUnique({ where: { id }, select: { status: true } });
       if (!actual) return { conflicto: "AUSENTE" as const };
-      if (actual.status === "RECIBIDO_POR_TIENDA" || actual.status === "CANCELADO") {
+      if (actual.status === "ENTREGADO" || actual.status === "RECIBIDO_POR_TIENDA" || actual.status === "CANCELADO") {
         return { conflicto: "CERRADA" as const, status: actual.status };
       }
       if (actual.status !== existing.status) return { conflicto: "CAMBIO" as const, status: actual.status };

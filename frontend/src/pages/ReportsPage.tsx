@@ -1,3 +1,5 @@
+import { collectReportPages } from "../services/reportPages";
+import { formatBusinessDate } from "../utils/businessDate";
 import { useState, useEffect, useCallback } from "react";
 import { jsPDF } from "jspdf";
 import {
@@ -16,26 +18,6 @@ interface SalesReport {
   user: { name: string } | null;
   itemCount: number;
   payments: { method: string; amount: number }[];
-}
-
-interface RawSaleItem {
-  product?: { name: string };
-  productId?: number;
-  quantity?: number;
-  subtotal?: number | string;
-}
-
-interface RawSale {
-  saleDate?: string;
-  total?: number | string;
-  location?: { name: string };
-  items?: RawSaleItem[];
-}
-
-interface RawReturn {
-  date?: string;
-  amount?: number | string;
-  sale?: { locationId?: number };
 }
 
 interface InventoryItem {
@@ -86,11 +68,12 @@ interface Location {
 }
 
 interface DailyStore {
+  locationId: number;
   locationName: string;
   total: number;
   saleCount: number;
   returns: number;
-  products: { name: string; quantity: number; subtotal: number }[];
+  products: { productId: number; name: string; quantity: number; subtotal: number }[];
 }
 
 interface DailyGroup {
@@ -150,8 +133,8 @@ export default function ReportsPage() {
 
   useEffect(() => {
     api.get("/locations").then((res) => setLocations(res.data.locations || res.data)).catch(() => {});
-    api.get("/suppliers?limit=100").then((res) => setSuppliers(res.data.suppliers || [])).catch(() => {});
-  }, []);
+    if (puedeVerCostos) api.get("/suppliers?limit=100").then((res) => setSuppliers(res.data.suppliers || [])).catch(() => {});
+  }, [puedeVerCostos]);
 
   const fetchSales = useCallback(async () => {
     try {
@@ -165,9 +148,9 @@ export default function ReportsPage() {
       if (filterModel) params.set("model", filterModel);
       if (filterSupplier) params.set("supplierId", filterSupplier);
       if (filterProduct) params.set("product", filterProduct);
-      const res = await api.get(`/reports/sales?${params.toString()}`);
-      setSalesData(res.data.sales);
-      setSalesSummary(res.data.summary);
+      const report = await collectReportPages((url) => api.get(url), params);
+      setSalesData(report.sales);
+      setSalesSummary(report.summary);
     } catch {
       toast.error("Error al cargar reporte de ventas");
     } finally {
@@ -178,78 +161,32 @@ export default function ReportsPage() {
   const fetchDaily = useCallback(async () => {
     try {
       setDailyLoading(true);
-      const params = new URLSearchParams({ limit: "1000" });
+      const params = new URLSearchParams();
       if (filterFrom) params.set("startDate", filterFrom);
       if (filterTo) params.set("endDate", filterTo);
       if (filterLocation) params.set("locationId", filterLocation);
-      // Las devoluciones deben respetar el MISMO rango que las ventas; si no,
-      // el diario sumaba devoluciones de cualquier fecha al día actual.
-      const returnParams = new URLSearchParams({ limit: "1000" });
-      if (filterFrom) returnParams.set("startDate", filterFrom);
-      if (filterTo) returnParams.set("endDate", filterTo);
-      if (filterLocation) returnParams.set("locationId", filterLocation);
-      const [salesRes, returnsRes] = await Promise.all([
-        api.get(`/sales?${params.toString()}`),
-        api.get(`/returns?${returnParams.toString()}`),
-      ]);
-      groupDaily(salesRes.data.sales, returnsRes.data.returns || []);
+      if (filterBrand) params.set("brand", filterBrand);
+      if (filterModel) params.set("model", filterModel);
+      if (filterProduct) params.set("product", filterProduct);
+      if (filterSupplier) params.set("supplierId", filterSupplier);
+      const response = await api.get(`/reports/daily?${params.toString()}`);
+      setDailyData(response.data.groups || []);
     } catch {
       toast.error("Error al cargar reporte diario");
       setDailyData([]);
     } finally {
       setDailyLoading(false);
     }
-  }, [filterFrom, filterTo, filterLocation, locations]);
-
-  const groupDaily = (sales: RawSale[], returns: RawReturn[]) => {
-    const byDate: Record<string, DailyGroup> = {};
-    for (const s of sales) {
-      const day = s.saleDate ? new Date(s.saleDate).toDateString() : "Sin fecha";
-      if (!byDate[day]) byDate[day] = { date: day, stores: [], total: 0, saleCount: 0 };
-      const group = byDate[day];
-      group.total += Number(s.total) || 0;
-      group.saleCount += 1;
-      const locName = s.location?.name || "Sin tienda";
-      let store = group.stores.find((st) => st.locationName === locName);
-      if (!store) {
-        store = { locationName: locName, total: 0, saleCount: 0, returns: 0, products: [] };
-        group.stores.push(store);
-      }
-      store.total += Number(s.total) || 0;
-      store.saleCount += 1;
-      for (const item of s.items || []) {
-        const pName = item.product?.name || String(item.productId || "") || "Producto";
-        let p = store.products.find((pr) => pr.name === pName);
-        if (!p) {
-          p = { name: pName, quantity: 0, subtotal: 0 };
-          store.products.push(p);
-        }
-        p.quantity += item.quantity || 0;
-        p.subtotal += Number(item.subtotal) || 0;
-      }
-    }
-    for (const item of returns) {
-      const day = item.date ? new Date(item.date).toDateString() : "Sin fecha";
-      if (!byDate[day]) byDate[day] = { date: day, stores: [], total: 0, saleCount: 0 };
-      const group = byDate[day];
-      const locName = locations.find((location) => location.id === item.sale?.locationId)?.name || "Sin tienda";
-      let store = group.stores.find((st) => st.locationName === locName);
-      if (!store) {
-        store = { locationName: locName, total: 0, saleCount: 0, returns: 0, products: [] };
-        group.stores.push(store);
-      }
-      store.returns += Number(item.amount) || 0;
-    }
-    const sorted = Object.values(byDate).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    setDailyData(sorted);
-  };
+  }, [filterFrom, filterTo, filterLocation, filterBrand, filterModel, filterProduct, filterSupplier]);
 
   const fetchInventory = useCallback(async () => {
     try {
       setInventoryLoading(true);
       const params = new URLSearchParams();
       if (filterLocation) params.set("locationId", filterLocation);
-      if (filterSearch) params.set("brand", filterSearch);
+      if (filterSearch) params.set("search", filterSearch);
+      if (filterBrand) params.set("brand", filterBrand);
+      if (filterModel) params.set("model", filterModel);
       const res = await api.get(`/reports/inventory?${params.toString()}`);
       setInventoryData(res.data);
     } catch {
@@ -257,7 +194,7 @@ export default function ReportsPage() {
     } finally {
       setInventoryLoading(false);
     }
-  }, [filterLocation, filterSearch]);
+  }, [filterLocation, filterSearch, filterBrand, filterModel]);
 
   const fetchMonthly = useCallback(async () => {
     try {
@@ -268,6 +205,7 @@ export default function ReportsPage() {
         if (year) params.set("year", year);
         if (month) params.set("month", month);
       }
+      if (filterLocation) params.set("locationId", filterLocation);
       const res = await api.get(`/reports/monthly?${params.toString()}`);
       setMonthlyData(res.data);
     } catch {
@@ -275,7 +213,7 @@ export default function ReportsPage() {
     } finally {
       setMonthlyLoading(false);
     }
-  }, [filterMonth]);
+  }, [filterMonth, filterLocation]);
 
   useEffect(() => {
     if (activeTab === "ventas") fetchSales();
@@ -299,7 +237,7 @@ export default function ReportsPage() {
     doc.setFontSize(14);
     doc.text(`RepuestoPro - ${title}`, 14, 15);
     doc.setFontSize(9);
-    doc.text(`Fecha: ${new Date().toLocaleDateString("es-BO")}`, 14, 22);
+    doc.text(`Fecha: ${formatBusinessDate(new Date())}`, 14, 22);
 
     let y = 28;
     const colWidths = headers.map(() => Math.floor(267 / headers.length));
@@ -323,7 +261,7 @@ export default function ReportsPage() {
     toast.success("PDF exportado correctamente");
   };
 
-  const formatDate = (d: string) => new Date(d).toLocaleDateString("es-BO", { day: "2-digit", month: "short", year: "numeric" });
+  const formatDate = (d: string) => formatBusinessDate(d, { day: "2-digit", month: "short", year: "numeric" });
 
   const filteredSales = salesData.filter((s) =>
     !filterSearch || (s.customer?.name || "").toLowerCase().includes(filterSearch.toLowerCase()) || String(s.id).includes(filterSearch)
@@ -364,19 +302,19 @@ export default function ReportsPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
-          <p className="text-gray-400 text-xs mb-1">Total Ventas</p>
-          <p className="text-2xl font-bold text-amber-400">{formatBs(activeTab === "diario" ? dailyTotal : salesSummary.totalSales || inventoryData?.totalStock || monthlyData?.summary?.totalSales || 0)}</p>
+          <p className="text-gray-400 text-xs mb-1">{activeTab === "inventario" ? "Productos" : "Total Ventas"}</p>
+          <p className="text-2xl font-bold text-amber-400">{activeTab === "inventario" ? inventoryData?.totalProducts ?? 0 : formatBs(activeTab === "diario" ? dailyTotal : activeTab === "mensual" ? monthlyData?.summary?.totalSales ?? 0 : salesSummary.totalSales)}</p>
           <p className="text-xs text-gray-500 mt-1">{activeTab === "ventas" ? `${salesSummary.count} registros` : activeTab === "diario" ? `${dailyCount} ventas` : activeTab === "inventario" ? `${inventoryData?.totalProducts || 0} productos` : `${monthlyData?.summary?.totalLocations || 0} ubicaciones`}</p>
         </div>
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
           <p className="text-gray-400 text-xs mb-1">{activeTab === "inventario" ? "Stock Total" : activeTab === "mensual" ? "Ventas Netas" : "Promedio/Venta"}</p>
           <p className="text-2xl font-bold text-blue-400">{activeTab === "ventas" ? formatBs(salesSummary.average) : activeTab === "diario" ? formatBs(dailyCount > 0 ? dailyTotal / dailyCount : 0) : activeTab === "inventario" ? `${inventoryData?.totalStock || 0} uds` : formatBs(monthlyData?.summary?.netSales || 0)}</p>
-          <p className="text-xs text-gray-500 mt-1">{activeTab === "inventario" ? `${inventoryData?.lowStockCount || 0} bajo stock` : activeTab === "mensual" ? `${monthlyData?.summary?.activeLocations || 0} activas` : ""}</p>
+          <p className="text-xs text-gray-500 mt-1">{activeTab === "inventario" ? `${inventoryData?.lowStockCount ?? "—"} bajo stock` : activeTab === "mensual" ? `${monthlyData?.summary?.activeLocations || 0} activas` : ""}</p>
         </div>
         <div className="bg-dark-800/50 border border-dark-700/50 rounded-xl p-4">
           <p className="text-gray-400 text-xs mb-1">Stock Crítico</p>
-          <p className={`text-2xl font-bold ${(inventoryData?.lowStockCount || 0) > 0 ? "text-red-400" : "text-green-400"}`}>{inventoryData?.lowStockCount || 0}</p>
-          <p className="text-xs text-gray-500 mt-1">{(inventoryData?.lowStockCount || 0) > 0 ? "Requiere atención" : "Todo en orden"}</p>
+          <p className={`text-2xl font-bold ${(inventoryData?.lowStockCount ?? 0) > 0 ? "text-red-400" : "text-green-400"}`}>{inventoryData?.lowStockCount ?? "—"}</p>
+          <p className="text-xs text-gray-500 mt-1">{(inventoryData?.lowStockCount ?? 0) > 0 ? "Requiere atención" : inventoryData ? "Todo en orden" : "Consultar Inventario"}</p>
         </div>
       </div>
 
@@ -409,15 +347,15 @@ export default function ReportsPage() {
           <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}
             className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500" />
         )}
-        {activeTab === "ventas" && (
+        {["ventas", "diario", "inventario"].includes(activeTab) && (
           <>
             <input value={filterBrand} onChange={(e) => setFilterBrand(e.target.value)} placeholder="Marca" className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 w-32" />
             <input value={filterModel} onChange={(e) => setFilterModel(e.target.value)} placeholder="Modelo" className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 w-32" />
-            <input value={filterProduct} onChange={(e) => setFilterProduct(e.target.value)} placeholder="Producto" className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 w-32" />
-            <select value={filterSupplier} onChange={(e) => setFilterSupplier(e.target.value)} className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 max-w-40">
+            {activeTab !== "inventario" && <input value={filterProduct} onChange={(e) => setFilterProduct(e.target.value)} placeholder="Producto" className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 w-32" />}
+            {puedeVerCostos && activeTab !== "inventario" && <select value={filterSupplier} onChange={(e) => setFilterSupplier(e.target.value)} className="px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500 max-w-40">
               <option value="">Proveedor</option>
               {suppliers.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}
-            </select>
+            </select>}
           </>
         )}
       </div>
@@ -533,7 +471,7 @@ export default function ReportsPage() {
                       </thead>
                       <tbody>
                         {g.stores.map((st) => (
-                          <tr key={st.locationName} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
+                          <tr key={st.locationId} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
                             <td className="px-4 py-2 text-white font-medium">{st.locationName}</td>
                             <td className="px-4 py-2 text-gray-300 text-center">{st.saleCount}</td>
                             <td className="px-4 py-2 text-amber-400 font-medium text-right">{formatBs(st.total)}</td>
@@ -547,11 +485,12 @@ export default function ReportsPage() {
                     <div className="p-3 border-t border-dark-700/50">
                       <p className="text-xs text-gray-400 mb-2">Productos vendidos del día</p>
                       <div className="flex flex-wrap gap-2">
-                        {Array.from(new Set(g.stores.flatMap((st) => st.products.map((p) => p.name)))).slice(0, 10).map((name) => {
-                          const totalQty = g.stores.reduce((sum, st) => sum + (st.products.find((p) => p.name === name)?.quantity || 0), 0);
-                          const totalSub = g.stores.reduce((sum, st) => sum + (st.products.find((p) => p.name === name)?.subtotal || 0), 0);
+                        {Array.from(new Map(g.stores.flatMap((st) => st.products.map((p) => [p.productId, p] as const))).values()).slice(0, 10).map((product) => {
+                          const name = product.name;
+                          const totalQty = g.stores.reduce((sum, st) => sum + (st.products.find((p) => p.productId === product.productId)?.quantity || 0), 0);
+                          const totalSub = g.stores.reduce((sum, st) => sum + (st.products.find((p) => p.productId === product.productId)?.subtotal || 0), 0);
                           return (
-                            <span key={name} className="inline-flex items-center gap-2 px-3 py-1 bg-dark-900/30 border border-dark-700/30 rounded-lg text-xs">
+                            <span key={product.productId} className="inline-flex items-center gap-2 px-3 py-1 bg-dark-900/30 border border-dark-700/30 rounded-lg text-xs">
                               <span className="text-gray-200">{name}</span>
                               <span className="text-gray-500">x{totalQty}</span>
                               <span className="text-amber-400 font-medium">{formatBs(totalSub)}</span>

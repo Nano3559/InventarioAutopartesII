@@ -11,13 +11,13 @@ import { seed, cleanup, createProduct, SeedContext } from "../../../testing/seed
  * en la base de datos.
  *
  * Reglas verificadas aquí:
- *  - Venta NORMAL  -> Product.price2 (minorista), fallback a price1 si price2 <= 0
- *  - Venta MAYORISTA -> Product.wholesalePrice (fallback a price1 si es null)
+ *  - Venta NORMAL -> Product.price1 o price2 según priceTier
+ *  - Venta MAYORISTA -> Product.wholesalePrice obligatorio
  *  - Precio de BD <= 0 -> la venta se RECHAZA (nunca se cobra 0 ni negativo).
  *
  * Semántica de precios del catálogo (ver prices.routes e InventoryPage):
- *   price1 = mayorista, price2 = minorista.
- * La venta NORMAL es venta al público minorista; por eso cobra price2.
+ *   price1 y price2 son niveles normales.
+ * El cliente elige un nivel, nunca el importe del cobro.
  */
 
 let server: TestServer;
@@ -49,41 +49,39 @@ function ventaSimple(productId: number, unitPrice: number, quantity = 1) {
   );
 }
 
-describe("P0-7 · venta NORMAL usa Product.price2 (minorista) e ignora el unitPrice del cliente", () => {
-  test("con price1 != price2 se cobra el minorista (price2), no el mayorista", async () => {
+describe("P0-7 · venta NORMAL usa Product.price1 (por menor) e ignora el unitPrice del cliente", () => {
+  test("price2 legacy no cambia el precio por menor", async () => {
     const p = await createProduct(ctx, { price1: 100, price2: 280, stockTienda: 10 });
     const res = await postJson(
       server.baseUrl,
       "/api/sales",
       {
-        items: [{ productId: p.id, quantity: 2, unitPrice: 1 }],
-        payments: [{ method: "EFECTIVO", amount: 560 }],
+        items: [{ productId: p.id, quantity: 2, priceMode: "POR_MENOR", unitPrice: 1 }],
+        payments: [{ method: "EFECTIVO", amount: 200 }],
       },
       tokenTienda
     );
 
     assert.equal(res.status, 201, "el POS minorista debe poder cobrar el precio minorista");
     const body: any = await res.json();
-    assert.equal(Number(body.items[0].unitPrice), 280, "venta al público cobra price2 (minorista)");
-    assert.equal(Number(body.items[0].subtotal), 560);
-    assert.equal(Number(body.total), 560);
+    assert.equal(Number(body.items[0].unitPrice), 100, "venta al público cobra price2 (minorista)");
+    assert.equal(Number(body.items[0].subtotal), 200);
+    assert.equal(Number(body.total), 200);
   });
 
-  test("si price2 no esta definido (0) cae a price1", async () => {
+  test("PRICE2 no configurado se rechaza sin fallback", async () => {
     const p = await createProduct(ctx, { price1: 100, price2: 0, stockTienda: 10 });
     const res = await postJson(
       server.baseUrl,
       "/api/sales",
       {
-        items: [{ productId: p.id, quantity: 1, unitPrice: 999999 }],
+        items: [{ productId: p.id, quantity: 1, priceTier: "PRICE2", unitPrice: 999999 }],
         payments: [{ method: "EFECTIVO", amount: 100 }],
       },
       tokenTienda
     );
 
-    assert.equal(res.status, 201);
-    const body: any = await res.json();
-    assert.equal(Number(body.items[0].unitPrice), 100, "fallback a price1 cuando no hay minorista");
+    assert.equal(res.status, 400);
   });
 
   test("unitPrice manipulado a 1 se descarta y se cobra el precio de catálogo", async () => {
@@ -123,7 +121,7 @@ describe("P0-7 · venta NORMAL usa Product.price2 (minorista) e ignora el unitPr
     assert.equal(Number(body.total), 50, "nadie puede cobrar de más desde el cliente");
   });
 
-  test("unitPrice a 0 o negativo se rechaza por validación (400)", async () => {
+  test("unitPrice arbitrario se ignora incluso si es cero o negativo", async () => {
     const p = await createProduct(ctx, { unitPrice: 100, stockTienda: 10 });
     for (const manipulado of [0, -5]) {
       const res = await postJson(
@@ -135,7 +133,7 @@ describe("P0-7 · venta NORMAL usa Product.price2 (minorista) e ignora el unitPr
         },
         tokenTienda
       );
-      assert.equal(res.status, 400, `unitPrice=${manipulado} debe rechazarse`);
+      assert.equal(res.status, 201, `unitPrice=${manipulado} no decide el precio`);
     }
   });
 
@@ -176,7 +174,7 @@ describe("P0-7 · venta MAYORISTA usa wholesalePrice y ignora el unitPrice del c
     assert.equal(Number(body.total), 160);
   });
 
-  test("sin wholesalePrice (null) cae a price1", async () => {
+  test("sin wholesalePrice se bloquea la venta", async () => {
     const p = await createProduct(ctx, { unitPrice: 120, wholesalePrice: null, stockTienda: 10 });
     const res = await postJson(
       server.baseUrl,
@@ -189,10 +187,7 @@ describe("P0-7 · venta MAYORISTA usa wholesalePrice y ignora el unitPrice del c
       tokenAdmin
     );
 
-    assert.equal(res.status, 201);
-    const body: any = await res.json();
-    assert.equal(Number(body.items[0].unitPrice), 120, "fallback a price1 cuando no hay precio mayorista");
-    assert.equal(Number(body.total), 120);
+    assert.equal(res.status, 400);
   });
 
   test("precio de base de datos <= 0 -> la venta mayorista se rechaza", async () => {

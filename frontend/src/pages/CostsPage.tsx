@@ -1,3 +1,4 @@
+import { formatBusinessDate } from "../utils/businessDate";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Plus, X, Upload, Search, Pencil, Trash2, Download,
@@ -18,6 +19,10 @@ interface CostRecord {
 const PAGE_SIZE = 15;
 
 export default function CostsPage() {
+  const [receiptLocation, setReceiptLocation] = useState("");
+  const [receiptQuantity, setReceiptQuantity] = useState("");
+  const [locations, setLocations] = useState<{ id: number; name: string }[]>([]);
+  useEffect(() => { api.get("/locations").then((r) => setLocations(Array.isArray(r.data) ? r.data : r.data.locations || [])).catch(() => toast.error("No se pudieron cargar ubicaciones")); }, []);
   const [costs, setCosts] = useState<CostRecord[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,6 +108,7 @@ export default function CostsPage() {
 
   // ========== COST CRUD ==========
   const openCreateCost = () => {
+    setReceiptLocation(""); setReceiptQuantity("");
     setEditingCost(null);
     setSelectedProduct(null); setProductSearch(""); setCostSupplierId("");
     setExchangeRate("6.96"); setPercentage(""); setCostUsd(""); setInvoiceFile(null);
@@ -138,8 +144,10 @@ export default function CostsPage() {
       formData.append("productId", String(selectedProduct.id));
       formData.append("supplierId", costSupplierId);
       formData.append("costPrice", String(computed));
+      formData.append("unitCost", costUsd);
       if (exchangeRate) formData.append("exchangeRate", exchangeRate);
       if (percentage) formData.append("percentage", percentage);
+      if (!editingCost && receiptLocation) { formData.append("locationId", receiptLocation); formData.append("quantity", receiptQuantity); }
       if (invoiceFile) formData.append("invoice", invoiceFile);
 
       if (editingCost) {
@@ -184,6 +192,7 @@ export default function CostsPage() {
   };
 
   const openImportInvoice = () => {
+    setReceiptLocation("");
     setInvoiceExcel(null); setInvFactFile(null); setInvoiceSupplierId("");
     setInvoiceRate("6.96"); setInvoicePercent("10"); setInvoiceMargin(""); setImportResult(null);
     setShowInvoiceModal(true);
@@ -200,6 +209,7 @@ export default function CostsPage() {
       if (invFactFile) formData.append("invoice", invFactFile);
       formData.append("supplierId", invoiceSupplierId);
       formData.append("exchangeRate", invoiceRate);
+      if (receiptLocation) formData.append("locationId", receiptLocation);
       if (invoicePercent) formData.append("percentage", invoicePercent);
       if (invoiceMargin) formData.append("defaultMargin", invoiceMargin);
       const res = await api.post("/costs/import-invoice", formData, {
@@ -318,7 +328,7 @@ export default function CostsPage() {
                     <tr><td colSpan={10} className="px-4 py-8 text-center text-gray-500">No hay costos registrados</td></tr>
                   ) : costs.map((c) => (
                     <tr key={c.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
-                      <td className="px-4 py-3 text-gray-300">{new Date(c.date).toLocaleDateString("es-BO")}</td>
+                      <td className="px-4 py-3 text-gray-300">{formatBusinessDate(c.date)}</td>
                       <td className="px-4 py-3 text-gray-300 font-mono text-xs">{c.itemCode}</td>
                       <td className="px-4 py-3 text-white font-medium">{c.productName}</td>
                       <td className="px-4 py-3 text-gray-300">{c.brand}</td>
@@ -472,6 +482,16 @@ export default function CostsPage() {
                 </select>
               </div>
 
+              {(!showCostModal || !editingCost) && <div className="flex flex-wrap gap-3 text-gray-300 text-sm">
+                <label>Ingresar mercadería (opcional)
+                  <select value={receiptLocation} onChange={(e) => setReceiptLocation(e.target.value)} className="ml-2 bg-dark-800 p-2 rounded-lg">
+                    <option value="">Solo registrar costo</option>
+                    {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                  </select>
+                </label>
+                {showCostModal && receiptLocation && <label>Cantidad <input type="number" min="1" value={receiptQuantity} onChange={(e) => setReceiptQuantity(e.target.value)} className="w-24 bg-dark-800 p-2 rounded-lg" /></label>}
+                {showInvoiceModal && receiptLocation && <span>Se ingresarán las cantidades indicadas en el Excel.</span>}
+              </div>}
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs text-gray-400 mb-1">Tipo Cambio (Bs/USD) *</label>
@@ -606,6 +626,16 @@ export default function CostsPage() {
                 </select>
               </div>
 
+              {(!showCostModal || !editingCost) && <div className="flex flex-wrap gap-3 text-gray-300 text-sm">
+                <label>Ingresar mercadería (opcional)
+                  <select value={receiptLocation} onChange={(e) => setReceiptLocation(e.target.value)} className="ml-2 bg-dark-800 p-2 rounded-lg">
+                    <option value="">Solo registrar costo</option>
+                    {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                  </select>
+                </label>
+                {showCostModal && receiptLocation && <label>Cantidad <input type="number" min="1" value={receiptQuantity} onChange={(e) => setReceiptQuantity(e.target.value)} className="w-24 bg-dark-800 p-2 rounded-lg" /></label>}
+                {showInvoiceModal && receiptLocation && <span>Se ingresarán las cantidades indicadas en el Excel.</span>}
+              </div>}
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs text-gray-400 mb-1">Tipo de Cambio (Bs/USD) *</label>

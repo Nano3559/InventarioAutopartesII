@@ -7,6 +7,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   permissions: string[];
+  permissionsLoading: boolean;
   columnConfig: Record<string, string[]>;
   allowedCategories: string[];
   login: (user: User, token: string) => Promise<void>;
@@ -29,36 +30,38 @@ const getAllowedCategories = (role: string, config: Record<string, unknown>): st
 
 const fallbackPermissions = (role: string): string[] => {
   if (role === "ADMIN") return ["inventario", "ventas", "ventas-mayor", "devoluciones", "solicitudes", "movimientos", "costos", "precios", "reportes", "configuracion"];
-  if (role === "TIENDA") return ["inventario", "ventas", "ventas-mayor", "devoluciones", "solicitudes", "reportes"];
-  if (role === "INVENTARIO") return ["inventario", "solicitudes", "movimientos", "costos", "precios"];
   return [];
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: localStorage.getItem("token"),
   isAuthenticated: !!localStorage.getItem("token"),
   permissions: [],
+  permissionsLoading: false,
   columnConfig: {},
   allowedCategories: [],
   login: async (user, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
-    set({ user, token, isAuthenticated: true });
+    set({ user, token, isAuthenticated: true, permissionsLoading: true, permissions: [] });
 
     try {
       const res = await api.get("/permissions/permissions/me");
+      if (get().token !== token) return;
       const perms = res.data.permissions || [];
       const cc = res.data.columnConfig || {};
-      set({ permissions: normalizePermissions(perms), columnConfig: cc, allowedCategories: getAllowedCategories(user.role, cc) });
-    } catch {
-      set({ permissions: fallbackPermissions(user.role), allowedCategories: getAllowedCategories(user.role, {}) });
+      set({ permissionsLoading: false, permissions: normalizePermissions(perms), columnConfig: cc, allowedCategories: getAllowedCategories(user.role, cc) });
+    } catch (error: any) {
+      if (error.response?.status === 401) { get().logout(); return; }
+      if (get().token !== token) return;
+      set({ permissionsLoading: false, permissions: fallbackPermissions(user.role), allowedCategories: getAllowedCategories(user.role, {}) });
     }
   },
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    set({ user: null, token: null, isAuthenticated: false, permissions: [], columnConfig: {}, allowedCategories: [] });
+    set({ user: null, token: null, isAuthenticated: false, permissionsLoading: false, permissions: [], columnConfig: {}, allowedCategories: [] });
   },
   loadFromStorage: () => {
     const token = localStorage.getItem("token");
@@ -66,22 +69,24 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr);
-        set({ user, token, isAuthenticated: true });
+        set({ user, token, isAuthenticated: true, permissionsLoading: true, permissions: [] });
 
         // Reload permissions from backend
         api
           .get("/permissions/permissions/me")
           .then((res) => {
+            if (get().token !== token) return;
             const cc = res.data.columnConfig || {};
-            set({ permissions: normalizePermissions(res.data.permissions || []), columnConfig: cc, allowedCategories: getAllowedCategories(user.role, cc) });
+            set({ permissionsLoading: false, permissions: normalizePermissions(res.data.permissions || []), columnConfig: cc, allowedCategories: getAllowedCategories(user.role, cc) });
           })
-          .catch(() => {
-            set({ permissions: fallbackPermissions(user.role), allowedCategories: getAllowedCategories(user.role, {}) });
+          .catch((error: any) => {
+            if (error.response?.status === 401) { get().logout(); return; }
+            if (get().token !== token) return;
+            set({ permissionsLoading: false, permissions: fallbackPermissions(user.role), allowedCategories: getAllowedCategories(user.role, {}) });
           });
       } catch {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        get().logout();
       }
-    }
+    } else { get().logout(); }
   },
 }));

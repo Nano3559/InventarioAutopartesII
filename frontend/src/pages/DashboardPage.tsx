@@ -1,3 +1,4 @@
+import { formatBusinessDate } from "../utils/businessDate";
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import {
@@ -112,7 +113,7 @@ function formatCurrency(value: number) {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("es-BO", {
+  return formatBusinessDate(dateStr, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -186,7 +187,7 @@ export default function DashboardPage() {
       sub: formatCurrency(summary.salesTodayTotal),
     },
     {
-      label: "Ingresos del Mes",
+      label: "Ventas brutas del mes",
       value: formatCurrency(summary.salesMonthTotal),
       icon: DollarSign,
       color: "text-emerald-400",

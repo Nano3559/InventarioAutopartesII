@@ -109,3 +109,20 @@ test("R6.15 — la devolución incrementa el stock y bloquea devolver más de lo
   const returnsCount = await ctx.prisma.return.count({ where: { saleId, productId: p.id } });
   assert.equal(returnsCount, 1, "solo debe registrarse una devolución");
 });
+test("legacy duplicado suma cantidades y reembolsa valor histórico completo", async () => {
+  const p = await createProduct(ctx, { stockTienda: 0 });
+  const sale = await ctx.prisma.sale.create({ data: { total: 500, type: "NORMAL", userId: ctx.users.tienda.userId, locationId: ctx.locationIds.tienda, items: { create: [{ productId: p.id, quantity: 2, unitPrice: 100, subtotal: 200 }, { productId: p.id, quantity: 2, unitPrice: 150, subtotal: 300 }] } } });
+  assert.equal((await postReturn(sale.id, p.id, 3, 375)).status, 201);
+  assert.equal((await postReturn(sale.id, p.id, 1, 125)).status, 201);
+  assert.equal((await postReturn(sale.id, p.id, 1, 125)).status, 400);
+  assert.equal(await stockInTienda(p.id), 4);
+  const total = await ctx.prisma.return.aggregate({ where: { saleId: sale.id }, _sum: { amount: true } });
+  assert.equal(Number(total._sum.amount), 500);
+});
+test("dos devoluciones simultáneas no pueden superar la cantidad vendida", async () => {
+  const p = await createProduct(ctx, { stockTienda: 3 });
+  const saleId = await sell(p.id, 3);
+  const results = await Promise.all([postReturn(saleId, p.id, 2, 200), postReturn(saleId, p.id, 2, 200)]);
+  assert.deepEqual(results.map((r) => r.status).sort(), [201, 400]);
+  assert.equal(await stockInTienda(p.id), 2);
+});

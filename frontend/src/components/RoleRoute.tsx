@@ -8,13 +8,15 @@ interface RoleRouteProps {
 }
 
 export default function RoleRoute({ children, allowedRoles, module }: RoleRouteProps) {
-  const { user, isAuthenticated, permissions } = useAuthStore();
+  const { user, isAuthenticated, permissions, permissionsLoading } = useAuthStore();
 
   if (!isAuthenticated) return <Navigate to="/login" />;
   if (!user || !allowedRoles.includes(user.role)) return <Navigate to="/panel" />;
 
   // ADMIN always has access to everything
   if (user.role === "ADMIN") return <>{children}</>;
+
+  if (permissionsLoading) return <div role="status">Cargando permisos...</div>;
 
   // Check module permission if specified
   const hasModule = module && (permissions.includes(module) || (module === "inventario" && permissions.includes("productos")));

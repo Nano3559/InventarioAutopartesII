@@ -86,6 +86,10 @@ async def _inferir(image: UploadFile) -> list[dict[str, Any]]:
     if not inference.modelo_cargado():
         raise HTTPException(status_code=503, detail="modelo_no_disponible")
     pixeles = _decodificar_contenido(contenido)
+    # Una captura de un solo color no contiene una pieza identificable.
+    # No enviar al detector evita candidatos falsos sobre imágenes vacías.
+    if np.array_equal(pixeles.min(axis=(0, 1)), pixeles.max(axis=(0, 1))):
+        return []
     try:
         # model.predict() es síncrono y pesado: se ejecuta en el threadpool de
         # FastAPI para no bloquear el event loop; el acceso a la instancia

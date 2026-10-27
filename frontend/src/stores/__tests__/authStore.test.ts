@@ -18,6 +18,26 @@ vi.mock("../../services/api", () => ({
 const apiMock = await import("../../services/api");
 const mockedApiGet = apiMock.default.get as ReturnType<typeof vi.fn>;
 
+it("una sesión vencida limpia el estado, sin fallback de ADMIN", async () => {
+  localStorage.clear();
+  mockedApiGet.mockRejectedValueOnce({ response: { status: 401 } });
+  await useAuthStore.getState().login(mockUser, "expired-local-test");
+  expect(useAuthStore.getState().isAuthenticated).toBe(false);
+  expect(useAuthStore.getState().permissions).toEqual([]);
+  expect(localStorage.getItem("user")).toBeNull();
+});
+
+it("una respuesta tardía de permisos no recupera una sesión cerrada", async () => {
+  let complete!: (value: unknown) => void;
+  mockedApiGet.mockImplementationOnce(() => new Promise(resolve => { complete = resolve; }));
+  const pending = useAuthStore.getState().login(mockUser, "session-test");
+  useAuthStore.getState().logout();
+  complete({ data: { permissions: ["ventas"], columnConfig: {} } });
+  await pending;
+  expect(useAuthStore.getState().isAuthenticated).toBe(false);
+  expect(useAuthStore.getState().permissions).toEqual([]);
+});
+
 describe("authStore", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -115,7 +135,7 @@ describe("authStore", () => {
       expect(perms).toContain("reportes");
     });
 
-    it("fallbackPermissions incluye permisos correctos para TIENDA", async () => {
+    it("TIENDA no recibe permisos inventados si falla la consulta", async () => {
       mockedApiGet.mockRejectedValue(new Error("fail"));
 
       await useAuthStore
@@ -123,8 +143,7 @@ describe("authStore", () => {
         .login({ ...mockUser, role: "TIENDA" }, "tok");
 
       const perms = useAuthStore.getState().permissions;
-      expect(perms).toContain("inventario");
-      expect(perms).toContain("ventas");
+      expect(perms).toEqual([]);
       expect(perms).not.toContain("costos");
     });
 
