@@ -1,3 +1,5 @@
+import { validatePriceConfiguration, money, MAX_QUANTITY } from "../../shared/utils/pricing";
+import { esErrorDominio, errorDominio } from "../../shared/utils/errorDominio";
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import * as XLSX from "xlsx";
@@ -283,7 +285,12 @@ router.post("/", authenticate, authorize("ADMIN"), async (req: AuthRequest, res:
       return res.status(409).json({ message: `Ya existe un producto con código "${itemCode}"` });
     }
 
-    const product = await prisma.product.create({
+    const product = await prisma.$transaction(async (tx) => {
+      validatePriceConfiguration({ price1, price2: price2 ?? 0, wholesalePrice, cost });
+      if (!Number.isInteger(Number(stock)) || Number(stock) < 0 || Number(stock) > MAX_QUANTITY || !Number.isInteger(Number(minStock)) || Number(minStock) < 0 || Number(minStock) > MAX_QUANTITY) {
+        throw errorDominio("Stock y mínimo deben ser enteros válidos no negativos");
+      }
+      const created = await tx.product.create({
       data: {
         itemCode,
         manufacturer,
@@ -294,21 +301,25 @@ router.post("/", authenticate, authorize("ADMIN"), async (req: AuthRequest, res:
         detail: detail || null,
         oemCode: oemCode || null,
         factoryCode: factoryCode || null,
-        price1,
-        price2: price2 ?? price1,
-        wholesalePrice: wholesalePrice ?? null,
-        cost: cost ?? null,
+        price1: money(price1, "Por menor"),
+        price2: money(price2 ?? 0, "Precio legacy", true),
+        wholesalePrice: wholesalePrice == null ? null : money(wholesalePrice, "Precio por mayor"),
+        cost: cost == null ? null : money(cost, "Costo", true),
         categoryId: categoryId ?? null,
         image: image || null,
       },
     });
 
     if (locationId) {
-      await prisma.inventory.create({ data: { productId: product.id, locationId: Number(locationId), stock: Number(stock) || 0, minStock: Number(minStock) || 1 } });
+      await tx.inventory.create({ data: { productId: created.id, locationId: Number(locationId), stock: Number(stock), minStock: Number(minStock) } });
     }
+
+      return created;
+    });
 
     res.status(201).json(product);
   } catch (error) {
+    if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
     console.error("Error al crear producto:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -318,21 +329,24 @@ router.post("/", authenticate, authorize("ADMIN"), async (req: AuthRequest, res:
 router.put("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const existing = await prisma.product.findUnique({ where: { id } });
+    const product = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${id} FOR UPDATE`;
+    const existing = await tx.product.findUnique({ where: { id } });
     if (!existing) {
-      return res.status(404).json({ message: "Producto no encontrado" });
+      throw new Error("Producto no encontrado");
     }
 
     const { itemCode, manufacturer, name, brand, model, year, detail, oemCode, factoryCode, price1, price2, wholesalePrice, cost, categoryId, image } = req.body;
 
     if (itemCode && itemCode !== existing.itemCode) {
-      const dup = await prisma.product.findUnique({ where: { itemCode } });
+      const dup = await tx.product.findUnique({ where: { itemCode } });
       if (dup) {
-        return res.status(409).json({ message: `Ya existe un producto con código "${itemCode}"` });
+        throw new Error(`Ya existe un producto con código "${itemCode}"`);
       }
     }
 
-    const product = await prisma.product.update({
+    validatePriceConfiguration({ price1: price1 ?? existing.price1, price2: price2 ?? existing.price2, wholesalePrice: wholesalePrice !== undefined ? wholesalePrice : existing.wholesalePrice, cost: cost !== undefined ? cost : existing.cost });
+    return tx.product.update({
       where: { id },
       data: {
         ...(itemCode && { itemCode }),
@@ -344,17 +358,22 @@ router.put("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest, re
         detail: detail !== undefined ? detail : existing.detail,
         oemCode: oemCode !== undefined ? oemCode : existing.oemCode,
         factoryCode: factoryCode !== undefined ? factoryCode : existing.factoryCode,
-        ...(price1 != null && { price1 }),
-        ...(price2 != null && { price2 }),
-        wholesalePrice: wholesalePrice !== undefined ? wholesalePrice : existing.wholesalePrice,
-        cost: cost !== undefined ? cost : existing.cost,
+        ...(price1 != null && { price1: money(price1, "Por menor") }),
+        ...(price2 != null && { price2: money(price2, "Precio legacy", true) }),
+        wholesalePrice: wholesalePrice === undefined ? existing.wholesalePrice : wholesalePrice === null ? null : money(wholesalePrice, "Precio por mayor"),
+        cost: cost === undefined ? existing.cost : cost === null ? null : money(cost, "Costo", true),
         categoryId: categoryId !== undefined ? (categoryId ?? null) : existing.categoryId,
         image: image !== undefined ? (image || null) : existing.image,
       },
     });
 
+    });
+
     res.json(product);
   } catch (error) {
+    if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
+    if (error instanceof Error && error.message === "Producto no encontrado") return res.status(404).json({ message: error.message });
+    if (error instanceof Error && error.message.startsWith("Ya existe un producto")) return res.status(409).json({ message: error.message });
     console.error("Error al editar producto:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
@@ -493,12 +512,12 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       const oemCode = (row["Código OEM"] || row["codigo oem"] || row["Codigo OEM"] || row["oemCode"] || row["Cód. OEM"] || row["Cod.OEM"] || row["OEM"] || "").toString().trim();
       const factoryCode = (row["Código fábrica"] || row["Código fabrica"] || row["codigo fabrica"] || row["Codigo fabrica"] || row["Codigo Fabrica"] || row["factoryCode"] || row["Cód. Fábrica"] || row["Cod. Fabrica"] || "").toString().trim();
       const category = (row["Categoría"] || row["categoría"] || row["Categoria"] || row["categoria"] || row["Category"] || "").toString().trim();
-      const price1 = parseFloat(row["Precio 1"] || row["precio1"] || row["Precio minorista"] || row["price1"] || "0") || 0;
-      const price2 = parseFloat(row["Precio 2"] || row["precio2"] || row["Precio mayoreo"] || row["price2"] || "0") || 0;
-      const wholesalePrice = parseFloat(row["Precio mayor"] || row["precio mayor"] || row["wholesalePrice"] || "0") || 0;
-      const cost = parseFloat(row["Costo"] || row["costo"] || row["cost"] || "0") || 0;
+      const price1 = Number(row["Por menor"] || row["precio1"] || row["Precio 1"] || row["Precio minorista"] || row["price1"] || "0");
+      const price2 = Number(row["Precio legacy"] || row["precio2"] || row["Precio 2"] || row["price2"] || "0");
+      const wholesalePrice = Number(row["Por mayor"] || row["Precio mayoreo"] || row["Precio mayor"] || row["precio mayor"] || row["wholesalePrice"] || "0");
+      const cost = Number(row["Costo"] || row["costo"] || row["cost"] || "0");
       const calidad = (row["Calidad"] || row["calidad"] || row["quality"] || row["Detalles"] || row["detalles"] || "").toString().trim();
-      const rowStock = parseInt(row["Stock"] || row["stock"] || "0", 10) || 0;
+      const rowStock = Number(row["Stock"] ?? row["stock"] ?? 0);
       const rowLocation = (row["Ubicación"] || row["Ubicacion"] || row["Tienda"] || row["Almacén"] || row["Almacen"] || "").toString().trim();
 
       if (!itemCode || !name) {
@@ -507,6 +526,14 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       }
 
       try {
+        for (const [value, keys] of [
+          [price1, ["Por menor", "Precio 1", "precio1", "Precio minorista", "price1"]],
+          [price2, ["Precio legacy", "Precio 2", "precio2", "price2"]],
+          [wholesalePrice, ["Por mayor", "Precio mayoreo", "Precio mayor", "precio mayor", "wholesalePrice"]],
+          [cost, ["Costo", "costo", "cost"]],
+        ] as const) {
+          if (keys.some((key) => row[key] !== undefined && row[key] !== "")) money(value, "Precio o costo importado", (keys.includes("Costo" as never) || keys.includes("price2" as never)));
+        }
         let categoryId: number | null = null;
         if (category && catMap[category.toLowerCase()]) {
           categoryId = catMap[category.toLowerCase()];
@@ -519,7 +546,11 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
           rowLocationId = location.id;
         }
 
-        const existing = await prisma.product.findUnique({ where: { itemCode } });
+        await prisma.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "Product" WHERE "itemCode" = ${itemCode} FOR UPDATE`;
+        const existing = await tx.product.findUnique({ where: { itemCode } });
+        const hasStock = row["Stock"] !== undefined || row["stock"] !== undefined;
+        if (!Number.isInteger(rowStock) || rowStock < 0 || rowStock > MAX_QUANTITY) throw errorDominio("Stock inválido");
 
         if (existing) {
           const updateData: any = {};
@@ -539,14 +570,22 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
           if (calidad) updateData.detalles = calidad;
 
           if (Object.keys(updateData).length > 0) {
-            await prisma.product.update({ where: { id: existing.id }, data: updateData });
+            validatePriceConfiguration({ ...existing, ...updateData });
+            await tx.product.update({ where: { id: existing.id }, data: updateData });
           }
-          if (rowLocationId) {
-            await prisma.inventory.upsert({ where: { productId_locationId: { productId: existing.id, locationId: rowLocationId } }, update: { stock: rowStock }, create: { productId: existing.id, locationId: rowLocationId, stock: rowStock, minStock: 1 } });
+          if (rowLocationId && hasStock) {
+            const inv = await tx.inventory.upsert({ where: { productId_locationId: { productId: existing.id, locationId: rowLocationId } }, create: { productId: existing.id, locationId: rowLocationId, stock: 0 }, update: {} });
+            await tx.$queryRaw`SELECT id FROM "Inventory" WHERE id = ${inv.id} FOR UPDATE`;
+            const current = await tx.inventory.findUniqueOrThrow({ where: { id: inv.id } });
+            const expected = row["Stock esperado"] ?? row["expectedStock"];
+            if (expected === undefined || Number(expected) !== current.stock) throw errorDominio("Incluya Stock esperado y recargue el inventario antes de importar un ajuste");
+            await tx.inventory.update({ where: { id: inv.id }, data: { stock: rowStock } });
+            await tx.auditLog.create({ data: { userId: req.user!.userId, action: "IMPORT_INVENTORY", targetType: "INVENTORY", targetId: inv.id, oldValue: { stock: current.stock }, newValue: { stock: rowStock } } });
           }
           updated.push({ id: existing.id, itemCode, name, action: "actualizado" });
         } else {
-          const product = await prisma.product.create({
+          validatePriceConfiguration({ price1, price2, wholesalePrice: wholesalePrice || null, cost: cost || null });
+          const product = await tx.product.create({
             data: {
               itemCode,
               name,
@@ -567,14 +606,15 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
           });
 
           const locations = rowLocationId
-            ? await prisma.location.findMany({ where: { id: rowLocationId } })
-            : await prisma.location.findMany();
-          for (const loc of locations) await prisma.inventory.create({ data: { productId: product.id, locationId: loc.id, stock: rowLocationId ? rowStock : 0, minStock: 1 } });
+            ? await tx.location.findMany({ where: { id: rowLocationId } })
+            : await tx.location.findMany();
+          for (const loc of locations) await tx.inventory.create({ data: { productId: product.id, locationId: loc.id, stock: rowLocationId ? rowStock : 0, minStock: 1 } });
 
           imported.push({ id: product.id, itemCode, name, action: "creado" });
         }
-      } catch {
-        errors.push(`Fila ${i + 2}: no se pudo guardar (verifique códigos, precios y existencias)`);
+        });
+      } catch (error) {
+        errors.push(`Fila ${i + 2}: ${esErrorDominio(error) ? error.message : "no se pudo guardar (verifique códigos, precios y existencias)"}`);
       }
     }
 

@@ -1,3 +1,4 @@
+import { formatBusinessDateTime } from "../utils/businessDate";
 import { useState, useEffect, useCallback } from "react";
 import {
   Users, Shield, Plus, Pencil, Trash2, X, User, RefreshCw, Check, History,
@@ -411,7 +412,7 @@ export default function SettingsPage() {
                 ) : auditLogs.map((log) => (
                   <tr key={log.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
                     <td className="px-4 py-3 text-gray-300 text-xs whitespace-nowrap">
-                      {new Date(log.createdAt).toLocaleString("es-BO")}
+                      {formatBusinessDateTime(log.createdAt)}
                     </td>
                     <td className="px-4 py-3 text-white text-xs">{log.user?.name || `User #${log.userId}`}</td>
                     <td className="px-4 py-3">

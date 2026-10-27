@@ -1,6 +1,10 @@
+import { createHash } from "crypto";
+import { errorDominio } from "../../shared/utils/errorDominio";
+import { landedCost, syncProductCost, receivePurchase } from "../../shared/utils/costing";
+import { money, validatePriceConfiguration } from "../../shared/utils/pricing";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate, authorize } from "../../shared/middlewares/auth";
+import { authorizeModule, authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveDecimal, parsePositiveInt } from "../../shared/middlewares/validate";
 import { isPrismaClientError } from "../../shared/utils/errors";
@@ -15,6 +19,7 @@ const prisma = new PrismaClient();
 
 router.use(authenticate);
 router.use(authorize("ADMIN"));
+router.use(authorizeModule("costos"));
 
 const uploadsDir = path.join(__dirname, "../../../uploads");
 if (!fs.existsSync(uploadsDir)) {
@@ -120,7 +125,7 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
   try {
     const productId = parsePositiveInt(req.body.productId, "Producto");
     const supplierId = parsePositiveInt(req.body.supplierId, "Proveedor");
-    const costPrice = parsePositiveDecimal(req.body.costPrice, "Costo");
+    let costPrice = money(req.body.costPrice, "Costo");
     if (costPrice <= 0) return res.status(400).json({ message: "El costo debe ser mayor a 0" });
 
     const exchangeRate = req.body.exchangeRate ? parsePositiveDecimal(req.body.exchangeRate, "Tipo de cambio") : null;
@@ -132,6 +137,7 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
       return res.status(400).json({ message: "El porcentaje debe estar entre 0 y 100" });
     }
 
+    if (req.body.unitCost !== undefined) costPrice = landedCost(parsePositiveDecimal(req.body.unitCost, "Costo unitario"), exchangeRate ?? 1, percentage ?? 0);
     const [product, supplier] = await Promise.all([
       prisma.product.findUnique({ where: { id: productId } }),
       prisma.supplier.findUnique({ where: { id: supplierId } }),
@@ -139,7 +145,9 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
     if (!product) return res.status(404).json({ message: "Producto no encontrado" });
     if (!supplier) return res.status(404).json({ message: "Proveedor no encontrado" });
 
-    const cost = await prisma.cost.create({
+    const cost = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${productId} FOR UPDATE`;
+    const created = await tx.cost.create({
       data: { productId, supplierId, costPrice, exchangeRate, percentage, invoiceUrl: req.file?.filename || null },
       include: {
         product: { select: { name: true, itemCode: true } },
@@ -147,19 +155,26 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
       },
     });
 
-    await prisma.auditLog.create({
+    await tx.auditLog.create({
       data: {
         userId: req.user!.userId,
         action: "CREATE_COST",
         targetType: "COST",
-        targetId: cost.id,
+        targetId: created.id,
         newValue: {
           productId,
           supplierId,
           costPrice,
-          invoiceUrl: cost.invoiceUrl,
+          invoiceUrl: created.invoiceUrl,
         },
       },
+    });
+
+    await syncProductCost(tx, productId);
+    if (req.body.locationId || req.body.quantity) {
+      await receivePurchase(tx, productId, parsePositiveInt(req.body.locationId, "Ubicación"), parsePositiveInt(req.body.quantity, "Cantidad"), req.user!.userId, created.id);
+    }
+    return created;
     });
 
     res.status(201).json({
@@ -219,6 +234,7 @@ router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: Aut
         return res.status(400).json({ message: "El porcentaje debe estar entre 0 y 100" });
       }
     }
+    if (req.body.unitCost !== undefined) data.costPrice = landedCost(parsePositiveDecimal(req.body.unitCost, "Costo unitario"), data.exchangeRate ?? Number(existing.exchangeRate ?? 1), data.percentage ?? Number(existing.percentage ?? 0));
     if (req.file) data.invoiceUrl = req.file.filename;
 
     const previous = {
@@ -230,7 +246,10 @@ router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: Aut
       invoiceUrl: existing.invoiceUrl,
     };
 
-    const cost = await prisma.cost.update({
+    const cost = await prisma.$transaction(async (tx) => {
+    const productIds = [...new Set([existing.productId, data.productId ?? existing.productId])].sort((a: number, b: number) => a - b);
+    for (const pid of productIds) await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${pid} FOR UPDATE`;
+    const changed = await tx.cost.update({
       where: { id },
       data,
       include: {
@@ -239,7 +258,7 @@ router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: Aut
       },
     });
 
-    await prisma.auditLog.create({
+    await tx.auditLog.create({
       data: {
         userId: req.user!.userId,
         action: "UPDATE_COST",
@@ -247,14 +266,18 @@ router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: Aut
         targetId: id,
         oldValue: previous,
         newValue: {
-          productId: cost.productId,
-          supplierId: cost.supplierId,
-          costPrice: Number(cost.costPrice),
-          exchangeRate: cost.exchangeRate ? Number(cost.exchangeRate) : null,
-          percentage: cost.percentage ? Number(cost.percentage) : null,
-          invoiceUrl: cost.invoiceUrl,
+          productId: changed.productId,
+          supplierId: changed.supplierId,
+          costPrice: Number(changed.costPrice),
+          exchangeRate: changed.exchangeRate ? Number(changed.exchangeRate) : null,
+          percentage: changed.percentage ? Number(changed.percentage) : null,
+          invoiceUrl: changed.invoiceUrl,
         },
       },
+    });
+
+    for (const pid of productIds) await syncProductCost(tx, pid);
+    return changed;
     });
 
     res.json({
@@ -286,8 +309,10 @@ router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response
     const id = parseId(req.params.id);
     const existing = await prisma.cost.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Costo no encontrado" });
-    await prisma.cost.delete({ where: { id } });
-    await prisma.auditLog.create({
+    await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${existing.productId} FOR UPDATE`;
+    await tx.cost.delete({ where: { id } });
+    await tx.auditLog.create({
       data: {
         userId: req.user!.userId,
         action: "DELETE_COST",
@@ -295,6 +320,8 @@ router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response
         targetId: id,
         oldValue: { costPrice: Number(existing.costPrice), invoiceUrl: existing.invoiceUrl },
       },
+    });
+    await syncProductCost(tx, existing.productId);
     });
     res.json({ message: "Costo eliminado" });
   } catch (error: any) {
@@ -308,98 +335,73 @@ router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response
 // Calcula el "Costo Puesto Aquí" (CIF nacionalizado):
 //   CostoPuestoAqui = PrecioUnitario(USD) × TipoCambio × (1 + %Gastos/100)
 router.post("/import-invoice", authorize("ADMIN"), upload.fields([{ name: "file", maxCount: 1 }, { name: "invoice", maxCount: 1 }]), async (req: AuthRequest, res: Response) => {
+  const excelFile = (req.files as any)?.file?.[0];
+  const invoiceFile = (req.files as any)?.invoice?.[0];
+  let keepInvoice = false;
   try {
-    const excelFile = (req.files as any)?.["file"]?.[0];
-    const invoiceFile = (req.files as any)?.["invoice"]?.[0];
-    if (!excelFile) {
-      return res.status(400).json({ message: "Debe subir el archivo Excel de la factura (columna 'file')" });
-    }
-
+    if (!excelFile || ![".xlsx", ".xls"].includes(path.extname(excelFile.originalname).toLowerCase())) throw errorDominio("Debe subir el archivo Excel de la factura");
     const supplierId = parsePositiveInt(req.body.supplierId, "Proveedor");
     const exchangeRate = parsePositiveDecimal(req.body.exchangeRate, "Tipo de cambio");
-    if (exchangeRate <= 0) return res.status(400).json({ message: "El tipo de cambio debe ser mayor a 0" });
     const percentage = req.body.percentage !== undefined && req.body.percentage !== "" ? parsePositiveDecimal(req.body.percentage, "Porcentaje de gastos") : 0;
-    if (percentage < 0 || percentage > 100) return res.status(400).json({ message: "El porcentaje debe estar entre 0 y 100" });
-    const defaultMargin = req.body.defaultMargin !== undefined && req.body.defaultMargin !== "" ? parsePositiveDecimal(req.body.defaultMargin, "Margen de ganancia") : 0;
-    if (defaultMargin < 0 || defaultMargin > 200) return res.status(400).json({ message: "El margen debe estar entre 0 y 200" });
-
-    const supplier = await prisma.supplier.findUnique({ where: { id: supplierId } });
-    if (!supplier) return res.status(404).json({ message: "Proveedor no encontrado" });
-
-    const workbook = XLSX.read(excelFile.buffer, { type: "buffer" });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(sheet);
-    if (rows.length === 0) return res.status(400).json({ message: "El archivo Excel está vacío" });
-
-    const imported: any[] = [];
-    const updated: any[] = [];
-    const errors: string[] = [];
-    const invoiceUrl = invoiceFile?.filename || null;
-
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i] as any;
-      const code = (row["Código"] || row["Codigo"] || row["codigo"] || row["itemCode"] || row["ItemCode"] || row["Codigo Fabrica"] || row["Código Fábrica"] || row["Cod. Fabrica"] || row["Cód. Fabrica"] || row["Cód. Producto"] || row["Codigo Producto"] || "").toString().trim();
-      const qtyRaw = parseFloat(row["Cantidad"] || row["cantidad"] || row["Cant"] || row["Qty"] || row["Quantity"] || "1") || 1;
-      const unitRaw = parseFloat(row["Precio Unitario"] || row["Precio unitario"] || row["Precio"] || row["PU"] || row["Pu"] || row["Unit Price"] || row["Precio USD"] || row["Precio US"] || row["precio"] || "0") || 0;
-
-      if (!code) {
-        errors.push(`Fila ${i + 2}: Falta el código del producto`);
-        continue;
+    const defaultMargin = req.body.defaultMargin !== undefined && req.body.defaultMargin !== "" ? parsePositiveDecimal(req.body.defaultMargin, "Margen") : 0;
+    const locationId = req.body.locationId ? parsePositiveInt(req.body.locationId, "Ubicación") : null;
+    if (exchangeRate <= 0 || percentage > 100 || defaultMargin > 200) throw errorDominio("Tipo de cambio, porcentaje o margen inválidos");
+    if (!await prisma.supplier.findUnique({ where: { id: supplierId } })) return res.status(404).json({ message: "Proveedor no encontrado" });
+    const excelBytes = fs.readFileSync(excelFile.path);
+    const fileHash = createHash("sha256").update(excelBytes).digest("hex");
+    const workbook = XLSX.read(excelBytes, { type: "buffer" });
+    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets[workbook.SheetNames[0]]);
+    if (!rows.length || rows.length > 5000) throw errorDominio("La factura debe contener entre 1 y 5000 filas");
+    const configuration = { exchangeRate, percentage, defaultMargin, locationId };
+    const result = await prisma.$transaction(async tx => {
+      // Se comparte entre procesos y protege la comprobación y todos los efectos.
+      await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`invoice:${supplierId}:${fileHash}`}, 0))::text`;
+      const prior = await tx.auditLog.findFirst({ where: { action: "IMPORT_INVOICE", targetType: "SUPPLIER", targetId: supplierId, newValue: { path: ["fileHash"], equals: fileHash } }, orderBy: { id: "asc" } });
+      if (prior) {
+        const saved = prior.newValue as any;
+        if (JSON.stringify(saved.configuration) !== JSON.stringify(configuration)) {
+          // JSONB no conserva orden de claves. Se comparan sus valores.
+          if (Object.entries(configuration).some(([k,v]) => saved.configuration[k] !== v)) return { conflict: true as const };
+        }
+        return { conflict: false as const, response: { ...saved.response, replayed: true } };
       }
-      if (unitRaw <= 0) {
-        errors.push(`Fila ${i + 2}: Precio unitario inválido para "${code}"`);
-        continue;
+      const prepared = [];
+      for (let i=0; i<rows.length; i++) {
+        const row = rows[i];
+        const code = String(row["Código"] ?? row["Codigo"] ?? row["codigo"] ?? row.itemCode ?? row.ItemCode ?? row["Codigo Fabrica"] ?? row["Código Fábrica"] ?? row["Cod. Fabrica"] ?? row["Cód. Fabrica"] ?? row["Cód. Producto"] ?? row["Codigo Producto"] ?? "").trim();
+        const quantity = parsePositiveInt(row.Cantidad ?? row.cantidad ?? row.Cant ?? row.Qty ?? row.Quantity ?? 1, `Cantidad fila ${i+2}`);
+        const unit = parsePositiveDecimal(row["Precio Unitario"] ?? row["Precio unitario"] ?? row.Precio ?? row.PU ?? row.Pu ?? row["Unit Price"] ?? row["Precio USD"] ?? row["Precio US"] ?? row.precio, `Precio unitario fila ${i+2}`);
+        if (!code || unit <= 0) throw errorDominio(`Fila ${i+2}: código o precio inválido`);
+        const product = await tx.product.findUnique({ where: { itemCode: code } });
+        if (!product) throw errorDominio(`Fila ${i+2}: producto no encontrado (${code})`);
+        prepared.push({ product, quantity, costPrice: landedCost(unit, exchangeRate, percentage) });
       }
-
-      const product = await prisma.product.findUnique({ where: { itemCode: code } });
-      if (!product) {
-        errors.push(`Fila ${i + 2}: Producto no encontrado (código "${code}")`);
-        continue;
+      for (const id of [...new Set(prepared.map(r=>r.product.id))].sort((a,b)=>a-b)) await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${id} FOR UPDATE`;
+      const imported = [];
+      for (const row of prepared) {
+        const actual = await tx.product.findUniqueOrThrow({ where: { id: row.product.id } });
+        const next = { ...actual, cost: row.costPrice, ...(defaultMargin > 0 ? { price1: money(row.costPrice * (1+defaultMargin/100), "Precio por menor") } : {}) };
+        validatePriceConfiguration(next);
+        const cost = await tx.cost.create({ data: { productId: actual.id, supplierId, costPrice: row.costPrice, exchangeRate, percentage, invoiceUrl: invoiceFile?.filename ?? null } });
+        await tx.product.update({ where: { id: actual.id }, data: { cost: row.costPrice, ...(defaultMargin > 0 ? { price1: Number(next.price1) } : {}) } });
+        await tx.auditLog.create({ data: { userId: req.user!.userId, action: "IMPORT_COST", targetType: "COST", targetId: cost.id, newValue: { productId: actual.id, supplierId, costPrice: row.costPrice, fileHash } } });
+        if (locationId) await receivePurchase(tx, actual.id, locationId, row.quantity, req.user!.userId, cost.id);
+        imported.push({ id: cost.id, itemCode: actual.itemCode, name: actual.name, costPrice: row.costPrice, cantidad: row.quantity });
       }
-
-      const costPuestoAqui = unitRaw * exchangeRate * (1 + percentage / 100);
-
-      const existing = await prisma.cost.findFirst({ where: { productId: product.id, supplierId } });
-      if (existing) {
-        await prisma.cost.update({
-          where: { id: existing.id },
-          data: { costPrice: costPuestoAqui, exchangeRate, percentage: percentage > 0 ? percentage : null, invoiceUrl: invoiceUrl || existing.invoiceUrl },
-        });
-        updated.push({ id: existing.id, itemCode: code, name: product.name, costPrice: costPuestoAqui, cantidad: qtyRaw });
-      } else {
-        const cost = await prisma.cost.create({
-          data: { productId: product.id, supplierId, costPrice: costPuestoAqui, exchangeRate, percentage: percentage > 0 ? percentage : null, invoiceUrl },
-        });
-        imported.push({ id: cost.id, itemCode: code, name: product.name, costPrice: costPuestoAqui, cantidad: qtyRaw });
-      }
-
-      await prisma.product.update({
-        where: { id: product.id },
-        data: {
-          cost: costPuestoAqui,
-          ...(defaultMargin > 0 ? { price1: costPuestoAqui * (1 + defaultMargin / 100) } : {}),
-        },
-      });
-    }
-
-    res.json({
-      total: rows.length,
-      imported: imported.length,
-      updated: updated.length,
-      errors: errors.length,
-      formula: `PrecioUnitario × TipoCambio(${exchangeRate}) × (1 + ${percentage}% / 100)`,
-      details: { imported, updated, errors },
-    });
+      const response = { total: rows.length, imported: imported.length, updated: 0, errors: 0, formula: `PrecioUnitario × TipoCambio(${exchangeRate}) × (1 + ${percentage}% / 100)`, details: { imported, updated: [], errors: [] }, replayed: false };
+      await tx.auditLog.create({ data: { userId: req.user!.userId, action: "IMPORT_INVOICE", targetType: "SUPPLIER", targetId: supplierId, newValue: { fileHash, configuration, response } } });
+      return { conflict: false as const, response };
+    }, { timeout: 60000 });
+    if (result.conflict) return res.status(409).json({ message: "Este archivo ya fue importado para el proveedor con otros parámetros. Revise la importación registrada" });
+    keepInvoice = !result.response.replayed;
+    res.json(result.response);
   } catch (error: any) {
-    if (typeof error?.message === "string" && !error.code && !isPrismaClientError(error)) {
-      return res.status(400).json({ message: error.message });
-    }
-    if (error.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
-    }
+    if (!isPrismaClientError(error)) return res.status(400).json({ message: error.message || "Factura inválida" });
     console.error("Error al importar factura:", error);
     res.status(500).json({ message: "Error interno del servidor" });
+  } finally {
+    if (excelFile?.path && fs.existsSync(excelFile.path)) fs.unlinkSync(excelFile.path);
+    if (!keepInvoice && invoiceFile?.path && fs.existsSync(invoiceFile.path)) fs.unlinkSync(invoiceFile.path);
   }
 });
 

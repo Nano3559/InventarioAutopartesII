@@ -1,6 +1,7 @@
+import { money } from "../../shared/utils/pricing";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
+import { authorizeModule, authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
@@ -11,6 +12,7 @@ const prisma = new PrismaClient();
 router.use(authenticate);
 router.use(requireTiendaLocation);
 router.use(authorize("ADMIN", "TIENDA"));
+router.use(authorizeModule(["ventas", "ventas-mayor"]));
 
 // GET / — Listar pagos con filtros
 router.get("/", async (req: AuthRequest, res: Response) => {
@@ -64,10 +66,8 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "Campos obligatorios: saleId, method, amount" });
     }
 
-    const amountNum = Number(amount);
-    if (isNaN(amountNum) || amountNum <= 0) {
-      return res.status(400).json({ message: "El monto debe ser un número mayor a 0" });
-    }
+    const amountNum = money(amount, "Monto de pago");
+    if (method === "CREDITO") return res.status(400).json({ message: "El crédito se asigna al crear la venta. Registre aquí un cobro efectivo, QR o transferencia" });
 
     const sale = await prisma.sale.findUnique({
       where: { id: Number(saleId) },
@@ -94,7 +94,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     const payment = await prisma.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT id FROM "Sale" WHERE "id" = ${Number(saleId)} FOR UPDATE`;
 
-      const existingPayments = await tx.payment.aggregate({ where: { saleId: Number(saleId) }, _sum: { amount: true } });
+      const existingPayments = await tx.payment.aggregate({ where: { saleId: Number(saleId), method: { not: "CREDITO" } }, _sum: { amount: true } });
       const totalReturned = await tx.return.aggregate({ where: { saleId: Number(saleId) }, _sum: { amount: true } });
       const paid = Number(existingPayments._sum.amount || 0);
       const returned = Number(totalReturned._sum.amount || 0);
@@ -141,7 +141,7 @@ router.get("/summary/:saleId", async (req: AuthRequest, res: Response) => {
       prisma.return.aggregate({ where: { saleId }, _sum: { amount: true } }),
     ]);
 
-    const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const totalPaid = payments.filter((p) => p.method !== "CREDITO").reduce((sum, p) => sum + Number(p.amount), 0);
     const totalReturned = Number(returns._sum.amount || 0);
     const totalSale = Number(sale.total);
 
@@ -150,7 +150,8 @@ router.get("/summary/:saleId", async (req: AuthRequest, res: Response) => {
       totalSale,
       totalPaid,
       totalReturned,
-      pending: totalSale - totalPaid - totalReturned,
+      pending: Math.max(0, totalSale - totalPaid - totalReturned),
+      creditAssigned: payments.filter((p) => p.method === "CREDITO").reduce((sum, p) => sum + Number(p.amount), 0),
       payments: payments.map((p) => ({
         id: p.id,
         method: p.method,

@@ -1,3 +1,4 @@
+import { assertDemoDatabase } from "../src/shared/utils/demoSafety";
 import { PrismaClient } from "@prisma/client";
 import { productSeed, suppliersSeed, customersSeed, importersSeed } from "./seed-data";
 
@@ -11,7 +12,8 @@ const hash = (s: string) => {
 };
 
 async function main() {
-  console.log("=== ENRIQUECIMIENTO DE DATOS DE PRODUCCIÓN (idempotente) ===");
+  assertDemoDatabase(process.env.DATABASE_URL);
+  console.log("=== ENRIQUECIMIENTO DE DATOS DEMO LOCALES (idempotente) ===");
 
   const cats = await prisma.category.findMany();
   const catNames = cats.map((c) => c.name);

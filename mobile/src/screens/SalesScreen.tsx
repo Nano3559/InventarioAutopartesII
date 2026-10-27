@@ -4,20 +4,19 @@ import api from "../services/api";
 import { useSession } from "../navigation/AppNavigator";
 import { precioVentaNormal, totalCarrito } from "../utils/precioVenta";
 
-interface Product { id: number; itemCode: string; name: string; brand: string; price1: number | string; price2?: number | string | null; stock: number; }
-interface CartItem { product: Product; quantity: number; }
+interface Product { id: number; itemCode: string; name: string; brand: string; price1: number | string; price2?: number | string | null; wholesalePrice?: number | string | null; stock: number; }
+interface CartItem { product: Product; quantity: number; priceMode: "POR_MENOR" | "POR_MAYOR"; }
 
 export default function SalesScreen() {
-  const { user } = useSession();
+  const { user, permissions } = useSession();
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState("EFECTIVO");
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  // El backend cobra price2 (minorista) y rechaza el pago si no coincide, así que el
-  // total del TPV debe usar exactamente la misma regla. Ver utils/precioVenta.ts.
-  const total = totalCarrito(cart.map((item) => ({ producto: item.product, cantidad: item.quantity })));
+  // Cada línea comunica su nivel de precio al servidor.
+  const total = totalCarrito(cart.map((item) => ({ producto: item.product, cantidad: item.quantity, priceMode: item.priceMode })));
 
   const findProducts = useCallback(async () => {
     try {
@@ -39,7 +38,7 @@ export default function SalesScreen() {
     setCart((current) => {
       const found = current.find((item) => item.product.id === product.id);
       if (found) return current.map((item) => item.product.id === product.id ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) } : item);
-      return [...current, { product, quantity: 1 }];
+      return [...current, { product, quantity: 1, priceMode: "POR_MENOR" }];
     });
   };
 
@@ -54,7 +53,7 @@ export default function SalesScreen() {
     try {
       setSubmitting(true);
       await api.post("/sales", {
-        items: cart.map(({ product, quantity }) => ({ productId: product.id, quantity, unitPrice: precioVentaNormal(product) })),
+        items: cart.map(({ product, quantity, priceMode }) => ({ productId: product.id, quantity, priceMode })),
         payments: [{ method: paymentMethod, amount: total }],
         locationId: user?.locationId || undefined,
       });
@@ -79,10 +78,11 @@ export default function SalesScreen() {
       )} />
       <View style={styles.cart}>
         <Text style={styles.section}>Carrito ({cart.length})</Text>
-        {cart.map(({ product, quantity }) => <View style={styles.cartRow} key={product.id}>
+        {cart.map(({ product, quantity, priceMode }) => <View style={styles.cartRow} key={product.id}>
           <Text style={styles.cartName}>{product.name} x{quantity}</Text>
+          <TouchableOpacity disabled={!permissions.includes("ventas-mayor") || !Number(product.wholesalePrice) || Number(product.wholesalePrice) > Number(product.price1)} onPress={() => setCart((prev) => prev.map((line) => line.product.id === product.id ? { ...line, priceMode: line.priceMode === "POR_MENOR" ? "POR_MAYOR" : "POR_MENOR" } : line))}><Text>{priceMode === "POR_MENOR" ? "POR MENOR" : "POR MAYOR"}</Text></TouchableOpacity>
           <View style={styles.controls}><TouchableOpacity onPress={() => changeQuantity(product.id, -1)}><Text style={styles.control}>−</Text></TouchableOpacity><TouchableOpacity onPress={() => changeQuantity(product.id, 1)}><Text style={styles.control}>+</Text></TouchableOpacity></View>
-          <Text style={styles.lineTotal}>Bs. {(precioVentaNormal(product) * quantity).toFixed(2)}</Text>
+          <Text style={styles.lineTotal}>Bs. {(precioVentaNormal(product, priceMode) * quantity).toFixed(2)}</Text>
         </View>)}
         <Text style={styles.total}>Total: Bs. {total.toFixed(2)}</Text>
         <View style={styles.methods}>{["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"].map((method) => <TouchableOpacity key={method} style={[styles.method, paymentMethod === method && styles.selected]} onPress={() => setPaymentMethod(method)}><Text style={paymentMethod === method ? styles.selectedText : styles.methodText}>{method}</Text></TouchableOpacity>)}</View>

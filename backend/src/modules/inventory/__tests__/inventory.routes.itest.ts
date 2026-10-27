@@ -39,6 +39,10 @@ const getJson = async (ruta: string, token?: string): Promise<{ status: number; 
 };
 
 const putJson = async (ruta: string, body: unknown, token?: string): Promise<{ status: number; body: any }> => {
+  if (body && typeof body === "object" && "stock" in body) {
+    const row = await ctx!.prisma.inventory.findUnique({ where: { id: Number(ruta.split("/").pop()) } });
+    body = { ...body, expectedStock: row?.stock };
+  }
   const res = await fetch(`${server.baseUrl}${ruta}`, {
     method: "PUT",
     headers: { ...jsonHeaders(token), "content-type": "application/json" },
@@ -375,6 +379,7 @@ test("Regresión — un MOVIMIENTO sigue moviendo stock entre almacén y tienda"
       toLocationId: ctx!.locationIds.tienda,
       quantity: 6,
       observation: " Reposicion de prueba",
+      operationId: crypto.randomUUID(),
     },
     tokenDe(ctx!.users.inventario, "INVENTARIO"),
   );

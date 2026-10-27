@@ -28,24 +28,9 @@ export const ROLES_CON_COSTOS = ROLES_CON_VISTA_GLOBAL;
  * Allow-list, no deny-list, por el mismo motivo que `ROLES_CON_COSTOS`: un rol nuevo
  * o desconocido no debe heredar el precio mayorista solo por estar autenticado.
  *
- * Por qué los TRES roles actuales, y no solo ADMIN. Esto NO es una suposición, son los
- * consumidores reales que se verificaron en el frontend:
- *
- *  - ADMIN     → `/panel/precios` (lectura y edición), `/panel/ventas-mayor`,
- *                `/panel/inventario` y `/panel/inventario/:id`.
- *  - TIENDA    → `/panel/ventas-mayor` (`WholesalePage.tsx:113`): el precio del carrito
- *                MAYORISTA sale de aquí, y el servidor cobra `wholesalePrice ?? price1`
- *                (`wholesale.routes.ts:150`). Si el campo desapareciera, el carrito
- *                caería a `price1` y el backend rechazaría el pago por total distinto.
- *                Además edita el precio desde el formulario de producto.
- *  - INVENTARIO→ `/panel/inventario` y `/panel/inventario/:id`, donde el campo
- *                "Precio Mayor" es un input editable sin gate de rol
- *                (`InventoryPage.tsx:592`, `ProductDetailPage.tsx:245`).
- *
- * Reducir este conjunto exige un cambio coordinado en esas pantallas: el input se
- * manda en el guardado como `wholesalePrice: form.wholesalePrice ? Number(...) : null`,
- * así que ocultarlo sin tocar el formulario haría que un guardado borrase el precio
- * mayorista almacenado.
+ * ADMIN e INVENTARIO consultan la configuración interna. TIENDA necesita el precio
+ * explícito para su venta por mayor. No existe fallback a price1. Ver wholesale.routes.
+ * Poder consultar este dato no concede permiso para editarlo.
  */
 export const ROLES_CON_PRECIO_MAYORISTA = new Set(["ADMIN", "TIENDA", "INVENTARIO"]);
 

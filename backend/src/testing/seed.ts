@@ -11,8 +11,8 @@ import { resolveTestEnv } from "./helpers";
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
   ADMIN: ["*"],
-  TIENDA: ["ventas", "inventario", "solicitudes", "devoluciones"],
-  INVENTARIO: ["movimientos", "inventario", "solicitudes"],
+  TIENDA: ["ventas", "ventas-mayor", "inventario", "solicitudes", "devoluciones", "reportes"],
+  INVENTARIO: ["movimientos", "inventario", "solicitudes", "reportes"],
 };
 
 const PASSWORD = "TestPassword123!";
@@ -117,11 +117,11 @@ export interface TestProduct {
 
 export interface ProductSeedOptions {
   unitPrice?: number;
-  /** Precio mayorista. Por defecto 80% de unitPrice. null = sin precio mayorista (usa price1). */
+  /** Precio mayorista. Por defecto 80% de unitPrice. null = sin precio mayorista, venta por mayor bloqueada. */
   wholesalePrice?: number | null;
-  /** Precio mayorista explicito (price1). Por defecto igual a unitPrice. */
+  /** POR MENOR canónico (price1). Por defecto igual a unitPrice. */
   price1?: number;
-  /** Precio minorista explicito (price2). Por defecto igual a unitPrice. */
+  /** Campo legacy conservado (price2). Por defecto igual a unitPrice. */
   price2?: number;
   stockAlmacen?: number;
   stockTienda?: number;

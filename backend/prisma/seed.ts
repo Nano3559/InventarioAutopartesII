@@ -1,3 +1,4 @@
+import { assertDemoDatabase } from "../src/shared/utils/demoSafety";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { seedData } from "./seed-data";
@@ -5,6 +6,7 @@ import { seedData } from "./seed-data";
 const prisma = new PrismaClient();
 
 async function main() {
+  assertDemoDatabase(process.env.DATABASE_URL);
   console.log("Sembrando datos iniciales...");
 
   // Roles
@@ -17,7 +19,7 @@ async function main() {
   const tiendaRole = await prisma.roleModel.upsert({
     where: { name: "TIENDA" },
     update: {
-      permissions: ["ventas", "inventario", "solicitudes", "devoluciones"],
+      permissions: ["ventas", "ventas-mayor", "inventario", "solicitudes", "devoluciones", "reportes"],
       columnConfig: {
         inventario: ["ID", "Fabricante", "Producto", "Marca", "Modelo", "Año", "Detalles", "Cód. OEM", "Cód. Fábrica", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones"],
         ventas: ["ID", "Fecha", "Cliente", "Tienda", "Vendedor", "Total", "Estado", "Acciones"],
@@ -26,7 +28,7 @@ async function main() {
     },
     create: {
       name: "TIENDA",
-      permissions: ["ventas", "inventario", "solicitudes", "devoluciones"],
+      permissions: ["ventas", "ventas-mayor", "inventario", "solicitudes", "devoluciones", "reportes"],
       columnConfig: {
         inventario: ["ID", "Fabricante", "Producto", "Marca", "Modelo", "Año", "Detalles", "Cód. OEM", "Cód. Fábrica", "Imagen", "Precio 1", "Precio 2", "Stock", "Acciones"],
         ventas: ["ID", "Fecha", "Cliente", "Tienda", "Vendedor", "Total", "Estado", "Acciones"],
@@ -38,7 +40,7 @@ async function main() {
   const inventarioRole = await prisma.roleModel.upsert({
     where: { name: "INVENTARIO" },
     update: {},
-    create: { name: "INVENTARIO", permissions: ["movimientos", "inventario", "solicitudes"] },
+    create: { name: "INVENTARIO", permissions: ["movimientos", "inventario", "solicitudes", "reportes"] },
   });
 
   console.log("Roles creados:", { adminRole: adminRole.id, tiendaRole: tiendaRole.id, inventarioRole: inventarioRole.id });
@@ -153,13 +155,7 @@ async function main() {
   await seedData(prisma);
 
   console.log("\n=== Datos iniciales sembrados correctamente ===");
-  console.log("Credenciales de acceso:");
-  console.log("  Admin:       admin@inventario.com / admin123");
-  console.log("  Tienda 1:    tienda1@inventario.com / tienda123");
-  console.log("  Tienda 2:    tienda2@inventario.com / tienda123");
-  console.log("  Tienda 3:    tienda3@inventario.com / tienda123");
-  console.log("  Inventario:  inventario@inventario.com / inventario123");
-  console.log("  Fernando:    fernando@inventario.com / vendedor123 (rol TIENDA, Tienda 1)");
+  console.log("Entorno de demostración local creado. No utilizar estas cuentas en producción.");
 }
 
 main()

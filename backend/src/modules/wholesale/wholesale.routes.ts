@@ -1,16 +1,21 @@
+import { saleCustomer } from "../../shared/utils/saleCustomer";
+import { saleValidation } from "../../shared/middlewares/saleValidation";
 import { Router, Response } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
 import { rangoFechasNegocio } from "../../shared/utils/rangoFechas";
 import * as XLSX from "xlsx";
-import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
+import { authorizeModule, authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { nextDayAt8, REQUEST_STATUS_ACTIVOS } from "../../utils/replenish";
 import { validateAndMergeItems } from "../../utils/saleItems";
 import { excelUpload } from "../../shared/utils/upload";
 import { notificarInventarioSolicitud } from "../../shared/utils/notificarInventario";
 import { esErrorDominio, errorDominio } from "../../shared/utils/errorDominio";
+
+import { salePrice, lineSubtotal, money, validatePayments, validatePriceConfiguration } from "../../shared/utils/pricing";
+import { saleLocation } from "../../shared/utils/saleLocation";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -19,11 +24,12 @@ const upload = excelUpload;
 router.use(authenticate);
 router.use(requireTiendaLocation);
 router.use(authorize("ADMIN", "TIENDA"));
+router.use(authorizeModule("ventas-mayor"));
 
 // POST — Crear venta mayorista
-router.post("/", async (req: AuthRequest, res: Response) => {
+router.post("/", saleValidation, async (req: AuthRequest, res: Response) => {
   try {
-    const { items, payments, customerId, customerData, locationId, clienteName, paraQuien, lugarEntrega, datosFactura, formaPago } = req.body;
+    const { items, payments, customerId, customerData, locationId, seller, clienteName, paraQuien, lugarEntrega, datosFactura, formaPago } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "Debe agregar al menos un producto" });
@@ -34,41 +40,15 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     }
 
     const user = req.user!;
-    let userLocationId: number | null = null;
-
-    if (user.role === "TIENDA") {
-      userLocationId = user.locationId ?? null;
-      if (!userLocationId) {
-        return res.status(400).json({ message: "Usuario TIENDA sin ubicación asignada" });
-      }
-      if (locationId && Number(locationId) !== userLocationId) {
-        return res.status(403).json({ message: "No puede vender productos de otra tienda" });
-      }
-    } else {
-      userLocationId = locationId ? Number(locationId) : user.locationId || null;
+    if (user.role === "TIENDA" && locationId !== undefined && Number(locationId) !== user.locationId) {
+      return res.status(403).json({ message: "No puede vender productos de otra tienda" });
     }
+    const userLocationId = await saleLocation(prisma, user, locationId, true);
 
-    if (!userLocationId) {
-      const tienda = await prisma.location.findFirst({ where: { type: "TIENDA" } });
-      if (!tienda) {
-        return res.status(400).json({ message: "No hay tiendas configuradas en el sistema" });
-      }
-      userLocationId = tienda.id;
-    }
-
-    const validMethods = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"];
-    for (const p of payments) {
-      if (!validMethods.includes(p.method)) {
-        return res.status(400).json({ message: `Método de pago inválido: ${p.method}` });
-      }
-      const amount = Number(p.amount);
-      if (!Number.isFinite(amount) || amount < 0) {
-        return res.status(400).json({ message: "El monto de pago debe ser un número mayor o igual a 0" });
-      }
-    }
+    const acceptedPayments = validatePayments(payments);
 
     // Validar, deduplicar y resolver precio unitario de los ítems
-    const validItems = validateAndMergeItems(items);
+    const validItems = validateAndMergeItems(items, "POR_MAYOR");
 
     // Datos de entrega: usar los enviados explícitamente o inferir del payload
     const entregaParaQuien = paraQuien || clienteName || null;
@@ -97,23 +77,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     }[] = [];
 
     const result = await prisma.$transaction(async (tx) => {
-      let finalCustomerId = customerId || null;
-
-      if (customerData && !finalCustomerId) {
-        const { name, nit, phone } = customerData;
-        if (name) {
-          let customer;
-          if (nit) {
-            customer = await tx.customer.findFirst({ where: { nit } });
-          }
-          if (!customer) {
-            customer = await tx.customer.create({
-              data: { name, nit: nit || null, phone: phone || null },
-            });
-          }
-          finalCustomerId = customer.id;
-        }
-      }
+      const finalCustomerId = await saleCustomer(tx, customerId, customerData);
       // R4: bloqueo de fila pesimista (FOR UPDATE) sobre el inventario antes de validar y
       // descontar (misma mecánica que movements). Todas las filas se bloquean en un único
       // query con ORDER BY id: locks en orden determinista y sin ventana entre bloqueos, por
@@ -147,12 +111,9 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       let totalSale = 0;
       const saleItemsData = orderedItems.map((item) => {
         const product = productById.get(item.productId)!;
-        const unitPrice = Number(product.wholesalePrice ?? product.price1);
-        if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
-          throw errorDominio(`El producto "${product.name}" no tiene un precio de venta por mayor definido`);
-        }
-        const subtotal = item.quantity * unitPrice;
-        totalSale += subtotal;
+        const unitPrice = salePrice(product, "POR_MAYOR");
+        const subtotal = lineSubtotal(item.quantity, unitPrice);
+        totalSale = money(totalSale + subtotal, "Total de venta");
         return {
           productId: item.productId,
           quantity: item.quantity,
@@ -161,7 +122,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         };
       });
 
-      const totalPaid = payments.reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+      const totalPaid = acceptedPayments.reduce((sum, p) => money(sum + p.amount, "Total de pagos", true), 0);
       if (Math.abs(totalPaid - totalSale) > 0.01) {
         throw errorDominio(`El total pagado (Bs. ${totalPaid}) no coincide con el total de la venta (Bs. ${totalSale})`);
       }
@@ -173,13 +134,14 @@ router.post("/", async (req: AuthRequest, res: Response) => {
           userId: user.userId,
           locationId: userLocationId,
           customerId: finalCustomerId,
+          seller: typeof seller === "string" ? seller.trim().slice(0, 120) || null : null,
           paraQuien: entregaParaQuien,
           lugarEntrega: entregaLugar,
           datosFactura: entregaFactura,
           formaPago: entregaFormaPago,
           items: { create: saleItemsData },
           payments: {
-            create: payments.map((p: any) => ({
+            create: acceptedPayments.map((p) => ({
               method: p.method,
               amount: Number(p.amount),
             })),
@@ -330,13 +292,14 @@ router.post("/import", authorize("ADMIN"), upload.single("file"), async (req: Au
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i] as any;
-      const itemCode = row["Codigo fabrica"] || row["codigo fabrica"] || row["itemCode"] || "";
+      const itemCode = row["Código Fábrica"] || row["Codigo Fabrica"] || row["Codigo fabrica"] || row["codigo fabrica"] || row["itemCode"] || "";
       const name = row["Descripcion"] || row["descripcion"] || row["Producto"] || row["producto"] || "";
       const brand = row["Marca"] || row["marca"] || "";
       const model = row["Modelo"] || row["modelo"] || "";
       const year = row["Anos"] || row["anos"] || row["Años"] || row["años"] || "";
       const detail = row["Detalle"] || row["detalle"] || "";
-      const wholesalePrice = parseFloat(row["Precio mayor"] || row["precio mayor"] || row["wholesalePrice"] || "0");
+      const wholesalePrice = Number(row["Por mayor"] ?? row["Precio por mayor"] ?? row["Precio mayor"] ?? row["precio mayor"] ?? row["wholesalePrice"] ?? 0);
+      const retailPrice = Number(row["Por menor"] ?? row["Precio por menor"] ?? row["price1"]);
 
       if (!itemCode || !name) {
         errors.push(`Fila ${i + 1}: Código y nombre son obligatorios`);
@@ -347,6 +310,8 @@ router.post("/import", authorize("ADMIN"), upload.single("file"), async (req: Au
         let product = await prisma.product.findUnique({ where: { itemCode } });
 
         if (!product) {
+          if (!Number.isFinite(retailPrice) || retailPrice <= 0) throw errorDominio("Para crear un producto indique Por menor. No se inventa desde Por mayor");
+          validatePriceConfiguration({ price1: retailPrice, price2: 0, wholesalePrice });
           product = await prisma.product.create({
             data: {
               itemCode,
@@ -356,21 +321,24 @@ router.post("/import", authorize("ADMIN"), upload.single("file"), async (req: Au
               year: year || "",
               detail,
               manufacturer: "Importado",
-              price1: wholesalePrice || 0,
-              price2: wholesalePrice || 0,
+              price1: retailPrice,
+              price2: 0,
               wholesalePrice: wholesalePrice || undefined,
             },
           });
         } else if (wholesalePrice > 0) {
-          product = await prisma.product.update({
-            where: { id: product.id },
-            data: { wholesalePrice },
+          const id = product.id;
+          product = await prisma.$transaction(async (tx) => {
+            await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${id} FOR UPDATE`;
+            const current = await tx.product.findUniqueOrThrow({ where: { id } });
+            validatePriceConfiguration({ ...current, wholesalePrice });
+            return tx.product.update({ where: { id }, data: { wholesalePrice } });
           });
         }
 
         imported.push({ id: product.id, itemCode: product.itemCode, name: product.name });
-      } catch {
-        errors.push(`Fila ${i + 1}: no se pudo guardar (verifique código, nombre y precio)`);
+      } catch (error) {
+        errors.push(`Fila ${i + 1}: ${esErrorDominio(error) ? error.message : "no se pudo guardar (verifique código, nombre y precio)"}`);
       }
     }
 

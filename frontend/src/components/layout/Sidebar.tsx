@@ -37,6 +37,11 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const links = allLinks.filter((l) => {
     if (!l.module) return true; // Dashboard always visible
     if (isAdmin) return true; // ADMIN sees everything
+    const allowedRoles: Record<string, string[]> = {
+      inventario: ["TIENDA", "INVENTARIO"], ventas: ["TIENDA"], "ventas-mayor": ["TIENDA"], devoluciones: ["TIENDA"],
+      solicitudes: ["TIENDA", "INVENTARIO"], movimientos: ["INVENTARIO"], reportes: ["TIENDA", "INVENTARIO"],
+    };
+    if (!(allowedRoles[l.module] || []).includes(role)) return false;
     return permissions.includes(l.module) || (l.module === "inventario" && permissions.includes("productos"));
   });
 

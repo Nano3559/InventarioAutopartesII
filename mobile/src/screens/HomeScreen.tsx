@@ -9,12 +9,12 @@ const modules = [
 ];
 
 export default function HomeScreen({ navigation }: any) {
-  const { user, logout } = useSession();
+  const { user, permissions, logout } = useSession();
   const availableModules = modules.filter((mod) =>
     mod.screen === "Inventory"
-      ? user?.role === "ADMIN" || user?.role === "INVENTARIO" || user?.role === "TIENDA"
+      ? user?.role === "ADMIN" || (["INVENTARIO", "TIENDA"].includes(user?.role || "") && (permissions.includes("inventario") || permissions.includes("productos")))
       : mod.screen === "Sales"
-        ? user?.role === "ADMIN" || user?.role === "TIENDA"
+        ? user?.role === "ADMIN" || (user?.role === "TIENDA" && permissions.includes("ventas"))
         : true
   );
 

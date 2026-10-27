@@ -7,12 +7,14 @@ import HomeScreen from "../screens/HomeScreen";
 import InventoryScreen from "../screens/InventoryScreen";
 import SalesScreen from "../screens/SalesScreen";
 import ScannerScreen from "../screens/ScannerScreen";
+import api from "../services/api";
 import { clearSession, getStoredSession, setOnUnauthorized, LoginResponse, User } from "../services/api";
 
 const Stack = createNativeStackNavigator();
 
 interface SessionContextValue {
   user: User | null;
+  permissions: string[];
   setSession: (session: LoginResponse) => void;
   logout: () => Promise<void>;
 }
@@ -27,6 +29,7 @@ export const useSession = () => {
 
 export default function AppNavigator() {
   const [user, setUser] = useState<User | null>(null);
+  const [permissions, setPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,6 +41,13 @@ export default function AppNavigator() {
     return () => setOnUnauthorized(null);
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    setPermissions([]);
+    if (user) api.get("/permissions/permissions/me").then((r) => { if (active) setPermissions(r.data.permissions || []); }).catch(() => { if (active) setPermissions([]); });
+    return () => { active = false; };
+  }, [user]);
+
   const logout = async () => {
     await clearSession();
     setUser(null);
@@ -47,11 +57,11 @@ export default function AppNavigator() {
     return <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}><ActivityIndicator size="large" color="#2563eb" /></View>;
   }
 
-  const canInventory = user?.role === "ADMIN" || user?.role === "INVENTARIO" || user?.role === "TIENDA";
-  const canSales = user?.role === "ADMIN" || user?.role === "TIENDA";
+  const canInventory = user?.role === "ADMIN" || (["INVENTARIO", "TIENDA"].includes(user?.role || "") && (permissions.includes("inventario") || permissions.includes("productos")));
+  const canSales = user?.role === "ADMIN" || (user?.role === "TIENDA" && permissions.includes("ventas"));
 
   return (
-    <SessionContext.Provider value={{ user, setSession: (session) => setUser(session.user), logout }}>
+    <SessionContext.Provider value={{ user, permissions, setSession: (session) => setUser(session.user), logout }}>
       <NavigationContainer>
         <Stack.Navigator>
           {!user ? (

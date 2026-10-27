@@ -1,8 +1,11 @@
+import { dailyReport } from "./dailyReport";
+import { esErrorDominio } from "../../shared/utils/errorDominio";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate } from "../../shared/middlewares/auth";
+import { authorizeModule, authenticate } from "../../shared/middlewares/auth";
+import { parsePositiveInt } from "../../shared/middlewares/validate";
 import { parsePagination } from "../../shared/utils/pagination";
-import { rangoFechasNegocio, rangoMesNegocio } from "../../shared/utils/rangoFechas";
+import { rangoFechasNegocio, rangoMesNegocio, fechaNegocio } from "../../shared/utils/rangoFechas";
 import { AuthRequest } from "../../shared/types";
 import { ROLES_CON_COSTOS as ROLES_CON_COSTOS_SHARED, alcanceDeFiltro, SIN_ALCANCE } from "../../shared/utils/scope";
 
@@ -18,35 +21,18 @@ const prisma = new PrismaClient();
 export const ROLES_CON_COSTOS = ROLES_CON_COSTOS_SHARED;
 
 router.use(authenticate);
+router.use(authorizeModule("reportes"));
 
-/**
- * DECISIÓN PENDIENTE — por qué NO hay `authorizeModule("reportes")` en este router.
- *
- * ACCESO ACTUAL (verificado): cualquiera con un JWT válido entra a /api/reports/*, y
- * la SEGURIDAD DE LOS DATOS se aplica dentro de cada endpoint, no en el router:
- *  - /sales, /inventory, /monthly → acotados a la ubicación del usuario; los costos,
- *    utilidad y margen solo a ADMIN/INVENTARIO (ROLES_CON_COSTOS).
- *  - /suppliers → 403 salvo ADMIN/INVENTARIO (agrega costos de compra por proveedor).
- *  - El PDF de /monthly heredea exactamente el mismo `puedeVerCostos`, así que un
- *    TIENDA no puede exportar costos por la vía del PDF.
- *
- * QUIÉN TIENE EL PERMISO `reportes` HOY: NADIE. Los permisos sembrados son
- *   ADMIN      -> ["*"]
- *   TIENDA     -> ["ventas", "inventario", "solicitudes", "devoluciones"]
- *   INVENTARIO -> ["movimientos", "inventario", "solicitudes"]
- * ADMIN pasa siempre (línea 96 y 110 del middleware,Atribución por nombre de rol), pero
- * TIENDA e INVENTARIO no tienen la cadena "reportes".
- *
- * QUÉ SE ROMPERÍA AL ACTIVARLO: añadir `router.use(authorizeModule("reportes"))` sin
- * tocar los permisos dejaría a TIENDA e INVENTARIO con 403 en TODO /api/reports,
- * incluidos los reportes operativos que hoy sí ven (sus propias ventas, su inventario y
- * su resumen mensual sin costos). Para activarlo hay que decidir antes qué roles lo
- * reciben y añadir "reportes" a `RoleModel.permissions` (seed y panel de permisos).
- *
- * Alternativa de menor riesgo, si se quiere endurecer sin cambiar permisos: exigir
- * `authorizeModule("inventario")` o `authorizeModule("ventas")` según el reporte, que sí
- * existen en los tres roles. Queda como decisión de arquitectura, no se aplica aquí.
- */
+// El permiso de módulo se aplica junto al alcance y a la protección de costos.
+
+router.get("/daily", async (req: AuthRequest, res: Response) => {
+  try { res.json({ groups: await dailyReport(prisma, req) }); }
+  catch (error) {
+    if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
+    console.error("Error en reporte diario:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
 
 // GET /sales — Ventas filtradas
 router.get("/sales", async (req: AuthRequest, res: Response) => {
@@ -93,6 +79,7 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
     const supplierIdEfectivo =
       supplierId && supplierId !== "all" && ROLES_CON_COSTOS.has(req.user?.role ?? "") ? supplierId : undefined;
 
+    let matchingProductFilter: any = null;
     if (brand || model || supplierIdEfectivo || product) {
       const productFilter: any = {};
       if (brand && typeof brand === "string") productFilter.brand = { contains: brand, mode: "insensitive" };
@@ -110,6 +97,7 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
         // resultado de la consulta sin filtrar por nada.
         if (!Number.isNaN(sid) && sid >= 1) productFilter.costs = { some: { supplierId: sid } };
       }
+      matchingProductFilter = productFilter;
       where.items = { some: { product: productFilter } };
     }
 
@@ -117,6 +105,10 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
     // respondía 500.
     const { page: pg, limit: take, skip } = parsePagination(page, limit, 500);
 
+    const requestedSnapshot = req.query.snapshotMaxId;
+    const snapshotMaxId = requestedSnapshot === undefined ? (await prisma.sale.aggregate({ where, _max: { id: true } }))._max.id ?? 0 : Number(requestedSnapshot);
+    if (!Number.isSafeInteger(snapshotMaxId) || snapshotMaxId < 0) return res.status(400).json({ message: "Snapshot inválido" });
+    where.id = { lte: snapshotMaxId };
     const [sales, total, summary] = await Promise.all([
       prisma.sale.findMany({
         where,
@@ -124,10 +116,10 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
           user: { select: { id: true, name: true } },
           location: { select: { id: true, name: true } },
           customer: { select: { id: true, name: true } },
-          items: { include: { product: { select: { id: true, name: true, brand: true, model: true, itemCode: true } } } },
+          items: { ...(matchingProductFilter ? { where: { product: matchingProductFilter } } : {}), include: { product: { select: { id: true, name: true, brand: true, model: true, itemCode: true } } } },
           payments: true,
         },
-        orderBy: { saleDate: "desc" },
+        orderBy: [{ saleDate: "desc" }, { id: "desc" }],
         skip,
         take,
       }),
@@ -135,12 +127,15 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
       prisma.sale.aggregate({ where, _sum: { total: true }, _count: true }),
     ]);
 
+    const filteredTotal = matchingProductFilter ? Number((await prisma.saleItem.aggregate({ where: { sale: where, product: matchingProductFilter }, _sum: { subtotal: true } }))._sum.subtotal ?? 0) : Number(summary._sum.total ?? 0);
     res.json({
+      snapshotMaxId,
+      totalScope: matchingProductFilter ? "MATCHING_ITEMS" : "SALE",
       sales: sales.map((s) => ({
         id: s.id,
         date: s.saleDate,
         type: s.type,
-        total: Number(s.total),
+        total: matchingProductFilter ? s.items.reduce((sum, i) => sum + Number(i.subtotal), 0) : Number(s.total),
         location: s.location,
         customer: s.customer,
         user: s.user,
@@ -148,9 +143,9 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
         payments: s.payments.map((p) => ({ method: p.method, amount: Number(p.amount) })),
       })),
       summary: {
-        totalSales: Number(summary._sum.total) || 0,
+        totalSales: filteredTotal,
         count: summary._count,
-        average: summary._count > 0 ? Number((Number(summary._sum.total) / summary._count).toFixed(2)) : 0,
+        average: summary._count > 0 ? Number((filteredTotal / summary._count).toFixed(2)) : 0,
       },
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
@@ -163,7 +158,7 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
 // GET /inventory — Stock por ubicación
 router.get("/inventory", async (req: AuthRequest, res: Response) => {
   try {
-    const { brand, model, locationId, lowStock } = req.query;
+    const { brand, model, locationId, lowStock, search } = req.query;
 
     const where: any = {};
     if (locationId && typeof locationId === "string") where.locationId = Number(locationId);
@@ -181,6 +176,7 @@ router.get("/inventory", async (req: AuthRequest, res: Response) => {
       where.product = { ...where.product, model: { contains: model, mode: "insensitive" } };
     }
 
+    if (typeof search === "string" && search.trim()) where.product = { ...where.product, OR: ["name", "itemCode", "brand"].map(field => ({ [field]: { contains: search.trim(), mode: "insensitive" } })) };
     const inventories = await prisma.inventory.findMany({
       where,
       include: {
@@ -292,7 +288,7 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
     // Se acepta además ?month=YYYY-MM.
     const mesActual = (() => {
       const ahora = new Date();
-      return `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}`;
+      return fechaNegocio(ahora).slice(0, 7);
     })();
 
     const anio = year === undefined || String(year).trim() === "" ? null : String(year).trim();
@@ -308,7 +304,7 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
       if (!/^(0?[1-9]|1[0-2])$/.test(mesBruto)) {
         return res.status(400).json({ message: "Parámetro month inválido. Use un mes entre 1 y 12" });
       }
-      claveMes = `${anio ?? String(new Date().getFullYear())}-${mesBruto.padStart(2, "0")}`;
+      claveMes = `${anio ?? fechaNegocio().slice(0, 4)}-${mesBruto.padStart(2, "0")}`;
     } else {
       claveMes = anio !== null ? `${anio}-01` : mesActual;
     }
@@ -323,7 +319,8 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
 
     // Los roles de la allow-list ven todas las tiendas; el resto queda acotado a la
     // suya, y sin ubicación asignada no ve el reporte.
-    const locationScope = alcanceDeFiltro(req.user);
+    let locationScope = alcanceDeFiltro(req.user);
+    if (locationScope === null && req.query.locationId) locationScope = parsePositiveInt(req.query.locationId, "Ubicación");
     if (locationScope === SIN_ALCANCE) {
       return res.status(403).json({ message: "Usuario sin ubicación asignada" });
     }

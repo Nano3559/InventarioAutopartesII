@@ -1,3 +1,6 @@
+import { saveSalePdf } from "../utils/salePdf";
+import { formatBusinessDateTime } from "../utils/businessDate";
+import { formatBusinessDate, formatBusinessTime } from "../utils/businessDate";
 import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 import {
   Search, ShoppingCart, Plus, Minus, Trash2, X, CreditCard,
@@ -8,8 +11,6 @@ import toast from "react-hot-toast";
 import api from "../services/api";
 import { useAuthStore } from "../stores/authStore";
 import ColumnManager from "../components/ui/ColumnManager";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
 import {
   leerBorradorVision,
   limpiarBorradorVision,
@@ -32,7 +33,7 @@ interface Location {
 
 interface CartItem {
   productId: number; itemCode: string; name: string; brand: string;
-  unitPrice: number; priceTier: 1 | 2; price1: number; price2: number;
+  unitPrice: number; priceMode: "POR_MENOR" | "POR_MAYOR"; price1: number; wholesalePrice: number;
   quantity: number; availableStock: number;
 }
 
@@ -53,7 +54,7 @@ interface SaleRecord {
 }
 
 interface SalePayload {
-  items: { productId: number; quantity: number; unitPrice: number }[];
+  items: { productId: number; quantity: number; priceMode: "POR_MENOR" | "POR_MAYOR" }[];
   payments: { method: string; amount: number }[];
   customerData?: { name: string; nit: string | null; phone: string | null };
   locationId?: number;
@@ -77,6 +78,7 @@ export default function SalesPage() {
   const { user, allowedCategories } = useAuthStore();
   const isAdmin = user?.role === "ADMIN";
   const isTienda = user?.role === "TIENDA";
+  const canWholesale = user?.role === "ADMIN" || useAuthStore.getState().permissions.includes("ventas-mayor");
   const isVendedor = isTienda;
 
   // --- Locations ---
@@ -86,7 +88,7 @@ export default function SalesPage() {
   useEffect(() => {
     api.get("/locations").then((r) => {
       const locationList = Array.isArray(r.data) ? r.data : r.data.locations || [];
-      setLocations(locationList);
+      setLocations(locationList.filter((l: Location) => l.type === "TIENDA"));
       if (isTienda && user?.locationId) {
         setSelectedLocationId(user.locationId);
       }
@@ -176,16 +178,16 @@ export default function SalesPage() {
     if (column === "Producto") return <td key={column} className="px-5 py-3"><p className="text-white font-medium text-sm">{c.name}</p><p className="text-xs text-gray-500">{c.brand} · {c.itemCode}</p></td>;
     if (column === "Precio") return (
       <td key={column} className="px-4 py-3 text-right">
-        {c.price2 > 0 && c.price2 !== c.price1 ? (
+        {canWholesale && c.wholesalePrice > 0 && c.wholesalePrice <= c.price1 ? (
           <div className="flex items-center justify-end gap-1">
             <button
-              onClick={() => changePriceTier(c.productId, 1, String(c.price1), String(c.price2))}
-              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceTier === 1 ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"}`}
-            >Mayorista</button>
+              onClick={() => changePriceMode(c.productId, "POR_MENOR", c.price1, c.wholesalePrice)}
+              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceMode === "POR_MENOR" ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"}`}
+            >POR MENOR</button>
             <button
-              onClick={() => changePriceTier(c.productId, 2, String(c.price1), String(c.price2))}
-              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceTier === 2 ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"}`}
-            >Minorista</button>
+              onClick={() => changePriceMode(c.productId, "POR_MAYOR", c.price1, c.wholesalePrice)}
+              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceMode === "POR_MAYOR" ? "bg-primary-600 text-white" : "bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white"}`}
+            >POR MAYOR</button>
           </div>
         ) : (
           <span className="text-gray-300">{formatBs(c.unitPrice)}</span>
@@ -244,8 +246,9 @@ export default function SalesPage() {
   };
 
   // ==================== CART ====================
-  const addToCart = (p: Product, tier: 1 | 2 = 2) => {
-    const price = tier === 2 && Number(p.price2) > 0 ? Number(p.price2) : Number(p.price1);
+  const addToCart = (p: Product, priceMode: "POR_MENOR" | "POR_MAYOR" = "POR_MENOR") => {
+    const price = Number((priceMode === "POR_MAYOR" ? Number(p.wholesalePrice) : Number(p.price1)).toFixed(2));
+    if (!Number.isFinite(price) || price <= 0 || (priceMode === "POR_MAYOR" && (!canWholesale || price > Number(p.price1)))) { toast.error("Precio por mayor no configurado o inválido"); return; }
     setCart((prev) => {
       const existing = prev.find((c) => c.productId === p.id);
       if (existing) {
@@ -253,13 +256,14 @@ export default function SalesPage() {
           toast.error(`Stock insuficiente (disponible: ${p.stock})`);
           return prev;
         }
+        if (existing.priceMode !== priceMode) { toast.error("El producto ya usa otro modo. Cámbielo en su fila del carrito"); return prev; }
         return prev.map((c) =>
           c.productId === p.id ? { ...c, quantity: c.quantity + 1 } : c
         );
       }
       return [...prev, {
         productId: p.id, itemCode: p.itemCode, name: p.name, brand: p.brand,
-        unitPrice: price, priceTier: tier, price1: Number(p.price1), price2: Number(p.price2),
+        unitPrice: price, priceMode, price1: Number(p.price1), wholesalePrice: Number(p.wholesalePrice),
         quantity: 1, availableStock: p.stock,
       }];
     });
@@ -281,11 +285,11 @@ export default function SalesPage() {
     }));
   };
 
-  const changePriceTier = (productId: number, tier: 1 | 2, price1: string, price2: string) => {
+  const changePriceMode = (productId: number, priceMode: "POR_MENOR" | "POR_MAYOR", price1: number, wholesalePrice: number) => {
     setCart((prev) => prev.map((c) => {
       if (c.productId !== productId) return c;
-      const price = tier === 2 && Number(price2) > 0 ? Number(price2) : Number(price1);
-      return { ...c, priceTier: tier, unitPrice: price };
+      const price = Number((priceMode === "POR_MAYOR" ? wholesalePrice : price1).toFixed(2));
+      return { ...c, priceMode, unitPrice: price };
     }));
   };
 
@@ -337,7 +341,7 @@ export default function SalesPage() {
           toast.error("El producto del borrador ya no tiene stock. Agregalo manualmente.");
           return;
         }
-        const price2 = Number(found.price2);
+        const wholesalePrice = Number(found.wholesalePrice);
         setCart((prev) => {
           const existing = prev.find((c) => c.productId === found.id);
           if (existing) {
@@ -354,10 +358,10 @@ export default function SalesPage() {
               itemCode: found.itemCode,
               name: found.name,
               brand: found.brand,
-              unitPrice: price2 > 0 ? price2 : Number(found.price1),
-              priceTier: price2 > 0 ? 2 : 1,
+              unitPrice: Number(Number(found.price1).toFixed(2)),
+              priceMode: "POR_MENOR",
               price1: Number(found.price1),
-              price2,
+              wholesalePrice,
               quantity: Math.min(b.producto.cantidad, Number(found.stock)),
               availableStock: Number(found.stock),
             },
@@ -399,8 +403,9 @@ export default function SalesPage() {
   const confirmSale = async () => {
     if (cart.length === 0) return;
 
+    if (!selectedLocationId) { toast.error("Selecciona una tienda para la venta"); return; }
     if (Math.abs(totalPaid - cartTotal) > 0.01) {
-      toast.error(`El total pagado (${formatBs(totalPaid)}) no coincide con el total (${formatBs(cartTotal)})`);
+      toast.error(`El total asignado (${formatBs(totalPaid)}) no coincide con el total (${formatBs(cartTotal)})`);
       return;
     }
 
@@ -415,7 +420,7 @@ export default function SalesPage() {
         items: cart.map((c) => ({
           productId: c.productId,
           quantity: c.quantity,
-          unitPrice: c.unitPrice,
+          priceMode: c.priceMode,
         })),
         payments: payments.map((p) => ({
           method: p.method,
@@ -482,13 +487,7 @@ export default function SalesPage() {
     if (!modalRef) return;
     toast.loading("Generando PDF...", { id: "pdf" });
     try {
-      const canvas = await html2canvas(modalRef, { scale: 2, backgroundColor: "#1d232e" });
-      const img = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const imgHeight = (canvas.height * pageWidth) / canvas.width;
-      pdf.addImage(img, "PNG", 0, 0, pageWidth, imgHeight);
-      pdf.save(`venta-${lastSale.id}.pdf`);
+      await saveSalePdf(modalRef, `venta-${lastSale.id}.pdf`);
       toast.success("PDF descargado", { id: "pdf" });
     } catch {
       toast.error("Error al generar PDF", { id: "pdf" });
@@ -683,7 +682,7 @@ export default function SalesPage() {
             {searchResults.length > 0 && (
               <div className="mt-3 space-y-1.5 max-h-72 overflow-y-auto">
                 {searchResults.map((p) => {
-                  const hasPrice2 = Number(p.price2) > 0 && Number(p.price2) !== Number(p.price1);
+                  const hasWholesale = canWholesale && Number(p.wholesalePrice) > 0 && Number(p.wholesalePrice) <= Number(p.price1);
                   return (
                     <div
                       key={p.id}
@@ -697,24 +696,24 @@ export default function SalesPage() {
                         </p>
                       </div>
                       <div className="text-right ml-4 shrink-0 space-y-1">
-                        {hasPrice2 ? (
+                        {hasWholesale ? (
                           <div className="flex flex-col items-end gap-1">
                             <button
-                              onClick={() => addToCart(p, 1)}
+                              onClick={() => addToCart(p, "POR_MENOR")}
                               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-all"
                             >
-                              <Plus size={12} /> Mayorista: {formatBs(Number(p.price1))}
+                              <Plus size={12} /> POR MENOR: {formatBs(Number(p.price1))}
                             </button>
                             <button
-                              onClick={() => addToCart(p, 2)}
+                              onClick={() => addToCart(p, "POR_MAYOR")}
                               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-all"
                             >
-                              <Plus size={12} /> Minorista: {formatBs(Number(p.price2))}
+                              <Plus size={12} /> POR MAYOR: {formatBs(Number(p.wholesalePrice))}
                             </button>
                           </div>
                         ) : (
                           <button
-                            onClick={() => addToCart(p, 1)}
+                            onClick={() => addToCart(p, "POR_MENOR")}
                             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition-all"
                           >
                             <Plus size={12} /> {formatBs(Number(p.price1))}
@@ -903,9 +902,9 @@ export default function SalesPage() {
                             {isHistCol("#") && <td className="px-4 py-3 text-gray-400">{s.id}</td>}
                             {isHistCol("Fecha") && (
                               <td className="px-4 py-3 text-gray-300 text-xs">
-                                {new Date(s.saleDate).toLocaleDateString("es-BO")}{" "}
+                                {formatBusinessDate(s.saleDate)}{" "}
                                 <span className="text-gray-500">
-                                  {new Date(s.saleDate).toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" })}
+                                  {formatBusinessTime(s.saleDate, { hour: "2-digit", minute: "2-digit" })}
                                 </span>
                               </td>
                             )}
@@ -1053,14 +1052,15 @@ export default function SalesPage() {
                   <span className="text-xl font-bold text-green-400">{formatBs(cartTotal)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-xs">Pagado</span>
+                  <span className="text-gray-400 text-xs">Asignado (incluye crédito)</span>
                   <span className={`text-sm font-medium ${totalPaid >= cartTotal ? "text-green-400" : "text-yellow-400"}`}>
                     {formatBs(totalPaid)}
                   </span>
                 </div>
+                <div className="flex items-center justify-between text-sm text-gray-300"><span>Crédito pendiente</span><span>{formatBs(payments.filter((p) => p.method === "CREDITO").reduce((sum, p) => sum + (Number(p.amount) || 0), 0))}</span></div>
                 {pending > 0.01 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400 text-xs">Pendiente</span>
+                    <span className="text-gray-400 text-xs">Sin asignar</span>
                     <span className="text-sm font-medium text-red-400">{formatBs(pending)}</span>
                   </div>
                 )}
@@ -1194,13 +1194,13 @@ export default function SalesPage() {
       {/* ============ CONFIRMATION MODAL ============ */}
       {showConfirmed && lastSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div id="sale-confirm-modal" className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-md p-6 text-center">
+          <div id="sale-confirm-modal" className="bg-dark-800 border border-dark-700/50 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 text-center">
             <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Check size={32} className="text-green-400" />
             </div>
             <h3 className="text-xl font-bold text-white mb-1">¡Venta Registrada!</h3>
             <p className="text-gray-400 text-sm mb-2">
-              Venta #{lastSale.id} · {new Date(lastSale.saleDate).toLocaleString("es-BO")}
+              Venta #{lastSale.id} · {formatBusinessDateTime(lastSale.saleDate)}
               {lastSale.seller && <span className="ml-2 text-primary-400">· {lastSale.seller}</span>}
             </p>
             <p className="text-2xl font-bold text-green-400 mb-4">{formatBs(lastSale.total)}</p>
@@ -1218,8 +1218,8 @@ export default function SalesPage() {
               <div className="space-y-1.5">
                 {lastSale.items.map((item) => (
                   <div key={item.id} className="flex items-center justify-between text-sm">
-                    <span className="text-gray-300 truncate flex-1 mr-2">{item.product.name}</span>
-                    <span className="text-gray-500 shrink-0">x{item.quantity} · {formatBs(item.subtotal)}</span>
+                    <span className="text-gray-300 break-words min-w-0 flex-1 mr-2">{item.product.name}</span>
+                    <span className="text-gray-500 shrink-0">x{item.quantity} · P.U. {formatBs(item.unitPrice)} · {formatBs(item.subtotal)}</span>
                   </div>
                 ))}
               </div>

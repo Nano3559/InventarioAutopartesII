@@ -1,3 +1,6 @@
+import { idempotentMovement } from "../../shared/utils/idempotentMovement";
+import { rangoFechasNegocio } from "../../shared/utils/rangoFechas";
+import { moveStock } from "../../shared/utils/moveStock";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorizeModule } from "../../shared/middlewares/auth";
@@ -20,15 +23,8 @@ router.get("/", authorizeModule("movimientos"), async (req: AuthRequest, res: Re
     if (productId && typeof productId === "string") where.productId = Number(productId);
     if (fromLocationId && typeof fromLocationId === "string") where.fromLocationId = Number(fromLocationId);
     if (toLocationId && typeof toLocationId === "string") where.toLocationId = Number(toLocationId);
-    if (startDate || endDate) {
-      where.date = {};
-      if (startDate && typeof startDate === "string") where.date.gte = new Date(startDate);
-      if (endDate && typeof endDate === "string") {
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        where.date.lte = end;
-      }
-    }
+    const range = rangoFechasNegocio(startDate, endDate);
+    if (range.gte || range.lte) where.date = range;
 
     const { page: pg, limit: take, skip } = parsePagination(page, limit, 100);
 
@@ -67,7 +63,7 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
     const toLocationId = parsePositiveInt(req.body.toLocationId, "Ubicación destino");
     const quantity = parsePositiveInt(req.body.quantity, "Cantidad");
     const observation = parseString(req.body.observation, "Observación", { max: 500 });
-    const requestId = req.body.requestId ? Number(req.body.requestId) : null;
+    const requestId = req.body.requestId ? parsePositiveInt(req.body.requestId, "Solicitud") : null;
 
     if (fromLocationId === toLocationId) {
       return res.status(400).json({ message: "La ubicación de origen y destino no pueden ser la misma" });
@@ -85,58 +81,21 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
     if (!fromLocation) return res.status(404).json({ message: "Ubicación de origen no encontrada" });
     if (!toLocation) return res.status(404).json({ message: "Ubicación de destino no encontrada" });
 
-    if (fromLocation.type !== "ALMACEN") {
-      return res.status(400).json({ message: "El movimiento solo puede originarse desde un almacén" });
-    }
-    if (toLocation.type !== "TIENDA") {
-      return res.status(400).json({ message: "El destino del movimiento debe ser una tienda" });
-    }
-
-    const inventoryOrigin = await prisma.inventory.findUnique({
-      where: { productId_locationId: { productId, locationId: fromLocationId } },
-    });
-
-    if (!inventoryOrigin || inventoryOrigin.stock < quantity) {
-      const available = inventoryOrigin?.stock || 0;
-      return res.status(400).json({ message: `Stock insuficiente en origen. Disponible: ${available}, solicitado: ${quantity}` });
-    }
+    const operationId = req.body.operationId;
+    if (!requestId && typeof operationId !== "string") return res.status(400).json({ message: "Envíe operationId para evitar movimientos duplicados al reintentar" });
 
     const movement = await prisma.$transaction(async (tx) => {
-      // Bloqueo pesimista: re-leer stock dentro de la transacción
-      const lockedOrigin = await tx.$queryRaw<{ id: number; stock: number }[]>`
-        SELECT id, stock FROM "Inventory"
-        WHERE "productId" = ${productId} AND "locationId" = ${fromLocationId}
-        FOR UPDATE`;
-
-      if (!lockedOrigin.length || lockedOrigin[0].stock < quantity) {
-        throw new Error(`Stock insuficiente en origen. Disponible: ${lockedOrigin[0]?.stock || 0}, solicitado: ${quantity}`);
+      const execute = async () => {
+      if (requestId) {
+        await tx.$queryRaw`SELECT id FROM "ProductRequest" WHERE id = ${requestId} FOR UPDATE`;
+        const request = await tx.productRequest.findUnique({ where: { id: requestId } });
+        if (!request || request.status !== "PREPARANDO" || request.productId !== productId || request.locationId !== toLocationId || request.quantity !== quantity || fromLocation.type !== "ALMACEN") throw new Error("El movimiento no coincide con una solicitud en preparación");
+        await tx.productRequest.update({ where: { id: requestId }, data: { status: "ENTREGADO" } });
+        await tx.requestHistory.create({ data: { requestId, previousStatus: "PREPARANDO", newStatus: "ENTREGADO", userId: user.userId, userRole: user.role } });
       }
-
-      await tx.inventory.update({
-        where: { id: lockedOrigin[0].id },
-        data: { stock: { decrement: quantity } },
-      });
-
-      // M8 (ETAPA 8): upsert atómico del destino. Dos movimientos concurrentes hacia una
-      // ubicación sin fila de inventario pueden leer null ambas lecturas e intentar create
-      // (violación de @@unique [productId, locationId] → P2002). El upsert garantiza que
-      // solo uno crea y el otro actualiza por incremento.
-      await tx.inventory.upsert({
-        where: { productId_locationId: { productId, locationId: toLocationId } },
-        update: { stock: { increment: quantity } },
-        create: { productId, locationId: toLocationId, stock: quantity, minStock: 0 },
-      });
-
-      return tx.movement.create({
-        data: { productId, fromLocationId, toLocationId, quantity, userId: user.userId, observation, requestId },
-        include: {
-          product: { select: { name: true, itemCode: true } },
-          fromLocation: { select: { name: true } },
-          toLocation: { select: { name: true } },
-          user: { select: { name: true } },
-          request: { select: { id: true, status: true } },
-        },
-      });
+      return moveStock(tx, { productId, fromLocationId, toLocationId, quantity, userId: user.userId, observation, requestId });
+      };
+      return operationId ? idempotentMovement(tx, user.userId, operationId, { productId, fromLocationId, toLocationId, quantity, observation, requestId }, execute) : execute();
     });
 
     res.status(201).json(movement);

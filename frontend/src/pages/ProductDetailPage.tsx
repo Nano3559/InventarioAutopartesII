@@ -93,7 +93,7 @@ export default function ProductDetailPage() {
       await api.put(`/products/${id}`, {
         ...form,
         price1: Number(form.price1),
-        price2: form.price2 ? Number(form.price2) : Number(form.price1),
+        price2: form.price2 ? Number(form.price2) : 0,
         wholesalePrice: form.wholesalePrice ? Number(form.wholesalePrice) : null,
         cost: form.cost ? Number(form.cost) : null,
         categoryId: form.categoryId ? Number(form.categoryId) : null,
@@ -240,16 +240,14 @@ export default function ProductDetailPage() {
             <h3 className="text-white font-semibold mb-4">Precios</h3>
             {editing ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <Input label="Precio Mayorista (Bs.) *" value={form.price1} onChange={(v) => setField("price1", v)} type="number" />
-                <Input label="Precio Minorista (Bs.)" value={form.price2} onChange={(v) => setField("price2", v)} type="number" />
-                <Input label="Precio Mayor (Bs.)" value={form.wholesalePrice} onChange={(v) => setField("wholesalePrice", v)} type="number" />
+                <Input label="POR MENOR (Bs.) *" value={form.price1} onChange={(v) => setField("price1", v)} type="number" />
+                  <Input label="POR MAYOR (Bs.)" value={form.wholesalePrice} onChange={(v) => setField("wholesalePrice", v)} type="number" />
                 <Input label="Costo (Bs.)" value={form.cost} onChange={(v) => setField("cost", v)} type="number" />
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <InfoBox label="Precio Mayorista" value={fc(product.price1)} highlight="green" />
-                <InfoBox label="Precio Minorista" value={fc(product.price2)} highlight="blue" />
-                <InfoBox label="Precio Mayor" value={product.wholesalePrice ? fc(product.wholesalePrice) : "—"} />
+                <InfoBox label="POR MENOR" value={fc(product.price1)} highlight="green" />
+                <InfoBox label="POR MAYOR" value={product.wholesalePrice ? fc(product.wholesalePrice) : "Sin configurar"} highlight="blue" />
                 <InfoBox label="Costo" value={product.cost ? fc(product.cost) : "—"} />
               </div>
             )}

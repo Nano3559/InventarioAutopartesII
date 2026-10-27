@@ -6,12 +6,6 @@ import App from "./App";
 import "./index.css";
 
 function Root() {
-  const loadFromStorage = useAuthStore((s) => s.loadFromStorage);
-
-  React.useEffect(() => {
-    loadFromStorage();
-  }, [loadFromStorage]);
-
   return (
     <BrowserRouter>
       <App />
@@ -19,7 +13,12 @@ function Root() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+useAuthStore.getState().loadFromStorage();
+
+const root = (import.meta.hot?.data.root as ReturnType<typeof ReactDOM.createRoot> | undefined)
+  ?? ReactDOM.createRoot(document.getElementById("root")!);
+if (import.meta.hot) import.meta.hot.data.root = root;
+root.render(
   <React.StrictMode>
     <Root />
   </React.StrictMode>

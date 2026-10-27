@@ -12,6 +12,7 @@ interface Product {
   year: string;
   price1: number | string;
   price2: number | string;
+  wholesalePrice?: number | string | null;
   stock: number;
 }
 
@@ -60,7 +61,7 @@ export default function InventoryScreen() {
             </View>
             <Text style={styles.muted}>{item.brand} · {item.model} · {item.year}</Text>
             <Text style={styles.muted}>Código: {item.itemCode} · Fabricante: {item.manufacturer}</Text>
-            <Text style={styles.price}>Mayorista: Bs. {Number(item.price1).toFixed(2)} · Minorista: Bs. {Number(item.price2).toFixed(2)}</Text>
+            <Text style={styles.price}>POR MENOR: Bs. {Number(item.price1).toFixed(2)} · POR MAYOR: {item.wholesalePrice ? `Bs. ${Number(item.wholesalePrice).toFixed(2)}` : "Sin configurar"}</Text>
           </View>
         )}
       />
