@@ -1,48 +1,71 @@
-# Dependencias
+
+# ==========================================
+# DEPENDENCIAS
+# ==========================================
 node_modules/
 
-# Archivos de entorno
+# ==========================================
+# ARCHIVOS DE ENTORNO
+# ==========================================
 .env
 .env.*
 !.env.example
 !frontend/.env.production
 
-# Build
+# ==========================================
+# COMPILACIÓN Y COBERTURA
+# ==========================================
 dist/
 build/
 coverage/
 
-# Logs
+# ==========================================
+# LOGS
+# ==========================================
 *.log
 npm-debug.log*
 
-# IDE
+# ==========================================
+# EDITORES E IDE
+# ==========================================
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Sistema operativo
+# ==========================================
+# SISTEMA OPERATIVO
+# ==========================================
 .DS_Store
 Thumbs.db
 
-# TypeScript
+# ==========================================
+# TYPESCRIPT
+# ==========================================
 *.tsbuildinfo
 
-# Temporales
+# ==========================================
+# ARCHIVOS TEMPORALES
+# ==========================================
 .codebase-memory/
 *.tmp
 *.bak
 *.orig.*
 
-# Uploads
+# ==========================================
+# ARCHIVOS SUBIDOS
+# ==========================================
 backend/uploads/
 
-# Expo
+# ==========================================
+# EXPO
+# ==========================================
 .expo/
 web-build/
 
-# Certificados
+# ==========================================
+# CERTIFICADOS Y CLAVES
+# ==========================================
 *.pem
 *.key
 *.crt
@@ -51,25 +74,49 @@ web-build/
 *.p12
 *.mobileprovision
 
-# Servicio IA: datasets, artefactos y modelos nunca se versionan
+# ==========================================
+# SERVICIO IA - DATASETS
+# ==========================================
+
+# Ignorar datasets, excepto manifiestos
 /ia-service/datasets/*
 !/ia-service/datasets/dataset_manifest.csv
+
+# Dataset de revisión
 !/ia-service/datasets/review/
 /ia-service/datasets/review/images/
 /ia-service/datasets/review/labels/
 !/ia-service/datasets/review/review_manifest.csv
+
+# Dataset de anotación
 !/ia-service/datasets/annotation_batch/
 /ia-service/datasets/annotation_batch/images/
 /ia-service/datasets/annotation_batch/labels/
 !/ia-service/datasets/annotation_batch/annotation_batch_manifest.csv
+
+# ==========================================
+# SERVICIO IA - RESULTADOS Y EXPERIMENTOS
+# ==========================================
 /ia-service/runs/
 /ia-service/weights/
 /ia-service/artifacts/
 /ia-service/diagnostics/
+
+# Experimentos locales de entrenamiento y evaluación
+# Incluye los experimentos fallidos de V4
+/ia-service/experiments/
+
+# ==========================================
+# DATASETS Y RESULTADOS GLOBALES
+# ==========================================
 /dataset/
 /datasets/
 /runs/
 /weights/
+
+# ==========================================
+# SERVICIO IA - IMÁGENES Y ETIQUETAS
+# ==========================================
 /ia-service/**/*.jpg
 /ia-service/**/*.jpeg
 /ia-service/**/*.png
@@ -77,18 +124,29 @@ web-build/
 /ia-service/**/*.bmp
 /ia-service/**/*.tiff
 /ia-service/**/labels/
+
+# ==========================================
+# MODELOS DE INTELIGENCIA ARTIFICIAL
+# ==========================================
+
+# Ignorar pesos y modelos exportados
 *.pt
 *.onnx
-# Única excepción global a *.pt: el checkpoint oficial versionado de ia-service
+
+# Excepción: checkpoint oficial YOLO11n V3
 !ia-service/models/repuestopro_yolo11n_v3_webcam_robust.pt
 
-# Credenciales y tokens de Kaggle/IA
+# ==========================================
+# CREDENCIALES Y TOKENS
+# ==========================================
 **/kaggle.json
 .kaggle/
 **/*access_token*
 **/*access-token*
 
-# Python
+# ==========================================
+# PYTHON
+# ==========================================
 .venv/
 venv/
 env/
@@ -96,10 +154,16 @@ ENV/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Cachés de herramientas Python
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# Entorno virtual de anotación
 /ia-service/.annotation-venv/
 
-# Artefactos locales de OCR
+# ==========================================
+# ARTEFACTOS LOCALES DE OCR
+# ==========================================
 eng.traineddata
