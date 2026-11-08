@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { yearRangesOverlap } from "../../utils/yearRanges";
@@ -10,7 +11,7 @@ import {
 import { ocrPublicLimiter } from "../../shared/middlewares/rateLimit";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 // POST /api/public/search-image - Búsqueda por imagen sin autenticación (solo datos públicos)
 // Definida antes de cualquier ruta dinámica para evitar interceptaciones.
@@ -33,7 +34,7 @@ router.post("/search-image", ocrPublicLimiter, imageUpload.single("image"), asyn
       products: results.map(({ producto, score }) => serializeProductoPublico(producto, score)),
     });
   } catch (error) {
-    console.error("Error en búsqueda por imagen pública:", error);
+    console.error("Error en búsqueda por imagen pública:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -136,7 +137,7 @@ router.get("/products", async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error en catálogo público:", error);
+    console.error("Error en catálogo público:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -190,7 +191,7 @@ router.get("/products/:id", async (req: Request, res: Response) => {
       })),
     });
   } catch (error) {
-    console.error("Error en detalle público:", error);
+    console.error("Error en detalle público:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -223,7 +224,7 @@ router.get("/filters", async (_req: Request, res: Response) => {
       qualities: qualities.map((q) => q.detalles).filter(Boolean),
     });
   } catch (error) {
-    console.error("Error en filtros:", error);
+    console.error("Error en filtros:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -246,7 +247,7 @@ router.get("/filters/models", async (req: Request, res: Response) => {
     const models = [...new Set(modelsRaw.flatMap((m) => m.model.split("/").map((v) => v.trim())).filter(Boolean))].sort();
     res.json(models);
   } catch (error) {
-    console.error("Error en modelos:", error);
+    console.error("Error en modelos:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -272,7 +273,7 @@ router.get("/filters/years", async (req: Request, res: Response) => {
     const years = [...new Set(yearsRaw.flatMap((y) => y.year.split("/").map((v) => v.trim())).filter(Boolean))].sort();
     res.json(years);
   } catch (error) {
-    console.error("Error en años:", error);
+    console.error("Error en años:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -298,7 +299,7 @@ router.get("/importers", async (_req: Request, res: Response) => {
       }))
     );
   } catch (error) {
-    console.error("Error en importadoras:", error);
+    console.error("Error en importadoras:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

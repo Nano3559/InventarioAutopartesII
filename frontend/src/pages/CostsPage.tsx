@@ -10,6 +10,7 @@ import api from "../services/api";
 interface Supplier { id: number; name: string; nit: string; phone: string; costsCount?: number; }
 interface Product { id: number; itemCode: string; name: string; brand: string; model: string; }
 interface CostRecord {
+  purchaseInvoiceId?: number | null;
   id: number; productId: number; productName: string; itemCode: string;
   brand: string; model: string; supplierId: number; supplierName: string;
   invoiceUrl: string | null; exchangeRate: number | null; percentage: number | null;
@@ -19,6 +20,7 @@ interface CostRecord {
 const PAGE_SIZE = 15;
 
 export default function CostsPage() {
+  const [documentIdentity, setDocumentIdentity] = useState("");
   const [receiptLocation, setReceiptLocation] = useState("");
   const [receiptQuantity, setReceiptQuantity] = useState("");
   const [locations, setLocations] = useState<{ id: number; name: string }[]>([]);
@@ -108,7 +110,7 @@ export default function CostsPage() {
 
   // ========== COST CRUD ==========
   const openCreateCost = () => {
-    setReceiptLocation(""); setReceiptQuantity("");
+    setReceiptLocation(""); setDocumentIdentity(""); setReceiptQuantity("");
     setEditingCost(null);
     setSelectedProduct(null); setProductSearch(""); setCostSupplierId("");
     setExchangeRate("6.96"); setPercentage(""); setCostUsd(""); setInvoiceFile(null);
@@ -143,6 +145,7 @@ export default function CostsPage() {
       const formData = new FormData();
       formData.append("productId", String(selectedProduct.id));
       formData.append("supplierId", costSupplierId);
+      if (!editingCost && receiptLocation) formData.append("documentIdentity", documentIdentity);
       formData.append("costPrice", String(computed));
       formData.append("unitCost", costUsd);
       if (exchangeRate) formData.append("exchangeRate", exchangeRate);
@@ -192,15 +195,15 @@ export default function CostsPage() {
   };
 
   const openImportInvoice = () => {
-    setReceiptLocation("");
+    setReceiptLocation(""); setDocumentIdentity("");
     setInvoiceExcel(null); setInvFactFile(null); setInvoiceSupplierId("");
     setInvoiceRate("6.96"); setInvoicePercent("10"); setInvoiceMargin(""); setImportResult(null);
     setShowInvoiceModal(true);
   };
 
   const importInvoice = async () => {
-    if (!invoiceExcel || !invoiceSupplierId || !invoiceRate) {
-      toast.error("Excel, proveedor y tipo de cambio son obligatorios"); return;
+    if (!invoiceExcel || !invoiceSupplierId || !invoiceRate || documentIdentity.trim().length < 3) {
+      toast.error("Excel, proveedor, identificador de factura y tipo de cambio son obligatorios"); return;
     }
     try {
       setImporting(true);
@@ -208,6 +211,7 @@ export default function CostsPage() {
       formData.append("file", invoiceExcel);
       if (invFactFile) formData.append("invoice", invFactFile);
       formData.append("supplierId", invoiceSupplierId);
+      formData.append("documentIdentity", documentIdentity);
       formData.append("exchangeRate", invoiceRate);
       if (receiptLocation) formData.append("locationId", receiptLocation);
       if (invoicePercent) formData.append("percentage", invoicePercent);
@@ -345,10 +349,10 @@ export default function CostsPage() {
                       <td className="px-4 py-3 text-amber-400 font-medium text-right">{formatBs(c.costPrice)}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-1">
-                          <button onClick={() => openEditCost(c)} className="p-1.5 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-all" title="Editar">
+                          <button disabled={!!c.purchaseInvoiceId} onClick={() => openEditCost(c)} className="p-1.5 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-all disabled:opacity-30" title={c.purchaseInvoiceId ? "Factura registrada. Conserve el documento original" : "Editar"}>
                             <Pencil size={14} />
                           </button>
-                          <button onClick={() => deleteCost(c.id)} className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all" title="Eliminar">
+                          <button disabled={!!c.purchaseInvoiceId} onClick={() => deleteCost(c.id)} className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all disabled:opacity-30" title={c.purchaseInvoiceId ? "Factura registrada. No se elimina" : "Eliminar"}>
                             <Trash2 size={14} />
                           </button>
                         </div>
@@ -489,6 +493,7 @@ export default function CostsPage() {
                     {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
                 </label>
+                {showCostModal && receiptLocation && <label className="block text-sm text-gray-300">Identificador completo de factura *<input aria-label="Identificador completo de factura" maxLength={160} value={documentIdentity} onChange={e => setDocumentIdentity(e.target.value)} className="block w-full bg-dark-800 p-2 rounded-lg" placeholder="Serie, autorización y número tal como figuran en el documento" /><span className="block text-xs text-gray-400">Conserve ceros y todos los identificadores impresos. No use el nombre del archivo. Registre el comprobante completo en una sola operación.</span></label>}
                 {showCostModal && receiptLocation && <label>Cantidad <input type="number" min="1" value={receiptQuantity} onChange={(e) => setReceiptQuantity(e.target.value)} className="w-24 bg-dark-800 p-2 rounded-lg" /></label>}
                 {showInvoiceModal && receiptLocation && <span>Se ingresarán las cantidades indicadas en el Excel.</span>}
               </div>}
@@ -600,6 +605,7 @@ export default function CostsPage() {
               </div>
 
               <div>
+                <label className="block text-sm text-gray-300">Identificador completo de factura *<input aria-label="Identificador completo de factura" maxLength={160} value={documentIdentity} onChange={e => setDocumentIdentity(e.target.value)} className="block w-full bg-dark-800 p-2 rounded-lg" placeholder="Serie, autorización y número tal como figuran en el documento" /><span className="block text-xs text-gray-400">Conserve ceros y todos los identificadores impresos. No use el nombre del archivo. Registre el comprobante completo en una sola operación.</span></label>
                 <label className="block text-xs text-gray-400 mb-1">Excel de factura *</label>
                 <label className="flex items-center gap-2 px-4 py-2.5 bg-dark-800 border border-dark-700 rounded-xl text-gray-400 text-sm cursor-pointer hover:border-primary-500 transition-all">
                   <Upload size={16} />

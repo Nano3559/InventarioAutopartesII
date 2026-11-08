@@ -1,8 +1,8 @@
+import { safeError } from "../shared/utils/safeError";
 import cron from "node-cron";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../config/database";
 import { nextDayAt8, REQUEST_STATUS_ACTIVOS } from "../utils/replenish";
 
-const prisma = new PrismaClient();
 
 // Job diario a las 08:05:
 //  1) Activa solicitudes de reposición cuyo expectedDate ya llegó.
@@ -80,7 +80,7 @@ async function runReplenishCheck() {
           });
         }
       } catch (notifErr) {
-        console.error(`[replenish] No se pudo avisar a INVENTARIO de la solicitud #${req.id}:`, notifErr);
+        console.error(`[replenish] No se pudo avisar a INVENTARIO de la solicitud #${req.id}:`, safeError(notifErr));
       }
 
       console.log(`[replenish] Solicitud #${req.id} recibida por inventario (${req.product.name})`);
@@ -91,7 +91,7 @@ async function runReplenishCheck() {
     // 2) Reposición automática por stock < mínimo en tiendas
     await generateLowStockRequests();
   } catch (err) {
-    console.error("[replenish] Error ejecutando job de reposición:", err);
+    console.error("[replenish] Error ejecutando job de reposición:", safeError(err));
   }
 }
 
@@ -242,7 +242,7 @@ export async function generateLowStockRequests() {
             });
           }
         } catch (notifErr) {
-          console.error(`[replenish] No se pudo avisar a INVENTARIO de la solicitud #${created.id}:`, notifErr);
+          console.error(`[replenish] No se pudo avisar a INVENTARIO de la solicitud #${created.id}:`, safeError(notifErr));
         }
 
         console.log(`[replenish] Reposición automática #${created.id} (${inv.product.name} -> ${tienda.name})`);

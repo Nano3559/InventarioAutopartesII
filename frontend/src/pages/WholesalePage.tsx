@@ -1,3 +1,5 @@
+import BankVerificationFields, { emptyBankVerification } from "../components/BankVerificationFields";
+import VoidSalePanel from "../components/VoidSalePanel";
 import { saveSalePdf } from "../utils/salePdf";
 import { formatBusinessDate } from "../utils/businessDate";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -7,6 +9,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import { pendingOperationId, completeOperation } from "../services/pendingOperation";
+import PendingOperation from "../components/PendingOperation";
 import { useAuthStore } from "../stores/authStore";
 
 interface WholesaleItem {
@@ -16,6 +20,7 @@ interface WholesaleItem {
 }
 
 interface WholesaleSale {
+  status?: string;
   id: number; saleDate: string; total: number; type: string;
   paraQuien?: string | null; lugarEntrega?: string | null; datosFactura?: string | null; formaPago?: string | null;
   customer: { name: string; nit: string | null } | null;
@@ -47,6 +52,7 @@ export default function WholesalePage() {
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [lastWholesaleSale, setLastWholesaleSale] = useState<{ id: number; saleDate: string; total: number; items: WholesaleItem[]; clientName: string; pedido: string; deliveryPlace: string; paymentMethod: string; facturaNIT: string } | null>(null);
 
@@ -65,6 +71,7 @@ export default function WholesalePage() {
   const [pedido, setPedido] = useState("");
   const [deliveryPlace, setDeliveryPlace] = useState("Cochabamba");
   const [customDeliveryPlace, setCustomDeliveryPlace] = useState("");
+  const [bankVerification, setBankVerification] = useState(emptyBankVerification);
   const [paymentMethod, setPaymentMethod] = useState("TRANSFERENCIA");
   const [facturaNIT, setFacturaNIT] = useState("");
 
@@ -76,6 +83,7 @@ export default function WholesalePage() {
     : deliveryPlace;
 
   const total = items.reduce((sum, i) => sum + i.subtotal, 0);
+  useEffect(() => { setBankVerification(previous => ({ ...previous, confirmed: false })); }, [total]);
 
   const fetchSales = useCallback(async () => {
     try {
@@ -140,7 +148,9 @@ export default function WholesalePage() {
   };
 
   const confirmSale = async () => {
+    if (processing) return;
     try {
+      setProcessing(true);
       const payload = {
         locationId,
         customerData: { name: clientName, nit: facturaNIT || null },
@@ -151,18 +161,23 @@ export default function WholesalePage() {
           quantity: i.quantity,
           priceMode: "POR_MAYOR",
         })),
-        payments: [{ method: paymentMethod, amount: total }],
+        payments: [{ method: paymentMethod, amount: total, ...(["QR", "TRANSFERENCIA"].includes(paymentMethod) ? { bankVerification } : {}) }],
       };
-      const response = await api.post("/wholesale", payload);
+      const response = await api.post("/wholesale", { ...payload, operationId: pendingOperationId("SALE_WHOLESALE") });
+      completeOperation("SALE_WHOLESALE");
+      if (response.data.status === "VOIDED") { toast.error("Este intento corresponde a una venta anulada. Revise su historial"); setShowConfirm(false); return; }
       setLastWholesaleSale({ id: response.data.id, saleDate: response.data.saleDate || response.data.createdAt || new Date().toISOString(), total: Number(response.data.total) || total, items: items.map((item) => { const accepted = response.data.items.find((i: { productId: number }) => i.productId === item.productId); return { ...item, unitPrice: Number(accepted.unitPrice), subtotal: Number(accepted.subtotal) }; }), clientName, pedido, deliveryPlace: finalDeliveryPlace, paymentMethod, facturaNIT });
       toast.success("Venta por mayor registrada");
       setShowConfirm(false);
       setShowForm(false);
       setShowReceipt(true);
+      setBankVerification(emptyBankVerification());
       resetForm();
       fetchSales();
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Error al registrar venta");
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -221,6 +236,7 @@ export default function WholesalePage() {
 
   return (
     <div className="space-y-6">
+      <VoidSalePanel />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -273,7 +289,7 @@ export default function WholesalePage() {
                     <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-500">No hay ventas mayoristas registradas</td></tr>
                   ) : sales.map((s) => (
                     <tr key={s.id} className="border-b border-dark-700/30 hover:bg-dark-700/30 transition-colors">
-                      <td className="px-4 py-3 text-gray-300 font-mono text-xs">#{s.id}</td>
+                      <td className="px-4 py-3 text-gray-300 font-mono text-xs">#{s.id}{s.status === "VOIDED" && <span className="block text-red-400">ANULADA</span>}</td>
                       <td className="px-4 py-3 text-gray-300">{formatDate(s.saleDate)}</td>
                       <td className="px-4 py-3 text-white font-medium">{s.customer?.name || "N/A"}</td>
                       <td className="px-4 py-3 text-gray-300">{s.location?.name || "N/A"}</td>
@@ -344,13 +360,14 @@ export default function WholesalePage() {
               </div>
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Forma de pago *</label>
-                <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}
+                <select value={paymentMethod} onChange={(e) => { setPaymentMethod(e.target.value); setBankVerification(emptyBankVerification()); }}
                   className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white text-sm focus:outline-none focus:border-primary-500">
                   <option value="EFECTIVO">Efectivo</option>
                   <option value="TRANSFERENCIA">Transferencia</option>
                   <option value="QR">QR</option>
                   <option value="CREDITO">Crédito</option>
                 </select>
+                {["QR", "TRANSFERENCIA"].includes(paymentMethod) && <BankVerificationFields value={bankVerification} onChange={setBankVerification} />}
               </div>
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Datos factura (NIT)</label>
@@ -483,7 +500,8 @@ export default function WholesalePage() {
                 className="px-4 py-2 flex items-center gap-2 bg-dark-700 hover:bg-dark-600 text-gray-200 rounded-xl text-sm transition-all">
                 <FileText size={14} /> PDF
               </button>
-              <button onClick={confirmSale}
+              <PendingOperation scope="SALE_WHOLESALE" />
+              <button onClick={confirmSale} disabled={processing}
                 className="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-600/20">
                 Confirmar
               </button>

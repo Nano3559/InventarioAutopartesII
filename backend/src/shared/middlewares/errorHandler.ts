@@ -5,11 +5,9 @@ export const errorHandler = (err: any, req: Request, res: Response, _next: NextF
   const status = statusFor(err);
   logger.error("Error no capturado", {
     method: req.method,
-    path: req.originalUrl,
+    path: `${req.baseUrl}${req.path}`,
     status,
-    message: err?.message,
-    stack: err?.stack,
-    code: err?.code,
+    code: typeof err?.code === "string" && /^[A-Z0-9_]{1,40}$/.test(err.code) ? err.code : "INTERNAL_ERROR",
   });
 
   if (err.code === "LIMIT_FILE_SIZE") {

@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { fechaNegocio, inicioDiaNegocio, rangoMesNegocio } from "../../shared/utils/rangoFechas";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
@@ -5,7 +6,7 @@ import { authenticate, authorize, requireTiendaLocation } from "../../shared/mid
 import { AuthRequest } from "../../shared/types";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requireTiendaLocation, async (req: AuthRequest, res: Response) => {
   try {
@@ -52,20 +53,20 @@ router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requir
     });
 
     const salesToday = await prisma.sale.aggregate({
-      where: { saleDate: { gte: startOfDay, lte: now }, ...locWhere },
+      where: { status: "CONFIRMED", saleDate: { gte: startOfDay, lte: now }, ...locWhere },
       _count: true,
       _sum: { total: true },
     });
 
     const salesMonth = await prisma.sale.aggregate({
-      where: { saleDate: { gte: startOfMonth, lte: now }, ...locWhere },
+      where: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: now }, ...locWhere },
       _count: true,
       _sum: { total: true },
     });
 
     const salesByLocationAgg = await prisma.sale.groupBy({
       by: ["locationId"],
-      where: { saleDate: { gte: startOfMonth, lte: now }, ...locWhere },
+      where: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: now }, ...locWhere },
       _count: true,
       _sum: { total: true },
     });
@@ -80,7 +81,7 @@ router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requir
     });
 
     const saleItems = await prisma.saleItem.findMany({
-      where: { sale: { saleDate: { gte: startOfMonth, lte: now }, ...locWhere } },
+      where: { sale: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: now }, ...locWhere } },
       include: { product: { select: { brand: true, model: true } } },
     });
 
@@ -107,7 +108,7 @@ router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requir
       .sort((a, b) => b.totalAmount - a.totalAmount);
 
     const recentSales = await prisma.sale.findMany({
-      ...(isTienda ? { where: locWhere } : {}),
+      where: { status: "CONFIRMED", ...(isTienda ? locWhere : {}) },
       take: 10,
       orderBy: { saleDate: "desc" },
       include: {
@@ -219,7 +220,7 @@ router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requir
       criticalStock: criticalStockFormatted,
     });
   } catch (error) {
-    console.error("Error en dashboard:", error);
+    console.error("Error en dashboard:", safeError(error));
     res.status(500).json({ message: "Error al obtener datos del dashboard" });
   }
 });

@@ -1,4 +1,7 @@
-import { saleCustomer } from "../../shared/utils/saleCustomer";
+import { bankReferenceConflict, paymentEvidence } from "../../shared/utils/paymentEvidence";
+import { readImportWorkbook } from "../../shared/utils/importWorkbook";
+import { safeError } from "../../shared/utils/safeError";
+import { saleCustomer, requireCreditCustomer } from "../../shared/utils/saleCustomer";
 import { saleValidation } from "../../shared/middlewares/saleValidation";
 import { Router, Response } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
@@ -15,10 +18,11 @@ import { notificarInventarioSolicitud } from "../../shared/utils/notificarInvent
 import { esErrorDominio, errorDominio } from "../../shared/utils/errorDominio";
 
 import { salePrice, lineSubtotal, money, validatePayments, validatePriceConfiguration } from "../../shared/utils/pricing";
+import { operationKey, replayableOperation } from "../../shared/utils/replayableOperation";
 import { saleLocation } from "../../shared/utils/saleLocation";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 const upload = excelUpload;
 
 router.use(authenticate);
@@ -76,8 +80,10 @@ router.post("/", saleValidation, async (req: AuthRequest, res: Response) => {
       requestedById: number;
     }[] = [];
 
-    const result = await prisma.$transaction(async (tx) => {
+    const key = operationKey(req);
+    const result = await prisma.$transaction(async (tx) => replayableOperation(tx, user.userId, "SALE_WHOLESALE", key, req.body, async () => {
       const finalCustomerId = await saleCustomer(tx, customerId, customerData);
+      requireCreditCustomer(acceptedPayments, finalCustomerId);
       // R4: bloqueo de fila pesimista (FOR UPDATE) sobre el inventario antes de validar y
       // descontar (misma mecánica que movements). Todas las filas se bloquean en un único
       // query con ORDER BY id: locks en orden determinista y sin ventana entre bloqueos, por
@@ -127,6 +133,7 @@ router.post("/", saleValidation, async (req: AuthRequest, res: Response) => {
         throw errorDominio(`El total pagado (Bs. ${totalPaid}) no coincide con el total de la venta (Bs. ${totalSale})`);
       }
 
+      const verifiedPayments = await paymentEvidence(tx, acceptedPayments, user.userId);
       const sale = await tx.sale.create({
         data: {
           total: totalSale,
@@ -141,10 +148,7 @@ router.post("/", saleValidation, async (req: AuthRequest, res: Response) => {
           formaPago: entregaFormaPago,
           items: { create: saleItemsData },
           payments: {
-            create: acceptedPayments.map((p) => ({
-              method: p.method,
-              amount: Number(p.amount),
-            })),
+            create: verifiedPayments,
           },
         },
         include: { items: true, payments: true },
@@ -202,7 +206,7 @@ router.post("/", saleValidation, async (req: AuthRequest, res: Response) => {
         items: sale.items.map((i) => ({ ...i, unitPrice: Number(i.unitPrice), subtotal: Number(i.subtotal) })),
         payments: sale.payments.map((p) => ({ ...p, amount: Number(p.amount) })),
       };
-    }, { timeout: 20000 });
+    }), { timeout: 20000 });
 
     // Reposición automática DESPUÉS del commit: la venta ya está confirmada, así que un
     // P2002 (carrera con otra creación simultánea) solo significa "ya había una solicitud
@@ -258,15 +262,17 @@ router.post("/", saleValidation, async (req: AuthRequest, res: Response) => {
       await notificarInventarioSolicitud(prisma, notificacion);
     }
 
-    res.status(201).json(result);
+    const currentStatus = await prisma.sale.findUniqueOrThrow({ where: { id: result.id }, select: { status: true, voidedAt: true, voidReason: true } });
+    res.status(201).json({ ...result, ...currentStatus });
   } catch (error: any) {
+    if (bankReferenceConflict(error)) return res.status(409).json({ message: "La referencia bancaria ya está registrada. Revise el cobro original" });
     // Solo los rechazos de negocio conocidos (ErrorDominio) responden 400 con su
     // mensaje. Cualquier otro fallo (Prisma, fs, TypeError) se registra y responde
     // 500 genérico, en vez de filtrar error.message con un 400 engañoso.
     if (esErrorDominio(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al crear venta mayorista:", error);
+    console.error("Error al crear venta mayorista:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -278,7 +284,7 @@ router.post("/import", authorize("ADMIN"), upload.single("file"), async (req: Au
       return res.status(400).json({ message: "Debe subir un archivo Excel" });
     }
 
-    const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
+    const workbook = readImportWorkbook(req.file.buffer);
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(sheet);
@@ -348,7 +354,8 @@ router.post("/import", authorize("ADMIN"), upload.single("file"), async (req: Au
       details: { imported, errors },
     });
   } catch (error: any) {
-    console.error("Error al importar Excel:", error);
+    if (bankReferenceConflict(error)) return res.status(409).json({ message: "La referencia bancaria ya está registrada. Revise el cobro original" });
+    console.error("Error al importar Excel:", safeError(error));
     res.status(500).json({ message: "Error al procesar el archivo" });
   }
 });
@@ -400,7 +407,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar ventas mayoristas:", error);
+    console.error("Error al listar ventas mayoristas:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

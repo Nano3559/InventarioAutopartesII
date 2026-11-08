@@ -11,6 +11,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 // (transformRequest), así que el resto de la API no se ve afectado.
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 35000,
 });
 
 api.interceptors.request.use((config) => {

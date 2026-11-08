@@ -1,3 +1,6 @@
+import { registerInvoice, invoiceIdentity } from "../../shared/utils/purchaseInvoice";
+import { readImportWorkbook } from "../../shared/utils/importWorkbook";
+import { safeError } from "../../shared/utils/safeError";
 import { createHash } from "crypto";
 import { errorDominio } from "../../shared/utils/errorDominio";
 import { landedCost, syncProductCost, receivePurchase } from "../../shared/utils/costing";
@@ -15,7 +18,7 @@ import fs from "fs";
 import * as XLSX from "xlsx";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(authorize("ADMIN"));
@@ -99,6 +102,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     res.json({
       costs: costs.map((c) => ({
         id: c.id,
+        purchaseInvoiceId: c.purchaseInvoiceId,
         productId: c.productId,
         productName: c.product.name,
         itemCode: c.product.itemCode,
@@ -115,13 +119,14 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar costos:", error);
+    console.error("Error al listar costos:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 
 // POST — Registrar costo con factura
 router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthRequest, res: Response) => {
+  let keepNewInvoice = false;
   try {
     const productId = parsePositiveInt(req.body.productId, "Producto");
     const supplierId = parsePositiveInt(req.body.supplierId, "Proveedor");
@@ -146,9 +151,10 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
     if (!supplier) return res.status(404).json({ message: "Proveedor no encontrado" });
 
     const cost = await prisma.$transaction(async (tx) => {
+    const execute = async (purchaseInvoiceId?: number) => {
     await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${productId} FOR UPDATE`;
     const created = await tx.cost.create({
-      data: { productId, supplierId, costPrice, exchangeRate, percentage, invoiceUrl: req.file?.filename || null },
+      data: { purchaseInvoiceId, productId, supplierId, costPrice, exchangeRate, percentage, invoiceUrl: req.file?.filename || null },
       include: {
         product: { select: { name: true, itemCode: true } },
         supplier: { select: { name: true } },
@@ -175,8 +181,11 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
       await receivePurchase(tx, productId, parsePositiveInt(req.body.locationId, "Ubicación"), parsePositiveInt(req.body.quantity, "Cantidad"), req.user!.userId, created.id);
     }
     return created;
+    };
+    return req.body.locationId || req.body.quantity ? registerInvoice(tx, supplierId, req.body.documentIdentity, { kind: "ONE_LINE_RECEIPT", productId, costPrice, exchangeRate, percentage, locationId: parsePositiveInt(req.body.locationId, "Ubicación"), quantity: parsePositiveInt(req.body.quantity, "Cantidad") }, execute) : execute();
     });
 
+    keepNewInvoice = !!req.file && cost.invoiceUrl === req.file.filename;
     res.status(201).json({
       id: cost.id,
       productName: cost.product.name,
@@ -195,17 +204,21 @@ router.post("/", authorize("ADMIN"), upload.single("invoice"), async (req: AuthR
     if (error.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
     }
-    console.error("Error al registrar costo:", error);
+    console.error("Error al registrar costo:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
+  } finally {
+    if (!keepNewInvoice && req.file?.path && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
   }
 });
 
 // PUT /:id — Editar costo
 router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: AuthRequest, res: Response) => {
+  let keepNewInvoice = false;
   try {
     const id = parseId(req.params.id);
     const existing = await prisma.cost.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Costo no encontrado" });
+    if (existing.purchaseInvoiceId) return res.status(409).json({ message: "El costo pertenece a una factura registrada. Conserve el comprobante y concilie con un documento correctivo, no lo edite o elimine" });
 
     const data: any = {};
     if (req.body.productId !== undefined) {
@@ -280,6 +293,7 @@ router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: Aut
     return changed;
     });
 
+    keepNewInvoice = !!req.file && cost.invoiceUrl === req.file.filename;
     res.json({
       id: cost.id,
       productName: cost.product.name,
@@ -298,8 +312,10 @@ router.put("/:id", authorize("ADMIN"), upload.single("invoice"), async (req: Aut
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al editar costo:", error);
+    console.error("Error al editar costo:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
+  } finally {
+    if (!keepNewInvoice && req.file?.path && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
   }
 });
 
@@ -309,6 +325,7 @@ router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response
     const id = parseId(req.params.id);
     const existing = await prisma.cost.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ message: "Costo no encontrado" });
+    if (existing.purchaseInvoiceId) return res.status(409).json({ message: "El costo pertenece a una factura registrada. Conserve el comprobante y concilie con un documento correctivo, no lo edite o elimine" });
     await prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${existing.productId} FOR UPDATE`;
     await tx.cost.delete({ where: { id } });
@@ -326,7 +343,7 @@ router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response
     res.json({ message: "Costo eliminado" });
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
-    console.error("Error al eliminar costo:", error);
+    console.error("Error al eliminar costo:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -349,9 +366,10 @@ router.post("/import-invoice", authorize("ADMIN"), upload.fields([{ name: "file"
     if (!await prisma.supplier.findUnique({ where: { id: supplierId } })) return res.status(404).json({ message: "Proveedor no encontrado" });
     const excelBytes = fs.readFileSync(excelFile.path);
     const fileHash = createHash("sha256").update(excelBytes).digest("hex");
-    const workbook = XLSX.read(excelBytes, { type: "buffer" });
+    const workbook = readImportWorkbook(excelBytes);
     const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets[workbook.SheetNames[0]]);
     if (!rows.length || rows.length > 5000) throw errorDominio("La factura debe contener entre 1 y 5000 filas");
+    const identityKey = invoiceIdentity(req.body.documentIdentity);
     const configuration = { exchangeRate, percentage, defaultMargin, locationId };
     const result = await prisma.$transaction(async tx => {
       // Se comparte entre procesos y protege la comprobación y todos los efectos.
@@ -359,13 +377,14 @@ router.post("/import-invoice", authorize("ADMIN"), upload.fields([{ name: "file"
       const prior = await tx.auditLog.findFirst({ where: { action: "IMPORT_INVOICE", targetType: "SUPPLIER", targetId: supplierId, newValue: { path: ["fileHash"], equals: fileHash } }, orderBy: { id: "asc" } });
       if (prior) {
         const saved = prior.newValue as any;
+        if (saved.identityKey !== identityKey) throw errorDominio("El archivo ya tiene una importación previa con identidad distinta o histórica sin certificar. Requiere revisión");
         if (JSON.stringify(saved.configuration) !== JSON.stringify(configuration)) {
           // JSONB no conserva orden de claves. Se comparan sus valores.
           if (Object.entries(configuration).some(([k,v]) => saved.configuration[k] !== v)) return { conflict: true as const };
         }
         return { conflict: false as const, response: { ...saved.response, replayed: true } };
       }
-      const prepared = [];
+      const prepared: Array<{ product: import("@prisma/client").Product; quantity: number; costPrice: number }> = [];
       for (let i=0; i<rows.length; i++) {
         const row = rows[i];
         const code = String(row["Código"] ?? row["Codigo"] ?? row["codigo"] ?? row.itemCode ?? row.ItemCode ?? row["Codigo Fabrica"] ?? row["Código Fábrica"] ?? row["Cod. Fabrica"] ?? row["Cód. Fabrica"] ?? row["Cód. Producto"] ?? row["Codigo Producto"] ?? "").trim();
@@ -376,28 +395,31 @@ router.post("/import-invoice", authorize("ADMIN"), upload.fields([{ name: "file"
         if (!product) throw errorDominio(`Fila ${i+2}: producto no encontrado (${code})`);
         prepared.push({ product, quantity, costPrice: landedCost(unit, exchangeRate, percentage) });
       }
+      return registerInvoice(tx, supplierId, req.body.documentIdentity, { configuration, lines: prepared.map(r => ({ productId: r.product.id, quantity: r.quantity, costPrice: r.costPrice })).sort((a,b) => a.productId-b.productId || a.quantity-b.quantity || a.costPrice-b.costPrice) }, async purchaseInvoiceId => {
       for (const id of [...new Set(prepared.map(r=>r.product.id))].sort((a,b)=>a-b)) await tx.$queryRaw`SELECT id FROM "Product" WHERE id = ${id} FOR UPDATE`;
       const imported = [];
       for (const row of prepared) {
         const actual = await tx.product.findUniqueOrThrow({ where: { id: row.product.id } });
         const next = { ...actual, cost: row.costPrice, ...(defaultMargin > 0 ? { price1: money(row.costPrice * (1+defaultMargin/100), "Precio por menor") } : {}) };
         validatePriceConfiguration(next);
-        const cost = await tx.cost.create({ data: { productId: actual.id, supplierId, costPrice: row.costPrice, exchangeRate, percentage, invoiceUrl: invoiceFile?.filename ?? null } });
+        const cost = await tx.cost.create({ data: { purchaseInvoiceId, productId: actual.id, supplierId, costPrice: row.costPrice, exchangeRate, percentage, invoiceUrl: invoiceFile?.filename ?? null } });
         await tx.product.update({ where: { id: actual.id }, data: { cost: row.costPrice, ...(defaultMargin > 0 ? { price1: Number(next.price1) } : {}) } });
         await tx.auditLog.create({ data: { userId: req.user!.userId, action: "IMPORT_COST", targetType: "COST", targetId: cost.id, newValue: { productId: actual.id, supplierId, costPrice: row.costPrice, fileHash } } });
         if (locationId) await receivePurchase(tx, actual.id, locationId, row.quantity, req.user!.userId, cost.id);
         imported.push({ id: cost.id, itemCode: actual.itemCode, name: actual.name, costPrice: row.costPrice, cantidad: row.quantity });
       }
       const response = { total: rows.length, imported: imported.length, updated: 0, errors: 0, formula: `PrecioUnitario × TipoCambio(${exchangeRate}) × (1 + ${percentage}% / 100)`, details: { imported, updated: [], errors: [] }, replayed: false };
-      await tx.auditLog.create({ data: { userId: req.user!.userId, action: "IMPORT_INVOICE", targetType: "SUPPLIER", targetId: supplierId, newValue: { fileHash, configuration, response } } });
+      await tx.auditLog.create({ data: { userId: req.user!.userId, action: "IMPORT_INVOICE", targetType: "SUPPLIER", targetId: supplierId, newValue: { fileHash, identityKey, configuration, response } } });
       return { conflict: false as const, response };
+      });
     }, { timeout: 60000 });
     if (result.conflict) return res.status(409).json({ message: "Este archivo ya fue importado para el proveedor con otros parámetros. Revise la importación registrada" });
-    keepInvoice = !result.response.replayed;
+    keepInvoice = !(result as any).replayed && !result.response.replayed;
+    if ((result as any).replayed) result.response.replayed = true;
     res.json(result.response);
   } catch (error: any) {
     if (!isPrismaClientError(error)) return res.status(400).json({ message: error.message || "Factura inválida" });
-    console.error("Error al importar factura:", error);
+    console.error("Error al importar factura:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   } finally {
     if (excelFile?.path && fs.existsSync(excelFile.path)) fs.unlinkSync(excelFile.path);

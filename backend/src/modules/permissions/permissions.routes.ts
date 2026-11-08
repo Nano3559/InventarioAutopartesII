@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize, invalidateRoleCache } from "../../shared/middlewares/auth";
@@ -5,7 +6,7 @@ import { AuthRequest } from "../../shared/types";
 import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 
@@ -37,7 +38,7 @@ router.get("/roles", authorize("ADMIN"), async (_req: AuthRequest, res: Response
 
     res.json({ roles: result });
   } catch (error) {
-    console.error("Error al listar roles:", error);
+    console.error("Error al listar roles:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -92,7 +93,7 @@ router.put("/roles/:id/permissions", authorize("ADMIN"), async (req: AuthRequest
 
     res.json({ id: updated.id, name: updated.name, permissions: updated.permissions });
   } catch (error) {
-    console.error("Error al actualizar permisos:", error);
+    console.error("Error al actualizar permisos:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -132,7 +133,7 @@ router.put("/roles/:id/columns", authorize("ADMIN"), async (req: AuthRequest, re
 
     res.json({ id: updated.id, name: updated.name, columnConfig: updated.columnConfig });
   } catch (error) {
-    console.error("Error al actualizar columnas:", error);
+    console.error("Error al actualizar columnas:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -158,7 +159,7 @@ router.get("/audit", authorize("ADMIN"), async (req: AuthRequest, res: Response)
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al obtener auditoría:", error);
+    console.error("Error al obtener auditoría:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -181,7 +182,7 @@ router.get("/permissions/me", async (req: AuthRequest, res: Response) => {
       columnConfig: user.role.columnConfig || {},
     });
   } catch (error) {
-    console.error("Error al obtener permisos:", error);
+    console.error("Error al obtener permisos:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

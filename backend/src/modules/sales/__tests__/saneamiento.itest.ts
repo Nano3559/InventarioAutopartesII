@@ -1,6 +1,8 @@
+const postJson = (base: string, path: string, body: any, token?: string) => postVerifiedBankFixture(ctx, base, path, body, token);
+import { postVerifiedBankFixture } from "../../../testing/bankFixture";
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { startTestServer, TestServer, postJson, loginAndGetToken, jsonHeaders } from "../../../testing/helpers";
+import { startTestServer, TestServer,  loginAndGetToken, jsonHeaders } from "../../../testing/helpers";
 import { seed, cleanup, createProduct, SeedContext } from "../../../testing/seed";
 
 let ctx: SeedContext;
@@ -56,7 +58,7 @@ test("edición rechaza mayorista superior a niveles normales y precio inferior a
 
 test("crédito inicial no cuenta como cobro y admite cobrar el saldo después", async () => {
   const p = await createProduct(ctx, { stockTienda: 4 });
-  const res = await postJson(server.baseUrl, "/api/sales", { items: [{ productId: p.id, quantity: 1, priceTier: "PRICE1" }], payments: [{ method: "EFECTIVO", amount: 30 }, { method: "CREDITO", amount: 70 }] }, tienda);
+  const res = await postJson(server.baseUrl, "/api/sales", { items: [{ productId: p.id, quantity: 1, priceTier: "PRICE1" }], payments: [{ method: "EFECTIVO", amount: 30 }, { method: "CREDITO", amount: 70 }], customerData: { name: "Cliente de crédito parcial" } }, tienda);
   assert.equal(res.status, 201);
   const sale = await res.json() as any;
   const summary = await (await fetch(`${server.baseUrl}/api/payments/summary/${sale.id}`, { headers: jsonHeaders(tienda) })).json() as any;
@@ -113,7 +115,7 @@ test("dos ventas del mismo NIT reutilizan un solo cliente", async () => {
 });
 test("nota imprime texto escapado y saldo de crédito sin tratarlo como cobrado", async () => {
   const p = await createProduct(ctx, { stockTienda: 3 });
-  const res = await postJson(server.baseUrl, "/api/sales", { items: [{ productId: p.id, quantity: 1 }], payments: [{ method: "CREDITO", amount: 100 }], paraQuien: '<script>alert("test")</script>' }, tienda);
+  const res = await postJson(server.baseUrl, "/api/sales", { items: [{ productId: p.id, quantity: 1 }], payments: [{ method: "CREDITO", amount: 100 }], customerData: { name: "Cliente identificado de prueba" }, paraQuien: '<script>alert("test")</script>' }, tienda);
   assert.equal(res.status, 201);
   const sale = await res.json() as any;
   const note = await fetch(`${server.baseUrl}/api/sales/${sale.id}/nota`, { headers: jsonHeaders(tienda) });

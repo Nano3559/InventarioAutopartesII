@@ -2,6 +2,10 @@
 
 Sistema web para la gestión de inventario, ventas y repuestos automotrices. El proyecto está compuesto por un backend API, un frontend web y una aplicación móvil.
 
+## Modelo predictivo H4
+
+La guía oficial es [H4_IMPLEMENTACION_MODELO_PREDICTIVO.md](docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md). Define el experimento académico, el dataset existente y la separación entre H4 e integración comercial H5. No hay un modelo predictivo entrenado.
+
 ## Características
 
 * **Gestión de productos:** CRUD de productos con información de marca, modelo, año, códigos y datos asociados.

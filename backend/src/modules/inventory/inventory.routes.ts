@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { parseId } from "../../shared/middlewares/validate";
 import { errorDominio, esErrorDominio } from "../../shared/utils/errorDominio";
 import { MAX_QUANTITY } from "../../shared/utils/pricing";
@@ -15,7 +16,7 @@ import {
 } from "../../shared/utils/scope";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(requireTiendaLocation);
@@ -146,7 +147,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
     res.json(result);
   } catch (error) {
-    console.error("Error al listar inventario:", error);
+    console.error("Error al listar inventario:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -180,7 +181,7 @@ router.get("/product/:productId", async (req: AuthRequest, res: Response) => {
       })),
     });
   } catch (error) {
-    console.error("Error al obtener stock:", error);
+    console.error("Error al obtener stock:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -233,7 +234,7 @@ router.put("/:id", authorize(...ROLES_QUE_AJUSTAN_INVENTARIO), async (req: AuthR
     res.json(serializarInventario(updated as unknown as FilaInventario, req.user, true));
   } catch (error) {
     if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
-    console.error("Error al actualizar inventario:", error);
+    console.error("Error al actualizar inventario:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
@@ -7,7 +8,7 @@ import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(authorize("ADMIN"));
@@ -51,7 +52,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar proveedores:", error);
+    console.error("Error al listar proveedores:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -88,7 +89,7 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
     });
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
-    console.error("Error al obtener proveedor:", error);
+    console.error("Error al obtener proveedor:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -113,7 +114,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al crear proveedor:", error);
+    console.error("Error al crear proveedor:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -151,7 +152,7 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al editar proveedor:", error);
+    console.error("Error al editar proveedor:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -172,7 +173,7 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
     res.json({ message: "Proveedor eliminado" });
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
-    console.error("Error al eliminar proveedor:", error);
+    console.error("Error al eliminar proveedor:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

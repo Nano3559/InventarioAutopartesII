@@ -384,6 +384,10 @@ test("Regresión — un MOVIMIENTO sigue moviendo stock entre almacén y tienda"
     tokenDe(ctx!.users.inventario, "INVENTARIO"),
   );
   assert.equal(res.status, 201, "el movimiento de mercadería sigue permitido para INVENTARIO");
+  assert.equal(await stockEnTienda(p.id), 4, "el traslado aún no fue recibido");
+  const movement: any = await res.json();
+  const received = await postJson(server.baseUrl, `/api/movements/${movement.id}/receive`, {}, tokenDe(ctx!.users.inventario, "INVENTARIO"));
+  assert.equal(received.status, 200);
   assert.equal(await stockEnTienda(p.id), 10, "la tienda recibe las 6 unidades");
   const almacen = await ctx!.prisma.inventory.findUniqueOrThrow({
     where: { productId_locationId: { productId: p.id, locationId: ctx!.locationIds.almacen } },

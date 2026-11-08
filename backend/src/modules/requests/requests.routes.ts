@@ -1,5 +1,6 @@
-import { moveStock } from "../../shared/utils/moveStock";
-import { esErrorDominio } from "../../shared/utils/errorDominio";
+import { safeError } from "../../shared/utils/safeError";
+import { moveStock, receiveMovement } from "../../shared/utils/moveStock";
+import { esErrorDominio, errorDominio } from "../../shared/utils/errorDominio";
 import { Router, Response } from "express";
 import { PrismaClient, RequestStatus } from "@prisma/client";
 import { authorizeModule, authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
@@ -11,7 +12,7 @@ import { notificarInventarioSolicitud } from "../../shared/utils/notificarInvent
 import { nextDayAt8, REQUEST_STATUS_ACTIVOS } from "../../utils/replenish";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(requireTiendaLocation);
@@ -72,7 +73,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar solicitudes:", error);
+    console.error("Error al listar solicitudes:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -101,7 +102,7 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
     res.json(request);
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
-    console.error("Error al obtener solicitud:", error);
+    console.error("Error al obtener solicitud:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -198,7 +199,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al crear solicitud:", error);
+    console.error("Error al crear solicitud:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -269,6 +270,11 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
         if (!origin || origin.type !== "ALMACEN") throw new Error("Seleccione un almacén de origen válido para entregar");
         await moveStock(tx, { productId: existing.productId, fromLocationId, toLocationId: existing.locationId, quantity: existing.quantity, userId: req.user!.userId, requestId: id, observation: `Entrega de solicitud #${id}` });
       }
+      if (status === "RECIBIDO_POR_TIENDA") {
+        const movement = await tx.movement.findFirst({ where: { requestId: id }, orderBy: { id: "desc" } });
+        if (!movement) throw errorDominio("La solicitud no tiene un traslado registrado para recibir");
+        await receiveMovement(tx, movement.id, req.user!.userId);
+      }
       await tx.requestHistory.create({
         data: {
           requestId: id,
@@ -323,7 +329,7 @@ router.put("/:id", async (req: AuthRequest, res: Response) => {
     if (error?.code === "P2002") {
       return res.status(409).json({ message: "Ya existe una solicitud abierta para este producto en esta ubicación" });
     }
-    console.error("Error al actualizar solicitud:", error);
+    console.error("Error al actualizar solicitud:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -402,7 +408,7 @@ router.delete("/:id", async (req: AuthRequest, res: Response) => {
     res.json({ message: "Solicitud cancelada" });
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
-    console.error("Error al cancelar solicitud:", error);
+    console.error("Error al cancelar solicitud:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

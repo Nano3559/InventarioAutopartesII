@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { config } from "../../config";
 import { AuthRequest, AuthPayload } from "../types";
+import { tokenDigest } from "../utils/sessionRevocation";
 
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 // Caché en memoria (single-instancia) de permisos por rol.
 // Evita re-leer roleModel por cada request que usa authorizeModule.
@@ -44,7 +45,25 @@ async function getCachedRole(roleId: number): Promise<CachedRole | null> {
   return entry;
 }
 
-export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
+async function resolveSession(token: string): Promise<AuthPayload | null> {
+  const decoded = jwt.verify(token, config.jwtSecret, { algorithms: ["HS256"] }) as AuthPayload & { iat?: number; issuedAtMs?: number };
+  if (!Number.isInteger(decoded.userId) || decoded.userId < 1 || !Number.isFinite(decoded.iat)) return null;
+  const user = await prisma.user.findUnique({
+    where: { id: decoded.userId },
+    select: { id: true, email: true, locationId: true, role: { select: { name: true } } },
+  });
+  if (!user) return null;
+  const issuedAt = decoded.issuedAtMs ?? decoded.iat! * 1000;
+  if (!Number.isFinite(issuedAt) || issuedAt > Date.now() + 30000) return null;
+  const revoked = await prisma.auditLog.findFirst({ where: { OR: [
+    { action: "REVOKE_USER_SESSIONS", targetType: "USER", targetId: user.id, createdAt: { gte: new Date(issuedAt) } },
+    { action: "REVOKE_TOKEN", userId: user.id, targetType: "SESSION", newValue: { path: ["tokenDigest"], equals: tokenDigest(token) } },
+  ] }, select: { id: true } });
+  if (revoked) return null;
+  return { userId: user.id, email: user.email, role: user.role.name, locationId: user.locationId };
+}
+
+export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -54,20 +73,23 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, config.jwtSecret, { algorithms: ["HS256"] }) as AuthPayload;
-    req.user = decoded;
+    const current = await resolveSession(token);
+    if (!current) return res.status(401).json({ message: "La sesión cambió o fue revocada. Inicie sesión nuevamente" });
+    req.user = current;
     next();
-  } catch {
-    return res.status(401).json({ message: "Token inválido o expirado" });
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) return res.status(401).json({ message: "Token inválido o expirado" });
+    return res.status(503).json({ message: "No se pudo verificar la sesión. Intente nuevamente" });
   }
 };
 
-export const optionalAuth = (req: AuthRequest, _res: Response, next: NextFunction) => {
+export const optionalAuth = async (req: AuthRequest, _res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) return next();
   try {
     const token = authHeader.split(" ")[1];
-    req.user = jwt.verify(token, config.jwtSecret, { algorithms: ["HS256"] }) as AuthPayload;
+    const current = await resolveSession(token);
+    if (current) req.user = current;
   } catch { /* ignore invalid token */ }
   next();
 };

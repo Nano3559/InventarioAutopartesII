@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import PhysicalStockPanel from "../components/PhysicalStockPanel";
 import ProductImage from "../components/public/ProductImage";
 import { validateYearRanges } from "../utils/yearRanges";
 import Autocomplete from "../components/ui/Autocomplete";
@@ -371,6 +372,8 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-6">
+      <PhysicalStockPanel mode="receive" onStockChanged={fetchProducts} />
+      <PhysicalStockPanel mode="inspect" onStockChanged={fetchProducts} />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

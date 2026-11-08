@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { safeError } from "./safeError";
 
 /**
  * E5/E7 — el flujo de solicitudes debe notificar a INVENTARIO en el MOMENTO en
@@ -34,7 +35,7 @@ export async function notificarInventarioSolicitud(
   } catch (err) {
     console.error(
       `[notificaciones] No se pudo avisar a INVENTARIO de la solicitud #${requestId}:`,
-      err instanceof Error ? err.message : err
+      safeError(err)
     );
     return 0;
   }

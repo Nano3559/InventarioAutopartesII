@@ -1,6 +1,8 @@
+const postJson = (base: string, path: string, body: any, token?: string) => postVerifiedBankFixture(ctx, base, path, body, token);
+import { postVerifiedBankFixture } from "../../../testing/bankFixture";
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { startTestServer, TestServer, postJson, loginAndGetToken } from "../../../testing/helpers";
+import { startTestServer, TestServer,  loginAndGetToken } from "../../../testing/helpers";
 import { seed, cleanup, createProduct, SeedContext } from "../../../testing/seed";
 
 /**

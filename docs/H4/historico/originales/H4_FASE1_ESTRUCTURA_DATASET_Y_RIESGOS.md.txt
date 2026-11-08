@@ -1,0 +1,416 @@
+# H4. Fase 1: comprensión de los datos, estructura del dataset y riesgos
+
+Fecha: 27 de octubre de 2026. Estado: definición documental terminada, pendiente de aprobación del catálogo propuesto y de la estructura antes de generar datos.
+
+## 1. Objetivo
+
+Definir el contrato de datos de DATOS_SINTETICOS_DEMANDA_H4 antes de construirlo. Este contrato establece qué representa una fila, qué información podrá entrar al modelo, cuál será el resultado esperado y qué condiciones impedirán usar una observación.
+
+Esta fase no genera ventas simuladas, archivos de dataset, lags calculados, modelos ni predicciones. No modifica código, Prisma, migraciones o datos de Neon. La lectura del catálogo no convierte los registros comerciales existentes en historia certificada. La autorización para consultar Neon tampoco autoriza la Fase 2.
+
+## 2. Fuentes revisadas y alcance de la comprobación
+
+Se revisaron la [propuesta detallada](H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md), la [síntesis por fases](H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md), la [auditoría anterior](AUDITORIA_MODELO_PREDICTIVO_H4.md) y el [plan de saneamiento](PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md). También se contrastaron Ejercicio 1.pdf y el plan de trabajo del equipo. El PDF describe el sistema comercial, no prescribe los algoritmos de H4. Sus nombres históricos de precios no cambian la semántica comercial vigente.
+
+El código revisado corresponde a a9ff618 en ross. Al comenzar ya existían cambios documentales de la revisión anterior. Se conservaron. La evidencia del código actual se resume así:
+
+| Fuente local | Evidencia relevante para el dataset |
+|---|---|
+| [schema.prisma](../backend/prisma/schema.prisma) | Product, Location, Inventory, Sale, SaleItem y Return tienen los campos citados en este documento. No hay estado de anulación de Sale ni campo de producto descontinuado |
+| [Ventas](../backend/src/modules/sales/sales.routes.ts) | El backend obtiene precios, calcula subtotales, registra SaleItem.quantity y conserva Sale.locationId. La venta normal guarda type NORMAL |
+| [Mayoristas](../backend/src/modules/wholesale/wholesale.routes.ts) | Utiliza el mayorista canónico y registra type MAYOR. Puede vender desde almacén cuando el rol lo permite |
+| [Precios](../backend/src/shared/utils/pricing.ts) | POR MENOR usa Product.price1, POR MAYOR usa Product.wholesalePrice. PRICE2 se rechaza como modo legacy |
+| [Ubicación de venta](../backend/src/shared/utils/saleLocation.ts) | La venta normal exige TIENDA. La ubicación histórica se toma de Sale, no de la asignación actual del vendedor |
+| [Productos](../backend/src/modules/products/products.routes.ts) | Sus atributos se pueden editar. La fecha createdAt no certifica inicio de comercialización. La eliminación protege productos con ventas asociadas |
+| [Inventario](../backend/src/modules/inventory/inventory.routes.ts) | stock y minStock son valores actuales. El ajuste protegido no crea una serie mensual completa de disponibilidad |
+| [Ubicaciones](../backend/src/modules/locations/locations.routes.ts) | La consulta lista almacenes y tiendas. H4 deberá filtrar explícitamente TIENDA |
+| [Devoluciones](../backend/src/modules/returns/returns.routes.ts) | Return conserva saleId, productId, quantity, amount y date. La devolución no reescribe la cantidad original vendida |
+| [Reportes](../backend/src/modules/reports/dailyReport.ts) y [fechas](../backend/src/shared/utils/rangoFechas.ts) | Agregan cantidades y separan devoluciones. Usan fechas de negocio de America/La_Paz. No constituyen por sí solos un dataset mensual preparado |
+
+Con autorización expresa se consultó directamente la base Neon real configurada en backend/.env. No se utilizó neontest, una copia local ni una rama temporal. Se verificó el proveedor, se rechazaron nombres de base identificados como prueba y se comprobó que current_database coincidía con la configuración, sin mostrar ese nombre ni credenciales.
+
+Prisma y psql agotaron el tiempo de conexión. La lectura se completó mediante el cliente oficial @neondatabase/serverless 1.0.2 por HTTPS, cargado temporalmente fuera del proyecto con integridad SHA-512 verificada. No se agregó una dependencia al repositorio. Se utilizó la misma conexión configurada en una transacción con readOnly true y aislamiento RepeatableRead. PostgreSQL confirmó transaction_read_only = on y transaction_isolation = repeatable read. Se realizaron únicamente SELECT de comprobación, Product, Category y Location. No se consultaron personas ni se extrajo historia de ventas.
+
+El corte fue 2026-10-28T01:08:41.263Z, equivalente al 27 de octubre de 2026 a las 21:08:41.263 en America/La_Paz. Los conteos actuales de catálogo y tiendas proceden de esa lectura. Las 247 ventas y demás cantidades comerciales de documentos anteriores siguen siendo observaciones históricas, no conteos renovados en esta fase. La consulta no auditó drift ni el estado de las migraciones.
+
+## 3. Unidad de análisis
+
+Una fila supervisada representará un producto en una tienda durante un mes objetivo. La clave será la combinación productId + locationId + mes_objetivo. No habrá una fila por factura, pago, devolución o vendedor. Cada combinación aparecerá una sola vez.
+
+Esta unidad es coherente con SaleItem.productId y Sale.locationId. El nombre tienda corresponde a Location.type = TIENDA, no a un modelo Prisma llamado Store. Se propone un modelo compartido para las series de producto y tienda, no un modelo independiente por cada combinación con poca historia. Usar un producto actual en meses simulados será una decisión explícita de simulación, sin afirmar que ya existía comercialmente entonces.
+
+## 4. Target y fuente futura de ventas reales
+
+target_ventas_mes será la suma de unidades vendidas brutas del producto en la tienda durante el mes objetivo. Su fuente real futura sería SaleItem.quantity, relacionada mediante SaleItem.saleId con Sale.id, Sale.saleDate y Sale.locationId. SaleItem.productId se vincula con Product.id. Sale.locationId se vincula con Location.id y se restringe a type TIENDA.
+
+Se sumarían cantidades, no importes ni número de comprobantes. Una venta de varias unidades aporta todas sus unidades. Tanto NORMAL como MAYOR pueden aportar ventas si su ubicación es TIENDA y su procedencia es válida. Se excluyen ALMACEN del alcance por sucursal. Sale.type no prueba el modo comercial de cada línea. El esquema actual no permite identificar todas las ventas anuladas mediante un estado, por lo que no se inventará un filtro status ni se afirmará que existen cero anulaciones.
+
+El target permanece bruto porque una devolución es otro evento, con su propia fecha. Restar hoy una devolución conocida después cambiaría una etiqueta histórica usando información futura. Return.quantity se analizará aparte. No se obtiene demanda comercial perdida cuando no había stock. La salida inicial estima ventas observadas bajo los supuestos del experimento.
+
+## 5. Estructura base y tabla supervisada
+
+Se distinguen dos estructuras futuras. La base mensual de apoyo tendría mes, productId, locationId y ventas_mes. Contendría 24 meses por combinación incluida, de octubre de 2024 a septiembre de 2026. ventas_mes sería una cantidad simulada, no una nueva columna Prisma. Esta fase solo define esa estructura, sin crear un archivo ni una fila.
+
+La tabla supervisada final tendrá nueve columnas, en el orden del diccionario siguiente. Para cada mes m, ventas_mes de ese mismo mes se convertirá en target_ventas_mes. Las cantidades de m-1, m-2 y m-3 se convertirán en entradas. Los tres primeros meses de la base aportan historia, pero no filas supervisadas completas. Quedarán 21 meses objetivo por combinación. Construir lags no significa entrenar. Su implementación corresponderá a la Fase 3, usando la base que se genere y valide en Fase 2.
+
+## 6. Diccionario de datos inicial
+
+El formato de intercambio recomendado es CSV UTF-8 con encabezado fijo. Los tipos son un contrato lógico. Las cantidades serán enteros no negativos, conservados como int64 para que una suma mensual no dependa del límite int32 de cada línea de Prisma. Se controlará cualquier desbordamiento. Los ejemplos de esta tabla son individuales y conceptuales, no una fila generada ni un registro comercial certificado.
+
+| Nombre | Tipo de dato | Origen | Significado | Ejemplo conceptual | Rol inicial | Disponibilidad temporal |
+|---|---|---|---|---|---|---|
+| mes_objetivo | Cadena YYYY-MM | Calendario definido | Mes m cuyo total se estima | 2025-01 | IDENTIFICADOR temporal | Conocido antes de iniciar m |
+| productId | Entero int32 positivo | Product.id del catálogo aprobado | Identidad del producto | ID 15, existente en el catálogo consultado | IDENTIFICADOR | Conocido al fijar el catálogo |
+| locationId | Entero int32 positivo | Location.id con type TIENDA | Identidad de la tienda | ID 5, Tienda 1 | IDENTIFICADOR | Conocido al fijar las tiendas |
+| ventas_mes_anterior | Entero int64 no negativo | ventas_mes de m-1 del mismo par | Primer lag | Cantidad de diciembre si m es enero | FEATURE | Al cierre de m-1, con captura completa |
+| ventas_hace_2_meses | Entero int64 no negativo | ventas_mes de m-2 del mismo par | Segundo lag | Cantidad de noviembre si m es enero | FEATURE | Al cierre de m-2 |
+| ventas_hace_3_meses | Entero int64 no negativo | ventas_mes de m-3 del mismo par | Tercer lag | Cantidad de octubre si m es enero | FEATURE | Al cierre de m-3 |
+| mes_sin | Decimal float64 finito entre -1 y 1 | Número del mes objetivo | Componente seno del ciclo anual | Fórmula de seno aplicada a enero | FEATURE | Conocida antes de m |
+| mes_cos | Decimal float64 finito entre -1 y 1 | Número del mes objetivo | Componente coseno del ciclo anual | Fórmula de coseno aplicada a enero | FEATURE | Conocida antes de m |
+| target_ventas_mes | Entero int64 no negativo | ventas_mes de m, futuro equivalente a suma de SaleItem.quantity | Unidades brutas del mes objetivo | Cantidad total de enero | TARGET | Solo al cierre de m con registros completos, nunca como entrada para predecir m |
+
+El conjunto inicial tiene tres identificadores, cinco features y un target. Los IDs no son magnitudes. productId 20 no significa doble demanda que productId 10. Si posteriormente se incorporan como entradas, serán categorías codificadas y se registrará esa variante del experimento. No se enviarán como números continuos por comodidad.
+
+Una codificación posible es OneHotEncoder ajustado solo con training, con tratamiento explícito de categorías desconocidas. La opción handle_unknown ignore evita un error de transformación, pero no resuelve la falta de historia de un producto nuevo. Tampoco certifica una predicción fiable. Véase la [documentación oficial del codificador](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html). Las columnas codificadas no forman parte del CSV inicial definido aquí. Los casos sin predicción se contarán al informar cobertura, sin retirarlos silenciosamente para mejorar métricas.
+
+## 7. Información excluida
+
+| Campo o información | Rol | Motivo de exclusión inicial |
+|---|---|---|
+| Inventory.stock actual | EXCLUIDO | Contiene efectos de operaciones posteriores a muchos meses históricos. No demuestra disponibilidad mensual anterior |
+| Inventory.minStock actual | EXCLUIDO | Es una regla actual de inventario, no demanda observada ni stock de seguridad histórico certificado |
+| Product.price1 actual | EXCLUIDO | Precio POR MENOR de hoy, sin versiones históricas completas |
+| Product.wholesalePrice actual | EXCLUIDO | Precio POR MAYOR actual, no precio conocido en cada mes antiguo |
+| Product.price2 | EXCLUIDO | Campo legacy sin función comercial activa para nuevas ventas |
+| Product.cost actual | EXCLUIDO | Costo actual que no representa necesariamente lo conocido en meses anteriores |
+| Sale.total del mes objetivo | EXCLUIDO | Se conoce después de las ventas que se pretende predecir y mezcla cantidades con precios |
+| SaleItem.quantity del mes objetivo como entrada | EXCLUIDO como feature | Es la fuente del target. Incluirlo como entrada revelaría la respuesta |
+| SaleItem.subtotal y SaleItem.unitPrice del mes objetivo | EXCLUIDO | Información de transacciones futuras al emitir el pronóstico |
+| Sale.customerId, Sale.seller, Sale.userId y relaciones personales | EXCLUIDO | No son necesarias para esta unidad de análisis e incorporan personas o cambios de asignación |
+| Sale.datosFactura, Sale.paraQuien, Sale.lugarEntrega, Customer.nit y otros datos de contacto o fiscales | EXCLUIDO | No aportan una justificación predictiva para esta primera versión |
+| updatedAt posteriores del producto, venta u otras tablas | EXCLUIDO | Reflejan cambios posteriores. No reconstruyen el valor que tenía una fila al corte anterior |
+| Product.detail y Product.detalles | EXCLUIDO | Textos distintos con semántica pendiente de revisión, innecesarios para el conjunto mínimo |
+| promedio_3_meses | EXCLUIDO inicialmente | Es una combinación exacta de los tres lags |
+| Parámetros internos del generador, grupo de rotación y demanda latente simulada | EXCLUIDO como features | Revelarían las reglas usadas para crear la respuesta |
+| Información de meses posteriores, acumulados centrados y estadísticas del dataset completo | EXCLUIDO | Introducen futuro en entrenamiento o evaluación |
+
+promedio_3_meses sería la suma de los tres lags dividida entre tres. En LinearRegression crea una dependencia lineal exacta, llamada multicolinealidad, que dificulta atribuir significado a los coeficientes. No añade observaciones nuevas. Para un bosque podría cambiar las divisiones disponibles, pero esa posibilidad se probaría después mediante validación, sin asumir que mejora el resultado.
+
+## 8. Variables opcionales futuras
+
+Los recuentos de valores diferentes siguientes se obtuvieron del catálogo actual de 62 productos. No representan versiones históricas ni el catálogo final aprobado para simular.
+
+| Variable | Aporte posible | Riesgo e historia disponible | Clasificación |
+|---|---|---|---|
+| Product.categoryId | Compartir información entre tipos de repuesto | Siete categorías actuales, tres productos sin asignación. No hay versiones completas de categoría por fecha y existen clasificaciones dudosas | POSIBLE FASE POSTERIOR, tras revisión |
+| Product.brand | Distinguir aplicación por marca del vehículo | Once valores actuales. Falta historial de cambios y hay combinaciones marca/modelo por comprobar | POSIBLE FASE POSTERIOR |
+| Product.manufacturer | Diferenciar fabricante del repuesto | Cuarenta y siete valores en 62 productos, casi un identificador por producto. Codificarlo puede memorizar casos escasos | POSIBLE FASE POSTERIOR, con control de cardinalidad |
+| Product.model | Distinguir aplicación del vehículo | Catorce valores actuales, sin historial completo. No equivale a modelo predictivo | POSIBLE FASE POSTERIOR |
+| Product.year como año numérico continuo | Ningún aporte claro en esa forma | Doce valores, incluidos rangos abiertos o abreviados. Es aplicación del vehículo, no fecha de venta | NO RECOMENDADA en esa representación |
+| precio_historico_anterior | Captar cambios anteriores de precio | Columna propuesta, no campo Prisma. SaleItem.unitPrice permite observar precios de operaciones previas, no una tarifa completa por mes o modo | POSIBLE FASE POSTERIOR, con fecha de disponibilidad y regla para meses sin venta |
+| devoluciones_mes_anterior | Señal previa de devoluciones | Columna propuesta a partir de Return.quantity y Return.date, separada de las ventas. Solo eventos conocidos al corte y sin unión que multiplique cantidades | POSIBLE FASE POSTERIOR |
+| proporcion_mayorista_anterior | Distinguir mezcla comercial anterior | Columna propuesta. Sale.type identifica canal, pero no todos los modos por línea. No existe historia fiable completa del modo elegido | NO RECOMENDADA como proporción del modo comercial con el contrato actual |
+| indice_temporal | Representar avance de la tendencia | Columna derivada del calendario, conocida antes del target. Puede extrapolar supuestos de simulación y dificultar a los árboles salir del rango aprendido | POSIBLE FASE POSTERIOR |
+
+POSIBLE FASE POSTERIOR no significa inclusión automática. Cualquier variante debe definir cómo se conocía el dato al emitir el pronóstico, tratar faltantes y compararse sin mirar test. Una proporción del canal MAYOR sería otra variable con otro significado, que requeriría una decisión explícita.
+
+## 9. Calendario y zona horaria
+
+La base simulará octubre de 2024 a septiembre de 2026, ambos inclusive. El mes base es el mes que contiene una cantidad ventas_mes. Al construir una fila, el mes objetivo m contiene el target. El mes anterior m-1 es el último mes observado al emitir la predicción. m-2 y m-3 completan la historia. Para el objetivo enero de 2025, las referencias son diciembre, noviembre y octubre de 2024. No se calculan cantidades en este documento.
+
+Si k es el número del mes objetivo, de 1 a 12, se propone mes_sin = sin(2π(k-1)/12) y mes_cos = cos(2π(k-1)/12). Las dos coordenadas ubican los meses sobre un círculo. Así diciembre y enero quedan próximos pese a sus números 12 y 1. Es una fórmula de calendario conocida de antemano, no una estadística aprendida de ventas. Aquí no se generan sus valores.
+
+La futura agregación real utilizará America/La_Paz. El intervalo mensual será desde el primer día a las 00:00 inclusive hasta el primer día del mes siguiente a las 00:00 exclusivo, convertido correctamente a UTC. Una venta del 31 de enero a las 23:59 local corresponde a enero aunque en UTC ya sea 1 de febrero a las 03:59. Una venta del 1 de febrero a las 00:01 local corresponde a febrero, equivalente a las 04:01 UTC. No se agrupará directamente por mes UTC.
+
+Las migraciones originales usan timestamp sin zona para fechas Prisma. La aplicación interpreta los instantes según su convención UTC y los reportes actuales aplican UTC-4. Una fuente externa deberá confirmar esa convención antes de agregarse. Además, saleDate es fecha del evento y createdAt es fecha de registro. Una carga retroactiva puede tener saleDate antigua sin haber estado disponible entonces. No se reconstruirá un experimento real suponiendo que fecha antigua significa conocimiento antiguo.
+
+## 10. Ceros, faltantes y baja rotación
+
+Un cero observado solo es interpretable cuando el producto estaba comercializado, la tienda operaba y la captura era completa. Incluso entonces, falta de stock puede ocultar demanda. Ausencia de filas puede significar falta de inventario, producto aún no incorporado, tienda que no lo vendía, registros incompletos o ausencia real de compras. No se convertirán automáticamente todos esos casos en cero ni se rellenarán cantidades faltantes con ventas de meses siguientes.
+
+Para la simulación inicial se propone una población fija de productos y tiendas durante los 24 meses. Es un supuesto deliberado. Dentro de ella, un cero significará ninguna unidad observada en ese mes simulado. No representará por defecto un cierre, un producto inexistente o un dato perdido. No se simulará disponibilidad histórica como si se hubiese medido. Escenarios de falta de stock podrán estudiarse posteriormente, identificados y separados del experimento base.
+
+Los productos de baja rotación, con meses de cero, una o dos unidades, se conservarán. Pueden hacer que una regla que siempre predice poco obtenga un MAE global bajo, aunque falle en meses con venta. Se pedirán métricas por rotación, tienda y meses con o sin venta. Random Forest puede promediar demasiado los picos y LinearRegression producir negativos. R² resulta inestable con poca variación y no está definido de forma ordinaria para un target constante. Algunas herramientas sustituyen ese caso por valores finitos. Se reportará la condición, no una supuesta precisión, conforme a la [documentación de R²](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html).
+
+## 11. Construcción posterior de lags y split temporal
+
+La futura preparación ordenará cada par productId/locationId por mes, verificará continuidad y obtendrá sus tres meses anteriores exactos. Desplazar tres filas sin comprobar calendario sería incorrecto si falta un mes. El primer target completo será enero de 2025. Los lags no cruzarán productos ni tiendas, no utilizarán el mes objetivo y no se calcularán con una ventana centrada.
+
+| Uso | Meses objetivo o de apoyo | Meses | Proporción de filas supervisadas del panel completo |
+|---|---|---:|---:|
+| Historia inicial | octubre a diciembre de 2024 | 3 | No forman targets iniciales |
+| TRAIN | enero de 2025 a marzo de 2026 | 15 | 71,43 % |
+| VALIDATION | abril a junio de 2026 | 3 | 14,29 % |
+| TEST | julio a septiembre de 2026 | 3 | 14,29 % |
+
+Es la aproximación a 70/15/15 que conserva meses completos. Todas las filas de un mes pertenecerán al mismo conjunto. No se usarán particiones aleatorias de filas. Se comprobará adicionalmente TimeSeriesSplit sobre meses únicos del training, trasladando cada corte a todo el panel. Dividir directamente filas ordenadas podría partir un mismo mes. La [referencia oficial](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html) fundamenta conservar el orden temporal.
+
+La evaluación será de un paso mensual. Para mayo podrá usarse abril ya observado, aunque abril pertenezca a validation. Para agosto podrá usarse julio observado, sin seleccionar parámetros con su error de test. No es un pronóstico de tres meses emitido desde marzo. Si el cierre real tarda, se deberá retrasar la emisión o cambiar el contrato. Scaler, encoder y tratamientos aprendidos se ajustarán solo con training, también dentro de cada corte interno. LinearRegression admite escalado opcional, Random Forest no lo necesita y MLP suele requerirlo.
+
+## 12. Riesgos de fuga de información
+
+Data leakage significa utilizar información que no se conocía al pronosticar. Puede ocurrir al construir columnas o al elegir el modelo. El criterio es disponibilidad al cierre anterior, no que un campo pueda consultarse hoy. Las transformaciones deben aprenderse solo con entrenamiento, como explica la [guía de buenas prácticas](https://scikit-learn.org/stable/common_pitfalls.html).
+
+| Caso | Ejemplo | Por qué está mal | Cómo evitarlo |
+|---|---|---|---|
+| Stock actual en el pasado | Repetir Inventory.stock de hoy en 2025 | Incluye operaciones posteriores | Excluirlo sin historia verificable |
+| Precio actual como histórico | Usar wholesalePrice actual para enero de 2025 | Puede haber cambiado después | Excluirlo o reconstruir solo precios anteriores con evidencia |
+| Devolución futura | Restar en enero una devolución conocida en marzo | Revela un evento posterior | Target bruto y eventos separados por fecha disponible |
+| Target como entrada | Usar quantity de m para predecir m | Entrega la respuesta | Entradas solo de m-1 y anteriores |
+| Importe del mes objetivo | Incorporar Sale.total o subtotal de m | Se conoce al concretar ventas futuras | Excluir los importes del periodo objetivo |
+| Scaler global | Calcular media y desviación con los 21 meses | El futuro influye en la preparación | Ajustar solo en training y repetir por corte |
+| Encoder global | Aprender categorías leyendo validation y test | Cambia la representación usando periodos reservados | Ajustar solo en training y manejar desconocidos |
+| Selección de variables con test | Conservar una columna porque mejora julio-septiembre | Adapta decisiones a la evaluación final | Elegir con training y validation |
+| Hiperparámetros con test | Elegir profundidad de bosque por MAE de test | El test deja de ser independiente | Congelar configuración antes del test final |
+| Estadísticas globales futuras | Media por producto calculada con todos los meses | Resume ventas que aún no ocurrieron | Ventanas solo anteriores o estadísticas de training |
+| Ventanas centradas o lags incorrectos | Promedio con m+1 o desplazamiento hacia adelante | Incorpora futuro directamente | Verificar las fechas de cada dependencia |
+| Revisiones y cargas retroactivas | Usar en enero un registro ingresado en abril | Confunde fecha de venta con fecha de conocimiento | Conservar cortes de disponibilidad y no certificar historia reconstruida sin ellos |
+| Fórmula sintética expuesta | Incluir la tasa interna con la que se generó el target | Facilita conocer la respuesta artificial | Parámetros latentes fuera de las features |
+| Generador ajustado mirando el test | Cambiar el ruido hasta que gane Random Forest | Diseña una evaluación favorable al candidato | Fijar supuestos antes de comparar y versionar cambios |
+
+## 13. Catálogo y tiendas confirmados en Neon
+
+La lectura actual confirmó 62 productos, siete categorías y siete ubicaciones. Hay tres tiendas, IDs 5, 6 y 7, más cuatro almacenes que no participarán como sucursales. No se encontraron itemCode repetidos, categorías referenciadas inexistentes ni valores vacíos en itemCode, name, manufacturer, brand, model o year. Esto comprueba estructura, no certifica exactitud comercial.
+
+| Location.id | Location.name | Location.type | Decisión propuesta |
+|---:|---|---|---|
+| 1 | Almacén 1 | ALMACEN | Excluir del panel por tienda |
+| 2 | Almacén 2 | ALMACEN | Excluir del panel por tienda |
+| 3 | Almacén 3 | ALMACEN | Excluir del panel por tienda |
+| 4 | Almacén 4 | ALMACEN | Excluir del panel por tienda |
+| 5 | Tienda 1 | TIENDA | Incluir en la propuesta |
+| 6 | Tienda 2 | TIENDA | Incluir en la propuesta |
+| 7 | Tienda 3 | TIENDA | Incluir en la propuesta |
+
+El catálogo consultado tiene categorías Frenos, Motor, Suspensión, Eléctrico, Carrocería, Transmisión y Filtros, con IDs 1 a 7 respectivamente. Sus cantidades son 8, 17, 7, 7, 6, 6 y 8 productos. Otros tres productos no tienen categoría. La tabla siguiente es evidencia del catálogo existente, no el dataset ni un snapshot aprobado.
+
+| Product.id | itemCode | name | categoryId |
+|---:|---|---|---:|
+| 1 | FRN-001 | Pastillas de Freno Delanteras | 1 |
+| 2 | FRN-002 | Disco de Freno Delantero | 1 |
+| 3 | FRN-003 | Pastillas de Freno Traseras | 1 |
+| 4 | MTR-001 | Bujía de Encendido | 2 |
+| 5 | MTR-002 | Bujía de Encendido | 2 |
+| 6 | MTR-003 | Bobina de Encendido | 2 |
+| 7 | SUS-001 | Amortiguador Delantero | 3 |
+| 8 | SUS-002 | Amortiguador Trasero | 3 |
+| 9 | SUS-003 | Brazo de Suspensión Inferior | 3 |
+| 10 | FLT-001 | Filtro de Aceite | 7 |
+| 11 | FLT-002 | Filtro de Aire | 7 |
+| 12 | FLT-003 | Filtro de Combustible | 7 |
+| 13 | ELC-001 | Alternador | 4 |
+| 14 | ELC-002 | Marcha de Arranque | 4 |
+| 15 | ELC-003 | Foco Halógeno H7 | 4 |
+| 16 | CAR-001 | Parachoque Delantero | 5 |
+| 17 | CAR-002 | Retrovisor Lateral Izquierdo | 5 |
+| 18 | TRN-001 | Kit de Embrague | 6 |
+| 19 | TRN-002 | Kit de Embrague | 6 |
+| 20 | FRN-004 | Disco de Freno Trasero | 1 |
+| 21 | FRN-005 | Caliper de Freno Delantero | 1 |
+| 22 | FRN-006 | Manguera de Freno Delantera | 1 |
+| 23 | FRN-007 | Retenedor de Caliper | 1 |
+| 24 | FRN-008 | Pastillas Cerámicas Premium | 1 |
+| 25 | MTR-004 | Bomba de Agua | 2 |
+| 26 | MTR-005 | Correa de Distribución | 2 |
+| 27 | MTR-006 | Juego de Juntas | 2 |
+| 28 | MTR-007 | Válvula EGR | 2 |
+| 29 | MTR-008 | Rodamiento de Cigüeñal | 2 |
+| 30 | SUS-004 | Rótula Inferior | 3 |
+| 31 | SUS-005 | Estabilizadora Delantera | 3 |
+| 32 | SUS-006 | Buje de Suspensión | 3 |
+| 33 | ELC-004 | Sensor de Oxígeno | 4 |
+| 34 | ELC-005 | Módulo de Encendido | 4 |
+| 35 | ELC-006 | Foco LED H11 | 4 |
+| 36 | FLT-004 | Filtro de Aire Deportivo | 7 |
+| 37 | FLT-005 | Filtro de Cabina | 7 |
+| 38 | FLT-006 | Filtro de Aceite Hidráulico | 7 |
+| 39 | CAR-003 | Farola Delantera Derecha | 5 |
+| 40 | CAR-004 | Parrilla Delantera | 5 |
+| 41 | CAR-005 | Parachoque Trasero | 5 |
+| 42 | CAR-006 | Tapa de Combustible | 5 |
+| 43 | TRN-003 | Cilindro Maestro de Embrague | 6 |
+| 44 | TRN-004 | Amortiguador de Transmisión | 6 |
+| 45 | TRN-005 | Retén de Transmisión | 6 |
+| 46 | ADI-001 | Radiador de Agua | 2 |
+| 47 | ADI-002 | Tapa de Radiador | 2 |
+| 48 | ADI-003 | Correa Serpentina | 2 |
+| 49 | ADI-004 | Soporte de Motor | 2 |
+| 50 | ADI-005 | Manguera de Radiador | 2 |
+| 51 | ADI-006 | Depósito de Expansión | 2 |
+| 52 | ADI-007 | Serpentina AC | 2 |
+| 53 | ADI-008 | Tensador de Correa | 2 |
+| 54 | ADI-009 | Soporte de Transmisión | 6 |
+| 55 | ADI-010 | Sensor MAP | 4 |
+| 56 | ADI-011 | Termostato | 2 |
+| 57 | DE01 | FAROL | 7 |
+| 58 | DE02 | RADIADOR | 3 |
+| 59 | 212-11D2 | FAROL | NULL |
+| 60 | 212-1548 | GUIÑADOR | NULL |
+| 61 | 215-1968 | STOP | NULL |
+| 62 | 648519 | prueba30 | 7 |
+
+Se proponen 56 candidatos iniciales, IDs 1 a 56, sin incidencias en los controles acotados de esta lectura y revisión. Son productos del catálogo del proyecto, no productos cuya actividad comercial o antigüedad se haya certificado. Se reservan los siguientes seis para revisión humana antes de congelar el catálogo. Esta reserva es una propuesta documental, no una eliminación ni una modificación productiva.
+
+| Producto | Evidencia actual | Decisión necesaria |
+|---|---|---|
+| 57, DE01, FAROL | categoryId 7, Filtros, no parece corresponder al nombre del repuesto | Confirmar clasificación comercial. No reasignar por inferencia |
+| 58, DE02, RADIADOR | categoryId 3, Suspensión, requiere comprobación. detail ausente | Confirmar categoría y si necesita descripción. La falta de detail opcional no basta por sí sola para excluir |
+| 59, 212-11D2, FAROL | Sin categoryId, marca MAZDA con modelo TACOMA, sin wholesalePrice | Confirmar aplicación, categoría y vigencia |
+| 60, 212-1548, GUIÑADOR | Sin categoryId, marca HYUNDAI con modelo TUNDRA, sin wholesalePrice | Confirmar aplicación, categoría y vigencia |
+| 61, 215-1968, STOP | Sin categoryId ni wholesalePrice | Confirmar vigencia y política de inclusión con categoría desconocida. No necesita mayorista para simular ventas brutas |
+| 62, 648519, prueba30 | Nombre, fabricante, marca y modelo de prueba. Mayorista bajo costo | Mantener fuera de la propuesta inicial hasta confirmar si es un producto comercial válido |
+
+Una categoría ausente o un precio mayorista no configurado no impiden matemáticamente usar IDs y lags. La reserva busca que el equipo apruebe un catálogo claro, sin esconder las dudas ni convertir campos opcionales en barreras arbitrarias. Si se aprueba incluir alguno, se actualizarán el manifiesto y sus motivos sin tocar Neon. No se borran productos por baja rotación. detail y detalles no se asumirán equivalentes. No se usa quality, ausente del contrato Prisma.
+
+Frente a la documentación anterior se confirman los mismos 62 productos, las tres categorías faltantes de 59 a 61 y las tiendas 5, 6 y 7. Se añaden explícitamente las dudas de clasificación de 57 y 58 y la ausencia de detail en 58. No se encontraron vacíos de oemCode ni factoryCode en el control de nulos o texto vacío. Esto no verifica que los códigos sean comercialmente correctos.
+
+## 14. Escenarios especiales del dominio
+
+Un producto nuevo, una tienda nueva o una combinación que empieza a comercializarse no tendrá necesariamente tres meses completos. Este inicio sin historia se conoce como cold start. La política inicial recomendada es no emitir una predicción del modelo cuando falte historia completa o el ID no haya sido visto en training, e indicar historial insuficiente. Un fallback simple o un modelo por categoría serían alternativas posteriores, identificadas como tales. No se rellenarán meses previos con ceros inventados.
+
+Product no tiene un indicador específico de descontinuación ni una historia completa de comercialización por tienda. Cero ventas no permite afirmar que dejó de ofrecerse. Una versión real necesitará un registro verificable de vigencia y disponibilidad, fuera del alcance de esta fase. Productos sustitutos tampoco tienen una relación de equivalencia que permita trasladar historia automáticamente.
+
+Una devolución parcial o completa conserva el target bruto original. Si ocurre en otro mes, se registra como evento de ese mes, sin descontarla retroactivamente de las entradas conocidas antes. Las devoluciones posteriores al periodo del dataset tampoco se usarán para corregir retrospectivamente las etiquetas brutas.
+
+Una venta mayorista válida de 30 unidades no será eliminada por ser grande. Se diferenciará un evento extraordinario de un dato incorrecto mediante evidencia comercial. Cualquier regla estadística para valores extremos se aprenderá solo en training y se documentará. No se borrarán picos de validation o test para mejorar métricas.
+
+Las nuevas ventas usan POR MENOR = Product.price1 y POR MAYOR = Product.wholesalePrice. Product.price2 es legacy. El modo elegido llega al backend, pero SaleItem no lo persiste como campo propio. Por eso el modo no será una feature inicial y no se reconstruirá comparando unitPrice histórico con tarifas actuales. Una venta NORMAL puede usar POR MAYOR. Un cambio de precio o una promoción tampoco quedan descritos por una historia completa de campañas que pueda asumirse disponible.
+
+Las líneas legacy repetidas por saleId/productId no se eliminarán automáticamente. Pueden representar varias líneas legítimas. La futura extracción sumará cantidades por producto y venta, y después por producto, tienda y mes. Las devoluciones se agregarán por separado antes de unirlas con ventas. Unir varias SaleItem y varias Return directamente por saleId/productId multiplicaría filas. También deben evitarse uniones de uno a muchos con pagos o proveedores que multipliquen unidades.
+
+## 15. Riesgos del futuro dataset sintético
+
+Fase 2 deberá fijar seed 42, orden estable por productId/locationId/mes, parámetros versionados, diferencias de rotación, ceros controlados, tendencia moderada, ciclo anual, efecto tienda y ruido. Las asignaciones aleatorias se harán en ese orden estable y quedarán separadas del valor numérico de los IDs. No se escribirá el generador durante esta fase.
+
+No se buscará una fórmula que favorezca a Random Forest. Se propondrán patrones variados, sin volver todos los productos idénticos ni elegir parámetros por el rendimiento de test. Los escenarios extraordinarios se identificarán y documentarán. El mecanismo de generación se conservará durante todo el periodo base, salvo escenarios de cambio declarados antes de evaluar. Los parámetros latentes permanecerán fuera de las entradas.
+
+| Posible falla | Cómo se detectaría en Fase 2 |
+|---|---|
+| Demanda demasiado regular | Revisar variación mensual por serie y cambios idénticos repetidos |
+| Ruido demasiado bajo | Comparar dispersión con la señal definida y detectar curvas casi deterministas |
+| Ruido excesivo | Revisar saltos, dispersión y pérdida de estructura temporal bajo los supuestos fijados |
+| Estacionalidad exagerada | Comparar máximos y mínimos por mes con el nivel base de cada grupo |
+| Todos los productos con el mismo patrón | Revisar curvas normalizadas y semejanza entre series |
+| Todas las tiendas iguales | Comparar perfiles por tienda, evitando que difieran solo por el nombre |
+| Ningún cero | Contar ceros por producto y rotación |
+| Demasiados ceros | Revisar proporción de ceros por grupo y series sin actividad |
+| IDs usados como fórmula de demanda | Inspeccionar reglas y verificar que la magnitud del ID no determine ventas |
+| Random Forest favorecido artificialmente | Revisar supuestos antes del entrenamiento, sin adaptar el generador al ganador deseado |
+| Test con otra lógica no declarada | Comparar configuración de generación entre periodos y su manifiesto |
+| Valores negativos | Validar enteros no negativos antes de guardar la base |
+| Ventas absurdamente altas | Contrastar rangos por rotación con límites de simulación justificados previamente, sin inventar evidencia comercial |
+| Productos sin variación | Revisar varianza y cantidad de valores distintos por serie |
+| Series completamente cero | Contar series sin actividad y justificar su proporción, sin retirarlas silenciosamente |
+| Redondeo o recorte que altera todo el conjunto | Medir cuántas cantidades cambian y si se acumulan en cero o en un límite |
+
+En Fase 2 se analizarán mínimo, máximo, media, mediana, percentiles, proporción de ceros, distribución por producto, tienda y rotación. También se comprobarán continuidad mensual y concentración en pocos productos. No se calculan estos estadísticos aquí porque el dataset aún no existe. Los umbrales de plausibilidad se fijarán en el diseño del generador, antes de utilizar métricas de modelos. No se afirmará que esos supuestos reproducen ventas reales.
+
+## 16. Riesgos de los modelos
+
+| Modelo | Riesgo | Evaluación futura prevista |
+|---|---|---|
+| LinearRegression | Predicciones negativas, relaciones no lineales y coeficientes inestables por entradas dependientes | Mantener fuera promedio_3_meses, revisar residuos y conservar métricas de salida original. Si se presenta max(0, predicción), registrar también esa política |
+| RandomForestRegressor | Sobreajuste, memorización de categorías y poca extrapolación de tendencias | Limitar complejidad mediante validación, comprobar meses nuevos y grupos con poca historia |
+| MLP opcional | Memorización de reglas sintéticas, sensibilidad al escalado e inestabilidad entre configuraciones | Escalar solo con training, evaluar varias configuraciones sin mirar test y justificar su costo adicional |
+
+El baseline ingenuo será ventas del mes anterior. Random Forest seguirá como candidato principal, no ganador. MAE será principal, acompañado de RMSE y R². Las filas correlacionadas de un panel no equivalen a miles de meses independientes. Tener 24 meses solo aporta dos ciclos anuales simulados, sin demostrar estabilidad del negocio real.
+
+## 17. ESCENARIOS QUE PODRÍAN AFECTAR LA IMPLEMENTACIÓN
+
+Esta revisión reúne escenarios que no quedan resueltos únicamente por definir columnas. Las respuestas son conceptuales, no funciones implementadas.
+
+| N.º y escenario | Riesgo | Impacto | Cómo detectarlo | Posible respuesta futura |
+|---|---|---|---|---|
+| 1. Producto nuevo | Sin tres meses conocidos | Predicción sin soporte histórico | Comprobar historia y presencia en training | Informar historial insuficiente o evaluar fallback explícito |
+| 2. Tienda nueva | Sin perfil aprendido | Error desconocido por ubicación | Validar ID y meses disponibles | Reservar pronóstico hasta reunir evidencia |
+| 3. Descontinuación | Confundir retiro con baja demanda | Reposición innecesaria | Confirmar vigencia con responsables, no solo ceros | Mantener registro de comercialización |
+| 4. Falta temporal de stock | Ventas censuradas por disponibilidad | Subestimar demanda | Usar futura historia de disponibilidad | Declarar ventas observadas y separar episodios |
+| 5. Captura incompleta | Confundir ausencia con cero | Lags y target falsos | Revisar cierres y cobertura | Bloquear meses incompletos |
+| 6. Mayorista extraordinaria | Tratar venta válida como error | Perder picos comerciales | Contrastar comprobante y cantidad | Conservar evento y evaluar sensibilidad |
+| 7. Devolución tardía | Reescribir el pasado | Fuga temporal y cambio de objetivo | Comparar fecha de venta con Return.date | Mantener bruto y analizar eventos aparte |
+| 8. Cambio importante de precio | Régimen distinto al aprendido | Error sistemático | Revisar precios transaccionados anteriores y evidencia del cambio | Evaluar feature histórica con disponibilidad demostrada |
+| 9. Promoción temporal | Aumento no explicado | Mala interpretación de picos | Identificar campañas con fechas verificadas | Incorporar historia de campañas en otra versión |
+| 10. Cambio de tendencia del mercado | El patrón deja de ser estable | Pronóstico desactualizado | Medir errores posteriores por mes | Revisar modelo y reentrenamiento en H5 |
+| 11. Temporada distinta a la simulada | Calendario artificial poco representativo | Métricas sintéticas optimistas | Contrastar con nueva historia real | Revisar hipótesis, sin reinterpretar simulaciones como evidencia |
+| 12. Producto sustituto | Historia repartida entre equivalentes | Sobreestimar o subestimar cada ID | Verificar equivalencia comercial | Crear un mapa aprobado antes de agregar historia |
+| 13. Cambio de catálogo | Identidades o atributos distintos | Pérdida de reproducibilidad | Comparar versiones y huellas | Congelar catálogo por experimento |
+| 14. Cambio de proveedor | Cambia disponibilidad o costo | Variación no observada por los lags | Revisar eventos de suministro con fecha | Añadir señales verificadas en otra versión |
+| 15. Apertura o cambio de ubicación | Historia incompatible con tienda actual | Atribución incorrecta | Revisar fechas operativas y Sale.locationId | Separar periodos, sin usar User.locationId actual |
+| 16. Datos demo mezclados | Origen comercial no certificable | Evaluación real inválida | Certificar procedencia, no inferirla solo por fechas | Mantener lista de inclusión aprobada |
+| 17. Mezcla de reales y sintéticos | Orígenes indistinguibles | Conclusiones engañosas | Revisar archivos y manifiesto | Mantener artefactos y evaluaciones separados |
+| 18. Filas duplicadas | Unidades contadas más de una vez | Sesgo del target y métricas | Validar clave compuesta y uniones | Detener preparación y revisar causa |
+| 19. Meses faltantes | Desplazamiento por fila incorrecto | Lags fuera de fecha | Comparar calendario por par | No rellenar con cero sin evidencia |
+| 20. Categoría faltante | Atributo opcional incompleto | Grupos sesgados | Revisar categoryId y su referencia | Excluir esa feature inicial o usar desconocida en versión posterior |
+| 21. IDs no vistos | Encoder sin categoría conocida | Error técnico o predicción sin soporte | Comparar IDs con training | Manejar desconocidos e informar cobertura insuficiente |
+| 22. Negativos de LinearRegression | Salida imposible como unidades operativas | Presentación incoherente | Revisar distribución de predicciones | Conservar error original y documentar ajuste operativo |
+| 23. Sobreajuste del bosque | Memoriza training | Mal resultado en meses posteriores | Comparar errores temporales y grupos | Ajustar profundidad y tamaño de hojas con validación |
+| 24. MLP memoriza simulación | Mayor complejidad sin generalización | Resultados inestables | Comparar entrenamiento con validación temporal | Mantenerla opcional y controlar complejidad |
+| 25. Aprende fórmula del generador | Evalúa reglas fabricadas, no negocio | Falsa confianza comercial | Revisar señales latentes y escenarios | Explicar límite y evaluar después con datos reales certificados |
+| 26. Buen promedio, mala baja rotación | Se ocultan fallas en productos escasos | Reposición poco útil | Métricas por rotación y ceros | Publicar desgloses, no solo promedio global |
+| 27. R² con ceros o target constante | Métrica poco informativa | Interpretación incorrecta | Revisar variación y número de casos | Reportar condición y priorizar MAE/RMSE |
+| 28. Una tienda con error alto | Promedio global oculta desigualdad | Pronósticos deficientes en esa sucursal | Métricas por tienda | Revisar datos y cobertura por ubicación |
+| 29. Cambio de Prisma tras entrenar | Contrato distinto | Extracción incompatible | Comparar versión de schema y columnas esperadas | Revisar contrato antes de reutilizar artefactos |
+| 30. Cambio de reglas comerciales | El significado de las columnas cambia | Comparaciones inválidas | Revisar precios, devoluciones, canales y políticas | Versionar definición de target y dataset |
+
+## 18. Metadatos y criterios de validación
+
+Los metadatos se guardarán posteriormente en un manifiesto separado, no en X, la matriz de entradas del modelo. Sus valores reales se completarán al generar. No se calcula ahora un hash ni se simula una fecha de generación.
+
+| Metadato | Tipo propuesto | Contenido y función |
+|---|---|---|
+| data_origin | Cadena | DATOS_SINTETICOS, sin ambigüedad de origen |
+| dataset_version | Cadena | Versión del contrato y de los datos generados |
+| seed | Entero | 42 para la primera generación autorizada |
+| fecha_generacion | Fecha y hora ISO 8601 UTC | Momento real de la futura ejecución |
+| periodo_inicio | Cadena YYYY-MM | 2024-10 |
+| periodo_fin | Cadena YYYY-MM | 2026-09 |
+| catalog_snapshot_hash | Cadena SHA-256 | Huella de la copia aprobada del catálogo y ubicaciones |
+| generator_version | Cadena | Versión identificable del futuro generador |
+| cantidad_productos | Entero | Cantidad realmente aprobada, no asumir 62 |
+| cantidad_tiendas | Entero | Cantidad incluida, propuesta actual tres |
+| cantidad_meses | Entero | 24 en base mensual, con 21 objetivos supervisados |
+| dataset_hash | Cadena SHA-256 | Huella del archivo canónico generado |
+| tool_versions y parametros_generacion | Objetos | Versiones de herramientas y supuestos completos |
+| productos_incluidos, productos_reservados y tiendas_incluidas | Listas de IDs y motivos | Evidencia de selección, sin datos personales |
+| cantidad_meses_supervisados | Entero | 21 tras reservar tres meses de historia |
+| zona_negocio y schema_reference | Cadenas | America/La_Paz y referencia del contrato real revisado |
+
+La futura copia del catálogo incluirá Product.id, itemCode, name, manufacturer, brand, model, year y categoryId de los productos aprobados, Category.id y name de sus categorías, además de Location.id, name y type de las tiendas aprobadas. No contendrá precios, stock ni personas. Se propone JSON UTF-8 con claves ordenadas, registros ordenados por id y sin espacios de presentación para calcular catalog_snapshot_hash. La consulta de esta fase no es todavía esa copia congelada.
+
+La huella del dataset se calculará sobre bytes CSV canónicos, con el orden de columnas del diccionario, filas ordenadas por productId/locationId/mes_objetivo, codificación UTF-8, salto de línea LF y formato numérico determinista que se fijará al implementar el generador. La fecha variable del manifiesto no se mezclará con las filas para exigir que dos ejecuciones con iguales entradas produzcan el mismo dataset_hash. No se prometerá igualdad de archivos si cambian versiones, catálogo o parámetros.
+
+| Validación futura | Criterio de aceptación |
+|---|---|
+| Origen e identidad | Todo producto existe en el catálogo aprobado. Toda ubicación pertenece a las TIENDA aprobadas. Ninguna fila incorpora un ALMACEN |
+| Estructura y tipos | Nueve columnas supervisadas exactas, tipos del diccionario, sin nulos, NaN o infinitos en filas utilizables |
+| Cantidades | Base, lags y target enteros no negativos, sin desbordamiento ni correcciones silenciosas |
+| Clave única | Una fila por producto, tienda y mes en cada estructura |
+| Calendario completo | Cada par incluido tiene los 24 meses base consecutivos, sin meses adicionales o ausentes |
+| Target | Igual a ventas_mes del propio mes objetivo, nunca desplazado dos veces |
+| Lags | Igualdad exacta con los tres meses anteriores del mismo par, no solo con las tres filas anteriores |
+| Filas supervisadas | Solo enero de 2025 a septiembre de 2026, 21 objetivos por par completo |
+| Calendario cíclico | Fórmulas documentadas aplicadas al mes objetivo con tolerancia numérica definida |
+| Reproducibilidad | Mismos insumos, seed, versiones y parámetros producen el mismo archivo canónico y su hash |
+| Distribución | Resumen de ceros, extremos, grupos, variación y series constantes revisado contra supuestos declarados |
+| Ausencia de futuro | Dependencias de cada feature anteriores al target, salvo calendario conocido de antemano. Sin parámetros latentes filtrados |
+| Separación temporal | Meses completos en un solo conjunto y transformaciones aprendidas solo en training |
+| Trazabilidad | Manifiesto completo, catálogo aprobado, exclusiones justificadas y origen sintético visible |
+| Aislamiento | Ninguna generación o validación escribe en las tablas comerciales de Neon |
+
+Un fallo estructural detendrá la preparación. Un resultado extraño de distribución requerirá explicación y revisión del generador, no borrar observaciones hasta obtener métricas cómodas. La base mensual y sus metadatos se validarán en Fase 2. Los lags, target supervisado y cortes se comprobarán en Fase 3. Estas comprobaciones están definidas, todavía no ejecutadas sobre un dataset.
+
+## 19. Estructura final recomendada
+
+Se confirma el encabezado supervisado: mes_objetivo, productId, locationId, ventas_mes_anterior, ventas_hace_2_meses, ventas_hace_3_meses, mes_sin, mes_cos, target_ventas_mes. La clave consta de sus tres primeras columnas. Las cinco entradas numéricas son los tres lags y las dos coordenadas del mes. El target es la última columna. Metadatos, promedio, stock, precios, personas y parámetros latentes quedan fuera.
+
+Se recomienda aprobar inicialmente los candidatos 1 a 56 y las tiendas 5, 6 y 7, manteniendo 57 a 62 en revisión. Con esa selección condicional habría 56 × 3 × 24 = 4.032 observaciones base y 56 × 3 × 21 = 3.528 filas supervisadas futuras. El split completo tendría 2.520, 504 y 504 filas. Estos son tamaños calculados a partir del diseño, no datos generados. Si el equipo aprueba otra selección, se recalcularán antes de ejecutar.
+
+La decisión sobre categorías o precios pendientes no obliga a modificar producción para simular con IDs aprobados. Tampoco autoriza a declarar que todo producto leído tiene actividad comercial real. El catálogo debe quedar congelado mediante una lista explícita de inclusión y motivos de reserva.
+
+## 20. Decisión para pasar a Fase 2
+
+La definición documental cubre unidad, target, columnas, tipos, disponibilidad, exclusiones, opciones futuras, lags, calendario, tiendas reales, riesgos y reglas de validación. La lectura actual de Neon y las dudas del catálogo quedan registradas. Falta la aprobación expresa de esta estructura y de la selección de productos. Por ese motivo no se declara todavía cerrado el criterio de estructura final aprobada ni se ejecuta Fase 2.
+
+Cuando se autorice Fase 2, primero se confirmará la lista de productos y tiendas, se congelará el catálogo mínimo y se fijarán parámetros, límites de plausibilidad y versiones. Después se escribirá el generador reproducible y se construirán exclusivamente la base mensual sintética de 24 meses, su manifiesto y sus controles de calidad. Se revisarán distribuciones, ceros, extremos y hashes, manteniendo los datos fuera de Neon. La Fase 3 construirá las nueve columnas supervisadas y verificará los cortes temporales antes de entrenar en Fase 4.
+
+La tarea actual termina con este documento. No existe dataset creado, generador implementado ni modelo entrenado como resultado de esta fase. No se realizaron migraciones, modificaciones comerciales, commit, push o deploy.

@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize, authorizeModule } from "../../shared/middlewares/auth";
@@ -6,7 +7,7 @@ import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(authorize("ADMIN", "TIENDA"));
@@ -38,7 +39,7 @@ router.get("/", async (req: Request, res: Response) => {
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar clientes:", error);
+    console.error("Error al listar clientes:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -55,7 +56,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.json(customer);
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
-    console.error("Error al obtener cliente:", error);
+    console.error("Error al obtener cliente:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -81,7 +82,7 @@ router.post("/", async (req: Request, res: Response) => {
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al crear cliente:", error);
+    console.error("Error al crear cliente:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -115,7 +116,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al editar cliente:", error);
+    console.error("Error al editar cliente:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

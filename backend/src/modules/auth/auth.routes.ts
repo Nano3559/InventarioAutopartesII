@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { Router, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -7,9 +8,11 @@ import { AuthRequest } from "../../shared/types";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { loginLimiter } from "../../shared/middlewares/rateLimit";
 import { isValidEmail } from "../../shared/utils/validation";
+import { tokenDigest } from "../../shared/utils/sessionRevocation";
+import { randomUUID } from "crypto";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.post("/register", authenticate, authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
   try {
@@ -58,9 +61,9 @@ router.post("/register", authenticate, authorize("ADMIN"), async (req: AuthReque
     });
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role.name, locationId: user.locationId },
+      { userId: user.id, email: user.email, role: user.role.name, locationId: user.locationId, issuedAtMs: Date.now() },
       config.jwtSecret,
-      { expiresIn: "24h", algorithm: "HS256" }
+      { expiresIn: "24h", algorithm: "HS256", jwtid: randomUUID() }
     );
 
     res.status(201).json({
@@ -74,7 +77,7 @@ router.post("/register", authenticate, authorize("ADMIN"), async (req: AuthReque
       },
     });
   } catch (error) {
-    console.error("Error en register:", error);
+    console.error("Error en register:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -102,9 +105,9 @@ router.post("/login", loginLimiter, async (req: AuthRequest, res: Response) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role.name, locationId: user.locationId },
+      { userId: user.id, email: user.email, role: user.role.name, locationId: user.locationId, issuedAtMs: Date.now() },
       config.jwtSecret,
-      { expiresIn: "24h", algorithm: "HS256" }
+      { expiresIn: "24h", algorithm: "HS256", jwtid: randomUUID() }
     );
 
     res.json({
@@ -118,9 +121,18 @@ router.post("/login", loginLimiter, async (req: AuthRequest, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error en login:", error);
+    console.error("Error en login:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
+});
+
+router.post("/logout", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const token = req.headers.authorization!.slice(7);
+    await prisma.auditLog.create({ data: { userId: req.user!.userId, action: "REVOKE_TOKEN", targetType: "SESSION",
+      targetId: req.user!.userId, newValue: { tokenDigest: tokenDigest(token) } } });
+    res.status(204).end();
+  } catch { res.status(503).json({ message: "No se pudo revocar la sesión en el servidor" }); }
 });
 
 router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
@@ -142,7 +154,7 @@ router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
       locationId: user.locationId,
     });
   } catch (error) {
-    console.error("Error en /me:", error);
+    console.error("Error en /me:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

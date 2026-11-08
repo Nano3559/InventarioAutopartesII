@@ -1,3 +1,5 @@
+import BankVerificationFields, { type BankVerification } from "../components/BankVerificationFields";
+import VoidSalePanel from "../components/VoidSalePanel";
 import { saveSalePdf } from "../utils/salePdf";
 import { formatBusinessDateTime } from "../utils/businessDate";
 import { formatBusinessDate, formatBusinessTime } from "../utils/businessDate";
@@ -9,6 +11,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import { pendingOperationId, completeOperation } from "../services/pendingOperation";
+import PendingOperation from "../components/PendingOperation";
 import { useAuthStore } from "../stores/authStore";
 import ColumnManager from "../components/ui/ColumnManager";
 import {
@@ -38,12 +42,13 @@ interface CartItem {
 }
 
 interface PaymentEntry {
-  method: "EFECTIVO" | "QR" | "TRANSFERENCIA" | "CREDITO"; amount: string;
+  method: "EFECTIVO" | "QR" | "TRANSFERENCIA" | "CREDITO"; amount: string; bankVerification?: BankVerification;
 }
 
 interface CustomerData { name: string; nit: string; phone: string; }
 
 interface SaleRecord {
+  status?: string;
   id: number; saleDate: string; total: number; type: string;
   location: { id: number; name: string }; user: { id: number; name: string };
   seller: string | null;
@@ -55,7 +60,7 @@ interface SaleRecord {
 
 interface SalePayload {
   items: { productId: number; quantity: number; priceMode: "POR_MENOR" | "POR_MAYOR" }[];
-  payments: { method: string; amount: number }[];
+  payments: { method: string; amount: number; bankVerification?: BankVerification }[];
   customerData?: { name: string; nit: string | null; phone: string | null };
   locationId?: number;
   seller?: string;
@@ -391,7 +396,7 @@ export default function SalesPage() {
     setPayments((prev) => [...prev, { method: "EFECTIVO", amount: "0" }]);
 
   const updatePayment = (i: number, field: keyof PaymentEntry, val: string) =>
-    setPayments((prev) => prev.map((p, idx) => idx === i ? { ...p, [field]: val } : p));
+    setPayments((prev) => prev.map((p, idx) => idx === i ? { ...p, [field]: val, bankVerification: p.bankVerification ? { ...p.bankVerification, confirmed: false } : undefined } : p));
 
   const removePayment = (i: number) =>
     setPayments((prev) => (prev.length > 1 ? prev.filter((_, idx) => idx !== i) : prev));
@@ -401,6 +406,7 @@ export default function SalesPage() {
 
   // ==================== CONFIRM SALE ====================
   const confirmSale = async () => {
+    if (processing) return;
     if (cart.length === 0) return;
 
     if (!selectedLocationId) { toast.error("Selecciona una tienda para la venta"); return; }
@@ -409,8 +415,8 @@ export default function SalesPage() {
       return;
     }
 
-    if (requiereFactura && !customerData.name.trim()) {
-      toast.error("Ingresa el nombre del cliente para la factura");
+    if ((requiereFactura || payments.some(p => p.method === "CREDITO" && Number(p.amount) > 0)) && !customerData.name.trim()) {
+      toast.error("Ingresa el nombre del cliente para la factura o venta a crédito");
       return;
     }
 
@@ -425,10 +431,11 @@ export default function SalesPage() {
         payments: payments.map((p) => ({
           method: p.method,
           amount: parseFloat(p.amount),
+          ...(["QR", "TRANSFERENCIA"].includes(p.method) ? { bankVerification: p.bankVerification } : {}),
         })),
       };
 
-      if (requiereFactura && customerData.name.trim()) {
+      if ((requiereFactura || payments.some(p => p.method === "CREDITO" && Number(p.amount) > 0)) && customerData.name.trim()) {
         payload.customerData = {
           name: customerData.name.trim(),
           nit: customerData.nit.trim() || null,
@@ -449,7 +456,9 @@ export default function SalesPage() {
         payload.paraQuien = entregaInfo.paraQuien.trim();
       }
 
-      const res = await api.post("/sales", payload);
+      const res = await api.post("/sales", { ...payload, operationId: pendingOperationId("SALE_NORMAL") });
+      completeOperation("SALE_NORMAL");
+      if (res.data.status === "VOIDED") { toast.error("Este intento corresponde a una venta anulada. Revise su historial"); setShowPayment(false); return; }
       const savedItems = (res.data.items || []).map((item: SavedSaleItem) => {
         const cartItem = cart.find((entry) => entry.productId === item.productId);
         return {
@@ -525,6 +534,7 @@ export default function SalesPage() {
 
   return (
     <div className="space-y-6">
+      <VoidSalePanel onChanged={fetchHistory} />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Ventas</h1>
@@ -899,7 +909,7 @@ export default function SalesPage() {
                                 {expandedSale === s.id ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                               </button>
                             </td>
-                            {isHistCol("#") && <td className="px-4 py-3 text-gray-400">{s.id}</td>}
+                            {isHistCol("#") && <td className="px-4 py-3 text-gray-400">{s.id}{s.status === "VOIDED" && <span className="block text-red-400">ANULADA</span>}</td>}
                             {isHistCol("Fecha") && (
                               <td className="px-4 py-3 text-gray-300 text-xs">
                                 {formatBusinessDate(s.saleDate)}{" "}
@@ -1078,7 +1088,7 @@ export default function SalesPage() {
 
                 <div className="space-y-2.5">
                   {payments.map((p, i) => (
-                    <div key={i} className="flex items-center gap-2">
+                    <div key={i} className="flex flex-wrap items-center gap-2">
                       <div className="relative flex-1">
                         <select value={p.method}
                           onChange={(e) => updatePayment(i, "method", e.target.value)}
@@ -1100,6 +1110,7 @@ export default function SalesPage() {
                           <X size={14} />
                         </button>
                       )}
+                      {["QR", "TRANSFERENCIA"].includes(p.method) && <BankVerificationFields value={p.bankVerification} onChange={value => setPayments(previous => previous.map((entry, index) => index === i ? { ...entry, bankVerification: value } : entry))} />}
                     </div>
                   ))}
                 </div>
@@ -1143,7 +1154,7 @@ export default function SalesPage() {
                   <ChevronDown size={16} className={`transition-transform ${requiereFactura ? "rotate-180" : ""}`} />
                 </button>
 
-                {requiereFactura && (
+                {(requiereFactura || payments.some(p => p.method === "CREDITO" && Number(p.amount) > 0)) && (
                   <div className="mt-3 space-y-3 pl-1">
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">Nombre / Razón Social *</label>
@@ -1178,6 +1189,7 @@ export default function SalesPage() {
                 className="px-4 py-2.5 text-sm text-gray-400 hover:text-white disabled:opacity-50">
                 Cancelar
               </button>
+      <PendingOperation scope="SALE_NORMAL" />
               <button onClick={confirmSale} disabled={processing || Math.abs(totalPaid - cartTotal) > 0.01}
                 className={`px-6 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                   Math.abs(totalPaid - cartTotal) <= 0.01

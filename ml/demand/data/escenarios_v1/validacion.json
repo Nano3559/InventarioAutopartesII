@@ -1,0 +1,568 @@
+{
+  "clases_base": {
+    "NEGATIVO": 1135,
+    "POSITIVO": 2897
+  },
+  "escenarios": {
+    "CAIDA_DE_VENTAS_CONFIRMADA": 225,
+    "MES_CERO_CONFIRMADO": 421,
+    "OPERACION_REGULAR": 2897,
+    "PEDIDO_MAYORISTA_EXTRAORDINARIO_VALIDO": 174,
+    "PICO_TEMPORAL_CONFIRMADO": 219,
+    "SERIE_CERO_CONFIRMADO": 48,
+    "SERIE_CONSTANTE_CONFIRMADA": 48
+  },
+  "global_target": {
+    "ceros": 422,
+    "maximo": 69,
+    "media": 10.111678004535147,
+    "mediana": 7.0,
+    "minimo": 0,
+    "n": 3528,
+    "p95": 30
+  },
+  "grises_separados": 10,
+  "invalidos_rechazados": 15,
+  "por_producto": {
+    "1": {
+      "ceros": 21,
+      "maximo": 35,
+      "media": 13.936507936507937,
+      "mediana": 18,
+      "minimo": 0,
+      "n": 63,
+      "p95": 30
+    },
+    "10": {
+      "ceros": 1,
+      "maximo": 43,
+      "media": 7.396825396825397,
+      "mediana": 7,
+      "minimo": 0,
+      "n": 63,
+      "p95": 10
+    },
+    "11": {
+      "ceros": 32,
+      "maximo": 28,
+      "media": 1.7936507936507937,
+      "mediana": 0,
+      "minimo": 0,
+      "n": 63,
+      "p95": 8
+    },
+    "12": {
+      "ceros": 23,
+      "maximo": 37,
+      "media": 3.142857142857143,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 27
+    },
+    "13": {
+      "ceros": 19,
+      "maximo": 41,
+      "media": 2.7142857142857144,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 7
+    },
+    "14": {
+      "ceros": 0,
+      "maximo": 50,
+      "media": 9.063492063492063,
+      "mediana": 7,
+      "minimo": 1,
+      "n": 63,
+      "p95": 20
+    },
+    "15": {
+      "ceros": 0,
+      "maximo": 29,
+      "media": 7.492063492063492,
+      "mediana": 6,
+      "minimo": 1,
+      "n": 63,
+      "p95": 17
+    },
+    "16": {
+      "ceros": 0,
+      "maximo": 38,
+      "media": 15.65079365079365,
+      "mediana": 16,
+      "minimo": 2,
+      "n": 63,
+      "p95": 26
+    },
+    "17": {
+      "ceros": 3,
+      "maximo": 48,
+      "media": 8.507936507936508,
+      "mediana": 6,
+      "minimo": 0,
+      "n": 63,
+      "p95": 35
+    },
+    "18": {
+      "ceros": 11,
+      "maximo": 42,
+      "media": 4.809523809523809,
+      "mediana": 2,
+      "minimo": 0,
+      "n": 63,
+      "p95": 26
+    },
+    "19": {
+      "ceros": 0,
+      "maximo": 68,
+      "media": 22.22222222222222,
+      "mediana": 21,
+      "minimo": 5,
+      "n": 63,
+      "p95": 39
+    },
+    "2": {
+      "ceros": 0,
+      "maximo": 32,
+      "media": 18.333333333333332,
+      "mediana": 19,
+      "minimo": 3,
+      "n": 63,
+      "p95": 27
+    },
+    "20": {
+      "ceros": 14,
+      "maximo": 37,
+      "media": 2.6507936507936507,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 8
+    },
+    "21": {
+      "ceros": 0,
+      "maximo": 36,
+      "media": 14.253968253968255,
+      "mediana": 14,
+      "minimo": 4,
+      "n": 63,
+      "p95": 22
+    },
+    "22": {
+      "ceros": 0,
+      "maximo": 69,
+      "media": 21.793650793650794,
+      "mediana": 20,
+      "minimo": 3,
+      "n": 63,
+      "p95": 43
+    },
+    "23": {
+      "ceros": 0,
+      "maximo": 37,
+      "media": 16.015873015873016,
+      "mediana": 16,
+      "minimo": 3,
+      "n": 63,
+      "p95": 23
+    },
+    "24": {
+      "ceros": 0,
+      "maximo": 45,
+      "media": 8.142857142857142,
+      "mediana": 8,
+      "minimo": 1,
+      "n": 63,
+      "p95": 13
+    },
+    "25": {
+      "ceros": 0,
+      "maximo": 35,
+      "media": 11.571428571428571,
+      "mediana": 11,
+      "minimo": 2,
+      "n": 63,
+      "p95": 24
+    },
+    "26": {
+      "ceros": 8,
+      "maximo": 34,
+      "media": 2.9047619047619047,
+      "mediana": 2,
+      "minimo": 0,
+      "n": 63,
+      "p95": 12
+    },
+    "27": {
+      "ceros": 0,
+      "maximo": 40,
+      "media": 20.142857142857142,
+      "mediana": 20,
+      "minimo": 4,
+      "n": 63,
+      "p95": 33
+    },
+    "28": {
+      "ceros": 0,
+      "maximo": 63,
+      "media": 19.904761904761905,
+      "mediana": 19,
+      "minimo": 3,
+      "n": 63,
+      "p95": 45
+    },
+    "29": {
+      "ceros": 0,
+      "maximo": 59,
+      "media": 25.19047619047619,
+      "mediana": 23,
+      "minimo": 5,
+      "n": 63,
+      "p95": 41
+    },
+    "3": {
+      "ceros": 0,
+      "maximo": 37,
+      "media": 9.634920634920634,
+      "mediana": 9,
+      "minimo": 1,
+      "n": 63,
+      "p95": 16
+    },
+    "30": {
+      "ceros": 0,
+      "maximo": 66,
+      "media": 22.73015873015873,
+      "mediana": 22,
+      "minimo": 3,
+      "n": 63,
+      "p95": 43
+    },
+    "31": {
+      "ceros": 12,
+      "maximo": 12,
+      "media": 1.5238095238095237,
+      "mediana": 2,
+      "minimo": 0,
+      "n": 63,
+      "p95": 2
+    },
+    "32": {
+      "ceros": 30,
+      "maximo": 36,
+      "media": 3.2857142857142856,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 25
+    },
+    "33": {
+      "ceros": 0,
+      "maximo": 44,
+      "media": 15.507936507936508,
+      "mediana": 16,
+      "minimo": 3,
+      "n": 63,
+      "p95": 33
+    },
+    "34": {
+      "ceros": 0,
+      "maximo": 57,
+      "media": 17.650793650793652,
+      "mediana": 15,
+      "minimo": 3,
+      "n": 63,
+      "p95": 43
+    },
+    "35": {
+      "ceros": 0,
+      "maximo": 56,
+      "media": 15.88888888888889,
+      "mediana": 14,
+      "minimo": 3,
+      "n": 63,
+      "p95": 33
+    },
+    "36": {
+      "ceros": 0,
+      "maximo": 59,
+      "media": 24.92063492063492,
+      "mediana": 23,
+      "minimo": 4,
+      "n": 63,
+      "p95": 44
+    },
+    "37": {
+      "ceros": 0,
+      "maximo": 49,
+      "media": 12.253968253968255,
+      "mediana": 10,
+      "minimo": 1,
+      "n": 63,
+      "p95": 19
+    },
+    "38": {
+      "ceros": 25,
+      "maximo": 13,
+      "media": 1.3174603174603174,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 6
+    },
+    "39": {
+      "ceros": 10,
+      "maximo": 29,
+      "media": 3.492063492063492,
+      "mediana": 2,
+      "minimo": 0,
+      "n": 63,
+      "p95": 13
+    },
+    "4": {
+      "ceros": 0,
+      "maximo": 44,
+      "media": 9.333333333333334,
+      "mediana": 8,
+      "minimo": 1,
+      "n": 63,
+      "p95": 17
+    },
+    "40": {
+      "ceros": 1,
+      "maximo": 39,
+      "media": 7.761904761904762,
+      "mediana": 6,
+      "minimo": 0,
+      "n": 63,
+      "p95": 16
+    },
+    "41": {
+      "ceros": 0,
+      "maximo": 56,
+      "media": 14.11111111111111,
+      "mediana": 11,
+      "minimo": 2,
+      "n": 63,
+      "p95": 43
+    },
+    "42": {
+      "ceros": 18,
+      "maximo": 29,
+      "media": 2.1587301587301586,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 8
+    },
+    "43": {
+      "ceros": 2,
+      "maximo": 44,
+      "media": 8.11111111111111,
+      "mediana": 6,
+      "minimo": 0,
+      "n": 63,
+      "p95": 30
+    },
+    "44": {
+      "ceros": 28,
+      "maximo": 38,
+      "media": 3.4126984126984126,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 34
+    },
+    "45": {
+      "ceros": 0,
+      "maximo": 41,
+      "media": 8.65079365079365,
+      "mediana": 8,
+      "minimo": 1,
+      "n": 63,
+      "p95": 17
+    },
+    "46": {
+      "ceros": 0,
+      "maximo": 58,
+      "media": 18.841269841269842,
+      "mediana": 17,
+      "minimo": 5,
+      "n": 63,
+      "p95": 29
+    },
+    "47": {
+      "ceros": 11,
+      "maximo": 41,
+      "media": 4.126984126984127,
+      "mediana": 2,
+      "minimo": 0,
+      "n": 63,
+      "p95": 25
+    },
+    "48": {
+      "ceros": 0,
+      "maximo": 50,
+      "media": 10.206349206349206,
+      "mediana": 10,
+      "minimo": 1,
+      "n": 63,
+      "p95": 15
+    },
+    "49": {
+      "ceros": 0,
+      "maximo": 46,
+      "media": 8.936507936507937,
+      "mediana": 8,
+      "minimo": 1,
+      "n": 63,
+      "p95": 18
+    },
+    "5": {
+      "ceros": 0,
+      "maximo": 48,
+      "media": 11.984126984126984,
+      "mediana": 10,
+      "minimo": 1,
+      "n": 63,
+      "p95": 40
+    },
+    "50": {
+      "ceros": 24,
+      "maximo": 38,
+      "media": 2.984126984126984,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 23
+    },
+    "51": {
+      "ceros": 0,
+      "maximo": 65,
+      "media": 24.6984126984127,
+      "mediana": 23,
+      "minimo": 7,
+      "n": 63,
+      "p95": 41
+    },
+    "52": {
+      "ceros": 13,
+      "maximo": 44,
+      "media": 2.634920634920635,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 7
+    },
+    "53": {
+      "ceros": 0,
+      "maximo": 41,
+      "media": 14.031746031746032,
+      "mediana": 14,
+      "minimo": 1,
+      "n": 63,
+      "p95": 22
+    },
+    "54": {
+      "ceros": 40,
+      "maximo": 32,
+      "media": 2.0476190476190474,
+      "mediana": 0,
+      "minimo": 0,
+      "n": 63,
+      "p95": 11
+    },
+    "55": {
+      "ceros": 1,
+      "maximo": 37,
+      "media": 6.301587301587301,
+      "mediana": 4,
+      "minimo": 0,
+      "n": 63,
+      "p95": 23
+    },
+    "56": {
+      "ceros": 10,
+      "maximo": 44,
+      "media": 3.015873015873016,
+      "mediana": 2,
+      "minimo": 0,
+      "n": 63,
+      "p95": 7
+    },
+    "6": {
+      "ceros": 0,
+      "maximo": 39,
+      "media": 6.031746031746032,
+      "mediana": 5,
+      "minimo": 1,
+      "n": 63,
+      "p95": 10
+    },
+    "7": {
+      "ceros": 0,
+      "maximo": 41,
+      "media": 7.936507936507937,
+      "mediana": 6,
+      "minimo": 1,
+      "n": 63,
+      "p95": 20
+    },
+    "8": {
+      "ceros": 25,
+      "maximo": 24,
+      "media": 2.1904761904761907,
+      "mediana": 1,
+      "minimo": 0,
+      "n": 63,
+      "p95": 11
+    },
+    "9": {
+      "ceros": 40,
+      "maximo": 35,
+      "media": 0.9047619047619048,
+      "mediana": 0,
+      "minimo": 0,
+      "n": 63,
+      "p95": 1
+    }
+  },
+  "por_tienda": {
+    "5": {
+      "ceros": 138,
+      "maximo": 66,
+      "media": 11.01530612244898,
+      "mediana": 8.0,
+      "minimo": 0,
+      "n": 1176,
+      "p95": 33
+    },
+    "6": {
+      "ceros": 132,
+      "maximo": 69,
+      "media": 10.162414965986395,
+      "mediana": 7.0,
+      "minimo": 0,
+      "n": 1176,
+      "p95": 30
+    },
+    "7": {
+      "ceros": 152,
+      "maximo": 65,
+      "media": 9.157312925170068,
+      "mediana": 7.0,
+      "minimo": 0,
+      "n": 1176,
+      "p95": 28
+    }
+  },
+  "split": {
+    "TEST": 504,
+    "TRAIN": 2520,
+    "VALIDATION": 504
+  },
+  "training_executed": false,
+  "validation": "APROBADA"
+}

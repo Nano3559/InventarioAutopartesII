@@ -1,10 +1,11 @@
+import { safeError } from "../../shared/utils/safeError";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 
@@ -30,7 +31,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 
     res.json({ notifications, unreadCount });
   } catch (error) {
-    console.error("Error al obtener notificaciones:", error);
+    console.error("Error al obtener notificaciones:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -53,7 +54,7 @@ router.put("/:id/read", async (req: AuthRequest, res: Response) => {
 
     res.json(updated);
   } catch (error) {
-    console.error("Error al marcar notificación:", error);
+    console.error("Error al marcar notificación:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -70,7 +71,7 @@ router.put("/read-all", async (req: AuthRequest, res: Response) => {
 
     res.json({ message: "Todas las notificaciones marcadas como leídas" });
   } catch (error) {
-    console.error("Error al marcar notificaciones:", error);
+    console.error("Error al marcar notificaciones:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

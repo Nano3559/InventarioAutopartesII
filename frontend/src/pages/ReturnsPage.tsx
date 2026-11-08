@@ -6,6 +6,9 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import { pendingOperationId, completeOperation } from "../services/pendingOperation";
+import PendingOperation from "../components/PendingOperation";
+import PhysicalStockPanel from "../components/PhysicalStockPanel";
 
 interface Sale {
   id: number; saleDate: string; total: number; type: string;
@@ -23,6 +26,7 @@ interface Sale {
 interface ReturnRecord {
   id: number; saleId: number; productId: number; reason: string;
   quantity: number; amount: number; method: string; date: string;
+  disposition?: string; debtReduction?: number | string; refundAmount?: number | string;
   product: { id: number; name: string; itemCode: string; brand: string };
   sale: { id: number; saleDate: string; total: number; type: string; locationId: number; seller: string | null };
 }
@@ -145,6 +149,7 @@ export default function ReturnsPage() {
   };
 
   const handleReturn = async () => {
+    if (saving) return;
     if (!sale || !selectedItem || !reason || !quantity || !amount) {
       toast.error("Completa todos los campos");
       return;
@@ -156,6 +161,7 @@ export default function ReturnsPage() {
     try {
       setSaving(true);
       await api.post("/returns", {
+        operationId: pendingOperationId("RETURN"),
         saleId: sale.id,
         productId: selectedItem,
         reason,
@@ -163,7 +169,8 @@ export default function ReturnsPage() {
         amount: amt,
         method,
       });
-      toast.success("Devolución registrada");
+      completeOperation("RETURN");
+      toast.success("Devolución registrada. La mercadería queda pendiente de inspección");
       setSelectedItem(null);
       setReason(""); setQuantity(""); setAmount(""); setMethod("EFECTIVO");
       const res = await api.get(`/returns/sale/${sale.id}`);
@@ -194,6 +201,9 @@ export default function ReturnsPage() {
 
   return (
     <div className="space-y-6">
+      <PendingOperation scope="RETURN" />
+      <p className="text-sm text-amber-200">La devolución reduce primero la deuda pendiente. Solo el excedente cobrado se registra como reintegro. La mercadería requiere inspección antes de volver a venderse.</p>
+      <PhysicalStockPanel mode="inspect" onStockChanged={fetchReturns} />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -317,12 +327,12 @@ export default function ReturnsPage() {
                     className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Monto (Bs.) *</label>
+                  <label className="block text-xs text-gray-400 mb-1">Valor total de devolución (Bs.) *</label>
                   <input type="number" value={amount} readOnly min="0" step="0.01"
                     className="w-full px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                 </div>
                 <div className="relative">
-                  <label className="block text-xs text-gray-400 mb-1">Método *</label>
+                  <label className="block text-xs text-gray-400 mb-1">Medio del reintegro, si corresponde *</label>
                   <select value={method} onChange={(e) => setMethod(e.target.value)}
                     className="w-full appearance-none px-3 py-2.5 bg-dark-900/50 border border-dark-600/50 rounded-xl text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none pr-8">
                     <option value="EFECTIVO">Efectivo</option>
@@ -398,7 +408,7 @@ export default function ReturnsPage() {
                     <td className="px-4 py-3 text-gray-400">#{r.saleId}</td>
                     <td className="px-4 py-3 text-gray-400 text-xs">{r.sale?.seller || "—"}</td>
                     <td className="px-4 py-3 text-center text-yellow-400 font-medium">{r.quantity}</td>
-                    <td className="px-4 py-3 text-right text-red-400 font-medium">{formatBs(Number(r.amount))}</td>
+                    <td className="px-4 py-3 text-right text-red-400 font-medium">{formatBs(Number(r.amount))}<div className="text-xs text-gray-400">Deuda: {formatBs(Number(r.debtReduction || 0))} · Reintegro: {formatBs(Number(r.refundAmount || 0))}<br />{{ LEGACY: "Histórico pendiente de conciliación", PENDING_INSPECTION: "Pendiente de inspección", SELLABLE: "Aprobado vendible", NOT_SELLABLE: "No vendible", MIXED: "Resultado mixto" }[r.disposition || "LEGACY"] || "Estado pendiente de revisión"}</div></td>
                     <td className="px-4 py-3 text-gray-300">{r.method}</td>
                     <td className="px-4 py-3 text-gray-400 max-w-[200px] truncate">{r.reason}</td>
                   </tr>

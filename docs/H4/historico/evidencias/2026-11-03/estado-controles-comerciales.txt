@@ -1,0 +1,224 @@
+ESTADO LOCAL. Incluye cambios previos conservados. Sin staging, commit ni push.
+GIT STATUS --SHORT
+ M backend/package-lock.json
+ M backend/package.json
+ M backend/prisma/schema.prisma
+ M backend/src/app.ts
+ M backend/src/jobs/replenishJob.ts
+ M backend/src/modules/auth/auth.routes.ts
+ M backend/src/modules/costs/__tests__/costs.itest.ts
+ M backend/src/modules/costs/costs.routes.ts
+ M backend/src/modules/customers/customers.routes.ts
+ M backend/src/modules/dashboard/dashboard.routes.ts
+ M backend/src/modules/inventory/__tests__/inventory.routes.itest.ts
+ M backend/src/modules/inventory/inventory.routes.ts
+ M backend/src/modules/locations/locations.routes.ts
+ M backend/src/modules/movements/__tests__/movements.itest.ts
+ M backend/src/modules/movements/movements.routes.ts
+ M backend/src/modules/notifications/notifications.routes.ts
+ M backend/src/modules/payments/payments.routes.ts
+ M backend/src/modules/permissions/permissions.routes.ts
+ M backend/src/modules/prices/prices.routes.ts
+ M backend/src/modules/products/products.routes.ts
+ M backend/src/modules/products/searchImage.service.ts
+ M backend/src/modules/public/public.routes.ts
+ M backend/src/modules/reports/dailyReport.ts
+ M backend/src/modules/reports/reports.routes.ts
+ M backend/src/modules/requests/requests.routes.ts
+ M backend/src/modules/returns/__tests__/returns.itest.ts
+ M backend/src/modules/returns/returns.routes.ts
+ M backend/src/modules/sales/__tests__/sales.itest.ts
+ M backend/src/modules/sales/__tests__/saneamiento.itest.ts
+ M backend/src/modules/sales/__tests__/segundaAuditoria.itest.ts
+ M backend/src/modules/sales/sales.routes.ts
+ M backend/src/modules/suppliers/suppliers.routes.ts
+ M backend/src/modules/users/users.routes.ts
+ M backend/src/modules/vision/vision.service.ts
+ M backend/src/modules/wholesale/wholesale.routes.ts
+ M backend/src/server.ts
+ M backend/src/shared/middlewares/auth.ts
+ M backend/src/shared/middlewares/errorHandler.ts
+ M backend/src/shared/utils/moveStock.ts
+ M backend/src/shared/utils/notificarInventario.ts
+ M backend/src/shared/utils/pricing.ts
+ M backend/src/shared/utils/saleCustomer.ts
+ M backend/src/testing/seed.ts
+ M docs/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md
+ M docs/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md
+ M frontend/package-lock.json
+ M frontend/package.json
+ M frontend/src/App.tsx
+ M frontend/src/pages/CostsPage.tsx
+ M frontend/src/pages/InventoryPage.tsx
+ M frontend/src/pages/MovementsPage.tsx
+ M frontend/src/pages/RequestsPage.tsx
+ M frontend/src/pages/ReturnsPage.tsx
+ M frontend/src/pages/SalesPage.tsx
+ M frontend/src/pages/WholesalePage.tsx
+ M frontend/src/services/api.ts
+ M frontend/src/stores/__tests__/authStore.test.ts
+ M frontend/src/stores/authStore.ts
+ M mobile/src/navigation/AppNavigator.tsx
+ M mobile/src/screens/SalesScreen.tsx
+ M mobile/src/services/api.ts
+?? backend/prisma/migrations/20261103_physical_stock_and_returns/
+?? backend/prisma/migrations/20261103b_commercial_controls/
+?? backend/src/modules/operations/
+?? backend/src/modules/returns/inspection.routes.ts
+?? backend/src/modules/sales/__tests__/controlesComerciales.itest.ts
+?? backend/src/modules/sales/__tests__/operacionReal.itest.ts
+?? backend/src/modules/sales/voidSale.ts
+?? backend/src/shared/utils/__tests__/importWorkbook.test.ts
+?? backend/src/shared/utils/__tests__/safeError.test.ts
+?? backend/src/shared/utils/importWorkbook.ts
+?? backend/src/shared/utils/paymentEvidence.ts
+?? backend/src/shared/utils/purchaseInvoice.ts
+?? backend/src/shared/utils/replayableOperation.ts
+?? backend/src/shared/utils/safeError.ts
+?? backend/src/shared/utils/saleBalance.ts
+?? backend/src/shared/utils/sessionRevocation.ts
+?? backend/src/testing/bankFixture.ts
+?? backend/src/testing/restoreFixture.ts
+?? docs/CORRECCIONES_INTEGRALES_TIENDA_REAL.md
+?? docs/H4_AUDITORIA_COBERTURA_Y_PREPARACION_ENTRENAMIENTO.md
+?? docs/H4_FALLAS_Y_ESCENARIOS_DATASET.md
+?? docs/H4_FASE1_ESTRUCTURA_DATASET_Y_RIESGOS.md
+?? docs/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md
+?? docs/REGLAS_COMERCIALES_FACTURAS_ANULACIONES_Y_PAGOS.md
+?? docs/SEGUNDA_REVISION_INTEGRAL_TIENDA_REAL.md
+?? docs/auditorias/
+?? frontend/src/components/BankVerificationFields.test.tsx
+?? frontend/src/components/BankVerificationFields.tsx
+?? frontend/src/components/PendingOperation.tsx
+?? frontend/src/components/PhysicalStockPanel.tsx
+?? frontend/src/components/VoidSalePanel.tsx
+?? frontend/src/services/__tests__/pendingOperation.test.ts
+?? frontend/src/services/pendingOperation.ts
+?? ml/
+?? mobile/package-lock.json
+GIT DIFF --STAT. Solo archivos versionados.
+ backend/package-lock.json                          | 141 +++-------------
+ backend/package.json                               |   4 +-
+ backend/prisma/schema.prisma                       |  74 ++++++++-
+ backend/src/app.ts                                 |  19 +++
+ backend/src/jobs/replenishJob.ts                   |  12 +-
+ backend/src/modules/auth/auth.routes.ts            |  28 +++-
+ backend/src/modules/costs/__tests__/costs.itest.ts |   5 +-
+ backend/src/modules/costs/costs.routes.ts          |  46 ++++--
+ backend/src/modules/customers/customers.routes.ts  |  11 +-
+ backend/src/modules/dashboard/dashboard.routes.ts  |  15 +-
+ .../inventory/__tests__/inventory.routes.itest.ts  |   4 +
+ backend/src/modules/inventory/inventory.routes.ts  |   9 +-
+ backend/src/modules/locations/locations.routes.ts  |   5 +-
+ .../modules/movements/__tests__/movements.itest.ts |  11 +-
+ backend/src/modules/movements/movements.routes.ts  |  42 ++++-
+ .../modules/notifications/notifications.routes.ts  |   9 +-
+ backend/src/modules/payments/payments.routes.ts    |  58 +++++--
+ .../src/modules/permissions/permissions.routes.ts  |  13 +-
+ backend/src/modules/prices/prices.routes.ts        |  11 +-
+ backend/src/modules/products/products.routes.ts    |  22 +--
+ .../src/modules/products/searchImage.service.ts    |   2 +-
+ backend/src/modules/public/public.routes.ts        |  17 +-
+ backend/src/modules/reports/dailyReport.ts         |   6 +-
+ backend/src/modules/reports/reports.routes.ts      |  17 +-
+ backend/src/modules/requests/requests.routes.ts    |  22 ++-
+ .../src/modules/returns/__tests__/returns.itest.ts |  17 +-
+ backend/src/modules/returns/returns.routes.ts      |  34 ++--
+ backend/src/modules/sales/__tests__/sales.itest.ts |   4 +-
+ .../modules/sales/__tests__/saneamiento.itest.ts   |   8 +-
+ .../sales/__tests__/segundaAuditoria.itest.ts      |  10 +-
+ backend/src/modules/sales/sales.routes.ts          |  53 ++++--
+ backend/src/modules/suppliers/suppliers.routes.ts  |  13 +-
+ backend/src/modules/users/users.routes.ts          |  27 ++-
+ backend/src/modules/vision/vision.service.ts       |   2 +-
+ backend/src/modules/wholesale/wholesale.routes.ts  |  33 ++--
+ backend/src/server.ts                              |  18 +-
+ backend/src/shared/middlewares/auth.ts             |  38 ++++-
+ backend/src/shared/middlewares/errorHandler.ts     |   6 +-
+ backend/src/shared/utils/moveStock.ts              |  24 ++-
+ backend/src/shared/utils/notificarInventario.ts    |   3 +-
+ backend/src/shared/utils/pricing.ts                |   4 +-
+ backend/src/shared/utils/saleCustomer.ts           |   4 +
+ backend/src/testing/seed.ts                        |   2 +
+ docs/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md   |  26 ++-
+ docs/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md        |   9 +
+ frontend/package-lock.json                         | 181 ++++++---------------
+ frontend/package.json                              |   4 +-
+ frontend/src/App.tsx                               |  37 +++--
+ frontend/src/pages/CostsPage.tsx                   |  18 +-
+ frontend/src/pages/InventoryPage.tsx               |   3 +
+ frontend/src/pages/MovementsPage.tsx               |   7 +-
+ frontend/src/pages/RequestsPage.tsx                |   4 +-
+ frontend/src/pages/ReturnsPage.tsx                 |  18 +-
+ frontend/src/pages/SalesPage.tsx                   |  32 ++--
+ frontend/src/pages/WholesalePage.tsx               |  28 +++-
+ frontend/src/services/api.ts                       |   1 +
+ frontend/src/stores/__tests__/authStore.test.ts    |   1 +
+ frontend/src/stores/authStore.ts                   |   4 +
+ mobile/src/navigation/AppNavigator.tsx             |   3 +-
+ mobile/src/screens/SalesScreen.tsx                 |  49 +++++-
+ mobile/src/services/api.ts                         |  30 ++++
+ 61 files changed, 847 insertions(+), 511 deletions(-)
+ARCHIVOS NUEVOS SIN SEGUIMIENTO
+backend/prisma/migrations/20261103_physical_stock_and_returns/migration.sql
+backend/prisma/migrations/20261103b_commercial_controls/migration.sql
+backend/src/modules/operations/operations.routes.ts
+backend/src/modules/returns/inspection.routes.ts
+backend/src/modules/sales/__tests__/controlesComerciales.itest.ts
+backend/src/modules/sales/__tests__/operacionReal.itest.ts
+backend/src/modules/sales/voidSale.ts
+backend/src/shared/utils/__tests__/importWorkbook.test.ts
+backend/src/shared/utils/__tests__/safeError.test.ts
+backend/src/shared/utils/importWorkbook.ts
+backend/src/shared/utils/paymentEvidence.ts
+backend/src/shared/utils/purchaseInvoice.ts
+backend/src/shared/utils/replayableOperation.ts
+backend/src/shared/utils/safeError.ts
+backend/src/shared/utils/saleBalance.ts
+backend/src/shared/utils/sessionRevocation.ts
+backend/src/testing/bankFixture.ts
+backend/src/testing/restoreFixture.ts
+docs/CORRECCIONES_INTEGRALES_TIENDA_REAL.md
+docs/H4_AUDITORIA_COBERTURA_Y_PREPARACION_ENTRENAMIENTO.md
+docs/H4_FALLAS_Y_ESCENARIOS_DATASET.md
+docs/H4_FASE1_ESTRUCTURA_DATASET_Y_RIESGOS.md
+docs/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md
+docs/REGLAS_COMERCIALES_FACTURAS_ANULACIONES_Y_PAGOS.md
+docs/SEGUNDA_REVISION_INTEGRAL_TIENDA_REAL.md
+docs/auditorias/2026-11-03/controles-comerciales-conservacion-local.txt
+docs/auditorias/2026-11-03/estado-controles-comerciales.txt
+docs/auditorias/2026-11-03/estado-local-final.txt
+docs/auditorias/2026-11-03/npm-audit-backend-posterior.json
+docs/auditorias/2026-11-03/npm-audit-backend.json
+docs/auditorias/2026-11-03/npm-audit-frontend-posterior.json
+docs/auditorias/2026-11-03/npm-audit-frontend.json
+docs/auditorias/2026-11-03/npm-audit-mobile-posterior.json
+docs/auditorias/2026-11-03/restauracion-local-con-datos.txt
+docs/auditorias/2026-11-03/restauracion-local.txt
+frontend/src/components/BankVerificationFields.test.tsx
+frontend/src/components/BankVerificationFields.tsx
+frontend/src/components/PendingOperation.tsx
+frontend/src/components/PhysicalStockPanel.tsx
+frontend/src/components/VoidSalePanel.tsx
+frontend/src/services/__tests__/pendingOperation.test.ts
+frontend/src/services/pendingOperation.ts
+ml/demand/README.md
+ml/demand/catalog_reference.json
+ml/demand/data/escenarios_v1/base_mensual.csv
+ml/demand/data/escenarios_v1/casos_grises.json
+ml/demand/data/escenarios_v1/casos_invalidos.json
+ml/demand/data/escenarios_v1/dataset_supervisado.csv
+ml/demand/data/escenarios_v1/escenarios_metadatos.csv
+ml/demand/data/escenarios_v1/manifest.json
+ml/demand/data/escenarios_v1/validacion.json
+ml/demand/data/escenarios_v1_1/base_mensual.csv
+ml/demand/data/escenarios_v1_1/casos_grises.json
+ml/demand/data/escenarios_v1_1/casos_invalidos.json
+ml/demand/data/escenarios_v1_1/dataset_supervisado.csv
+ml/demand/data/escenarios_v1_1/escenarios_metadatos.csv
+ml/demand/data/escenarios_v1_1/manifest.json
+ml/demand/data/escenarios_v1_1/validacion.json
+ml/demand/generate_synthetic.py
+ml/demand/test_generate_synthetic.py
+ml/demand/versions/generate_v1_0_0.py
+mobile/package-lock.json

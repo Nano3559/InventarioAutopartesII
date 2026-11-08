@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { dailyReport } from "./dailyReport";
 import { esErrorDominio } from "../../shared/utils/errorDominio";
 import { Router, Response } from "express";
@@ -10,7 +11,7 @@ import { AuthRequest } from "../../shared/types";
 import { ROLES_CON_COSTOS as ROLES_CON_COSTOS_SHARED, alcanceDeFiltro, SIN_ALCANCE } from "../../shared/utils/scope";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 // Roles autorizados a ver información financiera (costos de mercadería, costos de
 // tienda y utilidad). Allow-list explícita: el nombre del rol viene de RoleModel.name
@@ -29,7 +30,7 @@ router.get("/daily", async (req: AuthRequest, res: Response) => {
   try { res.json({ groups: await dailyReport(prisma, req) }); }
   catch (error) {
     if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
-    console.error("Error en reporte diario:", error);
+    console.error("Error en reporte diario:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -39,7 +40,7 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
   try {
     const { brand, model, month, locationId, supplierId, startDate, endDate, noInvoice, product, page = "1", limit = "50" } = req.query;
 
-    const where: any = {};
+    const where: any = { status: "CONFIRMED" };
 
     let effectiveLocationId: number | null = null;
     if (locationId && typeof locationId === "string") effectiveLocationId = Number(locationId);
@@ -150,7 +151,7 @@ router.get("/sales", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error en reporte de ventas:", error);
+    console.error("Error en reporte de ventas:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -212,7 +213,7 @@ router.get("/inventory", async (req: AuthRequest, res: Response) => {
       lowStockCount: filtered.filter((i) => i.stock <= i.minStock).length,
     });
   } catch (error) {
-    console.error("Error en reporte de inventario:", error);
+    console.error("Error en reporte de inventario:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -269,7 +270,7 @@ router.get("/suppliers", async (req: AuthRequest, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error en reporte de proveedores:", error);
+    console.error("Error en reporte de proveedores:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -337,7 +338,7 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
     // financiera (los únicos tres roles que crea prisma/seed.ts).
     const puedeVerCostos = ROLES_CON_COSTOS.has(req.user?.role ?? "");
 
-    const saleWhere: any = { saleDate: { gte: startDate, lte: endDate } };
+    const saleWhere: any = { status: "CONFIRMED", saleDate: { gte: startDate, lte: endDate } };
     if (locationScope) saleWhere.locationId = locationScope;
 
     const returnWhere: any = { date: { gte: startDate, lte: endDate } };
@@ -474,7 +475,7 @@ router.get("/monthly", async (req: AuthRequest, res: Response) => {
       summary: resumen,
     });
   } catch (error) {
-    console.error("Error en reporte mensual:", error);
+    console.error("Error en reporte mensual:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

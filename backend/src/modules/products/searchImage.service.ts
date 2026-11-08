@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import { ocrExtract } from "../../shared/utils/ocr";
 
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
 

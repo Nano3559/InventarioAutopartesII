@@ -1,0 +1,652 @@
+{
+  "fecha": "2026-11-03",
+  "zona": "America/La_Paz",
+  "respaldo": "C:\\Users\\DELL ALIENWARE\\.codex\\visualizations\\2026\\10\\27\\01a17e0c-4d6d-7201-8184-f45bb6b8fc5d\\organizacion-h3-h4-20261103",
+  "traslados": [
+    {
+      "antes": "docs/AUDITORIA_IMPLEMENTACION_IA_VISION.md",
+      "ahora": "docs/H3/AUDITORIA_IMPLEMENTACION_IA_VISION.md",
+      "sha256_original": "af602e80ff4b0ca4d9c11d1c863253c94b290f63d53fb97f44a08f89db19bd2b"
+    },
+    {
+      "antes": "docs/AUDITORIA_MODELO_PREDICTIVO_H4.md",
+      "ahora": "docs/H4/historico/AUDITORIA_MODELO_PREDICTIVO_H4.md",
+      "sha256_original": "1ebbafba5546e10cf273d3b889dfb506204ef28753f12f29df26d7e0d9a627ca"
+    },
+    {
+      "antes": "docs/CORRECCIONES_DOCENTE_2026-09-01.md",
+      "ahora": "docs/H3/cierre_saneamiento/CORRECCIONES_DOCENTE_2026-09-01.md",
+      "sha256_original": "d0f4e31e5fd31f9bd11d78f6bc6f3dfab937cd4889b4bd10db548414c3a79724"
+    },
+    {
+      "antes": "docs/CORRECCIONES_INTEGRALES_TIENDA_REAL.md",
+      "ahora": "docs/H3/cierre_saneamiento/CORRECCIONES_INTEGRALES_TIENDA_REAL.md",
+      "sha256_original": "ebeeadeeea1a0d1ca2de590dee581056a7459b3542634b208f33606a73a64f2d"
+    },
+    {
+      "antes": "docs/CORRECCION_OBERSERVACIONES.md",
+      "ahora": "docs/H3/cierre_saneamiento/CORRECCION_OBERSERVACIONES.md",
+      "sha256_original": "d872d5a5ad26fb7350db2d1cf3a0328c8d99b5a21e37a578a5984cc0aa488652"
+    },
+    {
+      "antes": "docs/FLUJO_VISION_IA.md",
+      "ahora": "docs/H3/FLUJO_VISION_IA.md",
+      "sha256_original": "2ce8cf2c43189962ad308f0663fdde580c6b659a61a9602f06fc3ff118d7c04e"
+    },
+    {
+      "antes": "docs/GIT_CONVENTION.md",
+      "ahora": "docs/GENERAL/GIT_CONVENTION.md",
+      "sha256_original": "ad3b8594160b9687b96c3e92e86f5749f2333c45070514cc81e0b2ee15551f1c"
+    },
+    {
+      "antes": "docs/H4_AUDITORIA_COBERTURA_Y_PREPARACION_ENTRENAMIENTO.md",
+      "ahora": "docs/H4/historico/H4_AUDITORIA_COBERTURA_Y_PREPARACION_ENTRENAMIENTO.md",
+      "sha256_original": "ce7194258baa37319e7a1b6ad2e759b383a6f91af4d269b548846c4209a29e64"
+    },
+    {
+      "antes": "docs/H4_FALLAS_Y_ESCENARIOS_DATASET.md",
+      "ahora": "docs/H4/historico/H4_FALLAS_Y_ESCENARIOS_DATASET.md",
+      "sha256_original": "a6565a50cb49d40ada32ea6412a98c410ead6eff933bdee74938c747b7ba776a"
+    },
+    {
+      "antes": "docs/H4_FASE1_ESTRUCTURA_DATASET_Y_RIESGOS.md",
+      "ahora": "docs/H4/historico/H4_FASE1_ESTRUCTURA_DATASET_Y_RIESGOS.md",
+      "sha256_original": "36f0187a3dcf0c2a9998cca62c7c10a0a923366f6e618b7fefd62d877a078804"
+    },
+    {
+      "antes": "docs/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+      "ahora": "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+      "sha256_original": "febfecbf29394883421d5716ea330f826e1164c269e5fcfec64928580b9c992a"
+    },
+    {
+      "antes": "docs/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md",
+      "ahora": "docs/H4/historico/redirecciones/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md",
+      "sha256_original": "c3cba2737181322d836eb8862398c8a7e0d4f79fc55e851cea3a1dcd82d900db"
+    },
+    {
+      "antes": "docs/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md",
+      "ahora": "docs/H4/historico/redirecciones/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md",
+      "sha256_original": "1f70ff919f557d16b576e58ca1257fa51437efbf2588794f21aeb5b4558a67ae"
+    },
+    {
+      "antes": "docs/MODO_ESCANEO_INTELIGENTE.md",
+      "ahora": "docs/H3/MODO_ESCANEO_INTELIGENTE.md",
+      "sha256_original": "3826d8760a7b7d791289ae5db5bb83c5496eeea8f78b60a8376ec6964710d545"
+    },
+    {
+      "antes": "docs/PLAN_IMPLEMENTACION_IA_VISION.md",
+      "ahora": "docs/H3/PLAN_IMPLEMENTACION_IA_VISION.md",
+      "sha256_original": "6735053beb27465be38edba972401f3b952c8ee261db595771ca13e371ab845d"
+    },
+    {
+      "antes": "docs/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md",
+      "ahora": "docs/H3/cierre_saneamiento/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md",
+      "sha256_original": "710025789101f55d60c511c5613cc1f14bf0fe17d6f25c2e76df27270fb45977"
+    },
+    {
+      "antes": "docs/PLAN_TRABAJO_ERIKA_ROSS.md",
+      "ahora": "docs/GENERAL/PLAN_TRABAJO_ERIKA_ROSS.md",
+      "sha256_original": "28b1d5045a496c04f7f5fcfa6070a7644cebf038140e7a80b91b7f817a4da172"
+    },
+    {
+      "antes": "docs/PLAN_TRABAJO_MARTES.md",
+      "ahora": "docs/GENERAL/PLAN_TRABAJO_MARTES.md",
+      "sha256_original": "d2ec91ffae227ac60e133ce653e53ccf13dbab2caec89901ed86667605a5308f"
+    },
+    {
+      "antes": "docs/PROMPTS_MODELO_PREDICTIVO_H4.md",
+      "ahora": "docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md",
+      "sha256_original": "fe2ebe8e97aeaee1195b0c36d17cc8497a68764aa1b05dbb07b72c2155f3b2fe"
+    },
+    {
+      "antes": "docs/REGLAS_COMERCIALES_FACTURAS_ANULACIONES_Y_PAGOS.md",
+      "ahora": "docs/H3/cierre_saneamiento/REGLAS_COMERCIALES_FACTURAS_ANULACIONES_Y_PAGOS.md",
+      "sha256_original": "8038783ca66f498333053a6bf344042657b2dc56bac21b4695feef6ee887ec2a"
+    },
+    {
+      "antes": "docs/SEGUNDA_REVISION_INTEGRAL_TIENDA_REAL.md",
+      "ahora": "docs/H3/cierre_saneamiento/SEGUNDA_REVISION_INTEGRAL_TIENDA_REAL.md",
+      "sha256_original": "5b620b4acc586fb2cec39bf382ad78817782deb9835cc1f647ea92d4ff4f86da"
+    },
+    {
+      "antes": "docs/STACK_BACKEND.md",
+      "ahora": "docs/GENERAL/STACK_BACKEND.md",
+      "sha256_original": "f3b13b87e81ea14b50f367fc3b1a9d16289d0fd84f0e59a6dd2298ec2f185f12"
+    },
+    {
+      "antes": "docs/STACK_FRONTEND.md",
+      "ahora": "docs/GENERAL/STACK_FRONTEND.md",
+      "sha256_original": "16fab76242a06ca919605d58bc87d85b66e9a18b2ac5d99c83d4f3cd1f139636"
+    },
+    {
+      "antes": "docs/STACK_INFRASTRUCTURE.md",
+      "ahora": "docs/GENERAL/STACK_INFRASTRUCTURE.md",
+      "sha256_original": "0f33d3fcf0dc45bf3c5cc00f7983e4c0eec68bfb9fdd989ca867f8aa8314c117"
+    },
+    {
+      "antes": "docs/STACK_MOBILE.md",
+      "ahora": "docs/GENERAL/STACK_MOBILE.md",
+      "sha256_original": "fc0177439e56af5d5dcdcf6fee89c74faf40a8acad3f3ab386030f26b6610e2e"
+    },
+    {
+      "antes": "docs/TAREAS_ERIKA_Y_ROSS.md",
+      "ahora": "docs/GENERAL/TAREAS_ERIKA_Y_ROSS.md",
+      "sha256_original": "d9c5ecbb0351a218944d7696f663781e77ad35e70a34a18e91a13898b2b9362a"
+    },
+    {
+      "antes": "docs/TESTING_BACKEND.md",
+      "ahora": "docs/GENERAL/TESTING_BACKEND.md",
+      "sha256_original": "dd5a899c43241648223e1ad9259486960ad0724185d52e10c38d6978faf12c21"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/backend-integraciones-posterior.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/backend-integraciones-posterior.log",
+      "sha256_original": "9f76c417157b09093315f3a0a04d9ff82f081cb8d471e00be80e60c826a33c2e"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/backend-unitarios-posterior.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/backend-unitarios-posterior.log",
+      "sha256_original": "3823cd1ce43e89dbadde0f614e5425417e3130ba8e9b3ce253b1295f1529212a"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/consolidacion-h4-validacion.json",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/consolidacion-h4-validacion.json",
+      "sha256_original": "1918b242b5477dd72e9d6ef0ecb8bc7403c8d880a387c76753b3bfc99bbb0a9e"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/controles-comerciales-build.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/controles-comerciales-build.log",
+      "sha256_original": "538a047f3932e18b5c7b6d96713a45971a5a5cebafb16024b42ca1b7df95339a"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/controles-comerciales-cierre-costos.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/controles-comerciales-cierre-costos.log",
+      "sha256_original": "32181d66a210fea311a55e5b6783e6f59e7451794c4a4307517f21a7b6fdb923"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/controles-comerciales-cierre.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/controles-comerciales-cierre.log",
+      "sha256_original": "03c6e12e07faa9a80b9164dee44cf30dfd175f3327ac9c9159ca04460c3108f6"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/controles-comerciales-conservacion-local.txt",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/controles-comerciales-conservacion-local.txt",
+      "sha256_original": "2c71bd57eb155361b124946153a8cc54d763b388ac487399dce7def982793354"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/controles-comerciales-frontend.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/controles-comerciales-frontend.log",
+      "sha256_original": "f9d261da1002f43bc3667cb5c0349d0f89a5458a4e56315ce46200b57602a508"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/controles-comerciales-integraciones.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/controles-comerciales-integraciones.log",
+      "sha256_original": "2b5548a8f6fe6669967c7683230a98091b02c2f2d1b5911935cf255c61fd16f3"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/controles-comerciales-nuevos.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/controles-comerciales-nuevos.log",
+      "sha256_original": "7b5f925f6304615bb517c89c41a2f2d85f4ad7a5d7379b686acb889940f85374"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/controles-comerciales-unitarios.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/controles-comerciales-unitarios.log",
+      "sha256_original": "77f6348228ab970e92f8e8036c5d9a35e2de2dc3027b851ab56cc081e66e379e"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/estado-consolidacion-h4.txt",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/estado-consolidacion-h4.txt",
+      "sha256_original": "8f0225068834b02538949b1636ea8bab733270918c8e6255b6e46170b627b418"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/estado-controles-comerciales.txt",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/estado-controles-comerciales.txt",
+      "sha256_original": "4c233a601f6af125126a02d6aa09ea6b4a6a4ea45303abd09379b858f102eefb"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/estado-local-final.txt",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/estado-local-final.txt",
+      "sha256_original": "ad2546db543c5af9d516b3d2c08a9897b54c83ec936c1a0e193426d61ad77ba8"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/frontend-build-posterior.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/frontend-build-posterior.log",
+      "sha256_original": "c7a0d79169cbfc0fd2848200594e7996c1bf1303fcb447540a8730c3ef794dc5"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/frontend-posterior.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/frontend-posterior.log",
+      "sha256_original": "e6c1e9dcef3a6b551ef05480757b30908f9a262f9a803dba0d6c4af19e2165fd"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/npm-audit-backend-posterior.json",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/npm-audit-backend-posterior.json",
+      "sha256_original": "204e88278c5ee1a5e13cab9d623399d343fa952f90b4ab02057a7126e639fc32"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/npm-audit-backend.json",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/npm-audit-backend.json",
+      "sha256_original": "14381064fa117e2f290c80f3a472c53e0a7d4e4ad0c499ba659153a43e3c5511"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/npm-audit-frontend-posterior.json",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/npm-audit-frontend-posterior.json",
+      "sha256_original": "e7d6ef4948b885acab218b723b3987544966fd80cc0026e4bcb479f55df02c28"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/npm-audit-frontend.json",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/npm-audit-frontend.json",
+      "sha256_original": "85a03b0a3d2cb54564d4af7ca56dbbed929d5ded13fcaaed3092cb2604f42aec"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/npm-audit-mobile-posterior.json",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/npm-audit-mobile-posterior.json",
+      "sha256_original": "2085d3ee510df17c4fe4917f781b69f256f4b72c74f4fb05a8c5da531da745b8"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/operacion-real-posterior.log",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/operacion-real-posterior.log",
+      "sha256_original": "ecd02284f7387de5fe83407e24eed57e20cc2b3ee6377c05a830bb5bf2b3b8c8"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/restauracion-local-con-datos.txt",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/restauracion-local-con-datos.txt",
+      "sha256_original": "c6df26aae5f8d4d86e4a75c1bdc7da9ff69f1260a36a102bc101841abe272289"
+    },
+    {
+      "antes": "docs/auditorias/2026-11-03/restauracion-local.txt",
+      "ahora": "docs/H4/historico/evidencias/2026-11-03/restauracion-local.txt",
+      "sha256_original": "282a1dd69b6c2486ecb768d82661cc227cc2b7c97e76bc81b0d3188ba2a99f9e"
+    },
+    {
+      "antes": "docs/historico/h4/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md",
+      "ahora": "docs/H4/historico/propuestas/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md",
+      "sha256_original": "1ebeddf80e0d9fe710865d91e16e02a2b70e96086255786999bbd629105d1fb7"
+    },
+    {
+      "antes": "docs/historico/h4/H4_PLAN_DE_TRABAJO.md",
+      "ahora": "docs/H4/historico/propuestas/H4_PLAN_DE_TRABAJO.md",
+      "sha256_original": "c419bfdec9652bcfd5509603398469630a173992a2a09ebe9b9187cdb2191b1c"
+    },
+    {
+      "antes": "docs/historico/h4/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md",
+      "ahora": "docs/H4/historico/propuestas/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md",
+      "sha256_original": "78c1d8a103be8a4c80806181506438c4dd9b67499bb1f5f5d5cc83c9e2376862"
+    },
+    {
+      "antes": "docs/modelo-ia/ALTERNATIVAS_ANOTACION_DATASET_IA.md",
+      "ahora": "docs/H3/modelo-ia/ALTERNATIVAS_ANOTACION_DATASET_IA.md",
+      "sha256_original": "1251e51e5d2fac5a2dc48983e6cc511dafdb00f5220ab1c255156baac0d32cc7"
+    },
+    {
+      "antes": "docs/modelo-ia/AUDITORIA_AIR_FILTER_IA.md",
+      "ahora": "docs/H3/modelo-ia/AUDITORIA_AIR_FILTER_IA.md",
+      "sha256_original": "8ecabaed44f4f8b3f8052c65747e54c7a1fe6567885bfeccc782ca45a1b59f5d"
+    },
+    {
+      "antes": "docs/modelo-ia/AUDITORIA_FUENTES_DATASET_IA.md",
+      "ahora": "docs/H3/modelo-ia/AUDITORIA_FUENTES_DATASET_IA.md",
+      "sha256_original": "b7efa1e759b55ee9839c4013417072dd716fea6f2e27afc9d8920e7d97b43a07"
+    },
+    {
+      "antes": "docs/modelo-ia/AUDITORIA_HEADLIGHT_CARPARTS_SEG.md",
+      "ahora": "docs/H3/modelo-ia/AUDITORIA_HEADLIGHT_CARPARTS_SEG.md",
+      "sha256_original": "7ddec87f93bf6f8846d6dba1a2061892050c364852d521e27de54eb619c0b016"
+    },
+    {
+      "antes": "docs/modelo-ia/CONSTRUCCION_DATASET_PROCESSED.md",
+      "ahora": "docs/H3/modelo-ia/CONSTRUCCION_DATASET_PROCESSED.md",
+      "sha256_original": "da4ac2e8a099b38943339d3faf1d840b9cf4abab8f4ea12504b5bfe3f6577080"
+    },
+    {
+      "antes": "docs/modelo-ia/CONTEO_CLASES_DATASET_IA.md",
+      "ahora": "docs/H3/modelo-ia/CONTEO_CLASES_DATASET_IA.md",
+      "sha256_original": "7a29329e7ee3aa0e6afdb3df6a23a8df17ed3342ba73db5d185507be1588aa1c"
+    },
+    {
+      "antes": "docs/modelo-ia/CONTEO_LABELS_CAR_ENGINE_BAY.md",
+      "ahora": "docs/H3/modelo-ia/CONTEO_LABELS_CAR_ENGINE_BAY.md",
+      "sha256_original": "02447e23de124be40c0ebbd114a732fdb361be1fb50f324dc4d98ca6965cacdb"
+    },
+    {
+      "antes": "docs/modelo-ia/CONVERSION_HEADLIGHT_YOLO.md",
+      "ahora": "docs/H3/modelo-ia/CONVERSION_HEADLIGHT_YOLO.md",
+      "sha256_original": "5893d65470c9aed630691f162ac0cd39eda88773dd559846f536afa74862a292"
+    },
+    {
+      "antes": "docs/modelo-ia/CV4_AUDITORIA_ROBUSTEZ_V2.md",
+      "ahora": "docs/H3/modelo-ia/CV4_AUDITORIA_ROBUSTEZ_V2.md",
+      "sha256_original": "bf4f8e9d59a7ff4822ce5df7e5a65fbf081268c64742c518594a3e3c34b9cd39"
+    },
+    {
+      "antes": "docs/modelo-ia/CV4_ENTRENAMIENTO_YOLO_BASELINE.md",
+      "ahora": "docs/H3/modelo-ia/CV4_ENTRENAMIENTO_YOLO_BASELINE.md",
+      "sha256_original": "133adf5f4141e2668876d017fd850f536a07be8259c8a12e4b285d6d0a2044c2"
+    },
+    {
+      "antes": "docs/modelo-ia/CV4_MODELO_V2_DOMAIN_BALANCED.md",
+      "ahora": "docs/H3/modelo-ia/CV4_MODELO_V2_DOMAIN_BALANCED.md",
+      "sha256_original": "65ac25226a650772805b2f158c9a5a26f01b4b5b11caba0e4596b09b6109efc7"
+    },
+    {
+      "antes": "docs/modelo-ia/CV4_MODELO_V3_WEBCAM_ROBUST.md",
+      "ahora": "docs/H3/modelo-ia/CV4_MODELO_V3_WEBCAM_ROBUST.md",
+      "sha256_original": "5d2c715224e0f1cf47f43dd85fac81ddbf6d3bac07be21f7513a5a7d1a574121"
+    },
+    {
+      "antes": "docs/modelo-ia/CV4_SANITY_CHECK_YOLO.md",
+      "ahora": "docs/H3/modelo-ia/CV4_SANITY_CHECK_YOLO.md",
+      "sha256_original": "0bbaedcfa8a3d3bcfa77dd94db5a62369f61c742a6b5311ea77c6fa5a930ef1c"
+    },
+    {
+      "antes": "docs/modelo-ia/CV5_EVALUACION_MODELO_YOLO.md",
+      "ahora": "docs/H3/modelo-ia/CV5_EVALUACION_MODELO_YOLO.md",
+      "sha256_original": "0f77162ab60b3892a9cf292ebc543f61b20a4b1e2fff9cd6ab3cbdb2bbe02a6e"
+    },
+    {
+      "antes": "docs/modelo-ia/CV6_SERVICIO_INFERENCIA_FASTAPI.md",
+      "ahora": "docs/H3/modelo-ia/CV6_SERVICIO_INFERENCIA_FASTAPI.md",
+      "sha256_original": "e12b9cd7718687d4487fc9b4452ce3481b1a0262fdc235c7633cab44729380bd"
+    },
+    {
+      "antes": "docs/modelo-ia/CV7_INTEGRACION_IA_BACKEND.md",
+      "ahora": "docs/H3/modelo-ia/CV7_INTEGRACION_IA_BACKEND.md",
+      "sha256_original": "5543db411a7b1418c1f46b67e78fb1f2b218cad84723decd5686069476dd541e"
+    },
+    {
+      "antes": "docs/modelo-ia/GENERACION_DATASET_SINTETICO.md",
+      "ahora": "docs/H3/modelo-ia/GENERACION_DATASET_SINTETICO.md",
+      "sha256_original": "5aeac919869d9c47671895e45d244f29f5fdc6487d7bf49545e6c573fd4a82db"
+    },
+    {
+      "antes": "docs/modelo-ia/PILOTO_AUTOBOX_OPENCV.md",
+      "ahora": "docs/H3/modelo-ia/PILOTO_AUTOBOX_OPENCV.md",
+      "sha256_original": "e74df9e625275317cb133de1bc451c3f1aa2013fe924d5f9d4e7a4d58ebdbeb5"
+    },
+    {
+      "antes": "docs/modelo-ia/PILOTO_DATOS_SINTETICOS_BRAKE_PAD.md",
+      "ahora": "docs/H3/modelo-ia/PILOTO_DATOS_SINTETICOS_BRAKE_PAD.md",
+      "sha256_original": "e438fdee567b1fcfc742f1bc72879335314c610112440b8242a255e7040eb86e"
+    },
+    {
+      "antes": "docs/modelo-ia/PILOTO_DATOS_SINTETICOS_CLASES_FALTANTES.md",
+      "ahora": "docs/H3/modelo-ia/PILOTO_DATOS_SINTETICOS_CLASES_FALTANTES.md",
+      "sha256_original": "5971cb2472b42399efd40bb4e04f497c15463518178a7024846f216640789dd6"
+    },
+    {
+      "antes": "docs/modelo-ia/PLAN_CONSTRUCCION_DATASET_MVP.md",
+      "ahora": "docs/H3/modelo-ia/PLAN_CONSTRUCCION_DATASET_MVP.md",
+      "sha256_original": "4581e4d8bf7ec243f6b839eaac10fe36e13a983c72cb97dfc4f59cabbbda19c9"
+    },
+    {
+      "antes": "docs/modelo-ia/PLAN_DATASET_AUTOPARTES_IA.md",
+      "ahora": "docs/H3/modelo-ia/PLAN_DATASET_AUTOPARTES_IA.md",
+      "sha256_original": "72262a63a2d6163d985f9b922cb7b7091ff018d8cca71997165b0622d2ead81f"
+    },
+    {
+      "antes": "docs/modelo-ia/VERIFICACION_METADATA_DATASETS_IA.md",
+      "ahora": "docs/H3/modelo-ia/VERIFICACION_METADATA_DATASETS_IA.md",
+      "sha256_original": "ac3b0cdc1e353e1399b8b82acf68b9f87fc685cc07b0d866868b902d442aa6a7"
+    }
+  ],
+  "catalogo_sin_cambios": true,
+  "documento_catalogo_original": "docs/H4/historico/originales/H4_FASE1_ESTRUCTURA_DATASET_Y_RIESGOS.md.txt",
+  "sha256_documento_catalogo_original": "36f0187a3dcf0c2a9998cca62c7c10a0a923366f6e618b7fefd62d877a078804",
+  "nota": "source_document conserva su ruta histórica en el catálogo. El original exacto y este mapa permiten resolver esa procedencia sin modificar el dataset.",
+  "validacion": {
+    "archivos_trasladados": 77,
+    "enlaces_locales_comprobados": 90,
+    "enlaces_rotos": 0,
+    "archivos_codigo_y_datos_comparados": 343,
+    "cambios_codigo_o_datos": 0,
+    "hash_original_fase1_preservado": true,
+    "dataset_modificado": false,
+    "entrenamiento": false,
+    "conexion_neon": false,
+    "commit": false,
+    "push": false
+  },
+  "git_status_final": [
+    " M AGENTS.md",
+    " M README.md",
+    " M backend/package-lock.json",
+    " M backend/package.json",
+    " M backend/prisma/schema.prisma",
+    " M backend/src/app.ts",
+    " M backend/src/jobs/replenishJob.ts",
+    " M backend/src/modules/auth/auth.routes.ts",
+    " M backend/src/modules/costs/__tests__/costs.itest.ts",
+    " M backend/src/modules/costs/costs.routes.ts",
+    " M backend/src/modules/customers/customers.routes.ts",
+    " M backend/src/modules/dashboard/dashboard.routes.ts",
+    " M backend/src/modules/inventory/__tests__/inventory.routes.itest.ts",
+    " M backend/src/modules/inventory/inventory.routes.ts",
+    " M backend/src/modules/locations/locations.routes.ts",
+    " M backend/src/modules/movements/__tests__/movements.itest.ts",
+    " M backend/src/modules/movements/movements.routes.ts",
+    " M backend/src/modules/notifications/notifications.routes.ts",
+    " M backend/src/modules/payments/payments.routes.ts",
+    " M backend/src/modules/permissions/permissions.routes.ts",
+    " M backend/src/modules/prices/prices.routes.ts",
+    " M backend/src/modules/products/products.routes.ts",
+    " M backend/src/modules/products/searchImage.service.ts",
+    " M backend/src/modules/public/public.routes.ts",
+    " M backend/src/modules/reports/dailyReport.ts",
+    " M backend/src/modules/reports/reports.routes.ts",
+    " M backend/src/modules/requests/requests.routes.ts",
+    " M backend/src/modules/returns/__tests__/returns.itest.ts",
+    " M backend/src/modules/returns/returns.routes.ts",
+    " M backend/src/modules/sales/__tests__/sales.itest.ts",
+    " M backend/src/modules/sales/__tests__/saneamiento.itest.ts",
+    " M backend/src/modules/sales/__tests__/segundaAuditoria.itest.ts",
+    " M backend/src/modules/sales/sales.routes.ts",
+    " M backend/src/modules/suppliers/suppliers.routes.ts",
+    " M backend/src/modules/users/users.routes.ts",
+    " M backend/src/modules/vision/vision.service.ts",
+    " M backend/src/modules/wholesale/wholesale.routes.ts",
+    " M backend/src/server.ts",
+    " M backend/src/shared/middlewares/auth.ts",
+    " M backend/src/shared/middlewares/errorHandler.ts",
+    " M backend/src/shared/utils/moveStock.ts",
+    " M backend/src/shared/utils/notificarInventario.ts",
+    " M backend/src/shared/utils/pricing.ts",
+    " M backend/src/shared/utils/saleCustomer.ts",
+    " M backend/src/testing/seed.ts",
+    " D docs/AUDITORIA_IMPLEMENTACION_IA_VISION.md",
+    " D docs/AUDITORIA_MODELO_PREDICTIVO_H4.md",
+    " D docs/CORRECCIONES_DOCENTE_2026-09-01.md",
+    " D docs/CORRECCION_OBERSERVACIONES.md",
+    " D docs/FLUJO_VISION_IA.md",
+    " D docs/GIT_CONVENTION.md",
+    " D docs/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md",
+    " D docs/H4_PLAN_DE_TRABAJO.md",
+    " D docs/MODO_ESCANEO_INTELIGENTE.md",
+    " D docs/PLAN_IMPLEMENTACION_IA_VISION.md",
+    " D docs/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md",
+    " D docs/PLAN_TRABAJO_ERIKA_ROSS.md",
+    " D docs/PLAN_TRABAJO_MARTES.md",
+    " D docs/STACK_BACKEND.md",
+    " D docs/STACK_FRONTEND.md",
+    " D docs/STACK_INFRASTRUCTURE.md",
+    " D docs/STACK_MOBILE.md",
+    " D docs/TAREAS_ERIKA_Y_ROSS.md",
+    " D docs/TESTING_BACKEND.md",
+    " D docs/modelo-ia/ALTERNATIVAS_ANOTACION_DATASET_IA.md",
+    " D docs/modelo-ia/AUDITORIA_AIR_FILTER_IA.md",
+    " D docs/modelo-ia/AUDITORIA_FUENTES_DATASET_IA.md",
+    " D docs/modelo-ia/AUDITORIA_HEADLIGHT_CARPARTS_SEG.md",
+    " D docs/modelo-ia/CONSTRUCCION_DATASET_PROCESSED.md",
+    " D docs/modelo-ia/CONTEO_CLASES_DATASET_IA.md",
+    " D docs/modelo-ia/CONTEO_LABELS_CAR_ENGINE_BAY.md",
+    " D docs/modelo-ia/CONVERSION_HEADLIGHT_YOLO.md",
+    " D docs/modelo-ia/CV4_AUDITORIA_ROBUSTEZ_V2.md",
+    " D docs/modelo-ia/CV4_ENTRENAMIENTO_YOLO_BASELINE.md",
+    " D docs/modelo-ia/CV4_MODELO_V2_DOMAIN_BALANCED.md",
+    " D docs/modelo-ia/CV4_MODELO_V3_WEBCAM_ROBUST.md",
+    " D docs/modelo-ia/CV4_SANITY_CHECK_YOLO.md",
+    " D docs/modelo-ia/CV5_EVALUACION_MODELO_YOLO.md",
+    " D docs/modelo-ia/CV6_SERVICIO_INFERENCIA_FASTAPI.md",
+    " D docs/modelo-ia/CV7_INTEGRACION_IA_BACKEND.md",
+    " D docs/modelo-ia/GENERACION_DATASET_SINTETICO.md",
+    " D docs/modelo-ia/PILOTO_AUTOBOX_OPENCV.md",
+    " D docs/modelo-ia/PILOTO_DATOS_SINTETICOS_BRAKE_PAD.md",
+    " D docs/modelo-ia/PILOTO_DATOS_SINTETICOS_CLASES_FALTANTES.md",
+    " D docs/modelo-ia/PLAN_CONSTRUCCION_DATASET_MVP.md",
+    " D docs/modelo-ia/PLAN_DATASET_AUTOPARTES_IA.md",
+    " D docs/modelo-ia/VERIFICACION_METADATA_DATASETS_IA.md",
+    " M frontend/package-lock.json",
+    " M frontend/package.json",
+    " M frontend/src/App.tsx",
+    " M frontend/src/pages/CostsPage.tsx",
+    " M frontend/src/pages/InventoryPage.tsx",
+    " M frontend/src/pages/MovementsPage.tsx",
+    " M frontend/src/pages/RequestsPage.tsx",
+    " M frontend/src/pages/ReturnsPage.tsx",
+    " M frontend/src/pages/SalesPage.tsx",
+    " M frontend/src/pages/WholesalePage.tsx",
+    " M frontend/src/services/api.ts",
+    " M frontend/src/stores/__tests__/authStore.test.ts",
+    " M frontend/src/stores/authStore.ts",
+    " M mobile/src/navigation/AppNavigator.tsx",
+    " M mobile/src/screens/SalesScreen.tsx",
+    " M mobile/src/services/api.ts",
+    "?? backend/prisma/migrations/20261103_physical_stock_and_returns/",
+    "?? backend/prisma/migrations/20261103b_commercial_controls/",
+    "?? backend/src/modules/operations/",
+    "?? backend/src/modules/returns/inspection.routes.ts",
+    "?? backend/src/modules/sales/__tests__/controlesComerciales.itest.ts",
+    "?? backend/src/modules/sales/__tests__/operacionReal.itest.ts",
+    "?? backend/src/modules/sales/voidSale.ts",
+    "?? backend/src/shared/utils/__tests__/importWorkbook.test.ts",
+    "?? backend/src/shared/utils/__tests__/safeError.test.ts",
+    "?? backend/src/shared/utils/importWorkbook.ts",
+    "?? backend/src/shared/utils/paymentEvidence.ts",
+    "?? backend/src/shared/utils/purchaseInvoice.ts",
+    "?? backend/src/shared/utils/replayableOperation.ts",
+    "?? backend/src/shared/utils/safeError.ts",
+    "?? backend/src/shared/utils/saleBalance.ts",
+    "?? backend/src/shared/utils/sessionRevocation.ts",
+    "?? backend/src/testing/bankFixture.ts",
+    "?? backend/src/testing/restoreFixture.ts",
+    "?? docs/GENERAL/",
+    "?? docs/H3/",
+    "?? docs/H4/",
+    "?? docs/README.md",
+    "?? frontend/src/components/BankVerificationFields.test.tsx",
+    "?? frontend/src/components/BankVerificationFields.tsx",
+    "?? frontend/src/components/PendingOperation.tsx",
+    "?? frontend/src/components/PhysicalStockPanel.tsx",
+    "?? frontend/src/components/VoidSalePanel.tsx",
+    "?? frontend/src/services/__tests__/pendingOperation.test.ts",
+    "?? frontend/src/services/pendingOperation.ts",
+    "?? ml/",
+    "?? mobile/package-lock.json"
+  ],
+  "git_diff_stat": [
+    " AGENTS.md                                          |    4 +-",
+    " README.md                                          |    4 +",
+    " backend/package-lock.json                          |  141 +--",
+    " backend/package.json                               |    4 +-",
+    " backend/prisma/schema.prisma                       |   74 +-",
+    " backend/src/app.ts                                 |   19 +",
+    " backend/src/jobs/replenishJob.ts                   |   12 +-",
+    " backend/src/modules/auth/auth.routes.ts            |   28 +-",
+    " backend/src/modules/costs/__tests__/costs.itest.ts |    5 +-",
+    " backend/src/modules/costs/costs.routes.ts          |   46 +-",
+    " backend/src/modules/customers/customers.routes.ts  |   11 +-",
+    " backend/src/modules/dashboard/dashboard.routes.ts  |   15 +-",
+    " .../inventory/__tests__/inventory.routes.itest.ts  |    4 +",
+    " backend/src/modules/inventory/inventory.routes.ts  |    9 +-",
+    " backend/src/modules/locations/locations.routes.ts  |    5 +-",
+    " .../modules/movements/__tests__/movements.itest.ts |   11 +-",
+    " backend/src/modules/movements/movements.routes.ts  |   42 +-",
+    " .../modules/notifications/notifications.routes.ts  |    9 +-",
+    " backend/src/modules/payments/payments.routes.ts    |   58 +-",
+    " .../src/modules/permissions/permissions.routes.ts  |   13 +-",
+    " backend/src/modules/prices/prices.routes.ts        |   11 +-",
+    " backend/src/modules/products/products.routes.ts    |   22 +-",
+    " .../src/modules/products/searchImage.service.ts    |    2 +-",
+    " backend/src/modules/public/public.routes.ts        |   17 +-",
+    " backend/src/modules/reports/dailyReport.ts         |    6 +-",
+    " backend/src/modules/reports/reports.routes.ts      |   17 +-",
+    " backend/src/modules/requests/requests.routes.ts    |   22 +-",
+    " .../src/modules/returns/__tests__/returns.itest.ts |   17 +-",
+    " backend/src/modules/returns/returns.routes.ts      |   34 +-",
+    " backend/src/modules/sales/__tests__/sales.itest.ts |    4 +-",
+    " .../modules/sales/__tests__/saneamiento.itest.ts   |    8 +-",
+    " .../sales/__tests__/segundaAuditoria.itest.ts      |   10 +-",
+    " backend/src/modules/sales/sales.routes.ts          |   53 +-",
+    " backend/src/modules/suppliers/suppliers.routes.ts  |   13 +-",
+    " backend/src/modules/users/users.routes.ts          |   27 +-",
+    " backend/src/modules/vision/vision.service.ts       |    2 +-",
+    " backend/src/modules/wholesale/wholesale.routes.ts  |   33 +-",
+    " backend/src/server.ts                              |   18 +-",
+    " backend/src/shared/middlewares/auth.ts             |   38 +-",
+    " backend/src/shared/middlewares/errorHandler.ts     |    6 +-",
+    " backend/src/shared/utils/moveStock.ts              |   24 +-",
+    " backend/src/shared/utils/notificarInventario.ts    |    3 +-",
+    " backend/src/shared/utils/pricing.ts                |    4 +-",
+    " backend/src/shared/utils/saleCustomer.ts           |    4 +",
+    " backend/src/testing/seed.ts                        |    2 +",
+    " docs/AUDITORIA_IMPLEMENTACION_IA_VISION.md         |  631 ----------",
+    " docs/AUDITORIA_MODELO_PREDICTIVO_H4.md             |  655 ----------",
+    " docs/CORRECCIONES_DOCENTE_2026-09-01.md            |  480 -------",
+    " docs/CORRECCION_OBERSERVACIONES.md                 |  298 -----",
+    " docs/FLUJO_VISION_IA.md                            |  163 ---",
+    " docs/GIT_CONVENTION.md                             |  113 --",
+    " docs/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md   |  183 ---",
+    " docs/H4_PLAN_DE_TRABAJO.md                         |  238 ----",
+    " docs/MODO_ESCANEO_INTELIGENTE.md                   |  373 ------",
+    " docs/PLAN_IMPLEMENTACION_IA_VISION.md              |  465 -------",
+    " docs/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md        |  661 ----------",
+    " docs/PLAN_TRABAJO_ERIKA_ROSS.md                    | 1316 --------------------",
+    " docs/PLAN_TRABAJO_MARTES.md                        |  235 ----",
+    " docs/STACK_BACKEND.md                              |   95 --",
+    " docs/STACK_FRONTEND.md                             |   47 -",
+    " docs/STACK_INFRASTRUCTURE.md                       |   45 -",
+    " docs/STACK_MOBILE.md                               |   44 -",
+    " docs/TAREAS_ERIKA_Y_ROSS.md                        |  290 -----",
+    " docs/TESTING_BACKEND.md                            |  612 ---------",
+    " .../modelo-ia/ALTERNATIVAS_ANOTACION_DATASET_IA.md |  314 -----",
+    " docs/modelo-ia/AUDITORIA_AIR_FILTER_IA.md          |  120 --",
+    " docs/modelo-ia/AUDITORIA_FUENTES_DATASET_IA.md     |  239 ----",
+    " docs/modelo-ia/AUDITORIA_HEADLIGHT_CARPARTS_SEG.md |  108 --",
+    " docs/modelo-ia/CONSTRUCCION_DATASET_PROCESSED.md   |  142 ---",
+    " docs/modelo-ia/CONTEO_CLASES_DATASET_IA.md         |  191 ---",
+    " docs/modelo-ia/CONTEO_LABELS_CAR_ENGINE_BAY.md     |   44 -",
+    " docs/modelo-ia/CONVERSION_HEADLIGHT_YOLO.md        |  122 --",
+    " docs/modelo-ia/CV4_AUDITORIA_ROBUSTEZ_V2.md        |  205 ---",
+    " docs/modelo-ia/CV4_ENTRENAMIENTO_YOLO_BASELINE.md  |   69 -",
+    " docs/modelo-ia/CV4_MODELO_V2_DOMAIN_BALANCED.md    |  190 ---",
+    " docs/modelo-ia/CV4_MODELO_V3_WEBCAM_ROBUST.md      |  195 ---",
+    " docs/modelo-ia/CV4_SANITY_CHECK_YOLO.md            |   97 --",
+    " docs/modelo-ia/CV5_EVALUACION_MODELO_YOLO.md       |  271 ----",
+    " docs/modelo-ia/CV6_SERVICIO_INFERENCIA_FASTAPI.md  |  296 -----",
+    " docs/modelo-ia/CV7_INTEGRACION_IA_BACKEND.md       |  202 ---",
+    " docs/modelo-ia/GENERACION_DATASET_SINTETICO.md     |   89 --",
+    " docs/modelo-ia/PILOTO_AUTOBOX_OPENCV.md            |   91 --",
+    " .../modelo-ia/PILOTO_DATOS_SINTETICOS_BRAKE_PAD.md |   70 --",
+    " .../PILOTO_DATOS_SINTETICOS_CLASES_FALTANTES.md    |   47 -",
+    " docs/modelo-ia/PLAN_CONSTRUCCION_DATASET_MVP.md    |  262 ----",
+    " docs/modelo-ia/PLAN_DATASET_AUTOPARTES_IA.md       |  348 ------",
+    " .../modelo-ia/VERIFICACION_METADATA_DATASETS_IA.md |  238 ----",
+    " frontend/package-lock.json                         |  181 +--",
+    " frontend/package.json                              |    4 +-",
+    " frontend/src/App.tsx                               |   37 +-",
+    " frontend/src/pages/CostsPage.tsx                   |   18 +-",
+    " frontend/src/pages/InventoryPage.tsx               |    3 +",
+    " frontend/src/pages/MovementsPage.tsx               |    7 +-",
+    " frontend/src/pages/RequestsPage.tsx                |    4 +-",
+    " frontend/src/pages/ReturnsPage.tsx                 |   18 +-",
+    " frontend/src/pages/SalesPage.tsx                   |   32 +-",
+    " frontend/src/pages/WholesalePage.tsx               |   28 +-",
+    " frontend/src/services/api.ts                       |    1 +",
+    " frontend/src/stores/__tests__/authStore.test.ts    |    1 +",
+    " frontend/src/stores/authStore.ts                   |    4 +",
+    " mobile/src/navigation/AppNavigator.tsx             |    3 +-",
+    " mobile/src/screens/SalesScreen.tsx                 |   49 +-",
+    " mobile/src/services/api.ts                         |   30 +",
+    " 103 files changed, 826 insertions(+), 11399 deletions(-)"
+  ],
+  "nota_git": "Incluye modificaciones anteriores conservadas. No se ejecutó staging ni otra mutación Git. Las rutas anteriores aparecen retiradas por el traslado de documentos."
+}

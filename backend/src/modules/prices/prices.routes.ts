@@ -1,3 +1,4 @@
+import { safeError } from "../../shared/utils/safeError";
 import { errorDominio } from "../../shared/utils/errorDominio";
 import { money, validatePriceConfiguration } from "../../shared/utils/pricing";
 import { esErrorDominio } from "../../shared/utils/errorDominio";
@@ -8,7 +9,7 @@ import { AuthRequest } from "../../shared/types";
 import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(authorize("ADMIN"));
@@ -127,7 +128,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
-    console.error("Error al calcular precios:", error);
+    console.error("Error al calcular precios:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -161,7 +162,7 @@ router.put("/:productId", authorizeModule("precios"), async (req: AuthRequest, r
     });
   } catch (error) {
     if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
-    console.error("Error al actualizar precio:", error);
+    console.error("Error al actualizar precio:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -208,7 +209,7 @@ router.post("/apply", authorizeModule("precios"), async (req: AuthRequest, res: 
     res.json({ updated, margin1: m1, margin2: m2, costId: costId ? Number(costId) : null });
   } catch (error: any) {
     if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
-    console.error("Error al aplicar precios:", error);
+    console.error("Error al aplicar precios:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -257,7 +258,7 @@ router.get("/export", async (req: AuthRequest, res: Response) => {
     res.json({ data: rows, total: rows.length, csv });
   } catch (error) {
     if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
-    console.error("Error al exportar precios:", error);
+    console.error("Error al exportar precios:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

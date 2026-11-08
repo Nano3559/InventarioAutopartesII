@@ -59,6 +59,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
   logout: () => {
+    const token = get().token;
+    if (token) void api.post("/auth/logout", {}, { headers: { Authorization: `Bearer ${token}` } }).catch(() => {
+      // La limpieza local no afirma revocación remota cuando no hay conexión.
+    });
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     set({ user: null, token: null, isAuthenticated: false, permissionsLoading: false, permissions: [], columnConfig: {}, allowedCategories: [] });
