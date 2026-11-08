@@ -1,4 +1,8 @@
-import { saleCustomer } from "../../shared/utils/saleCustomer";
+import { bankReferenceConflict, paymentEvidence } from "../../shared/utils/paymentEvidence";
+import { voidSale } from "./voidSale";
+import { parsePositiveInt } from "../../shared/middlewares/validate";
+import { safeError } from "../../shared/utils/safeError";
+import { saleCustomer, requireCreditCustomer } from "../../shared/utils/saleCustomer";
 import { escapeHtml } from "../../shared/utils/html";
 import { saleValidation } from "../../shared/middlewares/saleValidation";
 import { Router, Response, NextFunction } from "express";
@@ -14,10 +18,11 @@ import { notificarInventarioSolicitud } from "../../shared/utils/notificarInvent
 import { esErrorDominio, errorDominio } from "../../shared/utils/errorDominio";
 
 import { salePrice, lineSubtotal, money, validatePayments } from "../../shared/utils/pricing";
+import { operationKey, replayableOperation } from "../../shared/utils/replayableOperation";
 import { saleLocation } from "../../shared/utils/saleLocation";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(requireTiendaLocation);
@@ -28,6 +33,17 @@ router.use((req, res, next) => {
 });
 
 // GET / — Listar ventas con filtros
+router.post("/:id/void", authorize("ADMIN"), async (req: AuthRequest, res) => {
+  try {
+    const id = parsePositiveInt(req.params.id, "Venta");
+    const key = operationKey(req);
+    if (!key) return res.status(400).json({ message: "La anulación requiere identidad de operación" });
+    const result = await prisma.$transaction(tx => replayableOperation(tx, req.user!.userId, "VOID_SALE", key, { id, ...req.body },
+      () => voidSale(tx, id, req.user!.userId, req.body.reason, req.body.goodsNeverDeliveredAndVerified === true)));
+    res.json(result);
+  } catch (error) { res.status(isPrismaClientError(error) ? 500 : 400).json({ message: isPrismaClientError(error) ? "No se pudo anular la venta" : (error as Error).message }); }
+});
+
 router.get("/", async (req: AuthRequest, res: Response) => {
   try {
     const { type, locationId, seller, startDate, endDate, page = "1", limit = "20" } = req.query;
@@ -82,7 +98,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: cleanPage, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar ventas:", error);
+    console.error("Error al listar ventas:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -115,15 +131,17 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
     }
 
     const totalReturned = sale.returns.reduce((sum, r) => sum + Number(r.amount), 0);
+    const totalRefunded = sale.returns.reduce((sum, r) => sum + Number(r.refundAmount), 0);
+    const pending = sale.status === "VOIDED" ? 0 : Math.max(0, Number(sale.total) - totalReturned - sale.payments.filter(p => p.method !== "CREDITO").reduce((sum, p) => sum + Number(p.amount), 0) + totalRefunded);
     const totalPaid = sale.payments.filter((p) => p.method !== "CREDITO").reduce((sum, p) => sum + Number(p.amount), 0);
 
-    const paymentMethods = sale.payments.map((p) => `${p.method}: Bs. ${Number(p.amount).toFixed(2)}`).join(" | ");
+    const paymentMethods = sale.payments.map((p) => `${p.method}: Bs. ${Number(p.amount).toFixed(2)}${["QR", "TRANSFERENCIA"].includes(p.method) ? p.verifiedAt ? ` (verificado manualmente, ref. ${p.bankReference}, fecha ${p.bankOperationDate})` : " (histórico sin evidencia bancaria registrada)" : ""}`).join(" | ");
 
     const html = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Nota de Venta #${sale.id}</title>
+  <title>${sale.status === "VOIDED" ? "ANULADA - " : ""}Nota de Venta #${sale.id}</title>
   <style>
     @page { size: A5; margin: 10mm; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -184,6 +202,7 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
   </div>
   ` : ""}
 
+  ${sale.status === "VOIDED" ? `<div class="customer"><strong>VENTA ANULADA</strong><br>Motivo: ${escapeHtml(sale.voidReason || "")}<br>Fecha: ${escapeHtml(new Intl.DateTimeFormat("es-BO", { timeZone: "America/La_Paz", dateStyle: "short", timeStyle: "short" }).format(sale.voidedAt!))}<br>Responsable: #${sale.voidedById}<br>Importes originales conservados. Saldo exigible: Bs. 0.00</div>` : ""}
   <table>
     <thead>
       <tr>
@@ -210,7 +229,7 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
     ${totalReturned > 0 ? `<div class="row" style="color:#dc2626"><span>Devoluciones:</span><span>- Bs. ${totalReturned.toFixed(2)}</span></div>` : ""}
     <div class="row total-final"><span>TOTAL:</span><span>Bs. ${(Number(sale.total) - totalReturned).toFixed(2)}</span></div>
     <div class="row"><span>Pagado:</span><span>Bs. ${totalPaid.toFixed(2)}</span></div>
-    ${totalPaid < (Number(sale.total) - totalReturned) ? `<div class="row" style="color:#dc2626"><span>Pendiente:</span><span>Bs. ${((Number(sale.total) - totalReturned) - totalPaid).toFixed(2)}</span></div>` : ""}
+    ${pending > 0 ? `<div class="row" style="color:#dc2626"><span>Pendiente:</span><span>Bs. ${pending.toFixed(2)}</span></div>` : ""}
   </div>
 
   <div class="payments">
@@ -228,7 +247,7 @@ router.get("/:id/nota", async (req: AuthRequest, res: Response) => {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(html);
   } catch (error) {
-    console.error("Error al generar nota de venta:", error);
+    console.error("Error al generar nota de venta:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -268,7 +287,7 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
       returns: sale.returns.map((r) => ({ ...r, amount: Number(r.amount) })),
     });
   } catch (error) {
-    console.error("Error al obtener venta:", error);
+    console.error("Error al obtener venta:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -360,8 +379,10 @@ router.post("/", saleValidation, (req: AuthRequest, res: Response, next: NextFun
       requestedById: number;
     }[] = [];
 
-    const result = await prisma.$transaction(async (tx) => {
+    const key = operationKey(req);
+    const result = await prisma.$transaction(async (tx) => replayableOperation(tx, user.userId, "SALE_NORMAL", key, req.body, async () => {
       const finalCustomerId = await saleCustomer(tx, customerId, customerData);
+      requireCreditCustomer(acceptedPayments, finalCustomerId);
       // R4: bloqueo de fila pesimista (FOR UPDATE) sobre el inventario antes de validar y
       // descontar (misma mecánica que movements). Todas las filas se bloquean en un único
       // query con ORDER BY id: los locks se toman en orden determinista y sin ventana entre
@@ -411,6 +432,7 @@ router.post("/", saleValidation, (req: AuthRequest, res: Response, next: NextFun
         throw errorDominio(`El total pagado (Bs. ${totalPaid}) no coincide con el total de la venta (Bs. ${totalSale})`);
       }
 
+      const verifiedPayments = await paymentEvidence(tx, acceptedPayments, user.userId);
       const sale = await tx.sale.create({
         data: {
           total: totalSale,
@@ -425,10 +447,7 @@ router.post("/", saleValidation, (req: AuthRequest, res: Response, next: NextFun
           formaPago: entregaFormaPago,
           items: { create: saleItemsData },
           payments: {
-            create: acceptedPayments.map((p) => ({
-              method: p.method,
-              amount: Number(p.amount),
-            })),
+            create: verifiedPayments,
           },
         },
         include: { items: true, payments: true },
@@ -485,7 +504,7 @@ router.post("/", saleValidation, (req: AuthRequest, res: Response, next: NextFun
         items: sale.items.map((i) => ({ ...i, unitPrice: Number(i.unitPrice), subtotal: Number(i.subtotal) })),
         payments: sale.payments.map((p) => ({ ...p, amount: Number(p.amount) })),
       };
-    }, { timeout: 20000 });
+    }), { timeout: 20000 });
 
     // Reposición automática DESPUÉS del commit: la venta ya está confirmada, así que un
     // P2002 (carrera con otra creación simultánea) solo significa "ya había una solicitud
@@ -541,8 +560,10 @@ router.post("/", saleValidation, (req: AuthRequest, res: Response, next: NextFun
       await notificarInventarioSolicitud(prisma, notificacion);
     }
 
-    res.status(201).json(result);
+    const currentStatus = await prisma.sale.findUniqueOrThrow({ where: { id: result.id }, select: { status: true, voidedAt: true, voidReason: true } });
+    res.status(201).json({ ...result, ...currentStatus });
   } catch (error: any) {
+    if (bankReferenceConflict(error)) return res.status(409).json({ message: "La referencia bancaria ya está registrada. Revise el cobro original" });
     // Solo los rechazos de negocio conocidos (ErrorDominio) responden 400 con su
     // mensaje: son texto escrito por este código, no un detalle del sistema. Cualquier
     // otro fallo (Prisma, fs, TypeError) se registra y responde 500 genérico, en vez
@@ -550,7 +571,7 @@ router.post("/", saleValidation, (req: AuthRequest, res: Response, next: NextFun
     if (esErrorDominio(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al crear venta:", error);
+    console.error("Error al crear venta:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

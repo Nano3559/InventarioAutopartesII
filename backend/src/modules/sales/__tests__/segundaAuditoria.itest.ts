@@ -1,17 +1,19 @@
+const postJson = (base: string, path: string, body: any, token?: string) => postVerifiedBankFixture(ctx, base, path, body, token);
+import { postVerifiedBankFixture } from "../../../testing/bankFixture";
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import * as XLSX from "xlsx";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { seed, cleanup, createProduct, createSupplier, SeedContext } from "../../../testing/seed";
-import { startTestServer, TestServer, postJson, jsonHeaders, loginAndGetToken } from "../../../testing/helpers";
+import { startTestServer, TestServer,  jsonHeaders, loginAndGetToken } from "../../../testing/helpers";
 let ctx: SeedContext, server: TestServer;
 let admin: string, tienda: string, inventario: string, supplierId: number;
 before(async()=>{ctx=await seed("segunda");server=await startTestServer();supplierId=await createSupplier(ctx);[admin,tienda,inventario]=await Promise.all(["admin","tienda","inventario"].map(async role=>{const u=ctx.users[role as keyof typeof ctx.users];return loginAndGetToken(server.baseUrl,u.email,u.password);}));});
 after(async()=>{await cleanup(ctx);await server.close();});
 const stock=async(productId:number,locationId:number)=>(await ctx.prisma.inventory.findUniqueOrThrow({where:{productId_locationId:{productId,locationId}}})).stock;
 function invoiceBytes(rows:unknown[]){const b=XLSX.utils.book_new();XLSX.utils.book_append_sheet(b,XLSX.utils.json_to_sheet(rows),"Factura");return XLSX.write(b,{type:"buffer",bookType:"xlsx"});}
-function upload(bytes:Buffer,rate="7"){const form=new FormData();form.append("file",new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),"factura.xlsx");form.append("supplierId",String(supplierId));form.append("exchangeRate",rate);form.append("locationId",String(ctx.locationIds.almacen));return fetch(`${server.baseUrl}/api/costs/import-invoice`,{method:"POST",headers:{authorization:`Bearer ${admin}`},body:form});}
+function upload(bytes:Buffer,rate="7"){const form=new FormData();form.append("file",new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),"factura.xlsx");form.append("supplierId",String(supplierId));form.append("documentIdentity","SEGUNDA-"+String((XLSX.utils.sheet_to_json(XLSX.read(bytes,{type:"buffer"}).Sheets.Factura)[0] as any).Codigo));form.append("exchangeRate",rate);form.append("locationId",String(ctx.locationIds.almacen));return fetch(`${server.baseUrl}/api/costs/import-invoice`,{method:"POST",headers:{authorization:`Bearer ${admin}`},body:form});}
 
 test("factura idéntica concurrente registra costo y stock solo una vez, y detecta parámetros cambiados",async()=>{
  const p=await createProduct(ctx,{stockAlmacen:1});const bytes=invoiceBytes([{Codigo:p.itemCode,Cantidad:2,Precio:5}]);
@@ -37,7 +39,9 @@ test("reintento concurrente de movimiento conserva identidad, cantidades y audit
  const responses=await Promise.all([postJson(server.baseUrl,"/api/movements",payload,inventario),postJson(server.baseUrl,"/api/movements",payload,inventario)]);
  for(const r of responses)assert.equal(r.status,201,await r.clone().text());
  const ids=(await Promise.all(responses.map(r=>r.json())) as any[]).map(m=>m.id);assert.equal(ids[0],ids[1]);
- assert.equal(await stock(p.id,ctx.locationIds.almacen),6);assert.equal(await stock(p.id,ctx.locationIds.tienda),4);
+ assert.equal(await stock(p.id,ctx.locationIds.almacen),6);assert.equal(await stock(p.id,ctx.locationIds.tienda),0);
+ assert.equal((await postJson(server.baseUrl,`/api/movements/${ids[0]}/receive`,{},inventario)).status,200);
+ assert.equal(await stock(p.id,ctx.locationIds.tienda),4);
  assert.equal(await ctx.prisma.movement.count({where:{productId:p.id}}),1);
  assert.equal((await postJson(server.baseUrl,"/api/movements",{...payload,quantity:2},inventario)).status,400);
 });

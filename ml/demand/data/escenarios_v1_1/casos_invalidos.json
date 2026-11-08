@@ -1,0 +1,284 @@
+[
+  {
+    "case_id": "cantidad_negativa",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_QUANTITY",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": -1,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "lag_negativo",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_QUANTITY",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": -2
+      }
+    ]
+  },
+  {
+    "case_id": "cantidad_fraccionaria",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_QUANTITY",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 1.5,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "target_desconocido",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_QUANTITY",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": null,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "lag_desconocido",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_QUANTITY",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": null,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "texto_en_cantidad",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_QUANTITY",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": "NaN",
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "producto_inexistente",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_PRODUCT",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 999999,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "almacen_como_tienda",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_LOCATION",
+    "records": [
+      {
+        "locationId": 1,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "mes_fuera_periodo",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_MONTH",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2026-10",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "mes_invalido",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_MONTH",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-13",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "calendario_incorrecto",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_CALENDAR",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 9,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "lag_incorrecto",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "LAG_MISMATCH",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 25
+      }
+    ]
+  },
+  {
+    "case_id": "target_incorrecto",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "TARGET_MISMATCH",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 21,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "parametro_latente_filtrado",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "INVALID_COLUMNS",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "tasa_generador": 18,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  },
+  {
+    "case_id": "duplicado",
+    "clase_caso": "NEGATIVO_INVALIDO",
+    "expected_error": "DUPLICATE_ROW",
+    "records": [
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      },
+      {
+        "locationId": 5,
+        "mes_cos": 1.0,
+        "mes_objetivo": "2025-01",
+        "mes_sin": 0.0,
+        "productId": 1,
+        "target_ventas_mes": 20,
+        "ventas_hace_2_meses": 21,
+        "ventas_hace_3_meses": 28,
+        "ventas_mes_anterior": 24
+      }
+    ]
+  }
+]

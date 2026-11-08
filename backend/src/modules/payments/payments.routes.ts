@@ -1,4 +1,9 @@
+import { safeError } from "../../shared/utils/safeError";
+import { bankReferenceConflict, paymentEvidence } from "../../shared/utils/paymentEvidence";
+import { parsePositiveInt, parseString } from "../../shared/middlewares/validate";
 import { money } from "../../shared/utils/pricing";
+import { operationKey, replayableOperation } from "../../shared/utils/replayableOperation";
+import { saleBalance } from "../../shared/utils/saleBalance";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authorizeModule, authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
@@ -7,12 +12,30 @@ import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(requireTiendaLocation);
 router.use(authorize("ADMIN", "TIENDA"));
 router.use(authorizeModule(["ventas", "ventas-mayor"]));
+
+router.get("/receiving-accounts", async (_req, res) => {
+  try { res.json({ accounts: await prisma.receivingAccount.findMany({ where: { active: true }, orderBy: { code: "asc" } }) }); }
+  catch { res.status(503).json({ message: "No se pudieron consultar cuentas receptoras" }); }
+});
+router.post("/receiving-accounts", authorize("ADMIN"), async (req: AuthRequest, res) => {
+  try {
+    const code = parseString(req.body.code, "Código de cuenta", { required: true, max: 40 })!.toUpperCase();
+    const name = parseString(req.body.name, "Nombre de cuenta", { required: true, max: 100 })!;
+    if (!/^[A-Z0-9_-]{3,40}$/.test(code)) return res.status(400).json({ message: "Use un código de cuenta de 3 a 40 letras, números o guiones" });
+    const account = await prisma.$transaction(async tx => {
+      const created = await tx.receivingAccount.create({ data: { code, name } });
+      await tx.auditLog.create({ data: { userId: req.user!.userId, action: "CREATE_RECEIVING_ACCOUNT", targetType: "RECEIVING_ACCOUNT", targetId: created.id, newValue: { code, name } } });
+      return created;
+    });
+    res.status(201).json(account);
+  } catch { res.status(400).json({ message: "Cuenta inválida o código ya registrado" }); }
+});
 
 // GET / — Listar pagos con filtros
 router.get("/", async (req: AuthRequest, res: Response) => {
@@ -52,7 +75,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar pagos:", error);
+    console.error("Error al listar pagos:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -91,30 +114,28 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     // M5 (ETAPA 8): la validación de "no pagar de más" es lectura+validación+escritura.
     // Dos pagos concurrentes sobre el mismo saldo pendiente podían pasar ambos el filtro.
     // Se protege dentro de una transacción con bloqueo pesimista de la fila de la venta.
-    const payment = await prisma.$transaction(async (tx) => {
+    const key = operationKey(req);
+    const payment = await prisma.$transaction(async (tx) => replayableOperation(tx, payUser.userId, "PAYMENT", key, req.body, async () => {
       await tx.$queryRaw`SELECT id FROM "Sale" WHERE "id" = ${Number(saleId)} FOR UPDATE`;
+      if ((await tx.sale.findUniqueOrThrow({ where: { id: parsePositiveInt(saleId, "Venta") } })).status === "VOIDED") throw new Error("No se puede cobrar una venta anulada");
 
-      const existingPayments = await tx.payment.aggregate({ where: { saleId: Number(saleId), method: { not: "CREDITO" } }, _sum: { amount: true } });
-      const totalReturned = await tx.return.aggregate({ where: { saleId: Number(saleId) }, _sum: { amount: true } });
-      const paid = Number(existingPayments._sum.amount || 0);
-      const returned = Number(totalReturned._sum.amount || 0);
-      const pending = Number(sale.total) - paid - returned;
+      const { pending } = await saleBalance(tx, Number(saleId), Number(sale.total));
 
       if (amountNum - pending > 0.01) {
         throw new Error(`El monto (Bs. ${amountNum.toFixed(2)}) supera el saldo pendiente de la venta (Bs. ${pending.toFixed(2)})`);
       }
 
-      return tx.payment.create({
-        data: { saleId: Number(saleId), method, amount: amountNum },
-      });
-    });
+      const [verified] = await paymentEvidence(tx, [{ method, amount: amountNum, bankVerification: req.body.bankVerification }], payUser.userId);
+      return tx.payment.create({ data: { saleId: Number(saleId), ...verified } });
+    }));
 
     res.status(201).json(payment);
   } catch (error: any) {
+    if (bankReferenceConflict(error)) return res.status(409).json({ message: "La referencia bancaria ya está registrada. Revise el cobro original" });
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al registrar pago:", error);
+    console.error("Error al registrar pago:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -138,11 +159,12 @@ router.get("/summary/:saleId", async (req: AuthRequest, res: Response) => {
         where: { saleId },
         orderBy: { date: "asc" },
       }),
-      prisma.return.aggregate({ where: { saleId }, _sum: { amount: true } }),
+      prisma.return.aggregate({ where: { saleId }, _sum: { amount: true, refundAmount: true, debtReduction: true } }),
     ]);
 
     const totalPaid = payments.filter((p) => p.method !== "CREDITO").reduce((sum, p) => sum + Number(p.amount), 0);
     const totalReturned = Number(returns._sum.amount || 0);
+    const totalRefunded = Number(returns._sum.refundAmount || 0);
     const totalSale = Number(sale.total);
 
     res.json({
@@ -150,7 +172,11 @@ router.get("/summary/:saleId", async (req: AuthRequest, res: Response) => {
       totalSale,
       totalPaid,
       totalReturned,
-      pending: Math.max(0, totalSale - totalPaid - totalReturned),
+      totalRefunded,
+      debtReduced: Number(returns._sum.debtReduction || 0),
+      netCollected: totalPaid - totalRefunded,
+      status: sale.status,
+      pending: sale.status === "VOIDED" ? 0 : Math.max(0, totalSale - totalPaid - totalReturned + totalRefunded),
       creditAssigned: payments.filter((p) => p.method === "CREDITO").reduce((sum, p) => sum + Number(p.amount), 0),
       payments: payments.map((p) => ({
         id: p.id,
@@ -160,7 +186,7 @@ router.get("/summary/:saleId", async (req: AuthRequest, res: Response) => {
       })),
     });
   } catch (error) {
-    console.error("Error al obtener resumen de pagos:", error);
+    console.error("Error al obtener resumen de pagos:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

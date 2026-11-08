@@ -18,3 +18,7 @@ export async function saleCustomer(tx: Prisma.TransactionClient, customerId: unk
     : await tx.customer.create({ data: { name, phone } });
   return created.id;
 }
+
+export function requireCreditCustomer(payments: Array<{ method: string; amount: number }>, customerId: number | null) {
+  if (payments.some(p => p.method === "CREDITO" && p.amount > 0) && !customerId) throw errorDominio("Una venta a crédito requiere identificar al cliente");
+}

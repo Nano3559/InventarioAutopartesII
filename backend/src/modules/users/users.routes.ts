@@ -1,12 +1,14 @@
+import { safeError } from "../../shared/utils/safeError";
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { authenticate, authorize } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
 import { isValidEmail } from "../../shared/utils/validation";
+import { revokeUserSessions } from "../../shared/utils/sessionRevocation";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 
@@ -34,7 +36,7 @@ router.get("/", authorize("ADMIN"), async (req: AuthRequest, res: Response) => {
       })),
     });
   } catch (error) {
-    console.error("Error al listar usuarios:", error);
+    console.error("Error al listar usuarios:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -48,7 +50,7 @@ router.get("/roles", authorize("ADMIN"), async (req: AuthRequest, res: Response)
     });
     res.json({ roles });
   } catch (error) {
-    console.error("Error al listar roles:", error);
+    console.error("Error al listar roles:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -112,7 +114,7 @@ router.post("/", authorize("ADMIN"), async (req: AuthRequest, res: Response) => 
     if (error?.code === "P2002") {
       return res.status(400).json({ message: "Ya existe un usuario con ese email" });
     }
-    console.error("Error al crear usuario:", error);
+    console.error("Error al crear usuario:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -145,13 +147,20 @@ router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) =
       return res.status(400).json({ message: "No hay datos para actualizar" });
     }
 
-    const user = await prisma.user.update({
+    const user = await prisma.$transaction(async (tx) => {
+      const changed = await tx.user.update({
       where: { id },
       data: updateData,
       include: {
         role: { select: { id: true, name: true } },
         location: { select: { id: true, name: true } },
       },
+      });
+      if (password || (finalRoleId && finalRoleId !== existing.roleId) ||
+          (locationId !== undefined && changed.locationId !== existing.locationId)) {
+        await revokeUserSessions(tx, req.user!.userId, id);
+      }
+      return changed;
     });
 
     res.json({
@@ -167,7 +176,7 @@ router.put("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response) =
     if (error?.code === "P2002") {
       return res.status(400).json({ message: "Ya existe un usuario con ese email" });
     }
-    console.error("Error al actualizar usuario:", error);
+    console.error("Error al actualizar usuario:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -183,7 +192,7 @@ router.get("/me/preferences", async (req: AuthRequest, res: Response) => {
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
     res.json({ columnPrefs: user.columnPrefs || {} });
   } catch (error) {
-    console.error("Error al obtener preferencias:", error);
+    console.error("Error al obtener preferencias:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -203,7 +212,7 @@ router.put("/me/preferences", async (req: AuthRequest, res: Response) => {
     });
     res.json({ columnPrefs: user.columnPrefs });
   } catch (error) {
-    console.error("Error al guardar preferencias:", error);
+    console.error("Error al guardar preferencias:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -241,7 +250,7 @@ router.delete("/:id", authorize("ADMIN"), async (req: AuthRequest, res: Response
     if (error?.code === "P2003") {
       return res.status(409).json({ message: "No se puede eliminar el usuario: tiene registros dependientes" });
     }
-    console.error("Error al eliminar usuario:", error);
+    console.error("Error al eliminar usuario:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

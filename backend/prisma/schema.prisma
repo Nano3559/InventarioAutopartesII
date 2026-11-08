@@ -30,6 +30,7 @@ model User {
   movements    Movement[]
   requests     ProductRequest[] @relation("RequestedBy")
   sales        Sale[]
+  verifiedPayments Payment[] @relation("PaymentVerifier")
   location     Location?        @relation(fields: [locationId], references: [id])
   role         RoleModel        @relation(fields: [roleId], references: [id])
   auditLogs    AuditLog[]
@@ -117,6 +118,10 @@ model Sale {
   saleDate     DateTime   @default(now())
   total        Decimal
   type         SaleType
+  status       SaleStatus @default(CONFIRMED)
+  voidReason   String?
+  voidedAt     DateTime?
+  voidedById   Int?
   userId       Int
   locationId   Int
   customerId   Int?
@@ -157,9 +162,38 @@ model Payment {
   method PaymentMethod
   amount Decimal
   date   DateTime      @default(now())
+  receivingAccountId Int?
+  bankReference String?
+  bankOperationDate String?
+  verifiedAt DateTime?
+  verifiedById Int?
+  receivingAccount ReceivingAccount? @relation(fields: [receivingAccountId], references: [id])
+  verifiedBy User? @relation("PaymentVerifier", fields: [verifiedById], references: [id])
   sale   Sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
 
   @@index([saleId])
+  @@unique([receivingAccountId, bankReference, bankOperationDate])
+}
+
+model ReceivingAccount {
+  id Int @id @default(autoincrement())
+  code String @unique
+  name String
+  active Boolean @default(true)
+  payments Payment[]
+}
+
+model PurchaseInvoice {
+  id Int @id @default(autoincrement())
+  supplierId Int
+  documentIdentity String
+  identityKey String
+  contentHash String
+  result Json
+  createdAt DateTime @default(now())
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+  costs Cost[]
+  @@unique([supplierId, identityKey])
 }
 
 model Return {
@@ -171,11 +205,18 @@ model Return {
   amount    Decimal
   method    PaymentMethod
   date      DateTime      @default(now())
+  disposition ReturnDisposition @default(LEGACY)
+  restockedQuantity Int @default(0)
+  discardedQuantity Int @default(0)
+  debtReduction Decimal @default(0)
+  refundAmount Decimal @default(0)
+  inspectedAt DateTime?
   product   Product       @relation(fields: [productId], references: [id])
   sale      Sale          @relation(fields: [saleId], references: [id])
 
   @@index([saleId])
   @@index([productId])
+  @@index([disposition, date])
 }
 
 model Movement {
@@ -188,6 +229,9 @@ model Movement {
   requestId      Int?
   date           DateTime @default(now())
   observation    String?
+  status         MovementStatus @default(LEGACY)
+  receivedQuantity Int @default(0)
+  receivedAt     DateTime?
   fromLocation   Location @relation("MovementFrom", fields: [fromLocationId], references: [id])
   product        Product  @relation(fields: [productId], references: [id])
   toLocation     Location @relation("MovementTo", fields: [toLocationId], references: [id])
@@ -196,6 +240,7 @@ model Movement {
 
   @@index([productId])
   @@index([toLocationId])
+  @@index([status, date])
 }
 
 model ProductRequest {
@@ -229,12 +274,15 @@ model Supplier {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   costs     Cost[]
+  invoices PurchaseInvoice[]
 }
 
 model Cost {
   id           Int      @id @default(autoincrement())
   productId    Int
   supplierId   Int
+  purchaseInvoiceId Int?
+  purchaseInvoice PurchaseInvoice? @relation(fields: [purchaseInvoiceId], references: [id])
   invoiceUrl   String?
   exchangeRate Decimal?
   costPrice    Decimal
@@ -285,9 +333,28 @@ enum LocationType {
   TIENDA
 }
 
+enum MovementStatus {
+  LEGACY
+  IN_TRANSIT
+  RECEIVED
+}
+
+enum ReturnDisposition {
+  LEGACY
+  PENDING_INSPECTION
+  SELLABLE
+  NOT_SELLABLE
+  MIXED
+}
+
 enum SaleType {
   NORMAL
   MAYOR
+}
+
+enum SaleStatus {
+  CONFIRMED
+  VOIDED
 }
 
 enum PaymentMethod {
@@ -299,11 +366,16 @@ enum PaymentMethod {
 
 enum RequestStatus {
   PENDIENTE
+  // Valores históricos conservados por 20260909_close_schema_drift.
+  // No se admiten en las transiciones nuevas de la API.
+  EN_PREPARACION
+  ENVIADO
+  RECIBIDO
+  CANCELADO
   RECIBIDO_POR_INVENTARIO
   PREPARANDO
   ENTREGADO
   RECIBIDO_POR_TIENDA
-  CANCELADO
 }
 
 model RequestHistory {

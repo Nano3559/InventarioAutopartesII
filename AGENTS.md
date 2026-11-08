@@ -13,7 +13,7 @@ backend/             API Express + TypeScript + Prisma + PostgreSQL
 frontend/            SPA React + Vite + TailwindCSS
 mobile/              App Expo (React Native)
 docs/                Documentación del proyecto
-PLAN_TRABAJO_ERIKA_ROSS.md   Plan oficial de tareas (leer antes de trabajar)
+docs/GENERAL/PLAN_TRABAJO_ERIKA_ROSS.md   Plan oficial de tareas (leer antes de trabajar)
 README.md            Documentación general
 ```
 
@@ -79,7 +79,7 @@ ANALIZAR → REPORTAR → APROBAR → IMPLEMENTAR → PROBAR → VALIDAR
 * No reset destructivo.
 * No squash de commits existentes.
 * No alterar el historial académico del proyecto.
-* El flujo de ramas/PR está en `docs/GIT_CONVENTION.md`.
+* El flujo de ramas/PR está en `docs/GENERAL/GIT_CONVENTION.md`.
 
 ## Qué cosas NO modificar sin autorización
 

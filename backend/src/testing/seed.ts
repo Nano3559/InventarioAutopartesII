@@ -229,6 +229,8 @@ async function cleanupNamespace(ctx: SeedContext): Promise<void> {
   await prisma.inventory.deleteMany({ where: { productId: { in: productIds } } });
   await prisma.product.deleteMany({ where: { id: { in: productIds } } });
   await prisma.customer.deleteMany({ where: { name: { contains: `Cliente ${ns}` } } });
+  await prisma.purchaseInvoice.deleteMany({ where: { supplier: { name: { contains: `Proveedor ${ns}` } } } });
+  await prisma.receivingAccount.deleteMany({ where: { code: { startsWith: `TEST_${ns.toUpperCase()}_` } } });
   await prisma.supplier.deleteMany({ where: { name: { contains: `Proveedor ${ns}` } } });
   // El aviso a INVENTARIO notifica a TODOS los usuarios con ese rol, así que otro
   // archivo de pruebas puede insertar una notificación dirigida a estos mismos

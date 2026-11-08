@@ -47,7 +47,7 @@ async function postMovement(productId: number, quantity: number): Promise<Respon
   );
 }
 
-test("R6.11 — movimiento válido ALMACÉN→TIENDA descuenta origen y acredita destino", async () => {
+test("R6.11 — el traslado descuenta origen y la recepción acredita destino", async () => {
   const p = await createProduct(ctx, { stockAlmacen: 10, stockTienda: 0 });
   const res = await postMovement(p.id, 4);
   assert.equal(res.status, 201);
@@ -56,6 +56,8 @@ test("R6.11 — movimiento válido ALMACÉN→TIENDA descuenta origen y acredita
   assert.equal(body.product.itemCode, p.itemCode);
 
   assert.equal(await stock(p.id, ctx.locationIds.almacen), 6);
+  assert.equal(await stock(p.id, ctx.locationIds.tienda), 0, "en tránsito no es stock disponible");
+  assert.equal((await postJson(server.baseUrl, `/api/movements/${body.id}/receive`, {}, token)).status, 200);
   assert.equal(await stock(p.id, ctx.locationIds.tienda), 4);
 });
 
@@ -94,19 +96,22 @@ test("R6.12 — dos movimientos concurrentes que agotarían el origen: exactamen
   assert.match(loser.message, /Stock insuficiente en origen/);
 
   assert.equal(await stock(p.id, ctx.locationIds.almacen), 1);
+  assert.equal(await stock(p.id, ctx.locationIds.tienda), 0);
+  const winner: any = await (a.status === 201 ? a : b).json();
+  assert.equal((await postJson(server.baseUrl, `/api/movements/${winner.id}/receive`, {}, token)).status, 200);
   assert.equal(await stock(p.id, ctx.locationIds.tienda), 4);
 
   const count = await ctx.prisma.movement.count({ where: { productId: p.id } });
   assert.equal(count, 1, "solo debe registrarse un movimiento");
 });
-test("entrega de solicitud mueve stock una vez y recepción no duplica ingreso", async () => {
+test("entrega inicia tránsito y recepción ingresa una vez", async () => {
   const p = await createProduct(ctx, { stockAlmacen: 10, stockTienda: 0 });
   const request = await ctx.prisma.productRequest.create({ data: { productId: p.id, quantity: 3, locationId: ctx.locationIds.tienda, requestedById: ctx.users.tienda.userId, status: "PREPARANDO" } });
   const headers = { "content-type": "application/json", authorization: `Bearer ${token}` };
   const deliver = () => fetch(`${server.baseUrl}/api/requests/${request.id}`, { method: "PUT", headers, body: JSON.stringify({ status: "ENTREGADO", fromLocationId: ctx.locationIds.almacen }) });
   assert.equal((await deliver()).status, 200);
   assert.equal(await stock(p.id, ctx.locationIds.almacen), 7);
-  assert.equal(await stock(p.id, ctx.locationIds.tienda), 3);
+  assert.equal(await stock(p.id, ctx.locationIds.tienda), 0);
   assert.equal((await deliver()).status, 400);
   const tokenTienda = await loginAndGetToken(server.baseUrl, ctx.users.tienda.email, ctx.users.tienda.password);
   const receive = await fetch(`${server.baseUrl}/api/requests/${request.id}`, { method: "PUT", headers: { ...headers, authorization: `Bearer ${tokenTienda}` }, body: JSON.stringify({ status: "RECIBIDO_POR_TIENDA" }) });

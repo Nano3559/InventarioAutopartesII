@@ -1,18 +1,47 @@
+import { safeError } from "../../shared/utils/safeError";
 import { idempotentMovement } from "../../shared/utils/idempotentMovement";
 import { rangoFechasNegocio } from "../../shared/utils/rangoFechas";
-import { moveStock } from "../../shared/utils/moveStock";
+import { moveStock, receiveMovement } from "../../shared/utils/moveStock";
 import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticate, authorizeModule } from "../../shared/middlewares/auth";
+import { authenticate, authorizeModule, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
+import { operationKey, replayableOperation } from "../../shared/utils/replayableOperation";
 import { AuthRequest } from "../../shared/types";
 import { parsePositiveInt, parseString } from "../../shared/middlewares/validate";
 import { isPrismaClientError } from "../../shared/utils/errors";
 import { parsePagination } from "../../shared/utils/pagination";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
+router.use(requireTiendaLocation);
+
+router.get("/incoming", authorize("ADMIN", "INVENTARIO", "TIENDA"), authorizeModule(["movimientos", "solicitudes"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const movements = await prisma.movement.findMany({ where: { status: "IN_TRANSIT",
+      ...(req.user!.role === "TIENDA" ? { toLocationId: req.user!.locationId! } : {}) },
+      include: { product: { select: { id: true, itemCode: true, name: true } }, fromLocation: { select: { name: true } }, toLocation: { select: { name: true } } },
+      orderBy: { date: "asc" }, take: 200 });
+    res.json({ movements });
+  } catch { res.status(503).json({ message: "No se pudieron consultar los traslados pendientes" }); }
+});
+
+router.post("/:id/receive", authorizeModule(["movimientos", "solicitudes"]), async (req: AuthRequest, res: Response) => {
+  try {
+    if (!["ADMIN", "INVENTARIO", "TIENDA"].includes(req.user!.role)) return res.status(403).json({ message: "Rol no autorizado para recibir" });
+    const id = parsePositiveInt(req.params.id, "Traslado");
+    const key = operationKey(req);
+    if (req.body.quantity !== undefined && !key) return res.status(400).json({ message: "La recepción parcial requiere identidad de operación" });
+    const movement = await prisma.movement.findUnique({ where: { id } });
+    if (!movement) return res.status(404).json({ message: "Traslado no encontrado" });
+    if (req.user!.role === "TIENDA" && movement.toLocationId !== req.user!.locationId) return res.status(403).json({ message: "Solo puede recibir en su tienda" });
+    if (movement.requestId) return res.status(400).json({ message: "Confirme la recepción desde la solicitud vinculada" });
+    const quantity = req.body.quantity === undefined ? undefined : parsePositiveInt(req.body.quantity, "Cantidad recibida");
+    const result = await prisma.$transaction(tx => replayableOperation(tx, req.user!.userId, "RECEIVE_MOVEMENT", key, { id, quantity }, () => receiveMovement(tx, id, req.user!.userId, quantity)));
+    res.json(result);
+  } catch (error) { res.status(isPrismaClientError(error) ? 500 : 400).json({ message: isPrismaClientError(error) ? "No se pudo registrar la recepción" : (error as Error).message }); }
+});
 
 // GET / — Historial de movimientos con filtros (requiere permiso del módulo "movimientos")
 router.get("/", authorizeModule("movimientos"), async (req: AuthRequest, res: Response) => {
@@ -20,6 +49,7 @@ router.get("/", authorizeModule("movimientos"), async (req: AuthRequest, res: Re
     const { productId, fromLocationId, toLocationId, startDate, endDate, page = "1", limit = "20" } = req.query;
 
     const where: any = {};
+    if (req.user!.role === "TIENDA") where.OR = [{ fromLocationId: req.user!.locationId }, { toLocationId: req.user!.locationId }];
     if (productId && typeof productId === "string") where.productId = Number(productId);
     if (fromLocationId && typeof fromLocationId === "string") where.fromLocationId = Number(fromLocationId);
     if (toLocationId && typeof toLocationId === "string") where.toLocationId = Number(toLocationId);
@@ -50,13 +80,13 @@ router.get("/", authorizeModule("movimientos"), async (req: AuthRequest, res: Re
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar movimientos:", error);
+    console.error("Error al listar movimientos:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
 
 // POST / — Registrar movimiento (requiere permiso del módulo "movimientos")
-router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: Response) => {
+router.post("/", authorize("ADMIN", "INVENTARIO"), authorizeModule("movimientos"), async (req: AuthRequest, res: Response) => {
   try {
     const productId = parsePositiveInt(req.body.productId, "Producto");
     const fromLocationId = parsePositiveInt(req.body.fromLocationId, "Ubicación origen");
@@ -103,7 +133,7 @@ router.post("/", authorizeModule("movimientos"), async (req: AuthRequest, res: R
     if (typeof error?.message === "string" && !isPrismaClientError(error)) {
       return res.status(400).json({ message: error.message });
     }
-    console.error("Error al registrar movimiento:", error);
+    console.error("Error al registrar movimiento:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });

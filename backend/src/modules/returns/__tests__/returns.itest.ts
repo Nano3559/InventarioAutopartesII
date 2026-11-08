@@ -13,11 +13,13 @@ import { seed, cleanup, createProduct, SeedContext } from "../../../testing/seed
 let server: TestServer;
 let ctx: SeedContext;
 let token: string;
+let inspector: string;
 
 before(async () => {
   ctx = await seed("returns");
   server = await startTestServer();
   token = await loginAndGetToken(server.baseUrl, ctx.users.tienda.email, ctx.users.tienda.password);
+  inspector = await loginAndGetToken(server.baseUrl, ctx.users.admin.email, ctx.users.admin.password);
 });
 
 after(async () => {
@@ -56,6 +58,11 @@ async function stockInTienda(productId: number): Promise<number> {
   return inv?.stock ?? 0;
 }
 
+async function inspect(id: number, quantity: number) {
+  const response = await postJson(server.baseUrl, `/api/returns/inspection/${id}`, { operationId: crypto.randomUUID(), quantity, outcome: "SELLABLE", reason: "Inspección de prueba conforme a la regla confirmada" }, inspector);
+  assert.equal(response.status, 200, await response.clone().text());
+}
+
 test("R6.13 — devolución válida responde 201 con cantidad y datos", async () => {
   const p = await createProduct(ctx, { stockTienda: 5 });
   const saleId = await sell(p.id, 5);
@@ -91,13 +98,16 @@ test("R6.14 — devoluciones inválidas responden 400", async () => {
   assert.equal(notOwned.status, 404);
 });
 
-test("R6.15 — la devolución incrementa el stock y bloquea devolver más de lo vendido", async () => {
+test("R6.15 — la devolución exige inspección para stock y bloquea devolver en exceso", async () => {
   const p = await createProduct(ctx, { stockTienda: 5 });
   const saleId = await sell(p.id, 3);
   assert.equal(await stockInTienda(p.id), 2);
 
   const first = await postReturn(saleId, p.id, 2, 200);
   assert.equal(first.status, 201);
+  assert.equal(await stockInTienda(p.id), 2, "la devolución no inspeccionada no es vendible");
+  const ret: any = await first.json();
+  await inspect(ret.id, 2);
   assert.equal(await stockInTienda(p.id), 4, "el stock debe aumentar con la cantidad devuelta");
 
   const second = await postReturn(saleId, p.id, 2, 200);
@@ -115,6 +125,8 @@ test("legacy duplicado suma cantidades y reembolsa valor histórico completo", a
   assert.equal((await postReturn(sale.id, p.id, 3, 375)).status, 201);
   assert.equal((await postReturn(sale.id, p.id, 1, 125)).status, 201);
   assert.equal((await postReturn(sale.id, p.id, 1, 125)).status, 400);
+  assert.equal(await stockInTienda(p.id), 0);
+  for (const ret of await ctx.prisma.return.findMany({ where: { saleId: sale.id } })) await inspect(ret.id, ret.quantity);
   assert.equal(await stockInTienda(p.id), 4);
   const total = await ctx.prisma.return.aggregate({ where: { saleId: sale.id }, _sum: { amount: true } });
   assert.equal(Number(total._sum.amount), 500);
@@ -124,5 +136,8 @@ test("dos devoluciones simultáneas no pueden superar la cantidad vendida", asyn
   const saleId = await sell(p.id, 3);
   const results = await Promise.all([postReturn(saleId, p.id, 2, 200), postReturn(saleId, p.id, 2, 200)]);
   assert.deepEqual(results.map((r) => r.status).sort(), [201, 400]);
+  assert.equal(await stockInTienda(p.id), 0);
+  const accepted: any = await results.find(r => r.status === 201)!.json();
+  await inspect(accepted.id, 2);
   assert.equal(await stockInTienda(p.id), 2);
 });

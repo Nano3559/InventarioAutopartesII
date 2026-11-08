@@ -1,0 +1,133 @@
+{
+  "fecha": "2026-11-03",
+  "zona": "America/La_Paz",
+  "estado": "APROBADA_DOCUMENTACION",
+  "documento_oficial": "docs/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+  "fuente_principal": "Indicación del docente resumida por el equipo en la solicitud de consolidación",
+  "markdown_revisados": [
+    "docs/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md",
+    "docs/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md",
+    "docs/H4_FASE1_ESTRUCTURA_DATASET_Y_RIESGOS.md",
+    "docs/H4_FALLAS_Y_ESCENARIOS_DATASET.md",
+    "docs/H4_AUDITORIA_COBERTURA_Y_PREPARACION_ENTRENAMIENTO.md",
+    "docs/H4_PLAN_DE_TRABAJO.md",
+    "docs/AUDITORIA_MODELO_PREDICTIVO_H4.md",
+    "docs/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md",
+    "docs/CORRECCIONES_INTEGRALES_TIENDA_REAL.md",
+    "docs/SEGUNDA_REVISION_INTEGRAL_TIENDA_REAL.md",
+    "docs/REGLAS_COMERCIALES_FACTURAS_ANULACIONES_Y_PAGOS.md",
+    "docs/PLAN_TRABAJO_ERIKA_ROSS.md",
+    "docs/CORRECCIONES_DOCENTE_2026-09-01.md",
+    "README.md",
+    "ml/demand/README.md"
+  ],
+  "metodo": "Comparación de propuestas y decisiones, lectura pertinente de auditorías históricas, contraste con schema y módulos actuales, lectura de generador y pruebas, comprobación de los archivos guardados sin generar ni entrenar",
+  "otros_documentos": "Documentación de YOLO, OCR y datasets de imágenes identificada por búsqueda temática y conservada fuera del alcance mensual",
+  "evidencia_historica_integra": [
+    {
+      "archivo": "docs/AUDITORIA_MODELO_PREDICTIVO_H4.md",
+      "sha256": "1ebbafba5546e10cf273d3b889dfb506204ef28753f12f29df26d7e0d9a627ca",
+      "sin_cambios": true
+    },
+    {
+      "archivo": "docs/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md",
+      "sha256": "710025789101f55d60c511c5613cc1f14bf0fe17d6f25c2e76df27270fb45977",
+      "sin_cambios": true
+    },
+    {
+      "archivo": "docs/H4_FASE1_ESTRUCTURA_DATASET_Y_RIESGOS.md",
+      "sha256": "36f0187a3dcf0c2a9998cca62c7c10a0a923366f6e618b7fefd62d877a078804",
+      "sin_cambios": true
+    },
+    {
+      "archivo": "docs/H4_FALLAS_Y_ESCENARIOS_DATASET.md",
+      "sha256": "a6565a50cb49d40ada32ea6412a98c410ead6eff933bdee74938c747b7ba776a",
+      "sin_cambios": true
+    },
+    {
+      "archivo": "docs/H4_AUDITORIA_COBERTURA_Y_PREPARACION_ENTRENAMIENTO.md",
+      "sha256": "ce7194258baa37319e7a1b6ad2e759b383a6f91af4d269b548846c4209a29e64",
+      "sin_cambios": true
+    },
+    {
+      "archivo": "docs/SEGUNDA_REVISION_INTEGRAL_TIENDA_REAL.md",
+      "sha256": "5b620b4acc586fb2cec39bf382ad78817782deb9835cc1f647ea92d4ff4f86da",
+      "sin_cambios": true
+    },
+    {
+      "archivo": "docs/CORRECCIONES_INTEGRALES_TIENDA_REAL.md",
+      "sha256": "ebeeadeeea1a0d1ca2de590dee581056a7459b3542634b208f33606a73a64f2d",
+      "sin_cambios": true
+    },
+    {
+      "archivo": "docs/REGLAS_COMERCIALES_FACTURAS_ANULACIONES_Y_PAGOS.md",
+      "sha256": "8038783ca66f498333053a6bf344042657b2dc56bac21b4695feef6ee887ec2a",
+      "sin_cambios": true
+    }
+  ],
+  "propuestas_archivadas": [
+    {
+      "origen": "docs/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md",
+      "archivo": "docs/historico/h4/H4_MODELO_PREDICTIVO_PROPUESTA_DETALLADA.md",
+      "migrado": "Secciones 1 a 13",
+      "ruta_anterior": "Redirección para conservar enlaces de Fase 1"
+    },
+    {
+      "origen": "docs/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md",
+      "archivo": "docs/historico/h4/H4_PLAN_FASES_DATASET_PREDICCION_ALGORITMO.md",
+      "migrado": "Secciones 11, 13, 14 y 16",
+      "ruta_anterior": "Redirección para conservar enlaces de Fase 1"
+    },
+    {
+      "origen": "docs/H4_PLAN_DE_TRABAJO.md",
+      "archivo": "docs/historico/h4/H4_PLAN_DE_TRABAJO.md",
+      "migrado": "Secciones 6 a 14, fases, coordinación, controles y evidencia",
+      "ruta_anterior": "Retirada después del archivo y comprobación de enlaces",
+      "razon": "Checklist y cronograma anteriores contradicen promedio, integración y reposición del alcance vigente"
+    }
+  ],
+  "tratamiento": "No se destruyó contenido histórico. Las copias archivadas adaptan enlaces y puntuación. Los originales completos se respaldaron fuera del repositorio.",
+  "respaldo": "C:/Users/DELL ALIENWARE/.codex/visualizations/2026/10/27/01a17e0c-4d6d-7201-8184-f45bb6b8fc5d/consolidacion-h4-20261103",
+  "log": "docs/PROMPTS_MODELO_PREDICTIVO_H4.md contiene extracto literal de la solicitud actual, sin inventar mensajes anteriores",
+  "contradicciones_corregidas": [
+    "Dataset existente 1.1 frente a futura generación",
+    "56 productos frente a ejemplo condicional de 62",
+    "Cinco features, IDs solo como identificadores iniciales",
+    "Promedio redundante excluido",
+    "Reposiciones e integración completa en H5",
+    "Random Forest candidato, no ganador",
+    "Schema local incorpora Sale.status y voidedAt",
+    "Validador 1.0 distinto de correcciones 1.1",
+    "Ventas observadas distintas de demanda total",
+    "Scaler solo TRAIN",
+    "MLP opcional y 64/32 ilustrativo",
+    "70 % funcional, no conteo de archivos",
+    "Cronograma histórico sin autorización para ejecutar o cambiar Git"
+  ],
+  "validacion": {
+    "archivos_protegidos_comparados": 361,
+    "cambios_no_permitidos": [],
+    "enlaces_locales_comprobados": 77,
+    "enlaces_rotos": [],
+    "pin_fase1_coincide": true,
+    "artefactos_v1_1": "Seis hashes y hash del generador coinciden con el manifiesto",
+    "filas_base": 4032,
+    "filas_supervisadas": 3528,
+    "split": {
+      "TRAIN": 2520,
+      "VALIDATION": 504,
+      "TEST": 504
+    },
+    "features": 5,
+    "entrenamiento": false,
+    "regeneracion": false,
+    "tests_que_regeneran": false,
+    "cambios_codigo": false,
+    "cambios_prisma": false,
+    "cambios_migraciones": false,
+    "conexion_neon": false,
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

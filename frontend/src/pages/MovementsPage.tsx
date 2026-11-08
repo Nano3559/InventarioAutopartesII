@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import PhysicalStockPanel from "../components/PhysicalStockPanel";
 
 interface Product {
   id: number; itemCode: string; name: string; brand: string; model: string; stock: number;
@@ -17,6 +18,7 @@ interface Location {
 
 interface Movement {
   id: number; quantity: number; date: string; observation: string | null;
+  status?: string; receivedQuantity?: number;
   product: { id: number; name: string; itemCode: string; brand: string };
   fromLocation: { id: number; name: string; type: string };
   toLocation: { id: number; name: string; type: string };
@@ -164,6 +166,7 @@ export default function MovementsPage() {
 
   return (
     <div className="space-y-6">
+      <PhysicalStockPanel mode="receive" onStockChanged={fetchMovements} />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -296,7 +299,7 @@ export default function MovementsPage() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span className="px-2.5 py-0.5 bg-primary-600/10 border border-primary-600/20 text-primary-400 text-xs font-medium rounded-full">
-                          {m.quantity}
+                          {m.quantity}<small className="block text-xs text-gray-400">{m.status === "IN_TRANSIT" ? `En tránsito · Recibido ${m.receivedQuantity || 0}/${m.quantity}` : m.status === "RECEIVED" ? "Recibido" : "Histórico pendiente de conciliación"}</small>
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-300 text-xs">{m.user.name}</td>
@@ -325,7 +328,7 @@ export default function MovementsPage() {
                       <span>{formatBusinessDate(m.date)}</span>
                     </div>
                     <span className="px-2.5 py-0.5 bg-primary-600/10 border border-primary-600/20 text-primary-400 text-xs font-medium rounded-full">
-                      x{m.quantity}
+                      x{m.quantity}<small className="block text-xs text-gray-400">{m.status === "IN_TRANSIT" ? `En tránsito · Recibido ${m.receivedQuantity || 0}/${m.quantity}` : m.status === "RECEIVED" ? "Recibido" : "Histórico pendiente de conciliación"}</small>
                     </span>
                   </div>
                   <div>

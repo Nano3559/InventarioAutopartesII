@@ -53,6 +53,7 @@ export const setOnUnauthorized = (handler: UnauthorizedHandler | null) => {
 
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 35000,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -76,3 +77,32 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+const pendingIds = new Map<string, Promise<string>>();
+const operationStorageKey = (userId: number, scope: string) => `repuestopro:pending:${userId}:${scope}`;
+export function pendingOperationId(userId: number, scope: string): Promise<string> {
+  const key = operationStorageKey(userId, scope);
+  const existing = pendingIds.get(key);
+  if (existing) return existing;
+  const pending = (async () => {
+    const saved = await AsyncStorage.getItem(key);
+    if (saved) return saved;
+    // Identidad de operación, no credencial de autenticación.
+    const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+    await AsyncStorage.setItem(key, id);
+    return id;
+  })();
+  pendingIds.set(key, pending);
+  pending.catch(() => pendingIds.delete(key));
+  return pending;
+}
+export async function getPendingOperation(userId: number, scope: string) { return AsyncStorage.getItem(operationStorageKey(userId, scope)); }
+export async function completeOperation(userId: number, scope: string) {
+  const key = operationStorageKey(userId, scope);
+  await AsyncStorage.removeItem(key);
+  pendingIds.delete(key);
+}
+export async function revokeStoredSession() {
+  const token = await AsyncStorage.getItem("token");
+  if (token) await api.post("/auth/logout", {}, { headers: { Authorization: `Bearer ${token}` } });
+}

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import api from "../services/api";
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View, Switch, ScrollView } from "react-native";
+import api, { pendingOperationId, completeOperation, getPendingOperation } from "../services/api";
 import { useSession } from "../navigation/AppNavigator";
 import { precioVentaNormal, totalCarrito } from "../utils/precioVenta";
 
@@ -12,9 +12,27 @@ export default function SalesScreen() {
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [bankAccounts, setBankAccounts] = useState<{ id: number; code: string; name: string }[]>([]);
+  const [bankAccountId, setBankAccountId] = useState(0);
+  const [bankReference, setBankReference] = useState("");
+  const [bankDate, setBankDate] = useState(new Intl.DateTimeFormat("en-CA", { timeZone: "America/La_Paz", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()));
+  const [bankConfirmed, setBankConfirmed] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("EFECTIVO");
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [creditCustomer, setCreditCustomer] = useState("");
+  useEffect(() => { if (user) void getPendingOperation(user.id, "SALE_NORMAL").then(setPendingId); }, [user]);
+  const checkPending = async () => {
+    if (!pendingId || !user) return;
+    try {
+      const response = await api.get(`/operations/SALE_NORMAL/${pendingId}`);
+      Alert.alert("Venta confirmada", `Venta #${response.data.result.id}${response.data.result.status === "VOIDED" ? " ANULADA" : ""}. Revise el comprobante antes de cerrar el intento.`, [
+        { text: "Volver", style: "cancel" },
+        { text: "Ya revisé el resultado", onPress: () => { void completeOperation(user.id, "SALE_NORMAL").then(() => { setPendingId(null); setCart([]); }); } },
+      ]);
+    } catch (error: any) { Alert.alert("Resultado pendiente", error.response?.data?.message || "Reintente sin cambiar los datos de la venta."); }
+  };
   // Cada línea comunica su nivel de precio al servidor.
   const total = totalCarrito(cart.map((item) => ({ producto: item.product, cantidad: item.quantity, priceMode: item.priceMode })));
 
@@ -48,16 +66,30 @@ export default function SalesScreen() {
     return quantity > 0 && quantity <= item.product.stock ? [{ ...item, quantity }] : quantity <= 0 ? [] : [item];
   }));
 
+  useEffect(() => { setBankConfirmed(false); }, [total, paymentMethod, bankAccountId, bankReference, bankDate]);
+  useEffect(() => { if (["QR", "TRANSFERENCIA"].includes(paymentMethod)) void api.get("/payments/receiving-accounts").then(r => setBankAccounts(r.data.accounts)).catch(() => Alert.alert("Cuenta no disponible", "No se pudieron cargar cuentas receptoras. Configure las cuentas desde administración web.")); }, [paymentMethod]);
+
   const submitSale = async () => {
+    if (submitting) return;
+    if (paymentMethod === "CREDITO" && !creditCustomer.trim()) { Alert.alert("Cliente requerido", "Identifique al cliente de la venta a crédito."); return; }
     if (!cart.length) { Alert.alert("Carrito vacío", "Agrega al menos un producto."); return; }
     try {
       setSubmitting(true);
-      await api.post("/sales", {
+      if (!user) return;
+      const operationId = await pendingOperationId(user.id, "SALE_NORMAL");
+      setPendingId(operationId);
+      const response = await api.post("/sales", {
+        operationId,
+        ...(paymentMethod === "CREDITO" ? { customerData: { name: creditCustomer.trim() } } : {}),
         items: cart.map(({ product, quantity, priceMode }) => ({ productId: product.id, quantity, priceMode })),
-        payments: [{ method: paymentMethod, amount: total }],
+        payments: [{ method: paymentMethod, amount: total, ...(["QR", "TRANSFERENCIA"].includes(paymentMethod) ? { bankVerification: { receivingAccountId: bankAccountId, reference: bankReference, operationDate: bankDate, confirmed: bankConfirmed } } : {}) }],
         locationId: user?.locationId || undefined,
       });
+      await completeOperation(user.id, "SALE_NORMAL");
+      setPendingId(null);
+      if (response.data.status === "VOIDED") { Alert.alert("Venta anulada", "El intento corresponde a una venta anulada. Revise su historial."); return; }
       setCart([]);
+      setCreditCustomer(""); setBankConfirmed(false); setBankReference("");
       await findProducts();
       Alert.alert("Venta registrada", "La venta se registró y el stock fue actualizado.");
     } catch (requestError: any) {
@@ -68,6 +100,8 @@ export default function SalesScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Nueva venta</Text>
+      {paymentMethod === "CREDITO" && <TextInput style={styles.search} value={creditCustomer} onChangeText={setCreditCustomer} placeholder="Nombre del cliente a crédito" />}
+      {pendingId && <TouchableOpacity onPress={checkPending}><Text>Consultar resultado del intento pendiente</Text></TouchableOpacity>}
       <TextInput style={styles.search} placeholder="Buscar producto o código" value={search} onChangeText={setSearch} />
       {loading ? <ActivityIndicator color="#2563eb" /> : null}
       <FlatList data={products} keyExtractor={(item) => String(item.id)} style={styles.results} renderItem={({ item }) => (
@@ -86,6 +120,13 @@ export default function SalesScreen() {
         </View>)}
         <Text style={styles.total}>Total: Bs. {total.toFixed(2)}</Text>
         <View style={styles.methods}>{["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"].map((method) => <TouchableOpacity key={method} style={[styles.method, paymentMethod === method && styles.selected]} onPress={() => setPaymentMethod(method)}><Text style={paymentMethod === method ? styles.selectedText : styles.methodText}>{method}</Text></TouchableOpacity>)}</View>
+        {["QR", "TRANSFERENCIA"].includes(paymentMethod) && <ScrollView style={{ maxHeight: 220 }} nestedScrollEnabled><Text>Verificación manual. Compruebe el abono en la cuenta de la empresa, no solo una captura.</Text>
+          {!bankAccounts.length && <Text>Registre una cuenta receptora desde administración web.</Text>}
+          {bankAccounts.map(account => <TouchableOpacity key={account.id} onPress={() => setBankAccountId(account.id)}><Text>{bankAccountId === account.id ? "✓ " : "○ "}{account.code} · {account.name}</Text></TouchableOpacity>)}
+          <TextInput accessibilityLabel="Referencia bancaria" style={styles.search} value={bankReference} onChangeText={setBankReference} placeholder="Referencia bancaria" maxLength={120} />
+          <TextInput accessibilityLabel="Fecha bancaria" style={styles.search} value={bankDate} onChangeText={setBankDate} placeholder="Fecha del abono YYYY-MM-DD" />
+          <View style={styles.controls}><Switch value={bankConfirmed} onValueChange={setBankConfirmed} /><Text>Comprobé abono, importe y cuenta</Text></View>
+        </ScrollView>}
         <TouchableOpacity style={styles.button} onPress={submitSale} disabled={submitting}>{submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Registrar venta</Text>}</TouchableOpacity>
       </View>
     </View>

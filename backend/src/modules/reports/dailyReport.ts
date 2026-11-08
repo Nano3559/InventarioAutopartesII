@@ -30,14 +30,14 @@ export async function dailyReport(prisma: PrismaClient, req: AuthRequest) {
   const [totals, items, returns] = await prisma.$transaction([
     prisma.$queryRaw<Total[]>`SELECT to_char(s."saleDate" - interval '4 hours', 'YYYY-MM-DD') AS date, s."locationId", l.name AS "locationName", SUM(i.subtotal) AS total, COUNT(DISTINCT s.id)::int AS "saleCount"
       FROM "Sale" s JOIN "Location" l ON l.id = s."locationId" JOIN "SaleItem" i ON i."saleId" = s.id JOIN "Product" p ON p.id = i."productId"
-      WHERE ${loc} AND ${salesDates} AND ${products}
+      WHERE s.status = 'CONFIRMED' AND ${loc} AND ${salesDates} AND ${products}
       GROUP BY 1, 2, 3`,
     prisma.$queryRaw<Item[]>`SELECT to_char(s."saleDate" - interval '4 hours', 'YYYY-MM-DD') AS date, s."locationId", i."productId", p.name, SUM(i.quantity)::bigint AS quantity, SUM(i.subtotal) AS subtotal
       FROM "Sale" s JOIN "SaleItem" i ON i."saleId" = s.id JOIN "Product" p ON p.id = i."productId"
-      WHERE ${loc} AND ${salesDates} AND ${products} GROUP BY 1, 2, 3, 4`,
+      WHERE s.status = 'CONFIRMED' AND ${loc} AND ${salesDates} AND ${products} GROUP BY 1, 2, 3, 4`,
     prisma.$queryRaw<Returned[]>`SELECT to_char(r.date - interval '4 hours', 'YYYY-MM-DD') AS date, s."locationId", l.name AS "locationName", SUM(r.amount) AS amount
       FROM "Return" r JOIN "Sale" s ON s.id = r."saleId" JOIN "Location" l ON l.id = s."locationId" JOIN "Product" p ON p.id = r."productId"
-      WHERE ${loc} AND ${returnDates} AND ${products} GROUP BY 1, 2, 3`,
+      WHERE s.status = 'CONFIRMED' AND ${loc} AND ${returnDates} AND ${products} GROUP BY 1, 2, 3`,
   ], { isolationLevel: "RepeatableRead" });
   type Store = { locationId: number; locationName: string; total: number; saleCount: number; returns: number; netSales: number; products: { productId: number; name: string; quantity: number; subtotal: number }[] };
   const days = new Map<string, { date: string; total: number; saleCount: number; stores: Store[] }>();

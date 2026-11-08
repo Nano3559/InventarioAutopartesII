@@ -14,7 +14,7 @@ import { resolverClaseVisual } from "./claseVisual";
 import { ocrExtract } from "../../shared/utils/ocr";
 import { logger } from "../../shared/utils/logger";
 
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 const compatProvider = CompatibilityProviderFactory.crear("base_datos_interna");
 

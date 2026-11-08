@@ -34,11 +34,11 @@ export function salePrice(p: ProductPrices, tier: SaleMode | PriceTier | "WHOLES
   return price;
 }
 export function lineSubtotal(quantity: number, price: number): number { return money(quantity * price, "Subtotal"); }
-export function validatePayments(payments: unknown): Array<{ method: "EFECTIVO" | "QR" | "TRANSFERENCIA" | "CREDITO"; amount: number }> {
+export function validatePayments(payments: unknown): Array<{ method: "EFECTIVO" | "QR" | "TRANSFERENCIA" | "CREDITO"; amount: number; bankVerification?: unknown }> {
   if (!Array.isArray(payments) || !payments.length) throw errorDominio("Debe registrar al menos un pago");
   const methods = ["EFECTIVO", "QR", "TRANSFERENCIA", "CREDITO"] as const;
   return payments.map((p) => {
     if (!p || !methods.includes(p.method)) throw errorDominio("Método de pago inválido");
-    return { method: p.method, amount: money(p.amount, "Monto de pago", true) };
+    return { method: p.method, amount: money(p.amount, "Monto de pago", true), ...(p.bankVerification !== undefined ? { bankVerification: p.bankVerification } : {}) };
   });
 }

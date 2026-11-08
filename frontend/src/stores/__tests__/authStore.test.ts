@@ -12,6 +12,7 @@ const mockUser = {
 vi.mock("../../services/api", () => ({
   default: {
     get: vi.fn(),
+    post: vi.fn().mockResolvedValue({ status: 204 }),
   },
 }));
 

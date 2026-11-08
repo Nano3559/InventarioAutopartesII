@@ -1,5 +1,9 @@
+import { safeError } from "../../shared/utils/safeError";
 import { incrementStock } from "../../shared/utils/stock";
 import { money } from "../../shared/utils/pricing";
+import inspectionRouter from "./inspection.routes";
+import { saleBalance } from "../../shared/utils/saleBalance";
+import { operationKey, replayableOperation } from "../../shared/utils/replayableOperation";
 import { Router, Response } from "express";
 import { PrismaClient, PaymentMethod } from "@prisma/client";
 import { isPrismaClientError } from "../../shared/utils/errors";
@@ -10,10 +14,11 @@ import { AuthRequest } from "../../shared/types";
 import { parseId, parsePositiveInt, parsePositiveDecimal, parseString } from "../../shared/middlewares/validate";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 router.use(authenticate);
 router.use(requireTiendaLocation);
+router.use("/inspection", inspectionRouter);
 router.use(authorize("ADMIN", "TIENDA"));
 router.use(authorizeModule("devoluciones"));
 
@@ -71,7 +76,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
       pagination: { total, page: pg, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar devoluciones:", error);
+    console.error("Error al listar devoluciones:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -80,7 +85,7 @@ router.get("/", async (req: AuthRequest, res: Response) => {
 router.get("/recent-sales", async (req: AuthRequest, res: Response) => {
   try {
     const user = req.user!;
-    const where: any = {};
+    const where: any = { status: "CONFIRMED" };
     if (user.role === "TIENDA" && user.locationId) {
       where.locationId = user.locationId;
     }
@@ -99,7 +104,7 @@ router.get("/recent-sales", async (req: AuthRequest, res: Response) => {
 
     res.json({ sales });
   } catch (error) {
-    console.error("Error al obtener ventas recientes:", error);
+    console.error("Error al obtener ventas recientes:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -119,6 +124,7 @@ router.get("/sale/:saleId", async (req: AuthRequest, res: Response) => {
       },
     });
     if (!sale) return res.status(404).json({ message: "Venta no encontrada" });
+    if (sale.status === "VOIDED") return res.status(409).json({ message: "La venta está anulada y no admite devolución" });
 
     const lookupUser = req.user!;
     if (lookupUser.role === "TIENDA" && lookupUser.locationId && sale.locationId !== lookupUser.locationId) {
@@ -128,7 +134,7 @@ router.get("/sale/:saleId", async (req: AuthRequest, res: Response) => {
     res.json(sale);
   } catch (error: any) {
     if (error.message === "ID inválido") return res.status(400).json({ message: error.message });
-    console.error("Error al buscar venta:", error);
+    console.error("Error al buscar venta:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -153,18 +159,21 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       include: { items: true, location: true },
     });
     if (!sale) return res.status(404).json({ message: "Venta no encontrada" });
+    if (sale.status === "VOIDED") return res.status(409).json({ message: "La venta está anulada y no admite devolución" });
 
     const returnUser = req.user!;
     if (returnUser.role === "TIENDA" && returnUser.locationId && sale.locationId !== returnUser.locationId) {
       return res.status(403).json({ message: "No puede devolver productos de una venta de otra tienda" });
     }
 
-    const returned = await prisma.$transaction(async (tx) => {
+    const key = operationKey(req);
+    const returned = await prisma.$transaction(async (tx) => replayableOperation(tx, returnUser.userId, "RETURN", key, req.body, async () => {
       // R4: serializar devoluciones del mismo producto dentro de la misma venta bloqueando
       // la(s) fila(s) del SaleItem (FOR UPDATE). Sin este lock, dos devoluciones concurrentes
       // de un mismo producto podrían leer la misma suma previa y devolver más de lo vendido.
       // La cantidad vendida se relee dentro de la transacción a partir de las filas bloqueadas.
       await tx.$queryRaw`SELECT id FROM "Sale" WHERE id = ${saleId} FOR UPDATE`;
+      if ((await tx.sale.findUniqueOrThrow({ where: { id: saleId } })).status === "VOIDED") throw new Error("No se puede devolver una venta anulada");
       const lockedItems = await tx.$queryRaw<{ id: number; quantity: number; unitPrice: unknown }[]>`
         SELECT id, quantity, "unitPrice" FROM "SaleItem"
         WHERE "saleId" = ${saleId} AND "productId" = ${productId}
@@ -194,12 +203,17 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       const expectedAmount = money(soldAmount * (alreadyReturned + quantity) / soldQuantity - alreadyRefunded, "Monto a devolver");
       if (Math.abs(amount - expectedAmount) > 0.01) throw new Error(`El monto devuelto (Bs. ${amount}) no coincide con el precio vendido de la cantidad a devolver (Bs. ${expectedAmount.toFixed(2)})`);
       if (alreadyRefunded + expectedAmount - soldAmount > 0.01) throw new Error("El reembolso acumulado excede el valor vendido");
+      const balance = await saleBalance(tx, saleId, Number(sale.total));
+      const debtReduction = money(Math.min(balance.pending, expectedAmount), "Reducción de deuda", true);
+      const refundAmount = money(expectedAmount - debtReduction, "Reintegro", true);
+      if (refundAmount > 0 && method === "CREDITO") throw new Error("El excedente cobrado requiere efectivo, QR o transferencia para registrar su reintegro");
       const ret = await tx.return.create({
-        data: { saleId, productId, reason: reason!, quantity, amount: expectedAmount, method },
+        data: { saleId, productId, reason: reason!, quantity, amount: expectedAmount,
+          method: refundAmount === 0 ? "CREDITO" : method,
+          disposition: "PENDING_INSPECTION", debtReduction, refundAmount },
       });
-      await incrementStock(tx, productId, sale.locationId, quantity);
       return ret;
-    }, { timeout: 20000 });
+    }), { timeout: 20000 });
 
     res.status(201).json(returned);
   } catch (error: any) {
@@ -207,7 +221,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     // Los errores de dominio (doble devolución, producto no perteneciente) son mensajes
     // planos y se responden como 400.
     if (error && isPrismaClientError(error)) {
-      console.error("Error al registrar devolución:", error);
+      console.error("Error al registrar devolución:", safeError(error));
       return res.status(500).json({ message: "Error interno del servidor" });
     }
     res.status(400).json({ message: error.message || "Error interno del servidor" });

@@ -1,3 +1,5 @@
+import { readImportWorkbook } from "../../shared/utils/importWorkbook";
+import { safeError } from "../../shared/utils/safeError";
 import { validatePriceConfiguration, money, MAX_QUANTITY } from "../../shared/utils/pricing";
 import { esErrorDominio, errorDominio } from "../../shared/utils/errorDominio";
 import { Router, Request, Response } from "express";
@@ -18,7 +20,7 @@ import { excelUpload } from "../../shared/utils/upload";
 import { puedeVerCostos, puedeVerPrecioMayorista, alcanceDeFiltro, SIN_ALCANCE } from "../../shared/utils/scope";
 
 const router = Router();
-const prisma = new PrismaClient();
+import prisma from "../../config/database";
 
 // Upload para importación de Excel (no modifica la configuración de imagen de search-image)
 const upload = excelUpload;
@@ -168,7 +170,7 @@ router.get("/", authenticate, async (req: AuthRequest, res: Response) => {
       pagination: { total, page: cleanPage, limit: take, pages: Math.ceil(total / take) },
     });
   } catch (error) {
-    console.error("Error al listar productos:", error);
+    console.error("Error al listar productos:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -193,7 +195,7 @@ router.get("/filters", authenticate, async (_req: AuthRequest, res: Response) =>
 
     res.json({ brands, manufacturers, models, categories, years });
   } catch (error) {
-    console.error("Error al obtener filtros:", error);
+    console.error("Error al obtener filtros:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -266,7 +268,7 @@ router.get("/:id", authenticate, async (req: AuthRequest, res: Response) => {
     if (puedeVerCostos(req.user)) response.cost = product.cost;
     res.json(response);
   } catch (error) {
-    console.error("Error al obtener producto:", error);
+    console.error("Error al obtener producto:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -320,7 +322,7 @@ router.post("/", authenticate, authorize("ADMIN"), async (req: AuthRequest, res:
     res.status(201).json(product);
   } catch (error) {
     if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
-    console.error("Error al crear producto:", error);
+    console.error("Error al crear producto:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -374,7 +376,7 @@ router.put("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest, re
     if (esErrorDominio(error)) return res.status(400).json({ message: error.message });
     if (error instanceof Error && error.message === "Producto no encontrado") return res.status(404).json({ message: error.message });
     if (error instanceof Error && error.message.startsWith("Ya existe un producto")) return res.status(409).json({ message: error.message });
-    console.error("Error al editar producto:", error);
+    console.error("Error al editar producto:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -418,7 +420,7 @@ router.delete("/:id", authenticate, authorize("ADMIN"), async (req: AuthRequest,
     if (error?.code === "P2003") {
       return res.status(409).json({ message: "No se puede eliminar: el producto tiene registros dependientes" });
     }
-    console.error("Error al eliminar producto:", error);
+    console.error("Error al eliminar producto:", safeError(error));
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
@@ -460,7 +462,7 @@ router.post(
         ),
       });
     } catch (error) {
-      console.error("Error en búsqueda por imagen:", error);
+      console.error("Error en búsqueda por imagen:", safeError(error));
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -473,7 +475,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       return res.status(400).json({ message: "Debe subir un archivo Excel (.xlsx o .xls)" });
     }
 
-    const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
+    const workbook = readImportWorkbook(req.file.buffer);
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(sheet);
@@ -626,7 +628,7 @@ router.post("/import", authenticate, authorize("ADMIN"), upload.single("file"), 
       details: { imported, updated, errors },
     });
   } catch (error: any) {
-    console.error("Error al importar productos:", error);
+    console.error("Error al importar productos:", safeError(error));
     if (error.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({ message: "El archivo excede el tamaño máximo de 10MB" });
     }

@@ -5,6 +5,7 @@ import { config } from "./config";
 import { errorHandler } from "./shared/middlewares";
 import { generalLimiter } from "./shared/middlewares/rateLimit";
 import { logger } from "./shared/utils/logger";
+import prisma from "./config/database";
 
 import authRoutes from "./modules/auth/auth.routes";
 import usersRoutes from "./modules/users/users.routes";
@@ -27,6 +28,7 @@ import publicRoutes from "./modules/public/public.routes";
 import permissionsRoutes from "./modules/permissions/permissions.routes";
 import notificationsRoutes from "./modules/notifications/notifications.routes";
 import visionRoutes from "./modules/vision/vision.routes";
+import operationsRoutes from "./modules/operations/operations.routes";
 
 const app = express();
 
@@ -59,11 +61,28 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+app.get("/api/ready", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    // Una conexión activa no basta si la versión del esquema es incompatible.
+    await prisma.$queryRaw`SELECT "status", "receivedQuantity" FROM "Movement" LIMIT 0`;
+    await prisma.$queryRaw`SELECT "disposition", "refundAmount" FROM "Return" LIMIT 0`;
+    await prisma.$queryRaw`SELECT "status", "voidedAt" FROM "Sale" LIMIT 0`;
+    await prisma.$queryRaw`SELECT "bankReference", "verifiedAt" FROM "Payment" LIMIT 0`;
+    await prisma.$queryRaw`SELECT "identityKey" FROM "PurchaseInvoice" LIMIT 0`;
+    await prisma.$queryRaw`SELECT "code" FROM "ReceivingAccount" LIMIT 0`;
+    res.json({ status: "ready" });
+  } catch {
+    res.status(503).json({ status: "unavailable" });
+  }
+});
+
 // Limiter general de API: 300 requests / 15 minutos / IP.
 // Se coloca después de /api/health para no limitar innecesariamente el health check.
 app.use(generalLimiter);
 
 app.use("/api/auth", authRoutes);
+app.use("/api/operations", operationsRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/inventory", inventoryRoutes);

@@ -1,0 +1,81 @@
+{
+  "cantidad_meses": 24,
+  "cantidad_meses_supervisados": 21,
+  "cantidad_productos": 56,
+  "cantidad_tiendas": 3,
+  "catalog_as_of": "2026-10-28T01:08:41.263Z",
+  "catalog_is_current_read": false,
+  "catalog_snapshot_hash": "3cb0c9c1f733d565dcacb33f7a33f9911ed0931b19e1740034289c38a5368404",
+  "data_origin": "DATOS_SINTETICOS",
+  "dataset_name": "DATOS_SINTETICOS_DEMANDA_H4",
+  "dataset_version": "1.1.0-escenarios",
+  "excluded_from_features": [
+    "clase_caso",
+    "escenario",
+    "rotacion_simulada",
+    "conjunto"
+  ],
+  "features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos"
+  ],
+  "fecha_generacion": "2026-11-03T23:18:27.052268+00:00",
+  "generator_hash": "96ba7fe28dfd330c24f716574bc1c9fa3c59cd312cc53e5c977875b6968ff86a",
+  "generator_version": "1.1.0-escenarios",
+  "hashes": {
+    "base_mensual.csv": "a0c621c4550259342b6c328608918499097f4e03ef014eea011b2e26ba4d0ccb",
+    "casos_grises.json": "35182fc1a5f67c607a614bbded20a8e57bd8d8c5e63e9bdc0511230bc435270b",
+    "casos_invalidos.json": "b5eea24f598cbed3be826b0a4090fbcced00c620c3d1981a8e4ff80efbb6e386",
+    "dataset_supervisado.csv": "d25257286ccf08b41fedd2bdb5249be9bcd6aa7076fdb16ba13e7af21a825662",
+    "escenarios_metadatos.csv": "2773dc89333d99dd62ec9f4da705e94ce823a16d10c2dfd07ae9b4e84e64f006",
+    "validacion.json": "5f2e0fbe3d2dd870259db7b381b696fdc5a77026d923a1663b72923a3c291b69"
+  },
+  "identifiers": [
+    "mes_objetivo",
+    "productId",
+    "locationId"
+  ],
+  "parameters": {
+    "annual_amplitude": [
+      0.08,
+      0.25
+    ],
+    "constant_series": 2,
+    "drop_probability": 0.07,
+    "exceptional_order_probability": 0.05,
+    "policy": "Supuestos de prueba, sin calibración comercial ni selección por métricas",
+    "rotation_levels": {
+      "ALTA": [
+        12,
+        22
+      ],
+      "BAJA": [
+        0.3,
+        2
+      ],
+      "MEDIA": [
+        4,
+        10
+      ]
+    },
+    "store_factor": [
+      0.8,
+      1.2
+    ],
+    "temporary_peak_probability": 0.05,
+    "total_trend": [
+      -0.1,
+      0.15
+    ],
+    "zero_series": 2
+  },
+  "periodo_fin": "2026-09",
+  "periodo_inicio": "2024-10",
+  "python_version": "3.11.9",
+  "seed": 42,
+  "target": "target_ventas_mes",
+  "ventas_observadas_no_demanda_perdida": true
+}

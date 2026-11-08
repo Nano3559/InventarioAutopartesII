@@ -8,7 +8,7 @@ import InventoryScreen from "../screens/InventoryScreen";
 import SalesScreen from "../screens/SalesScreen";
 import ScannerScreen from "../screens/ScannerScreen";
 import api from "../services/api";
-import { clearSession, getStoredSession, setOnUnauthorized, LoginResponse, User } from "../services/api";
+import { clearSession, getStoredSession, setOnUnauthorized, LoginResponse, User, revokeStoredSession } from "../services/api";
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +49,7 @@ export default function AppNavigator() {
   }, [user]);
 
   const logout = async () => {
+    await revokeStoredSession().catch(() => { /* Se conserva la limpieza local si no hay conexión. */ });
     await clearSession();
     setUser(null);
   };

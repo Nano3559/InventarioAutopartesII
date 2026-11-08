@@ -12,7 +12,7 @@ after(async () => { await cleanup(ctx); await server.close(); });
 
 test("costo calculado por servidor actualiza snapshot, ingreso y auditoría atómicos", async () => {
   const p = await createProduct(ctx, { stockAlmacen: 2 });
-  const res = await postJson(server.baseUrl, "/api/costs", { productId: p.id, supplierId, costPrice: 1, unitCost: 5, exchangeRate: 7, percentage: 10, locationId: ctx.locationIds.almacen, quantity: 3 }, token);
+  const res = await postJson(server.baseUrl, "/api/costs", { productId: p.id, supplierId, documentIdentity: "COST-RECEIPT-" + p.id, costPrice: 1, unitCost: 5, exchangeRate: 7, percentage: 10, locationId: ctx.locationIds.almacen, quantity: 3 }, token);
   assert.equal(res.status, 201, await res.clone().text());
   assert.equal(Number((await res.json() as any).costPrice), 38.5);
   assert.equal(Number((await ctx.prisma.product.findUniqueOrThrow({ where: { id: p.id } })).cost), 38.5);
@@ -23,7 +23,7 @@ test("costo calculado por servidor actualiza snapshot, ingreso y auditoría ató
 
 test("costo contradictorio hace rollback sin cambiar inventario", async () => {
   const p = await createProduct(ctx, { stockAlmacen: 2 });
-  const res = await postJson(server.baseUrl, "/api/costs", { productId: p.id, supplierId, costPrice: 200, locationId: ctx.locationIds.almacen, quantity: 3 }, token);
+  const res = await postJson(server.baseUrl, "/api/costs", { productId: p.id, supplierId, documentIdentity: "COST-RECEIPT-" + p.id, costPrice: 200, locationId: ctx.locationIds.almacen, quantity: 3 }, token);
   assert.equal(res.status, 400);
   assert.equal(await ctx.prisma.cost.count({ where: { productId: p.id } }), 0);
   assert.equal(Number((await ctx.prisma.product.findUniqueOrThrow({ where: { id: p.id } })).cost), 50);
@@ -35,6 +35,7 @@ test("factura Excel almacenada en disco se lee, conserva historial y procesa can
   XLSX.utils.book_append_sheet(book, XLSX.utils.json_to_sheet([{ Codigo: p.itemCode, Cantidad: 2, Precio: 5 }]), "Factura");
   const bytes = XLSX.write(book, { type: "buffer", bookType: "xlsx" });
   const form = new FormData();
+  form.append("documentIdentity", "COST-IMPORT-" + p.id);
   form.append("file", new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), "factura.xlsx");
   form.append("supplierId", String(supplierId)); form.append("exchangeRate", "7"); form.append("percentage", "10"); form.append("locationId", String(ctx.locationIds.almacen));
   const res = await fetch(`${server.baseUrl}/api/costs/import-invoice`, { method: "POST", headers: { authorization: `Bearer ${token}` }, body: form });

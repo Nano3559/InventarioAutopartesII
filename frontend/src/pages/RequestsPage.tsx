@@ -31,7 +31,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof
   PENDIENTE: { label: "Pendiente", color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20", icon: Clock },
   RECIBIDO_POR_INVENTARIO: { label: "Recibido por Inventario", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", icon: Package },
   PREPARANDO: { label: "Preparando", color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/20", icon: Package },
-  ENTREGADO: { label: "Entregado", color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20", icon: Truck },
+  ENTREGADO: { label: "En tránsito", color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20", icon: Truck },
   RECIBIDO_POR_TIENDA: { label: "Recibido por Tienda", color: "text-green-400", bg: "bg-green-500/10 border-green-500/20", icon: CheckCircle },
   CANCELADO: { label: "Cancelado", color: "text-red-400", bg: "bg-red-500/10 border-red-500/20", icon: Ban },
 };
@@ -46,7 +46,7 @@ const STATUS_FLOW: Record<string, { to: string; label: string; icon: typeof Cloc
     { to: "CANCELADO", label: "Cancelar", icon: Ban, color: "text-red-400 bg-red-500/10 border-red-500/20", hoverColor: "hover:bg-red-500/20 hover:border-red-500/40" },
   ],
   PREPARANDO: [
-    { to: "ENTREGADO", label: "Entregar", icon: Truck, color: "text-orange-400 bg-orange-500/10 border-orange-500/20", hoverColor: "hover:bg-orange-500/20 hover:border-orange-500/40" },
+    { to: "ENTREGADO", label: "Despachar a tienda", icon: Truck, color: "text-orange-400 bg-orange-500/10 border-orange-500/20", hoverColor: "hover:bg-orange-500/20 hover:border-orange-500/40" },
     { to: "CANCELADO", label: "Cancelar", icon: Ban, color: "text-red-400 bg-red-500/10 border-red-500/20", hoverColor: "hover:bg-red-500/20 hover:border-red-500/40" },
   ],
   ENTREGADO: [
