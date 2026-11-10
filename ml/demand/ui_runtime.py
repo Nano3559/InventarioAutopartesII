@@ -6,8 +6,9 @@ import re
 import sys
 import uuid
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
+from session_trace import append_revision, utc_now
 
 from simulator_inputs import FEATURE_NAMES, HERE, InputError, MAX_UI_QUANTITY, SCENARIOS, parse_month, validate_quantity
 
@@ -155,6 +156,17 @@ class ObservationJournal:
         self.pending = {}
         self.closed = {}
         self.revealed = {}
+        self.trace_started_at = utc_now()
+        self.revisions = []
+
+    def record_edit(self, key, field, before, after, accepted=True):
+        if before != after or not accepted:
+            append_revision(self.revisions, "EDITOR_REVISION", key[:2], key[2],
+                            field=field, before=before, after=after, accepted=accepted)
+
+    def record_confirmation(self, key, features, error=None):
+        append_revision(self.revisions, "INPUTS_CONFIRMED" if not error else "INPUTS_REJECTED",
+                        key[:2], key[2], features=features, reason=error)
 
     def is_locked(self, key):
         return key in self.closed or key in self.revealed
@@ -162,12 +174,17 @@ class ObservationJournal:
     def discard_pending(self, key):
         if self.is_locked(key):
             raise InputError("El observado ya fue revelado. Cierra el mes o inicia una nueva sesión.")
-        self.pending.pop(key, None)
+        previous = self.pending.pop(key, None)
+        if previous is not None:
+            append_revision(self.revisions, "PENDING_DISCARDED", key[:2], key[2],
+                            forecast=asdict(previous))
 
     def issue(self, forecast):
         if self.is_locked(forecast.key):
             raise InputError("Mes cerrado u observado revelado. Restablece la sesión para otra hipótesis.")
         self.pending[forecast.key] = forecast
+        append_revision(self.revisions, "FORECAST_ISSUED", forecast.key[:2], forecast.month,
+                        forecast=asdict(forecast))
 
     def reveal(self, key, observed):
         validate_quantity(observed)
@@ -175,6 +192,8 @@ class ObservationJournal:
             raise InputError("No hay una emisión pendiente para revelar ese observado.")
         if key in self.revealed and self.revealed[key] != observed:
             raise InputError("El observado revelado no se cambia dentro de la misma hipótesis.")
+        if key not in self.revealed:
+            append_revision(self.revisions, "OBSERVED_REVEALED", key[:2], key[2], observed=observed)
         self.revealed[key] = observed
 
     def close(self, key, observed, rotation="SIN DATO"):
@@ -188,6 +207,9 @@ class ObservationJournal:
         row = ClosedObservation(forecast, observed, datetime.now(timezone.utc).isoformat(), rotation)
         self.closed[key] = row
         del self.pending[key]
+        append_revision(self.revisions, "OBSERVATION_CLOSED", key[:2], key[2],
+                        observed=observed, observed_at=row.observed_at,
+                        forecast=asdict(forecast))
         return row
 
 

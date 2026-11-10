@@ -1,0 +1,205 @@
+{
+  "scope": "ISOLATED_FIXTURE",
+  "fixture_artifact_verified": true,
+  "fixture_artifact_retained": false,
+  "registry_folder": "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\docs\\H4\\task18_evidence\\fixture_events\\0250ba565dad4c2faada858bd4d8d7ee",
+  "events": [
+    {
+      "active_after": null,
+      "active_before": null,
+      "affects_active": false,
+      "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+      "data_sha256": null,
+      "id": "EVT-2b1f465b832a47c4937a2af778bf8671",
+      "location_id": 5,
+      "model": {
+        "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+        "name": "RandomForestRegressor",
+        "version": "V1"
+      },
+      "normalized_sha256": "3e3cf6d1ef75567a69ff6f604bcb2a93f629f6d0fa503bdf734f3c6118c03883",
+      "previous_reference": null,
+      "previous_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "product_id": 1,
+      "reason": "Referencia congelada verificada; no activa.",
+      "result": "VERIFIED",
+      "schema": "h4-model-lifecycle-1",
+      "sequence": 1,
+      "session_id": "0250ba565dad4c2faada858bd4d8d7ee",
+      "source": {
+        "id": "V1_SELECTION_MANIFEST",
+        "path": "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\reports\\v1_selection_manifest.json",
+        "sha256": "41a10f4d196979cfff67410b21bf8ae527f6547aeca413e58811b4be920935f6"
+      },
+      "state_after": "AVAILABLE",
+      "state_before": "UNREGISTERED",
+      "timestamp": "2026-11-09T21:08:36.011267+00:00",
+      "type": "V1_AVAILABLE",
+      "event_sha256": "507b3b11fe93fa44c7ccb199026e0b0a361939eb3e1029d1586c8f14c52ef6a5"
+    },
+    {
+      "active_after": null,
+      "active_before": null,
+      "affects_active": true,
+      "artifact_hash": null,
+      "data_sha256": null,
+      "id": "EVT-174a489c656c464e9f8c6c0e3c270820",
+      "location_id": 5,
+      "model": null,
+      "previous_reference": null,
+      "previous_sha256": "507b3b11fe93fa44c7ccb199026e0b0a361939eb3e1029d1586c8f14c52ef6a5",
+      "product_id": 1,
+      "reason": "Conexión local observada ahora; no reconstruye activaciones previas.",
+      "result": "CONNECTED",
+      "schema": "h4-model-lifecycle-1",
+      "sequence": 2,
+      "session_id": "0250ba565dad4c2faada858bd4d8d7ee",
+      "source": null,
+      "state_after": "INACTIVE",
+      "state_before": null,
+      "timestamp": "2026-11-09T21:08:36.035509+00:00",
+      "type": "RUNTIME_CONNECTED",
+      "event_sha256": "48fe585d26ce001d5220d9d086271575ec67504a8a499bd667bb30d2f406452a"
+    },
+    {
+      "active_after": {
+        "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "name": "RandomForestRegressor",
+        "origin": "SIMULACION",
+        "role": "ACTIVE",
+        "trained_through": "2026-03",
+        "version": "TEST-4701be59"
+      },
+      "active_before": null,
+      "affects_active": true,
+      "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+      "data_sha256": null,
+      "displaced_reference": null,
+      "id": "EVT-1087b9963d7c44bcb19e08c56f7735bd",
+      "location_id": 5,
+      "model": {
+        "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "name": "RandomForestRegressor",
+        "origin": "SIMULACION",
+        "role": "ACTIVE",
+        "trained_through": "2026-03",
+        "version": "TEST-4701be59"
+      },
+      "previous_reference": null,
+      "previous_sha256": "48fe585d26ce001d5220d9d086271575ec67504a8a499bd667bb30d2f406452a",
+      "product_id": 1,
+      "reason": "Revisión simulada aislada; no es una política real.",
+      "result": "COMPLETED",
+      "schema": "h4-model-lifecycle-1",
+      "scope": "ISOLATED_FIXTURE",
+      "sequence": 3,
+      "session_id": "0250ba565dad4c2faada858bd4d8d7ee",
+      "source": null,
+      "state_after": "ACTIVE",
+      "state_before": "INACTIVE",
+      "timestamp": "2026-11-09T21:08:36.052206+00:00",
+      "type": "PROMOTE_FIXTURE",
+      "event_sha256": "9b56d2031af89014057f22ca9d086ad3e2fd593f1e71d72b5ee099cac6c810e2"
+    },
+    {
+      "active_after": null,
+      "active_before": {
+        "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "name": "RandomForestRegressor",
+        "origin": "SIMULACION",
+        "role": "ACTIVE",
+        "trained_through": "2026-03",
+        "version": "TEST-4701be59"
+      },
+      "affects_active": true,
+      "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+      "data_sha256": null,
+      "displaced_reference": {
+        "model": {
+          "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+          "feature_names": [
+            "ventas_mes_anterior",
+            "ventas_hace_2_meses",
+            "ventas_hace_3_meses",
+            "mes_sin",
+            "mes_cos"
+          ],
+          "name": "RandomForestRegressor",
+          "origin": "SIMULACION",
+          "role": "ACTIVE",
+          "trained_through": "2026-03",
+          "version": "TEST-4701be59"
+        },
+        "state": "ARCHIVED"
+      },
+      "id": "EVT-278ee615cf0b466da2339e26b7d7d14a",
+      "location_id": 5,
+      "model": {
+        "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "name": "RandomForestRegressor",
+        "origin": "SIMULACION",
+        "role": "ACTIVE",
+        "trained_through": "2026-03",
+        "version": "TEST-4701be59"
+      },
+      "previous_reference": {
+        "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "name": "RandomForestRegressor",
+        "origin": "SIMULACION",
+        "role": "ACTIVE",
+        "trained_through": "2026-03",
+        "version": "TEST-4701be59"
+      },
+      "previous_sha256": "9b56d2031af89014057f22ca9d086ad3e2fd593f1e71d72b5ee099cac6c810e2",
+      "product_id": 1,
+      "reason": "Cerrar demostración exclusiva de fixture R49.",
+      "result": "COMPLETED",
+      "schema": "h4-model-lifecycle-1",
+      "scope": "LOCAL_SIMULATION",
+      "sequence": 4,
+      "session_id": "0250ba565dad4c2faada858bd4d8d7ee",
+      "source": null,
+      "state_after": "AVAILABLE",
+      "state_before": "ACTIVE",
+      "timestamp": "2026-11-09T21:08:36.062977+00:00",
+      "type": "ROLLBACK",
+      "event_sha256": "04cbb2f53d8b44f5463084432dbd21234cfc463e95259dc2d99949940d6db6f6"
+    }
+  ],
+  "final_active": null
+}

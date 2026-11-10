@@ -1,0 +1,5 @@
+ ml/demand/README.md           |  10 ++-
+ ml/demand/simulator_inputs.py |  51 +++++++++---
+ ml/demand/streamlit_app.py    | 114 ++++++++++++++++++++++++---
+ ml/demand/ui_panels.py        | 178 +++++++++++++++++++++++++++++++++++++++---
+ 4 files changed, 317 insertions(+), 36 deletions(-)

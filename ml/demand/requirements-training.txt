@@ -1,0 +1,11 @@
+# Dependencias de entrenamiento H4 (Erika). Python 3.11 / Windows.
+# Separadas del lock de interfaz de Ross (requirements-ui.lock.txt), que no se modifica.
+# Instaladas el 2026-11-08 en ml/demand/.venv con pip.
+scikit-learn==1.9.1
+joblib==1.6.0
+scipy==1.17.1
+threadpoolctl==3.8.0
+cloudpickle==3.1.2
+# Compartidas con el entorno de interfaz ya instalado (sin cambios):
+# numpy==2.4.6
+# pandas==3.1.0

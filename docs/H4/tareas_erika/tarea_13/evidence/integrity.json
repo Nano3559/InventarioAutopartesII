@@ -1,0 +1,27 @@
+{
+  "unchanged": true,
+  "protected_count": 17,
+  "files": {
+    "ml\\demand\\data\\escenarios_v1_1\\base_mensual.csv": true,
+    "ml\\demand\\data\\escenarios_v1_1\\casos_grises.json": true,
+    "ml\\demand\\data\\escenarios_v1_1\\casos_invalidos.json": true,
+    "ml\\demand\\data\\escenarios_v1_1\\dataset_supervisado.csv": true,
+    "ml\\demand\\data\\escenarios_v1_1\\escenarios_metadatos.csv": true,
+    "ml\\demand\\data\\escenarios_v1_1\\manifest.json": true,
+    "ml\\demand\\data\\escenarios_v1_1\\validacion.json": true,
+    "ml\\demand\\models\\linear_regression_candidate.joblib": true,
+    "ml\\demand\\models\\random_forest_candidate.joblib": true,
+    "ml\\demand\\reports\\experiments.csv": true,
+    "ml\\demand\\reports\\v1_selection_manifest.json": true,
+    "ml\\demand\\reports\\v1_test_evaluation.json": true,
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\candidate.joblib": true,
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\incremental.json": true,
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\manifest.json": true,
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\reserved.csv": true,
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\train.csv": true
+  },
+  "dataset_verified": true,
+  "catalog_verified": true,
+  "generator_verified": true,
+  "archived_manifest_verified": true
+}

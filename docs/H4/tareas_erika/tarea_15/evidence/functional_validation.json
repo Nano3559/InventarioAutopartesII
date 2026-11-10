@@ -1,0 +1,89 @@
+{
+  "normal_streamlit": {
+    "activation": {
+      "action": "ACTIVATE_V1",
+      "reason": "T15: activación explícita de la referencia V1",
+      "timestamp": "2026-11-09T20:17:40.368544+00:00",
+      "model": {
+        "name": "RandomForestRegressor",
+        "version": "V1",
+        "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+        "trained_through": "2026-03",
+        "origin": "SIMULACION",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "role": "ACTIVE"
+      }
+    },
+    "rollback": {
+      "action": "ROLLBACK",
+      "reason": "Volver a SIN ACTIVE, T15",
+      "timestamp": "2026-11-09T20:17:41.135380+00:00",
+      "model": null
+    },
+    "forecast": {
+      "product_id": 1,
+      "location_id": 5,
+      "month": "2026-10",
+      "features": [
+        22,
+        18,
+        26,
+        -1.0,
+        -0.0
+      ],
+      "prediction": 21.773409189130824,
+      "baseline": 22.0,
+      "model": {
+        "name": "RandomForestRegressor",
+        "version": "V1",
+        "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+        "trained_through": "2026-03"
+      },
+      "reason": "",
+      "issued_at": "2026-11-09T20:17:40.507986+00:00",
+      "scenario": "NORMAL"
+    },
+    "fit_calls": 0,
+    "closed_count": 1,
+    "final_active": null
+  },
+  "diagnostics_after": {
+    "per_pair_rng": {
+      "alone": [
+        23,
+        24,
+        25,
+        26,
+        27,
+        26
+      ],
+      "interleaved": [
+        23,
+        24,
+        25,
+        26,
+        27,
+        26
+      ],
+      "independent": true
+    },
+    "manual_close": {
+      "complete_checkbox": false,
+      "close_disabled": true,
+      "advance_disabled": true,
+      "backend_error": "MES INCOMPLETO: confirma que la venta observada corresponde al mes completo antes de cerrar o avanzar.",
+      "state_unchanged": true,
+      "closed_count": 0,
+      "after_confirmation": {
+        "open_month": "2026-11",
+        "observed": 10
+      }
+    }
+  }
+}

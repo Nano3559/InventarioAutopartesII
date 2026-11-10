@@ -1,0 +1,8 @@
+{
+  "status": "PENDING",
+  "browser_available": true,
+  "tool": "computer-use / sky",
+  "stop_reason": "Could not determine the current browser URL on Windows with enough confidence to enforce policy",
+  "screenshots": [],
+  "fallback_not_attempted": true
+}

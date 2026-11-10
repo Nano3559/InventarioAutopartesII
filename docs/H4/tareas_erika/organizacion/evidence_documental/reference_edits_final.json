@@ -1,0 +1,192 @@
+[
+  {
+    "path": "docs/H4/H4_GUIA_EJECUCION_WINDOWS.md",
+    "sha256_before_edit": "b354778443e643e7a2dc9e11bd294286132c97fa9a95cee1136b2ee8eaeec587",
+    "sha256_after": "912af8b3787d8217df4193a5269d44d6c5d623a3df93c272dbd9926fb53cab3a"
+  },
+  {
+    "path": "docs/H4/H4_INFORME_FINAL.md",
+    "sha256_before_edit": "fad715576a9e907e66bf22f402ed9be320a6aba84f51e2e3c7d5a3bb03584a3d",
+    "sha256_after": "176cf611114d81ff7e1b59f7efb8db5be6147cf7ad7fd63222493e6e1e19b19b"
+  },
+  {
+    "path": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.md",
+    "sha256_before_edit": "ce0a63e6577760b18ed9da77116e9969956e09de3a7e294d8a19fb99739d3391",
+    "sha256_after": "765b250506da2e536edd554177523806ec19a1265ccf9bce26b9ab92a87e46df"
+  },
+  {
+    "path": "docs/H4/README.md",
+    "sha256_before_edit": "88908b0cffd9385520a024b2c03f2de2d88806daafe23b763e7bc4150a3501ac",
+    "sha256_after": "e4c66ca5ad3cec5967089679ad4e752934c10e9096073879d5d9b78181afe81f"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_10/H4_TAREA_10_INFORME.md",
+    "sha256_before_edit": "7aec2f68500cf6c87c5b665a79003d66c1cc86a073f954843a049d9a474e1632",
+    "sha256_after": "6d34329f820ec0bdce9556b2971156832efeebac792a88d17f7d6257aeff4f00"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_11/H4_TAREA_11_ACTIVACION_V1.md",
+    "sha256_before_edit": "aaa54bfcf5caaf219d3907012b0519478eab58aee985fc96d4f1ff54b3dd3672",
+    "sha256_after": "71e7bcefc4aff40a5a6b3bae1f0299148f896011c8a6534fd4efd91729bce05a"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_12/H4_TAREA_12_REENTRENAMIENTO.md",
+    "sha256_before_edit": "d7e4b7d33a9202d4ce4dbd2b0e9799c2f37411e5e2e71954af0d4262a7def832",
+    "sha256_after": "5e87ea083021aea1420a7be72423c669e931164294a8cb0dbff5e412c2765862"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_13/H4_TAREA_13_COMPARACION_DECISION.md",
+    "sha256_before_edit": "cc32bbaf6d5c7c663a92ed8587bd601af4fa774bf12aed18ceba01bea33ab823",
+    "sha256_after": "105aab49f625ad66d993f0c33037ea50d8452fdff6e5186172f8496695648363"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_14/H4_MATRIZ_CUMPLIMIENTO.md",
+    "sha256_before_edit": "fa39ab9792fd2739e599d2f8874f7a2e33913dfd34bf9a0c3d85995c2c243414",
+    "sha256_after": "1e4d16bfbabdbf69f47cc0f5619a442adf9e1723745f9ea1d4329451efadf559"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_15/H4_MATRIZ_CUMPLIMIENTO_T15.md",
+    "sha256_before_edit": "2d1394e1e7b8eece34e1088bade7f8b38132fed970012091a8bee5b71ca64fad",
+    "sha256_after": "e25c84f832347291179156331901c52a495c0ff4dc6c332933a16b9b2623554a"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_15/H4_TAREA_15_CORRECCIONES_FUNCIONALES.md",
+    "sha256_before_edit": "af351c7e572224c655de1509c833ccd744c908d7a76d7e9fdfe041a7b7a818e5",
+    "sha256_after": "8aa36bed1ea8ebf94913778a2e93bac7aa5c04bf50716f60fe04c151a9f771ea"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_17/H4_MATRIZ_CUMPLIMIENTO_T17.md",
+    "sha256_before_edit": "0466d1faa040b62c3a6638182c04bf5afac96ca9798cee9eb6b4ea0862ea36a7",
+    "sha256_after": "7175eca80ae5a1f5441405f2f855545d6a39e52cbdd93b8820b84c05aaa020a6"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_17/H4_TAREA_17_CONTEXTOS_POR_PAR.md",
+    "sha256_before_edit": "d789c574460794076c559beab66f086c7b7301fbd9dadb10c52c2439d02f187d",
+    "sha256_after": "eea08d05c81db53b5f0179043fc0cd1f19b64ed492316b53d2404264229a7126"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_18/H4_MATRIZ_CUMPLIMIENTO_T18.md",
+    "sha256_before_edit": "9f4d49f549974bb7f853125c033cae709bb2f469355fd9a3b0b2948dd3f1bc43",
+    "sha256_after": "caaec9597c3990ba4e0b619d4350c6a64849269b57edf95bfd28d759c318472c"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_18/H4_TAREA_18_REGISTRO_VERSIONES_DECISIONES.md",
+    "sha256_before_edit": "8f81a3380102fcfc8be33244a46a6c2ef997b8a77f82c43ce3b9d4d7155152f8",
+    "sha256_after": "e515245243f68e353ea0865e85ee9c4e98cdc1830c2eed8f9bcb2d330f66dbef"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_19/H4_MATRIZ_CUMPLIMIENTO_T19.md",
+    "sha256_before_edit": "7b79d2e1c87ddce1f6339e3882cb38f584c452fb8c6f9ee6e68ceb1bb3303220",
+    "sha256_after": "178ad1d933921b1bb7cc0ccc10ca2178ca13ac3b31aefb55833575daba7dd2d3"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_19/H4_TAREA_19_EXPORTACION_TRAZABILIDAD.md",
+    "sha256_before_edit": "cdb6fbdc3ac865b8c215eb2b3c1eb1a97f3e12dc87ff05f0c2277e4e87c3e9a3",
+    "sha256_after": "45a77c7666cb5af21cbd4e2a625caab987b1c1f72a33f018ddc3070aa21cc44c"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_21/H4_TAREA_21_AUDITORIA_FINAL.md",
+    "sha256_before_edit": "45e321f027f07dc2090218feae66846f79e3700e456dc7b7fa5efe196a18409a",
+    "sha256_after": "73a90a7f741e6b87976156d13376cc14614caa0051c12701903b2ac050f8f32a"
+  },
+  {
+    "path": "ml/demand/README.md",
+    "sha256_before_edit": "17541271adde75e15317511b497b082d547cacb03cdf0031b5efb95e222d8c1b",
+    "sha256_after": "faa9e70144afba369f189f8212953bb810fb1063954f273972c9af6e1412c436"
+  },
+  {
+    "path": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.csv",
+    "sha256_before_edit": "498ea5e9430e1325b63ebc72d610a05d96d56219a4b854014063abf0ee93a619",
+    "sha256_after": "ddf980114a5ce961aa6a10b03964bc5cc57f753945cda508375f2a9f17e24664"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_14/evidence/build_matrix.py",
+    "sha256_before_edit": "4c8f1cf7c484d2dbc6d9edde4cc6ea1a91bc9efefae974e13b0177843c0a91e4",
+    "sha256_after": "c1b0067578e3019d6cb45a107696dbb8675907042a606c898d4af4c1914b0ef4"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_14/evidence/verify_evidence.py",
+    "sha256_before_edit": "8a5276363a607453929d08fba04f0ffe0965ede7eee0bace764a0446aaef3878",
+    "sha256_after": "15d61db6d2e5e435503c7255367571bd2bbfddf61d39e785aff69b18e59b0c33"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_15/evidence/record_validation.py",
+    "sha256_before_edit": "e62ffb9cd5c4f56226ae0898c2e86c7c723e3366896bec8d58976c9a96f958dc",
+    "sha256_after": "94e713af42cf91c0a519232e324b1d6ad82c8b2a6c61f8e54637c292160435fc"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_15/evidence/update_matrix.py",
+    "sha256_before_edit": "26f3101c69b38d6739a31b55c00022f0cd0eecea993a70465f9623c7541aa0fa",
+    "sha256_after": "5e0ffb2a65097baa80231941d0665f322b963af652f92e348bf7326f3dd69a65"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_15/evidence/verify_evidence.py",
+    "sha256_before_edit": "8e45025c70ad8b1554f22474020d8aa46c5b39b122fdd1e3a3b2806f7351beaa",
+    "sha256_after": "0c9c48d9ed88ba9e00548859a7d3f402dcfcce0352e641ea61ae7e09b0f9365d"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_18/evidence/fixture_example.py",
+    "sha256_before_edit": "dda0f9e3b9538d81045d126ac2a5b5106c63b972351ad47f92cfa68c00e0ec68",
+    "sha256_after": "00cf205c2069c29d7826e50941ca0068b4c40256f95abf6869a511821707c9b6"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_18/evidence/run_tests.py",
+    "sha256_before_edit": "e2e9256631ec30e4da96328e2890efbd561c619f5012373a5a90cace1785e080",
+    "sha256_after": "1b52a61c4adbd4e32d64ec33890c51a20441f68a75ba8081d60aba1ae0ea7cff"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_19/evidence/run_tests.py",
+    "sha256_before_edit": "3c90b14d09b304f1730948e31aebc9ec259fa3110540e1d70ac391a547113ae6",
+    "sha256_after": "d70a6a5514d7272751a78e3f71ce2dd3d8dd2abfd0a7119d2e813600baa43087"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_21/evidence/build_closure.py",
+    "sha256_before_edit": "ad7af8e7bc2bd997d639514b461e214ed92601e59f114f5c1bed57cf49e71b50",
+    "sha256_after": "ef52d55432bf9943a7097b142b2b2912aad4c3b17684ab9c294690e443cef369"
+  },
+  {
+    "path": "docs/H4/tareas_erika/tarea_21/evidence/validate_flows.py",
+    "sha256_before_edit": "0e141b9323874ee01196b40b140af16544b8d00bdae51d91e94e7c8056f202b6",
+    "sha256_after": "7022962e40c2cd2f6be64091bddfba83a72b7c7c6c592fb1f26dbf6f3b741f25"
+  },
+  {
+    "path": "ml/demand/validate_v1_activation.py",
+    "sha256_before_edit": "0000d9d34321e884a324e5fb0a9ebd00092a39fa7e226fc340d79cd8f8ac8ab5",
+    "sha256_after": "ca8c2dbff43f50b0e93d0926e9899cb64d39146576195ab2e8f50f426454e2b7"
+  },
+  {
+    "path": "ml/demand/validate_h4_integral.py",
+    "sha256_before_edit": "b47946d48539dd5f94365d9fa88c5291c1990d799798b1cf132cf9883996eb2b",
+    "sha256_after": "6150e66e1c2f8163636fffe6c74e01f7206ca0cbaa2c901fc8879de06ce431d6"
+  },
+  {
+    "path": "ml/demand/validate_candidate_comparison.py",
+    "sha256_before_edit": "123160908e0ff29c2c7e8e2ad14d1472308fc3c0a437e2f0b7822008356a748a",
+    "sha256_after": "623c31ced320e38071d5872ddb5f51c696f840470ed41ce0a9aa52124e91f648"
+  },
+  {
+    "path": "ml/demand/tests/test_h4_functional_fixes.py",
+    "sha256_before_edit": "5021c6119779dc223f07f135f49e046dfdb7a6defee46f206c078f5f79c06359",
+    "sha256_after": "527d5659bce5ea63c49b2cfb556ebe2c4e6acbdd04c05bd8b54d2cc96bce3247"
+  },
+  {
+    "path": "ml/demand/tests/test_model_comparison.py",
+    "sha256_before_edit": "02dc8cbc6afee06ce87c56e7873c34d5438a6fd0619b3b40c1b54ddec88ac0ce",
+    "sha256_after": "9a33db68fe9ee568b9a2ff61ff4537e71621090d691729caf0bce73bd1dcdc3d"
+  },
+  {
+    "path": "ml/demand/tests/test_reference_runtime.py",
+    "sha256_before_edit": "45d39dba1073a0eac6358c71f5e0143da219fded021e2de372fcff1d01d6ee7b",
+    "sha256_after": "b9fde5126a646fd1337b0d216698c5bbea3ebe683e8dab22ef9eb729ce88681e"
+  },
+  {
+    "path": "ml/demand/tests/test_retraining.py",
+    "sha256_before_edit": "3426d926c059ac1c053b0358b833e45f65eee828857c360c0145760bfb0fe91c",
+    "sha256_after": "c19b5f8672b6657f76fcb5db950359ff659b78b18037bf509d33ad415caccd9e"
+  },
+  {
+    "path": ".gitignore",
+    "sha256_before_edit": "834bd68fc7864c88540d2d365d680cb883627aac7568bb9821c7329be88d3027",
+    "sha256_after": "6a02a2d41727c023510cf2fe3864af7ded3e17e51bd011e608d8ad708fdd44ff"
+  }
+]

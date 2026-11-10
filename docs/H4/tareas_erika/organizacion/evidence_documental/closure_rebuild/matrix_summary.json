@@ -1,0 +1,12 @@
+{
+  "total": 73,
+  "applicable": 68,
+  "states": {
+    "CUMPLIDO": 54,
+    "PARCIAL": 11,
+    "NO VERIFICADO": 3,
+    "NO APLICA": 5
+  },
+  "strict_percent": 79.41176470588235,
+  "method": "CUMPLIDO / aplicables; PARCIAL no suma fracciones; NO APLICA excluido"
+}

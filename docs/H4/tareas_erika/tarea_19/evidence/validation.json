@@ -1,0 +1,53 @@
+{
+  "requirement": "R52",
+  "technical_status": "CUMPLIDO",
+  "overall_status": "PARCIAL",
+  "visual_status": "PENDIENTE",
+  "suite": {
+    "previous": 420,
+    "new": 22,
+    "total": 442,
+    "seconds": 78.806,
+    "result": "OK",
+    "log": "full_tests.txt"
+  },
+  "protected_count": 29,
+  "protected_unchanged": true,
+  "schemas": [
+    "h4-session-1",
+    "h4-traceability-1"
+  ],
+  "example": {
+    "folder": "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\docs\\H4\\task19_evidence\\example\\example-e77c656488a945e18f746f5d017b50a5",
+    "engine_session_id": "156a9e39894041f9a28c602bf57ad52e",
+    "journal_session_id": "96801118b50f4168908ab13ef2e16306",
+    "new_engine_session_id": "4e5303c6a8d44fcd900e17f749adb2f9",
+    "closed_count": 2,
+    "observed_sources": [
+      "MANUAL",
+      "GENERATED"
+    ],
+    "seed": 42,
+    "final_active": null,
+    "trained_models": 0,
+    "schema_version": "h4-session-1",
+    "extension_version": "h4-traceability-1"
+  },
+  "example_files": {
+    "current.json": {
+      "binary_sha256": "38537b4fda89c34d9f9bb0ae03d9a78beed97471ba2f406b76c81d65e242d6a0",
+      "document_sha256": "e48fbfd685aa7db42d98ec330004dad5568c04f1cb390700b1d7ffcda737e4c7"
+    },
+    "rollback.json": {
+      "binary_sha256": "f7e52367938a9d044bb6799ddfa4d3212e5b8470332f989032fdfaf739874e33",
+      "document_sha256": "e0ce4f1858865c84a8139d81b340c86f2211e66c4a67b750f2518a666e9c3a0f"
+    },
+    "after_reset.json": {
+      "binary_sha256": "d181114fea0461d2b4379484b449d4ae07443663991d35d188f52f7824b0db6d",
+      "document_sha256": "5b284049522eb4fc5f50004d20239a401a3de0b263e19aa4834ac4773812ebb4"
+    }
+  },
+  "model_activation_from_json": false,
+  "real_candidate_promotion": "BLOCKED",
+  "visual_review": "NOT_PERFORMED"
+}

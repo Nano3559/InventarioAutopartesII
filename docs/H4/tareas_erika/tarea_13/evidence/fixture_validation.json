@@ -1,0 +1,109 @@
+{
+  "scope": "ISOLATED_UNITTEST_ONLY",
+  "promotion_and_rollback_assertions_passed": true,
+  "closed_forecast_immutability_asserted": true,
+  "restored_model": {
+    "name": "RandomForestRegressor",
+    "version": "TEST-4701be59",
+    "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+    "trained_through": "2026-03",
+    "origin": "SIMULACION",
+    "feature_names": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "role": "ACTIVE"
+  },
+  "events": [
+    {
+      "action": "PROMOTE_FIXTURE",
+      "reason": "Revisi\u00f3n simulada aislada; no es una pol\u00edtica real.",
+      "timestamp": "2026-11-09T19:18:20.595712+00:00",
+      "model": {
+        "name": "RandomForestRegressor",
+        "version": "TEST-4701be59",
+        "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+        "trained_through": "2026-03",
+        "origin": "SIMULACION",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "role": "ACTIVE"
+      }
+    },
+    {
+      "action": "PROMOTE_FIXTURE",
+      "reason": "Revisi\u00f3n simulada aislada; no es una pol\u00edtica real.",
+      "timestamp": "2026-11-09T19:18:20.611056+00:00",
+      "model": {
+        "name": "RandomForestRegressor",
+        "version": "TEST-0af34d78",
+        "artifact_hash": "0af34d7821fdf947d6a6a59f7532c098b2e19b200de9ce08d7222b040c6e55a5",
+        "trained_through": "2026-03",
+        "origin": "SIMULACION",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "role": "ACTIVE"
+      }
+    },
+    {
+      "action": "ROLLBACK",
+      "reason": "revertir fixture",
+      "timestamp": "2026-11-09T19:18:20.611056+00:00",
+      "model": {
+        "name": "RandomForestRegressor",
+        "version": "TEST-4701be59",
+        "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+        "trained_through": "2026-03",
+        "origin": "SIMULACION",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "role": "ACTIVE"
+      }
+    },
+    {
+      "action": "REJECT_FIXTURE",
+      "reason": "Evidencia no elegible del fixture.",
+      "timestamp": "2026-11-09T19:18:20.611056+00:00",
+      "model": {
+        "name": "RandomForestRegressor",
+        "version": "TEST-4701be59",
+        "artifact_hash": "4701be5918c6f369e694714ba2fae1af73f21de1e4ccd83d80dc613bf9c540f4",
+        "trained_through": "2026-03",
+        "origin": "SIMULACION",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "role": "ACTIVE"
+      }
+    },
+    {
+      "action": "ROLLBACK",
+      "reason": "Cerrar fixture y volver a SIN ACTIVE",
+      "timestamp": "2026-11-09T19:18:20.611816+00:00",
+      "model": null
+    }
+  ],
+  "final_active": null
+}

@@ -1,0 +1,362 @@
+{
+  "session_id": "60a54a1435134d62b247c71b8369d50c",
+  "before": null,
+  "timestamp": "2026-11-09T19:17:11.528844+00:00",
+  "comparison": {
+    "id": "CMP-3b6df70a763c4626b439598112d66b0e",
+    "schema": "h4-local-comparison-decision-1",
+    "session_id": "60a54a1435134d62b247c71b8369d50c",
+    "source_session_id": "9958a7bc0be3447e88c6b4a331b05ace",
+    "timestamp": "2026-11-09T19:17:11.651682+00:00",
+    "run_id": "CAND-f3690f19436644959f2218cdc079110c",
+    "active": {
+      "name": "RandomForestRegressor",
+      "version": "V1",
+      "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+      "trained_through": "2026-03",
+      "origin": "SIMULACION",
+      "feature_names": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos"
+      ],
+      "role": "ACTIVE"
+    },
+    "candidate": {
+      "name": "RandomForestRegressor",
+      "version": "CAND-f3690f19436644959f2218cdc079110c",
+      "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+      "trained_through": "2027-06",
+      "origin": "SIMULACION",
+      "feature_names": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos"
+      ],
+      "role": "CANDIDATE"
+    },
+    "data_sha256": "bbd5a485b3645a62111fa0f8fa5bab68221656e2d6a570458455794a25cd5639",
+    "compared_data_sha256": "0dfd5fefb852e60f098745dd56bdc2f6848fd55ca957ee18a5ed18cc3acbc998",
+    "artifact_files": {
+      "candidate.joblib": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+      "incremental.json": "bbd5a485b3645a62111fa0f8fa5bab68221656e2d6a570458455794a25cd5639",
+      "reserved.csv": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+      "train.csv": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45"
+    },
+    "period": [
+      "2027-07",
+      "2027-09"
+    ],
+    "n_train": 6,
+    "n_series": 1,
+    "n_comparison": 3,
+    "metrics": {
+      "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": {
+        "n": 3,
+        "MAE": 0.9279069888581345,
+        "RMSE": 1.1202195739427763,
+        "R2": null,
+        "R2_descriptive": -0.8823378407668028,
+        "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+        "observations": 3,
+        "coverage": 1.0
+      },
+      "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": {
+        "n": 3,
+        "MAE": 4.454166666666662,
+        "RMSE": 4.528384630429605,
+        "R2": null,
+        "R2_descriptive": -29.759401041666607,
+        "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+        "observations": 3,
+        "coverage": 1.0
+      }
+    },
+    "common_metrics": {
+      "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": {
+        "n": 3,
+        "MAE": 0.9279069888581345,
+        "RMSE": 1.1202195739427763,
+        "R2": null,
+        "R2_descriptive": -0.8823378407668028,
+        "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+        "observations": 3,
+        "coverage": 1.0
+      },
+      "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": {
+        "n": 3,
+        "MAE": 4.454166666666662,
+        "RMSE": 4.528384630429605,
+        "R2": null,
+        "R2_descriptive": -29.759401041666607,
+        "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+        "observations": 3,
+        "coverage": 1.0
+      }
+    },
+    "common_n": 3,
+    "rows": [
+      {
+        "productId": 1,
+        "locationId": 5,
+        "mes_objetivo": "2027-07",
+        "features": {
+          "ventas_mes_anterior": 18,
+          "ventas_hace_2_meses": 17,
+          "ventas_hace_3_meses": 16,
+          "mes_sin": 1.2246467991473532e-16,
+          "mes_cos": -1.0
+        },
+        "observed": 19,
+        "predictions": {
+          "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 17.296876688478108,
+          "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338
+        }
+      },
+      {
+        "productId": 1,
+        "locationId": 5,
+        "mes_objetivo": "2027-08",
+        "features": {
+          "ventas_mes_anterior": 19,
+          "ventas_hace_2_meses": 18,
+          "ventas_hace_3_meses": 17,
+          "mes_sin": -0.4999999999999997,
+          "mes_cos": -0.8660254037844388
+        },
+        "observed": 20,
+        "predictions": {
+          "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 19.085401144934462,
+          "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338
+        }
+      },
+      {
+        "productId": 1,
+        "locationId": 5,
+        "mes_objetivo": "2027-09",
+        "features": {
+          "ventas_mes_anterior": 20,
+          "ventas_hace_2_meses": 19,
+          "ventas_hace_3_meses": 18,
+          "mes_sin": -0.8660254037844385,
+          "mes_cos": -0.5000000000000004
+        },
+        "observed": 21,
+        "predictions": {
+          "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 20.834001200013027,
+          "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338
+        }
+      }
+    ],
+    "technical_comparison": "COMPLETED",
+    "eligibility": "INSUFFICIENT_EVIDENCE",
+    "promotion_allowed": false,
+    "reason": "INSUFFICIENT_EVIDENCE: seis filas de entrenamiento de una serie y tres observaciones reservadas. Promoción real bloqueada: no existe un protocolo de elegibilidad previamente aprobado.",
+    "ross_report": {
+      "schema_version": "h4-comparison-1",
+      "origin": "SIMULACION",
+      "purpose": "COMPARACION_LOCAL",
+      "models": [
+        {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03",
+          "origin": "SIMULACION",
+          "feature_names": [
+            "ventas_mes_anterior",
+            "ventas_hace_2_meses",
+            "ventas_hace_3_meses",
+            "mes_sin",
+            "mes_cos"
+          ],
+          "role": "ACTIVE"
+        },
+        {
+          "name": "RandomForestRegressor",
+          "version": "CAND-f3690f19436644959f2218cdc079110c",
+          "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+          "trained_through": "2027-06",
+          "origin": "SIMULACION",
+          "feature_names": [
+            "ventas_mes_anterior",
+            "ventas_hace_2_meses",
+            "ventas_hace_3_meses",
+            "mes_sin",
+            "mes_cos"
+          ],
+          "role": "CANDIDATE"
+        }
+      ],
+      "rows": [
+        {
+          "productId": 1,
+          "locationId": 5,
+          "mes_objetivo": "2027-07",
+          "features": {
+            "ventas_mes_anterior": 18,
+            "ventas_hace_2_meses": 17,
+            "ventas_hace_3_meses": 16,
+            "mes_sin": 1.2246467991473532e-16,
+            "mes_cos": -1.0
+          },
+          "observed": 19,
+          "predictions": {
+            "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 17.296876688478108,
+            "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338
+          }
+        },
+        {
+          "productId": 1,
+          "locationId": 5,
+          "mes_objetivo": "2027-08",
+          "features": {
+            "ventas_mes_anterior": 19,
+            "ventas_hace_2_meses": 18,
+            "ventas_hace_3_meses": 17,
+            "mes_sin": -0.4999999999999997,
+            "mes_cos": -0.8660254037844388
+          },
+          "observed": 20,
+          "predictions": {
+            "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 19.085401144934462,
+            "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338
+          }
+        },
+        {
+          "productId": 1,
+          "locationId": 5,
+          "mes_objetivo": "2027-09",
+          "features": {
+            "ventas_mes_anterior": 20,
+            "ventas_hace_2_meses": 19,
+            "ventas_hace_3_meses": 18,
+            "mes_sin": -0.8660254037844385,
+            "mes_cos": -0.5000000000000004
+          },
+          "observed": 21,
+          "predictions": {
+            "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 20.834001200013027,
+            "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338
+          }
+        }
+      ],
+      "decision": "RECHAZADO",
+      "reason": "INSUFFICIENT_EVIDENCE: seis filas de entrenamiento de una serie y tres observaciones reservadas. Promoción real bloqueada: no existe un protocolo de elegibilidad previamente aprobado."
+    }
+  },
+  "rejection": {
+    "id": "DEC-bc1a594e0e06418181d2b44e64b22e3c",
+    "comparison_id": "CMP-3b6df70a763c4626b439598112d66b0e",
+    "session_id": "60a54a1435134d62b247c71b8369d50c",
+    "timestamp": "2026-11-09T19:17:11.653109+00:00",
+    "decision": "REJECTED_FOR_PROMOTION",
+    "reason": "Tres observaciones y seis filas de ajuste: evidencia insuficiente para promoción.",
+    "active": {
+      "name": "RandomForestRegressor",
+      "version": "V1",
+      "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+      "trained_through": "2026-03",
+      "origin": "SIMULACION",
+      "feature_names": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos"
+      ],
+      "role": "ACTIVE"
+    },
+    "candidate": {
+      "name": "RandomForestRegressor",
+      "version": "CAND-f3690f19436644959f2218cdc079110c",
+      "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+      "trained_through": "2027-06",
+      "origin": "SIMULACION",
+      "feature_names": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos"
+      ],
+      "role": "CANDIDATE"
+    },
+    "compared_data_sha256": "0dfd5fefb852e60f098745dd56bdc2f6848fd55ca957ee18a5ed18cc3acbc998"
+  },
+  "promotion_blocked": "PROMOCIÓN BLOQUEADA: falta un protocolo de elegibilidad previamente aprobado.",
+  "fit_calls": 0,
+  "after": null,
+  "events": [
+    {
+      "action": "PROMOTE",
+      "reason": "Tarea 13 autorizada: ACTIVE temporal para comparación técnica",
+      "timestamp": "2026-11-09T19:17:11.557250+00:00",
+      "model": {
+        "name": "RandomForestRegressor",
+        "version": "V1",
+        "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+        "trained_through": "2026-03",
+        "origin": "SIMULACION",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "role": "ACTIVE"
+      }
+    },
+    {
+      "action": "PROMOTION_BLOCKED",
+      "reason": "PROMOCIÓN BLOQUEADA: falta un protocolo de elegibilidad previamente aprobado.",
+      "timestamp": "2026-11-09T19:17:11.655474+00:00",
+      "model": {
+        "name": "RandomForestRegressor",
+        "version": "V1",
+        "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+        "trained_through": "2026-03",
+        "origin": "SIMULACION",
+        "feature_names": [
+          "ventas_mes_anterior",
+          "ventas_hace_2_meses",
+          "ventas_hace_3_meses",
+          "mes_sin",
+          "mes_cos"
+        ],
+        "role": "ACTIVE"
+      }
+    },
+    {
+      "action": "ROLLBACK",
+      "reason": "Fin de validación Tarea 13: restaurar SIN ACTIVE",
+      "timestamp": "2026-11-09T19:17:11.655474+00:00",
+      "model": null
+    }
+  ],
+  "protected_unchanged": true,
+  "protected_files": {
+    "ml\\demand\\data\\escenarios_v1_1\\base_mensual.csv": "eb0d921027e6ef376b2d7228c7e99dd41d1dafaa7a1b03883d3d1152df73469b",
+    "ml\\demand\\data\\escenarios_v1_1\\casos_grises.json": "f18773f63240ab6980097afcf7ea77a726b75e913325f370011287bcbf4ea715",
+    "ml\\demand\\data\\escenarios_v1_1\\casos_invalidos.json": "49f6787f87efc039ddcacc515a8a813542220c489bcd5e2ec3998f3dfdc06596",
+    "ml\\demand\\data\\escenarios_v1_1\\dataset_supervisado.csv": "c04e65b77c3912245966ce54f0eb4eca18c94c2dbec4eb269374e8620d7d1817",
+    "ml\\demand\\data\\escenarios_v1_1\\escenarios_metadatos.csv": "70b35dabe28abeceff10c92ba77a13013d007650578bd3527d2bbe5b8aa016e0",
+    "ml\\demand\\data\\escenarios_v1_1\\manifest.json": "ba0cc67fef566c3a9d0745828ce40c82be2c11605121ff3e59c7bdcc9b6f7425",
+    "ml\\demand\\data\\escenarios_v1_1\\validacion.json": "19b32e2271a8de819d85d94f5f7f3a70b290e67a92af2c8dc656b4a56a606b56",
+    "ml\\demand\\models\\linear_regression_candidate.joblib": "55c7f1e152b485fc75150b506da541897948e4920aaabe95248aa433ff9dcbb8",
+    "ml\\demand\\models\\random_forest_candidate.joblib": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+    "ml\\demand\\reports\\experiments.csv": "1db9f324731f3c06fd16d2058e496e59a0c0df91ce888962b8644d6c876726a8",
+    "ml\\demand\\reports\\v1_selection_manifest.json": "41a10f4d196979cfff67410b21bf8ae527f6547aeca413e58811b4be920935f6",
+    "ml\\demand\\reports\\v1_test_evaluation.json": "f244f3209e3143eeeebd9a7f798f86a198582573e8d761930e3870c1a0a5351d",
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\candidate.joblib": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\incremental.json": "bbd5a485b3645a62111fa0f8fa5bab68221656e2d6a570458455794a25cd5639",
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\manifest.json": "556bd266c53bda5aee932ec3a359a53a43a6e1c8a690e564f2c9e8d991360b0f",
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\reserved.csv": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+    "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\ml\\demand\\candidates\\9958a7bc0be3447e88c6b4a331b05ace\\CAND-f3690f19436644959f2218cdc079110c\\train.csv": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45"
+  }
+}

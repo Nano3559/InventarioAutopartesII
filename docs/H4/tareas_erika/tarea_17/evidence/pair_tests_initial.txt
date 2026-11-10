@@ -1,0 +1,33 @@
+test_clear_discards_all_references_without_touching_journal (test_pair_contexts.ContextBindingTests.test_clear_discards_all_references_without_touching_journal) ... ok
+test_new_session_owner_cannot_inherit_old_contexts (test_pair_contexts.ContextBindingTests.test_new_session_owner_cannot_inherit_old_contexts) ... ok
+test_pair_switch_restores_identity_and_candidate_decisions (test_pair_contexts.ContextBindingTests.test_pair_switch_restores_identity_and_candidate_decisions) ... ok
+test_reconnect_deletion_does_not_resurrect_saved_provider (test_pair_contexts.ContextBindingTests.test_reconnect_deletion_does_not_resurrect_saved_provider) ... ok
+test_active_pair_switch_and_real_inference_without_fit (test_pair_contexts.PairStreamlitTests.test_active_pair_switch_and_real_inference_without_fit) ... 2026-11-09 16:49:04.139 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_reconnect_only_replaces_selected_runtime (test_pair_contexts.PairStreamlitTests.test_reconnect_only_replaces_selected_runtime) ... 2026-11-09 16:49:05.277 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_reset_discards_all_pairs_and_does_not_reactivate_on_return (test_pair_contexts.PairStreamlitTests.test_reset_discards_all_pairs_and_does_not_reactivate_on_return) ... 2026-11-09 16:49:06.094 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_rollback_is_pair_local_and_closed_history_is_immutable (test_pair_contexts.PairStreamlitTests.test_rollback_is_pair_local_and_closed_history_is_immutable) ... 2026-11-09 16:49:06.882 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_sessions_and_imported_approval_cannot_share_or_promote (test_pair_contexts.PairStreamlitTests.test_sessions_and_imported_approval_cannot_share_or_promote) ... 2026-11-09 16:49:08.742 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 16:49:08.868 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_train_candidate_through_ui_isolated_and_restored (test_pair_contexts.PairStreamlitTests.test_train_candidate_through_ui_isolated_and_restored) ... 2026-11-09 16:49:09.342 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 16:49:09.343 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 16:49:09.343 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+
+======================================================================
+FAIL: test_active_pair_switch_and_real_inference_without_fit (test_pair_contexts.PairStreamlitTests.test_active_pair_switch_and_real_inference_without_fit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\test_pair_contexts.py", line 102, in test_active_pair_switch_and_real_inference_without_fit
+    self.assertTrue(self.button(app, "PREDECIR").disabled)  # no segunda emisi�n
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 10 tests in 6.184s
+
+FAILED (failures=1)

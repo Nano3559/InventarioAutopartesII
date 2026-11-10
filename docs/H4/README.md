@@ -4,4 +4,6 @@
 
 **Registrar solicitudes:** [Log de prompts](PROMPTS_MODELO_PREDICTIVO_H4.md).
 
-La carpeta [historico](historico/) contiene auditorías, propuestas anteriores y evidencias. No es documentación activa para implementar.
+**Informes y evidencias de Erika:** [Índice por tarea](tareas_erika/README.md). Los documentos oficiales y finales permanecen en esta raíz; las rutas históricas se conservan en un mapa de traslados verificable.
+
+La carpeta [historico](historico) contiene auditorías, propuestas anteriores y evidencias. No es documentación activa para implementar.

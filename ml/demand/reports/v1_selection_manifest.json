@@ -1,0 +1,226 @@
+{
+  "schema": "h4-v1-selection-1",
+  "v1_id": "V1",
+  "selection_id": "SEL-V1-RANDOMFOREST-20261109T041158351931Z",
+  "frozen_utc": "2026-11-09T04:11:58Z",
+  "status": "SELECTED_FROZEN_NOT_ACTIVE",
+  "active": false,
+  "artifact_role": "CANDIDATE",
+  "criterion": {
+    "principal": "MAE global en VALIDATION",
+    "secundarios": [
+      "RMSE",
+      "R²",
+      "cobertura",
+      "errores por tienda, mes y rotación",
+      "complejidad y reproducibilidad"
+    ],
+    "orden_desempate": "menor MAE global en VALIDATION; empate por menor RMSE; luego mayor R²",
+    "busquedas_adicionales_tras_validation": false,
+    "reentrenamiento": false,
+    "test_utilizado": false
+  },
+  "selection": {
+    "model": "RANDOMFOREST",
+    "experiment_id": "EXP-RANDOMFOREST-20261109T040027015455Z",
+    "mae_val": 5.158657249544053,
+    "rmse_val": 8.441614483508094,
+    "r2_val": 0.3464685883046653
+  },
+  "comparison_validation": {
+    "BASELINE_LAG1": {
+      "experiment_id": "EXP-BASELINE_LAG1-20261109T025916056898Z",
+      "mae": 6.158730158730159,
+      "rmse": 10.972729544228894,
+      "r2": -0.10419248473065923
+    },
+    "LINEARREGRESSION": {
+      "experiment_id": "EXP-LINEARREGRESSION-20261109T033229156232Z",
+      "mae": 5.473184442331192,
+      "rmse": 8.792626425594534,
+      "r2": 0.2909894778615837
+    },
+    "RANDOMFOREST": {
+      "experiment_id": "EXP-RANDOMFOREST-20261109T040027015455Z",
+      "mae": 5.158657249544053,
+      "rmse": 8.441614483508094,
+      "r2": 0.3464685883046653
+    }
+  },
+  "artifact": {
+    "path": "ml\\demand\\models\\random_forest_candidate.joblib",
+    "sha256": "3e3cf6d1ef75567a69ff6f604bcb2a93f629f6d0fa503bdf734f3c6118c03883",
+    "bytes": 4280594,
+    "schema": "h4-random-forest-1",
+    "model": "RANDOMFOREST",
+    "role": "CANDIDATE",
+    "created_utc": "2026-11-09T04:00:26Z",
+    "candidate_preserved": true,
+    "retrained": false
+  },
+  "dataset": {
+    "version": "1.1.0-escenarios",
+    "hashes": {
+      "base_mensual.csv": "a0c621c4550259342b6c328608918499097f4e03ef014eea011b2e26ba4d0ccb",
+      "casos_grises.json": "35182fc1a5f67c607a614bbded20a8e57bd8d8c5e63e9bdc0511230bc435270b",
+      "casos_invalidos.json": "b5eea24f598cbed3be826b0a4090fbcced00c620c3d1981a8e4ff80efbb6e386",
+      "dataset_supervisado.csv": "d25257286ccf08b41fedd2bdb5249be9bcd6aa7076fdb16ba13e7af21a825662",
+      "escenarios_metadatos.csv": "2773dc89333d99dd62ec9f4da705e94ce823a16d10c2dfd07ae9b4e84e64f006",
+      "validacion.json": "5f2e0fbe3d2dd870259db7b381b696fdc5a77026d923a1663b72923a3c291b69"
+    },
+    "catalog_hash": "3cb0c9c1f733d565dcacb33f7a33f9911ed0931b19e1740034289c38a5368404",
+    "generator_version": "1.1.0-escenarios",
+    "seed": 42
+  },
+  "contract": {
+    "features": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "feature_order_exacta": true,
+    "target": "target_ventas_mes",
+    "preprocessing": "ninguno (RandomForest sin estandarización; cinco features crudas en orden oficial)"
+  },
+  "periods": {
+    "train": "2025-01..2026-03",
+    "validation": "2026-04..2026-06",
+    "test_reservado": "2026-07..2026-09"
+  },
+  "hyperparameters": {
+    "n_estimators": 200,
+    "max_depth": 8,
+    "min_samples_leaf": 3,
+    "max_features": "sqrt",
+    "random_state": 42,
+    "n_jobs": 1
+  },
+  "seed": {
+    "random_state": 42,
+    "dataset_seed": 42
+  },
+  "validation_metrics": {
+    "global": {
+      "n": 504,
+      "n_con_prediccion": 504,
+      "mae": 5.158657249544053,
+      "rmse": 8.441614483508094,
+      "r2": 0.3464685883046653,
+      "cobertura": 1.0
+    },
+    "predicciones_negativas": 0,
+    "por_tienda": {
+      "5": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 4.874048694717415,
+        "rmse": 8.014373762553344,
+        "r2": 0.36642925933543424,
+        "cobertura": 1.0
+      },
+      "6": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 4.837535800429757,
+        "rmse": 8.128228795464425,
+        "r2": 0.34753922327423337,
+        "cobertura": 1.0
+      },
+      "7": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 5.764387253484988,
+        "rmse": 9.136972972883326,
+        "r2": 0.32628213691785724,
+        "cobertura": 1.0
+      }
+    },
+    "por_mes": {
+      "2026-04": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 5.631354032088278,
+        "rmse": 8.513632149115294,
+        "r2": 0.17367443920855874,
+        "cobertura": 1.0
+      },
+      "2026-05": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 5.0374959955398895,
+        "rmse": 8.384149879758517,
+        "r2": 0.43444665011871797,
+        "cobertura": 1.0
+      },
+      "2026-06": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 4.807121721003993,
+        "rmse": 8.426545181022682,
+        "r2": 0.3799856957995231,
+        "cobertura": 1.0
+      }
+    },
+    "por_rotacion": {
+      "ALTA": {
+        "n": 162,
+        "n_con_prediccion": 162,
+        "mae": 6.161229495807044,
+        "rmse": 9.04198009344208,
+        "r2": 0.021399490895002038,
+        "cobertura": 1.0
+      },
+      "BAJA": {
+        "n": 171,
+        "n_con_prediccion": 171,
+        "mae": 3.7667003068272606,
+        "rmse": 6.852259561699511,
+        "r2": -0.17485303796544893,
+        "cobertura": 1.0
+      },
+      "MEDIA": {
+        "n": 171,
+        "n_con_prediccion": 171,
+        "mae": 5.600808906327486,
+        "rmse": 9.25333183759668,
+        "r2": -0.023889642564701274,
+        "cobertura": 1.0
+      }
+    },
+    "recomputed_from_artifact": true
+  },
+  "versions": {
+    "python": "3.11.0",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.17.1",
+    "joblib": "1.6.0"
+  },
+  "tool_versions": "python 3.11.0; numpy 2.4.6; pandas 3.1.0; scikit-learn 1.9.1; scipy 1.17.1; joblib 1.6.0",
+  "test": {
+    "filas": 504,
+    "meses": [
+      "2026-07",
+      "2026-08",
+      "2026-09"
+    ],
+    "metricas_calculadas": false,
+    "predicciones_generadas": false
+  },
+  "limitations": [
+    "Dataset sintético 1.1: los resultados proceden de simulación, no de ventas comerciales reales.",
+    "Panel de 21 meses (2025-01..2026-09) con dos ciclos anuales; la estacionalidad observable es limitada.",
+    "Selección basada exclusivamente en VALIDATION (2026-04..2026-06); TEST sigue reservado y sin evaluar.",
+    "Cinco features de lags y calendario, sin stockout, precio, promoción ni eventos del negocio.",
+    "RandomForest no extrapolá tendencias fuera del rango de lags aprendidos durante TRAIN.",
+    "Los ceros aprendidos como lag cero no distinguen falta de stock de ausencia de demanda.",
+    "Rotación ALTA: peor MAE de grupo (6.161229, R² 0.021399); es la limitación principal por grupo.",
+    "Tienda 7: mayor MAE por tienda (5.764387).",
+    "Mes 2026-04: mayor MAE por mes (5.631354).",
+    "R² negativo en rotaciones BAJA, MEDIA: el modelo reduce MAE pero no explica varianza en esos grupos."
+  ],
+  "next": "Tarea 9B: evaluación única sobre TEST con decisiones congeladas; la activación como ACTIVE exige el contrato runtime pendiente."
+}

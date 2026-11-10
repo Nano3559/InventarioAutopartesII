@@ -1,0 +1,16 @@
+{
+  "folder": "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\docs\\H4\\task19_evidence\\example\\example-e77c656488a945e18f746f5d017b50a5",
+  "engine_session_id": "156a9e39894041f9a28c602bf57ad52e",
+  "journal_session_id": "96801118b50f4168908ab13ef2e16306",
+  "new_engine_session_id": "4e5303c6a8d44fcd900e17f749adb2f9",
+  "closed_count": 2,
+  "observed_sources": [
+    "MANUAL",
+    "GENERATED"
+  ],
+  "seed": 42,
+  "final_active": null,
+  "trained_models": 0,
+  "schema_version": "h4-session-1",
+  "extension_version": "h4-traceability-1"
+}

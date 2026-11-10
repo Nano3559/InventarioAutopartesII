@@ -1,0 +1,217 @@
+{
+  "moved_files": 191,
+  "all_present": true,
+  "move_time_hashes_equal": {
+    "files_moved": 191,
+    "all_sha256_equal_immediately_after_move": true,
+    "overwritten_files": 0
+  },
+  "original_documents": 224,
+  "original_documents_byte_identical": 195,
+  "document_reference_edits": [
+    {
+      "old": "docs/H4/H4_GUIA_EJECUCION_WINDOWS.md",
+      "new": "docs/H4/H4_GUIA_EJECUCION_WINDOWS.md",
+      "sha256_original": "b354778443e643e7a2dc9e11bd294286132c97fa9a95cee1136b2ee8eaeec587",
+      "sha256_final": "912af8b3787d8217df4193a5269d44d6c5d623a3df93c272dbd9926fb53cab3a"
+    },
+    {
+      "old": "docs/H4/H4_INFORME_FINAL.md",
+      "new": "docs/H4/H4_INFORME_FINAL.md",
+      "sha256_original": "fad715576a9e907e66bf22f402ed9be320a6aba84f51e2e3c7d5a3bb03584a3d",
+      "sha256_final": "176cf611114d81ff7e1b59f7efb8db5be6147cf7ad7fd63222493e6e1e19b19b"
+    },
+    {
+      "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO.md",
+      "new": "docs/H4/tareas_erika/tarea_14/H4_MATRIZ_CUMPLIMIENTO.md",
+      "sha256_original": "fa39ab9792fd2739e599d2f8874f7a2e33913dfd34bf9a0c3d85995c2c243414",
+      "sha256_final": "1e4d16bfbabdbf69f47cc0f5619a442adf9e1723745f9ea1d4329451efadf559"
+    },
+    {
+      "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.csv",
+      "new": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.csv",
+      "sha256_original": "498ea5e9430e1325b63ebc72d610a05d96d56219a4b854014063abf0ee93a619",
+      "sha256_final": "ddf980114a5ce961aa6a10b03964bc5cc57f753945cda508375f2a9f17e24664"
+    },
+    {
+      "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.md",
+      "new": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.md",
+      "sha256_original": "ce0a63e6577760b18ed9da77116e9969956e09de3a7e294d8a19fb99739d3391",
+      "sha256_final": "765b250506da2e536edd554177523806ec19a1265ccf9bce26b9ab92a87e46df"
+    },
+    {
+      "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T15.md",
+      "new": "docs/H4/tareas_erika/tarea_15/H4_MATRIZ_CUMPLIMIENTO_T15.md",
+      "sha256_original": "2d1394e1e7b8eece34e1088bade7f8b38132fed970012091a8bee5b71ca64fad",
+      "sha256_final": "e25c84f832347291179156331901c52a495c0ff4dc6c332933a16b9b2623554a"
+    },
+    {
+      "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T17.md",
+      "new": "docs/H4/tareas_erika/tarea_17/H4_MATRIZ_CUMPLIMIENTO_T17.md",
+      "sha256_original": "0466d1faa040b62c3a6638182c04bf5afac96ca9798cee9eb6b4ea0862ea36a7",
+      "sha256_final": "7175eca80ae5a1f5441405f2f855545d6a39e52cbdd93b8820b84c05aaa020a6"
+    },
+    {
+      "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T18.md",
+      "new": "docs/H4/tareas_erika/tarea_18/H4_MATRIZ_CUMPLIMIENTO_T18.md",
+      "sha256_original": "9f4d49f549974bb7f853125c033cae709bb2f469355fd9a3b0b2948dd3f1bc43",
+      "sha256_final": "caaec9597c3990ba4e0b619d4350c6a64849269b57edf95bfd28d759c318472c"
+    },
+    {
+      "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T19.md",
+      "new": "docs/H4/tareas_erika/tarea_19/H4_MATRIZ_CUMPLIMIENTO_T19.md",
+      "sha256_original": "7b79d2e1c87ddce1f6339e3882cb38f584c452fb8c6f9ee6e68ceb1bb3303220",
+      "sha256_final": "178ad1d933921b1bb7cc0ccc10ca2178ca13ac3b31aefb55833575daba7dd2d3"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_10_INFORME.md",
+      "new": "docs/H4/tareas_erika/tarea_10/H4_TAREA_10_INFORME.md",
+      "sha256_original": "7aec2f68500cf6c87c5b665a79003d66c1cc86a073f954843a049d9a474e1632",
+      "sha256_final": "6d34329f820ec0bdce9556b2971156832efeebac792a88d17f7d6257aeff4f00"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_11_ACTIVACION_V1.md",
+      "new": "docs/H4/tareas_erika/tarea_11/H4_TAREA_11_ACTIVACION_V1.md",
+      "sha256_original": "aaa54bfcf5caaf219d3907012b0519478eab58aee985fc96d4f1ff54b3dd3672",
+      "sha256_final": "71e7bcefc4aff40a5a6b3bae1f0299148f896011c8a6534fd4efd91729bce05a"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_12_REENTRENAMIENTO.md",
+      "new": "docs/H4/tareas_erika/tarea_12/H4_TAREA_12_REENTRENAMIENTO.md",
+      "sha256_original": "d7e4b7d33a9202d4ce4dbd2b0e9799c2f37411e5e2e71954af0d4262a7def832",
+      "sha256_final": "5e87ea083021aea1420a7be72423c669e931164294a8cb0dbff5e412c2765862"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_13_COMPARACION_DECISION.md",
+      "new": "docs/H4/tareas_erika/tarea_13/H4_TAREA_13_COMPARACION_DECISION.md",
+      "sha256_original": "cc32bbaf6d5c7c663a92ed8587bd601af4fa774bf12aed18ceba01bea33ab823",
+      "sha256_final": "105aab49f625ad66d993f0c33037ea50d8452fdff6e5186172f8496695648363"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_15_CORRECCIONES_FUNCIONALES.md",
+      "new": "docs/H4/tareas_erika/tarea_15/H4_TAREA_15_CORRECCIONES_FUNCIONALES.md",
+      "sha256_original": "af351c7e572224c655de1509c833ccd744c908d7a76d7e9fdfe041a7b7a818e5",
+      "sha256_final": "8aa36bed1ea8ebf94913778a2e93bac7aa5c04bf50716f60fe04c151a9f771ea"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_17_CONTEXTOS_POR_PAR.md",
+      "new": "docs/H4/tareas_erika/tarea_17/H4_TAREA_17_CONTEXTOS_POR_PAR.md",
+      "sha256_original": "d789c574460794076c559beab66f086c7b7301fbd9dadb10c52c2439d02f187d",
+      "sha256_final": "eea08d05c81db53b5f0179043fc0cd1f19b64ed492316b53d2404264229a7126"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_18_REGISTRO_VERSIONES_DECISIONES.md",
+      "new": "docs/H4/tareas_erika/tarea_18/H4_TAREA_18_REGISTRO_VERSIONES_DECISIONES.md",
+      "sha256_original": "8f81a3380102fcfc8be33244a46a6c2ef997b8a77f82c43ce3b9d4d7155152f8",
+      "sha256_final": "e515245243f68e353ea0865e85ee9c4e98cdc1830c2eed8f9bcb2d330f66dbef"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_19_EXPORTACION_TRAZABILIDAD.md",
+      "new": "docs/H4/tareas_erika/tarea_19/H4_TAREA_19_EXPORTACION_TRAZABILIDAD.md",
+      "sha256_original": "cdb6fbdc3ac865b8c215eb2b3c1eb1a97f3e12dc87ff05f0c2277e4e87c3e9a3",
+      "sha256_final": "45a77c7666cb5af21cbd4e2a625caab987b1c1f72a33f018ddc3070aa21cc44c"
+    },
+    {
+      "old": "docs/H4/H4_TAREA_21_AUDITORIA_FINAL.md",
+      "new": "docs/H4/tareas_erika/tarea_21/H4_TAREA_21_AUDITORIA_FINAL.md",
+      "sha256_original": "45e321f027f07dc2090218feae66846f79e3700e456dc7b7fa5efe196a18409a",
+      "sha256_final": "73a90a7f741e6b87976156d13376cc14614caa0051c12701903b2ac050f8f32a"
+    },
+    {
+      "old": "docs/H4/README.md",
+      "new": "docs/H4/README.md",
+      "sha256_original": "88908b0cffd9385520a024b2c03f2de2d88806daafe23b763e7bc4150a3501ac",
+      "sha256_final": "e4c66ca5ad3cec5967089679ad4e752934c10e9096073879d5d9b78181afe81f"
+    },
+    {
+      "old": "docs/H4/task14_evidence/build_matrix.py",
+      "new": "docs/H4/tareas_erika/tarea_14/evidence/build_matrix.py",
+      "sha256_original": "4c8f1cf7c484d2dbc6d9edde4cc6ea1a91bc9efefae974e13b0177843c0a91e4",
+      "sha256_final": "c1b0067578e3019d6cb45a107696dbb8675907042a606c898d4af4c1914b0ef4"
+    },
+    {
+      "old": "docs/H4/task14_evidence/verify_evidence.py",
+      "new": "docs/H4/tareas_erika/tarea_14/evidence/verify_evidence.py",
+      "sha256_original": "8a5276363a607453929d08fba04f0ffe0965ede7eee0bace764a0446aaef3878",
+      "sha256_final": "15d61db6d2e5e435503c7255367571bd2bbfddf61d39e785aff69b18e59b0c33"
+    },
+    {
+      "old": "docs/H4/task15_evidence/record_validation.py",
+      "new": "docs/H4/tareas_erika/tarea_15/evidence/record_validation.py",
+      "sha256_original": "e62ffb9cd5c4f56226ae0898c2e86c7c723e3366896bec8d58976c9a96f958dc",
+      "sha256_final": "94e713af42cf91c0a519232e324b1d6ad82c8b2a6c61f8e54637c292160435fc"
+    },
+    {
+      "old": "docs/H4/task15_evidence/update_matrix.py",
+      "new": "docs/H4/tareas_erika/tarea_15/evidence/update_matrix.py",
+      "sha256_original": "26f3101c69b38d6739a31b55c00022f0cd0eecea993a70465f9623c7541aa0fa",
+      "sha256_final": "5e0ffb2a65097baa80231941d0665f322b963af652f92e348bf7326f3dd69a65"
+    },
+    {
+      "old": "docs/H4/task15_evidence/verify_evidence.py",
+      "new": "docs/H4/tareas_erika/tarea_15/evidence/verify_evidence.py",
+      "sha256_original": "8e45025c70ad8b1554f22474020d8aa46c5b39b122fdd1e3a3b2806f7351beaa",
+      "sha256_final": "0c9c48d9ed88ba9e00548859a7d3f402dcfcce0352e641ea61ae7e09b0f9365d"
+    },
+    {
+      "old": "docs/H4/task18_evidence/fixture_example.py",
+      "new": "docs/H4/tareas_erika/tarea_18/evidence/fixture_example.py",
+      "sha256_original": "dda0f9e3b9538d81045d126ac2a5b5106c63b972351ad47f92cfa68c00e0ec68",
+      "sha256_final": "00cf205c2069c29d7826e50941ca0068b4c40256f95abf6869a511821707c9b6"
+    },
+    {
+      "old": "docs/H4/task18_evidence/run_tests.py",
+      "new": "docs/H4/tareas_erika/tarea_18/evidence/run_tests.py",
+      "sha256_original": "e2e9256631ec30e4da96328e2890efbd561c619f5012373a5a90cace1785e080",
+      "sha256_final": "1b52a61c4adbd4e32d64ec33890c51a20441f68a75ba8081d60aba1ae0ea7cff"
+    },
+    {
+      "old": "docs/H4/task19_evidence/run_tests.py",
+      "new": "docs/H4/tareas_erika/tarea_19/evidence/run_tests.py",
+      "sha256_original": "3c90b14d09b304f1730948e31aebc9ec259fa3110540e1d70ac391a547113ae6",
+      "sha256_final": "d70a6a5514d7272751a78e3f71ce2dd3d8dd2abfd0a7119d2e813600baa43087"
+    },
+    {
+      "old": "docs/H4/task21_evidence/build_closure.py",
+      "new": "docs/H4/tareas_erika/tarea_21/evidence/build_closure.py",
+      "sha256_original": "ad7af8e7bc2bd997d639514b461e214ed92601e59f114f5c1bed57cf49e71b50",
+      "sha256_final": "ef52d55432bf9943a7097b142b2b2912aad4c3b17684ab9c294690e443cef369"
+    },
+    {
+      "old": "docs/H4/task21_evidence/validate_flows.py",
+      "new": "docs/H4/tareas_erika/tarea_21/evidence/validate_flows.py",
+      "sha256_original": "0e141b9323874ee01196b40b140af16544b8d00bdae51d91e94e7c8056f202b6",
+      "sha256_final": "7022962e40c2cd2f6be64091bddfba83a72b7c7c6c592fb1f26dbf6f3b741f25"
+    }
+  ],
+  "external_path_only_scripts": [
+    "ml/demand/validate_candidate_comparison.py",
+    "ml/demand/validate_h4_integral.py",
+    "ml/demand/validate_v1_activation.py",
+    "ml/demand/tests/test_h4_functional_fixes.py",
+    "ml/demand/tests/test_model_comparison.py",
+    "ml/demand/tests/test_reference_runtime.py",
+    "ml/demand/tests/test_retraining.py"
+  ],
+  "protected_files_unchanged": 29,
+  "lifecycle_events_unchanged": 442,
+  "zip_entries_verified": 442,
+  "markdown_links_checked": 143,
+  "broken_links": 0,
+  "documentation_python_parses": [
+    "docs/H4/tareas_erika/document_paths.py",
+    "docs/H4/tareas_erika/organizacion/evidence_documental/reorganize.py",
+    "docs/H4/tareas_erika/organizacion/evidence_documental/verify.py",
+    "docs/H4/tareas_erika/tarea_14/evidence/build_matrix.py",
+    "docs/H4/tareas_erika/tarea_14/evidence/verify_evidence.py",
+    "docs/H4/tareas_erika/tarea_15/evidence/record_validation.py",
+    "docs/H4/tareas_erika/tarea_15/evidence/update_matrix.py",
+    "docs/H4/tareas_erika/tarea_15/evidence/verify_evidence.py",
+    "docs/H4/tareas_erika/tarea_18/evidence/fixture_example.py",
+    "docs/H4/tareas_erika/tarea_18/evidence/run_tests.py",
+    "docs/H4/tareas_erika/tarea_19/evidence/run_tests.py",
+    "docs/H4/tareas_erika/tarea_21/evidence/build_closure.py",
+    "docs/H4/tareas_erika/tarea_21/evidence/validate_flows.py"
+  ],
+  "new_ignore_rules": 0
+}

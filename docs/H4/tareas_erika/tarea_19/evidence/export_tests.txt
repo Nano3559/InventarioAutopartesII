@@ -1,0 +1,51 @@
+test_download_available_without_closures_and_edits_traced (test_session_export.ExportStreamlitTests.test_download_available_without_closures_and_edits_traced) ... 2026-11-09 17:26:47.309 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_inconsistent_snapshot_is_quarantined_on_reset (test_session_export.ExportStreamlitTests.test_inconsistent_snapshot_is_quarantined_on_reset) ... 2026-11-09 17:26:48.208 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_pair_and_other_session_exports_do_not_share_models_or_observations (test_session_export.ExportStreamlitTests.test_pair_and_other_session_exports_do_not_share_models_or_observations) ... 2026-11-09 17:26:49.207 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 17:26:49.486 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_reset_exports_old_evidence_separately_without_active (test_session_export.ExportStreamlitTests.test_reset_exports_old_evidence_separately_without_active) ... 2026-11-09 17:26:50.918 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_active_and_previous_references_are_verified (test_session_export.ExportTests.test_active_and_previous_references_are_verified) ... ok
+test_all_pairs_sources_and_clocks_stay_independent (test_session_export.ExportTests.test_all_pairs_sources_and_clocks_stay_independent) ... ok
+test_candidate_and_decisions_verified_without_training_at_export (test_session_export.ExportTests.test_candidate_and_decisions_verified_without_training_at_export) ... ok
+test_conflicting_closed_observation_rejected (test_session_export.ExportTests.test_conflicting_closed_observation_rejected) ... ok
+test_export_does_not_change_future_simulation (test_session_export.ExportTests.test_export_does_not_change_future_simulation) ... ok
+test_export_hash_tampering_and_json_cannot_activate (test_session_export.ExportTests.test_export_hash_tampering_and_json_cannot_activate) ... ok
+test_hypotheses_do_not_become_closed_observations (test_session_export.ExportTests.test_hypotheses_do_not_become_closed_observations) ... ok
+test_latent_is_omitted_and_pending_is_not_closed (test_session_export.ExportTests.test_latent_is_omitted_and_pending_is_not_closed) ... ok
+test_missing_old_provenance_and_revisions_remain_unknown (test_session_export.ExportTests.test_missing_old_provenance_and_revisions_remain_unknown) ... ok
+test_model_or_prediction_changed_after_closure_rejected (test_session_export.ExportTests.test_model_or_prediction_changed_after_closure_rejected) ... ok
+test_other_session_journal_and_pair_contexts_rejected (test_session_export.ExportTests.test_other_session_journal_and_pair_contexts_rejected) ... ok
+test_public_envelope_and_existing_records_unchanged (test_session_export.ExportTests.test_public_envelope_and_existing_records_unchanged) ... ok
+test_real_custom_seed_and_rng_gaussian_cache_reproducible (test_session_export.ExportTests.test_real_custom_seed_and_rng_gaussian_cache_reproducible) ... ok
+test_revisions_keep_superseded_and_discarded_forecasts (test_session_export.ExportTests.test_revisions_keep_superseded_and_discarded_forecasts) ... ok
+test_snapshot_is_copy_and_no_executable_model_objects (test_session_export.ExportTests.test_snapshot_is_copy_and_no_executable_model_objects) ... ok
+test_source_changed_after_closure_rejected (test_session_export.ExportTests.test_source_changed_after_closure_rejected) ... ok
+
+======================================================================
+ERROR: test_reset_exports_old_evidence_separately_without_active (test_session_export.ExportStreamlitTests.test_reset_exports_old_evidence_separately_without_active)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\test_session_export.py", line 276, in test_reset_exports_old_evidence_separately_without_active
+    self.close_month(app)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\test_session_export.py", line 257, in close_month
+    self.button(app, "REGISTRAR ABSTENCI�N").click().run()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\testing\v1\element_tree.py", line 739, in click
+    return self.set_value(True)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\testing\v1\element_tree.py", line 735, in set_value
+    return super().set_value(v)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\testing\v1\element_tree.py", line 532, in set_value
+    self._assert_can_interact()
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\testing\v1\element_tree.py", line 525, in _assert_can_interact
+    raise AppTestError(
+streamlit.testing.v1.errors.AppTestError: Cannot update a disabled button widget. A browser user cannot interact with a disabled widget.
+
+----------------------------------------------------------------------
+Ran 20 tests in 4.642s
+
+FAILED (errors=1)

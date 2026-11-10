@@ -1,0 +1,372 @@
+{
+  "origin": "SIMULACION",
+  "session_id": "1eae9454a5d04755b067b1e1df00525f",
+  "candidate_id": "CAND-2ddcf83d811a478595b5293cb7b35eb7",
+  "n_train": 6,
+  "n_series": 1,
+  "n_comparison": 3,
+  "decision": "REJECTED_FOR_PROMOTION",
+  "eligibility": "INSUFFICIENT_EVIDENCE",
+  "event_types": [
+    "V1_AVAILABLE",
+    "RUNTIME_CONNECTED",
+    "ACTIVATE_V1",
+    "CANDIDATE_CREATED",
+    "MODELS_COMPARED",
+    "INSUFFICIENT_EVIDENCE",
+    "CANDIDATE_REJECTED",
+    "PROMOTION_BLOCKED",
+    "ROLLBACK",
+    "RESET"
+  ],
+  "event_count": 10,
+  "head_sha256": "f2a0a59cbfb0d9f8435976ced2093f0f9d8cbb899f856c504f74fcddb6e2c6cf",
+  "registry_folder": "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\docs\\H4\\task18_evidence\\example\\example-faf0febac551496fa75584c293ca75a9\\events\\1eae9454a5d04755b067b1e1df00525f",
+  "comparison_id": "CMP-e4e3c1047ab846e9a00fada5eb703580",
+  "compared_data_sha256": "0dfd5fefb852e60f098745dd56bdc2f6848fd55ca957ee18a5ed18cc3acbc998",
+  "metrics": {
+    "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": {
+      "n": 3,
+      "MAE": 0.9279069888581345,
+      "RMSE": 1.1202195739427763,
+      "R2": null,
+      "R2_descriptive": -0.8823378407668028,
+      "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+      "observations": 3,
+      "coverage": 1.0
+    },
+    "adbce4e218a725cfceaad91bb471da9950f2902821abf3aa6d8320f62221a735": {
+      "n": 3,
+      "MAE": 4.454166666666662,
+      "RMSE": 4.528384630429605,
+      "R2": null,
+      "R2_descriptive": -29.759401041666607,
+      "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+      "observations": 3,
+      "coverage": 1.0
+    }
+  },
+  "sources_verified": true,
+  "historical_predictions_preserved": true,
+  "final_active": null,
+  "closed_observations": [
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2026-10",
+        "features": null,
+        "prediction": null,
+        "baseline": null,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "HISTORIAL INSUFICIENTE",
+        "issued_at": "2026-11-09T21:06:02.333034+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 10,
+      "observed_at": "2026-11-09T21:06:02.333034+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2026-11",
+        "features": null,
+        "prediction": null,
+        "baseline": null,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "HISTORIAL INSUFICIENTE",
+        "issued_at": "2026-11-09T21:06:02.333034+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 11,
+      "observed_at": "2026-11-09T21:06:02.333034+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2026-12",
+        "features": null,
+        "prediction": null,
+        "baseline": null,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "HISTORIAL INSUFICIENTE",
+        "issued_at": "2026-11-09T21:06:02.333034+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 12,
+      "observed_at": "2026-11-09T21:06:02.333034+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-01",
+        "features": [
+          12,
+          11,
+          10,
+          0.0,
+          1.0
+        ],
+        "prediction": 10.829971690613473,
+        "baseline": 12.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.371144+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 13,
+      "observed_at": "2026-11-09T21:06:02.371144+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-02",
+        "features": [
+          13,
+          12,
+          11,
+          0.5,
+          0.866025403784
+        ],
+        "prediction": 11.142790401706904,
+        "baseline": 13.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.379650+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 14,
+      "observed_at": "2026-11-09T21:06:02.379650+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-03",
+        "features": [
+          14,
+          13,
+          12,
+          0.866025403784,
+          0.5
+        ],
+        "prediction": 12.207223922158004,
+        "baseline": 14.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.386858+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 15,
+      "observed_at": "2026-11-09T21:06:02.386858+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-04",
+        "features": [
+          15,
+          14,
+          13,
+          1.0,
+          0.0
+        ],
+        "prediction": 16.401606360345077,
+        "baseline": 15.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.395145+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 16,
+      "observed_at": "2026-11-09T21:06:02.395145+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-05",
+        "features": [
+          16,
+          15,
+          14,
+          0.866025403784,
+          -0.5
+        ],
+        "prediction": 16.313851857828677,
+        "baseline": 16.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.402566+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 17,
+      "observed_at": "2026-11-09T21:06:02.402566+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-06",
+        "features": [
+          17,
+          16,
+          15,
+          0.5,
+          -0.866025403784
+        ],
+        "prediction": 16.8878660327197,
+        "baseline": 17.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.410058+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 18,
+      "observed_at": "2026-11-09T21:06:02.410058+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-07",
+        "features": [
+          18,
+          17,
+          16,
+          0.0,
+          -1.0
+        ],
+        "prediction": 17.296876688478108,
+        "baseline": 18.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.418062+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 19,
+      "observed_at": "2026-11-09T21:06:02.418062+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-08",
+        "features": [
+          19,
+          18,
+          17,
+          -0.5,
+          -0.866025403784
+        ],
+        "prediction": 19.085401144934462,
+        "baseline": 19.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.426472+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 20,
+      "observed_at": "2026-11-09T21:06:02.426472+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "product_id": 1,
+        "location_id": 5,
+        "month": "2027-09",
+        "features": [
+          20,
+          19,
+          18,
+          -0.866025403784,
+          -0.5
+        ],
+        "prediction": 20.834001200013027,
+        "baseline": 20.0,
+        "model": {
+          "name": "RandomForestRegressor",
+          "version": "V1",
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "trained_through": "2026-03"
+        },
+        "reason": "",
+        "issued_at": "2026-11-09T21:06:02.434034+00:00",
+        "scenario": "NORMAL"
+      },
+      "observed": 21,
+      "observed_at": "2026-11-09T21:06:02.434034+00:00",
+      "rotation": "SIN DATO"
+    }
+  ]
+}
