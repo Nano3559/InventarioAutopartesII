@@ -1,0 +1,20 @@
+test_candidate_comparison_rejection_block_and_sources (test_lifecycle_registry.LifecycleCycleTests.test_candidate_comparison_rejection_block_and_sources) ... ok
+test_no_fabrication_of_candidate_creation_before_binding (test_lifecycle_registry.LifecycleCycleTests.test_no_fabrication_of_candidate_creation_before_binding) ... ok
+test_reruns_pairs_reset_keep_evidence_without_reactivation (test_lifecycle_registry.LifecycleStreamlitTests.test_reruns_pairs_reset_keep_evidence_without_reactivation) ... 2026-11-09 17:02:29.154 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_fixture_promotion_is_logged_without_production_policy (test_lifecycle_registry.RegistryTests.test_fixture_promotion_is_logged_without_production_policy) ... ok
+test_idempotency_and_contradictory_same_key_rejected (test_lifecycle_registry.RegistryTests.test_idempotency_and_contradictory_same_key_rejected) ... ok
+test_imported_evidence_is_not_activation_authority (test_lifecycle_registry.RegistryTests.test_imported_evidence_is_not_activation_authority) ... ok
+test_missing_or_added_file_is_detected (test_lifecycle_registry.RegistryTests.test_missing_or_added_file_is_detected) ... ok
+test_pair_and_session_isolation_and_binding_guard (test_lifecycle_registry.RegistryTests.test_pair_and_session_isolation_and_binding_guard) ... ok
+test_protected_output_and_invalid_hash_rejected (test_lifecycle_registry.RegistryTests.test_protected_output_and_invalid_hash_rejected) ... ok
+test_sequence_real_utc_dates_and_complete_fields (test_lifecycle_registry.RegistryTests.test_sequence_real_utc_dates_and_complete_fields) ... ok
+test_source_hash_and_copies_are_verified (test_lifecycle_registry.RegistryTests.test_source_hash_and_copies_are_verified) ... ok
+test_tampering_even_recomputed_hash_fails_memory_anchor (test_lifecycle_registry.RegistryTests.test_tampering_even_recomputed_hash_fails_memory_anchor) ... ok
+test_verified_v1_activation_rollback_and_no_fit (test_lifecycle_registry.RegistryTests.test_verified_v1_activation_rollback_and_no_fit) ... ok
+test_write_failure_cannot_activate_or_remove_active (test_lifecycle_registry.RegistryTests.test_write_failure_cannot_activate_or_remove_active) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 3.058s
+
+OK

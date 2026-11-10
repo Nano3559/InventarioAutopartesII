@@ -1,0 +1,29 @@
+{
+  "protected_files": 29,
+  "protected_unchanged": true,
+  "python_source_files_unchanged": 43,
+  "documented_reference_only_changes": [
+    "ml/demand/validate_candidate_comparison.py",
+    "ml/demand/validate_h4_integral.py",
+    "ml/demand/validate_v1_activation.py",
+    "ml/demand/tests/test_h4_functional_fixes.py",
+    "ml/demand/tests/test_model_comparison.py",
+    "ml/demand/tests/test_reference_runtime.py",
+    "ml/demand/tests/test_retraining.py"
+  ],
+  "test_modules": 21,
+  "discovered_unique_tests": 464,
+  "passed": 464,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "lifecycle_files_unchanged": 442,
+  "zip_entries_verified": 442,
+  "zip_sha256": "2d4de62b2eaa99831ecab98ee4908a1b511f4f1022331bbb59cdef02eeade9a0",
+  "flows_status": "PASSED",
+  "closed_scenario_months": 48,
+  "additional_manual_closed_months": 1,
+  "inference_fit_calls": 0,
+  "visual_review": "NOT_PERFORMED",
+  "official_test_reevaluated": false
+}

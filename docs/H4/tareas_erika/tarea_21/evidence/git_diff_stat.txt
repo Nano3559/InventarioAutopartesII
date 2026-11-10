@@ -1,0 +1,10 @@
+ .gitignore                           |   4 +
+ ml/demand/README.md                  | 152 +++++++++++-
+ ml/demand/simulator_inputs.py        |  51 +++-
+ ml/demand/streamlit_app.py           | 132 +++++++++-
+ ml/demand/test_generate_synthetic.py | 110 ---------
+ ml/demand/test_ross_ui.py            | 457 -----------------------------------
+ ml/demand/test_simulator_ui.py       | 175 --------------
+ ml/demand/ui_panels.py               | 371 ++++++++++++++++++++++++++--
+ ml/demand/ui_runtime.py              |  26 +-
+ 9 files changed, 687 insertions(+), 791 deletions(-)

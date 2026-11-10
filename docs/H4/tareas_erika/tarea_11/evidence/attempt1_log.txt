@@ -1,0 +1,52 @@
+2026-11-09 14:43:52.846 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:43:52.847 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:00.628 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:00.628 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:04.189 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:04.189 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:04.579 The widget with key "editor_1_5_2026-10_scenario" was created with a default value but also had its value set via the Session State API.
+Stack (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 995, in _bootstrap
+    self._bootstrap_inner()
+  File "C:\Users\MSI\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1038, in _bootstrap_inner
+    self.run()
+  File "C:\Users\MSI\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\testing\v1\local_script_runner.py", line 144, in _run_script_thread
+    super()._run_script_thread()
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\script_runner.py", line 436, in _run_script_thread
+    self._run_script(request.rerun_data)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\script_runner.py", line 949, in _run_script
+    ) = exec_func_with_error_handling(code_to_exec, ctx)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\exec_code.py", line 136, in exec_func_with_error_handling
+    result = func()
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\script_runner.py", line 924, in code_to_exec
+    exec(code, module.__dict__)  # noqa: S102
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\streamlit_app.py", line 244, in <module>
+    main()
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\streamlit_app.py", line 171, in main
+    scenario = st.selectbox(
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\metrics_util.py", line 725, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\elements\widgets\selectbox.py", line 635, in selectbox
+    return self._selectbox(
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\elements\widgets\selectbox.py", line 684, in _selectbox
+    check_widget_policies(
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\elements\lib\policies.py", line 146, in check_widget_policies
+    check_session_state_rules(
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\elements\lib\policies.py", line 90, in check_session_state_rules
+    _LOGGER.warning(
+2026-11-09 14:44:05.741 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:05.741 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:08.466 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:08.466 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:11.010 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:11.011 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:12.995 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 14:44:12.995 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+Traceback (most recent call last):
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\validate_v1_activation.py", line 144, in <module>
+    run()
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\validate_v1_activation.py", line 117, in run
+    assert row.prediction is None and row.reason == "HISTORIAL INSUFICIENTE"
+AssertionError

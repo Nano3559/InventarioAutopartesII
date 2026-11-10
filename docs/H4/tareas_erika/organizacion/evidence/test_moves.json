@@ -1,0 +1,107 @@
+[
+  {
+    "before": "ml/demand/test_demand_engine.py",
+    "after": "ml/demand/tests/test_demand_engine.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_demand_runtime.py",
+    "after": "ml/demand/tests/test_demand_runtime.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_engine_integration.py",
+    "after": "ml/demand/tests/test_engine_integration.py",
+    "imports_changed": true
+  },
+  {
+    "before": "ml/demand/test_evaluate_v1.py",
+    "after": "ml/demand/tests/test_evaluate_v1.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_generate_synthetic.py",
+    "after": "ml/demand/tests/test_generate_synthetic.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_h4_functional_fixes.py",
+    "after": "ml/demand/tests/test_h4_functional_fixes.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_integrity.py",
+    "after": "ml/demand/tests/test_integrity.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_lifecycle_registry.py",
+    "after": "ml/demand/tests/test_lifecycle_registry.py",
+    "imports_changed": true
+  },
+  {
+    "before": "ml/demand/test_linear_regression.py",
+    "after": "ml/demand/tests/test_linear_regression.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_ml_pipeline.py",
+    "after": "ml/demand/tests/test_ml_pipeline.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_model_comparison.py",
+    "after": "ml/demand/tests/test_model_comparison.py",
+    "imports_changed": true
+  },
+  {
+    "before": "ml/demand/test_pair_contexts.py",
+    "after": "ml/demand/tests/test_pair_contexts.py",
+    "imports_changed": true
+  },
+  {
+    "before": "ml/demand/test_random_forest.py",
+    "after": "ml/demand/tests/test_random_forest.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_reference_runtime.py",
+    "after": "ml/demand/tests/test_reference_runtime.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_retraining.py",
+    "after": "ml/demand/tests/test_retraining.py",
+    "imports_changed": true
+  },
+  {
+    "before": "ml/demand/test_ross_ui.py",
+    "after": "ml/demand/tests/test_ross_ui.py",
+    "imports_changed": true
+  },
+  {
+    "before": "ml/demand/test_runtime_integration.py",
+    "after": "ml/demand/tests/test_runtime_integration.py",
+    "imports_changed": true
+  },
+  {
+    "before": "ml/demand/test_select_v1.py",
+    "after": "ml/demand/tests/test_select_v1.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_session_export.py",
+    "after": "ml/demand/tests/test_session_export.py",
+    "imports_changed": true
+  },
+  {
+    "before": "ml/demand/test_simulator_ui.py",
+    "after": "ml/demand/tests/test_simulator_ui.py",
+    "imports_changed": false
+  },
+  {
+    "before": "ml/demand/test_simulator_validation.py",
+    "after": "ml/demand/tests/test_simulator_validation.py",
+    "imports_changed": true
+  }
+]

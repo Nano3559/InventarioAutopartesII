@@ -1,0 +1,27 @@
+test_local_compare_reject_block_and_reset (test_model_comparison.ComparisonStreamlitTests.test_local_compare_reject_block_and_reset) ... 2026-11-09 15:15:46.280 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 15:15:46.281 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 15:15:46.281 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 15:15:46.281 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 15:15:46.281 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 15:15:46.281 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 15:15:46.281 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_active_change_or_training_overlap_rejected (test_model_comparison.ComparisonTests.test_active_change_or_training_overlap_rejected) ... ok
+test_candidate_receives_identical_features (test_model_comparison.ComparisonTests.test_candidate_receives_identical_features) ... ok
+test_common_rows_and_coverage (test_model_comparison.ComparisonTests.test_common_rows_and_coverage) ... ok
+test_constant_target_and_abstention_metrics (test_model_comparison.ComparisonTests.test_constant_target_and_abstention_metrics) ... ok
+test_corrupt_artifact_never_deserialized (test_model_comparison.ComparisonTests.test_corrupt_artifact_never_deserialized) ... ok
+test_json_approval_never_authorizes_production_runtime (test_model_comparison.ComparisonTests.test_json_approval_never_authorizes_production_runtime) ... ok
+test_original_record_immutable_rejection_separate (test_model_comparison.ComparisonTests.test_original_record_immutable_rejection_separate) ... ok
+test_reserve_corruption_rejected (test_model_comparison.ComparisonTests.test_reserve_corruption_rejected) ... ok
+test_same_input_metrics_no_fit_and_insufficient_evidence (test_model_comparison.ComparisonTests.test_same_input_metrics_no_fit_and_insufficient_evidence) ... ok
+test_unknown_run_and_foreign_session_rejected (test_model_comparison.ComparisonTests.test_unknown_run_and_foreign_session_rejected) ... ok
+test_fixture_policy_rejects_real_candidate (test_model_comparison.FixturePolicyTests.test_fixture_policy_rejects_real_candidate) ... ok
+test_fixture_promotion_previous_active_and_rollback (test_model_comparison.FixturePolicyTests.test_fixture_promotion_previous_active_and_rollback) ... ok
+test_rejected_and_insufficient_fixture_cannot_promote (test_model_comparison.FixturePolicyTests.test_rejected_and_insufficient_fixture_cannot_promote) ... ok
+test_rollback_rejects_changed_previous_artifact (test_model_comparison.FixturePolicyTests.test_rollback_rejects_changed_previous_artifact) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 3.742s
+
+OK

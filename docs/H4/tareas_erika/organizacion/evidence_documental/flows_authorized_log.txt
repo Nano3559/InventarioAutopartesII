@@ -1,0 +1,51 @@
+2026-11-09 21:19:07.146 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 21:19:13.208 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 21:19:14.699 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+NORMAL: 6 cierres, reset y reproducci�n OK
+2026-11-09 21:19:14.889 The widget with key "editor_1_5_2026-10_scenario" was created with a default value but also had its value set via the Session State API.
+Stack (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 995, in _bootstrap
+    self._bootstrap_inner()
+  File "C:\Users\MSI\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1038, in _bootstrap_inner
+    self.run()
+  File "C:\Users\MSI\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\testing\v1\local_script_runner.py", line 144, in _run_script_thread
+    super()._run_script_thread()
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\script_runner.py", line 436, in _run_script_thread
+    self._run_script(request.rerun_data)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\script_runner.py", line 949, in _run_script
+    ) = exec_func_with_error_handling(code_to_exec, ctx)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\exec_code.py", line 136, in exec_func_with_error_handling
+    result = func()
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\scriptrunner\script_runner.py", line 924, in code_to_exec
+    exec(code, module.__dict__)  # noqa: S102
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\streamlit_app.py", line 270, in <module>
+    main()
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\streamlit_app.py", line 192, in main
+    scenario = st.selectbox(
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\runtime\metrics_util.py", line 725, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\elements\widgets\selectbox.py", line 635, in selectbox
+    return self._selectbox(
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\elements\widgets\selectbox.py", line 684, in _selectbox
+    check_widget_policies(
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\elements\lib\policies.py", line 146, in check_widget_policies
+    check_session_state_rules(
+  File "C:\Universidad\Sistemas\9vosemestre\programacion\InventarioAutopartesII\ml\demand\.venv\Lib\site-packages\streamlit\elements\lib\policies.py", line 90, in check_session_state_rules
+    _LOGGER.warning(
+CRECIMIENTO: 6 cierres, reset y reproducci�n OK
+2026-11-09 21:19:19.320 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+CA�DA: 6 cierres, reset y reproducci�n OK
+2026-11-09 21:19:23.860 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+PICO MAYORISTA: 6 cierres, reset y reproducci�n OK
+2026-11-09 21:19:28.536 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+STOCKOUT: 6 cierres, reset y reproducci�n OK
+2026-11-09 21:19:33.151 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+PRODUCTO NUEVO: 6 cierres, reset y reproducci�n OK
+2026-11-09 21:19:37.673 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+CAMBIO PERSISTENTE: 6 cierres, reset y reproducci�n OK
+2026-11-09 21:19:42.416 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+RECUPERACI�N: 6 cierres, reset y reproducci�n OK
+2026-11-09 21:19:47.067 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+T21 flows PASSED: 48 cierres, 8 escenarios, caso manual y cero fit

@@ -1,0 +1,13 @@
+{
+  "matrix_evidence_files_exist": true,
+  "report_links_exist": true,
+  "test_methods": 375,
+  "integral_months": 60,
+  "original_files_unchanged": 29,
+  "main_flow": "PASS",
+  "diagnostic_defects": [
+    "D01",
+    "D02"
+  ],
+  "visual_review": "PENDING"
+}

@@ -1,0 +1,1530 @@
+[
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO.csv",
+    "new": "docs/H4/tareas_erika/tarea_14/H4_MATRIZ_CUMPLIMIENTO.csv",
+    "sha256_before": "e49436e4f853a32e590cd9bdbba5cf0401c8e3d4c5b55545f74d3faa3710e944",
+    "sha256_immediately_after_move": "e49436e4f853a32e590cd9bdbba5cf0401c8e3d4c5b55545f74d3faa3710e944",
+    "sha256_final": "e49436e4f853a32e590cd9bdbba5cf0401c8e3d4c5b55545f74d3faa3710e944",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO.md",
+    "new": "docs/H4/tareas_erika/tarea_14/H4_MATRIZ_CUMPLIMIENTO.md",
+    "sha256_before": "fa39ab9792fd2739e599d2f8874f7a2e33913dfd34bf9a0c3d85995c2c243414",
+    "sha256_immediately_after_move": "fa39ab9792fd2739e599d2f8874f7a2e33913dfd34bf9a0c3d85995c2c243414",
+    "sha256_final": "1e4d16bfbabdbf69f47cc0f5619a442adf9e1723745f9ea1d4329451efadf559",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T15.csv",
+    "new": "docs/H4/tareas_erika/tarea_15/H4_MATRIZ_CUMPLIMIENTO_T15.csv",
+    "sha256_before": "f4359d871701a03d5965c536c8b3e8c3edb010243a930e8762970f609fd95f49",
+    "sha256_immediately_after_move": "f4359d871701a03d5965c536c8b3e8c3edb010243a930e8762970f609fd95f49",
+    "sha256_final": "f4359d871701a03d5965c536c8b3e8c3edb010243a930e8762970f609fd95f49",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T15.md",
+    "new": "docs/H4/tareas_erika/tarea_15/H4_MATRIZ_CUMPLIMIENTO_T15.md",
+    "sha256_before": "2d1394e1e7b8eece34e1088bade7f8b38132fed970012091a8bee5b71ca64fad",
+    "sha256_immediately_after_move": "2d1394e1e7b8eece34e1088bade7f8b38132fed970012091a8bee5b71ca64fad",
+    "sha256_final": "e25c84f832347291179156331901c52a495c0ff4dc6c332933a16b9b2623554a",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T17.csv",
+    "new": "docs/H4/tareas_erika/tarea_17/H4_MATRIZ_CUMPLIMIENTO_T17.csv",
+    "sha256_before": "6b1e5a87bd1ec3b4a031e61a70770d9b3babea16d78f43461a8fd43e72b38e98",
+    "sha256_immediately_after_move": "6b1e5a87bd1ec3b4a031e61a70770d9b3babea16d78f43461a8fd43e72b38e98",
+    "sha256_final": "6b1e5a87bd1ec3b4a031e61a70770d9b3babea16d78f43461a8fd43e72b38e98",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T17.md",
+    "new": "docs/H4/tareas_erika/tarea_17/H4_MATRIZ_CUMPLIMIENTO_T17.md",
+    "sha256_before": "0466d1faa040b62c3a6638182c04bf5afac96ca9798cee9eb6b4ea0862ea36a7",
+    "sha256_immediately_after_move": "0466d1faa040b62c3a6638182c04bf5afac96ca9798cee9eb6b4ea0862ea36a7",
+    "sha256_final": "7175eca80ae5a1f5441405f2f855545d6a39e52cbdd93b8820b84c05aaa020a6",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T18.csv",
+    "new": "docs/H4/tareas_erika/tarea_18/H4_MATRIZ_CUMPLIMIENTO_T18.csv",
+    "sha256_before": "3a1c1dfb3efa10e754078d13a4f31541366d52b49c6be0c2dbae3ee472a760db",
+    "sha256_immediately_after_move": "3a1c1dfb3efa10e754078d13a4f31541366d52b49c6be0c2dbae3ee472a760db",
+    "sha256_final": "3a1c1dfb3efa10e754078d13a4f31541366d52b49c6be0c2dbae3ee472a760db",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T18.md",
+    "new": "docs/H4/tareas_erika/tarea_18/H4_MATRIZ_CUMPLIMIENTO_T18.md",
+    "sha256_before": "9f4d49f549974bb7f853125c033cae709bb2f469355fd9a3b0b2948dd3f1bc43",
+    "sha256_immediately_after_move": "9f4d49f549974bb7f853125c033cae709bb2f469355fd9a3b0b2948dd3f1bc43",
+    "sha256_final": "caaec9597c3990ba4e0b619d4350c6a64849269b57edf95bfd28d759c318472c",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T19.csv",
+    "new": "docs/H4/tareas_erika/tarea_19/H4_MATRIZ_CUMPLIMIENTO_T19.csv",
+    "sha256_before": "faa97feeb7f1f8a59726dc5972e7cd78fd200aa754f45d2e8f0ab91e9fc11522",
+    "sha256_immediately_after_move": "faa97feeb7f1f8a59726dc5972e7cd78fd200aa754f45d2e8f0ab91e9fc11522",
+    "sha256_final": "faa97feeb7f1f8a59726dc5972e7cd78fd200aa754f45d2e8f0ab91e9fc11522",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/H4_MATRIZ_CUMPLIMIENTO_T19.md",
+    "new": "docs/H4/tareas_erika/tarea_19/H4_MATRIZ_CUMPLIMIENTO_T19.md",
+    "sha256_before": "7b79d2e1c87ddce1f6339e3882cb38f584c452fb8c6f9ee6e68ceb1bb3303220",
+    "sha256_immediately_after_move": "7b79d2e1c87ddce1f6339e3882cb38f584c452fb8c6f9ee6e68ceb1bb3303220",
+    "sha256_final": "178ad1d933921b1bb7cc0ccc10ca2178ca13ac3b31aefb55833575daba7dd2d3",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_10_INFORME.md",
+    "new": "docs/H4/tareas_erika/tarea_10/H4_TAREA_10_INFORME.md",
+    "sha256_before": "7aec2f68500cf6c87c5b665a79003d66c1cc86a073f954843a049d9a474e1632",
+    "sha256_immediately_after_move": "7aec2f68500cf6c87c5b665a79003d66c1cc86a073f954843a049d9a474e1632",
+    "sha256_final": "6d34329f820ec0bdce9556b2971156832efeebac792a88d17f7d6257aeff4f00",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_11_ACTIVACION_V1.md",
+    "new": "docs/H4/tareas_erika/tarea_11/H4_TAREA_11_ACTIVACION_V1.md",
+    "sha256_before": "aaa54bfcf5caaf219d3907012b0519478eab58aee985fc96d4f1ff54b3dd3672",
+    "sha256_immediately_after_move": "aaa54bfcf5caaf219d3907012b0519478eab58aee985fc96d4f1ff54b3dd3672",
+    "sha256_final": "71e7bcefc4aff40a5a6b3bae1f0299148f896011c8a6534fd4efd91729bce05a",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_12_REENTRENAMIENTO.md",
+    "new": "docs/H4/tareas_erika/tarea_12/H4_TAREA_12_REENTRENAMIENTO.md",
+    "sha256_before": "d7e4b7d33a9202d4ce4dbd2b0e9799c2f37411e5e2e71954af0d4262a7def832",
+    "sha256_immediately_after_move": "d7e4b7d33a9202d4ce4dbd2b0e9799c2f37411e5e2e71954af0d4262a7def832",
+    "sha256_final": "5e87ea083021aea1420a7be72423c669e931164294a8cb0dbff5e412c2765862",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_13_COMPARACION_DECISION.md",
+    "new": "docs/H4/tareas_erika/tarea_13/H4_TAREA_13_COMPARACION_DECISION.md",
+    "sha256_before": "cc32bbaf6d5c7c663a92ed8587bd601af4fa774bf12aed18ceba01bea33ab823",
+    "sha256_immediately_after_move": "cc32bbaf6d5c7c663a92ed8587bd601af4fa774bf12aed18ceba01bea33ab823",
+    "sha256_final": "105aab49f625ad66d993f0c33037ea50d8452fdff6e5186172f8496695648363",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_15_CORRECCIONES_FUNCIONALES.md",
+    "new": "docs/H4/tareas_erika/tarea_15/H4_TAREA_15_CORRECCIONES_FUNCIONALES.md",
+    "sha256_before": "af351c7e572224c655de1509c833ccd744c908d7a76d7e9fdfe041a7b7a818e5",
+    "sha256_immediately_after_move": "af351c7e572224c655de1509c833ccd744c908d7a76d7e9fdfe041a7b7a818e5",
+    "sha256_final": "8aa36bed1ea8ebf94913778a2e93bac7aa5c04bf50716f60fe04c151a9f771ea",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_17_CONTEXTOS_POR_PAR.md",
+    "new": "docs/H4/tareas_erika/tarea_17/H4_TAREA_17_CONTEXTOS_POR_PAR.md",
+    "sha256_before": "d789c574460794076c559beab66f086c7b7301fbd9dadb10c52c2439d02f187d",
+    "sha256_immediately_after_move": "d789c574460794076c559beab66f086c7b7301fbd9dadb10c52c2439d02f187d",
+    "sha256_final": "eea08d05c81db53b5f0179043fc0cd1f19b64ed492316b53d2404264229a7126",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_18_REGISTRO_VERSIONES_DECISIONES.md",
+    "new": "docs/H4/tareas_erika/tarea_18/H4_TAREA_18_REGISTRO_VERSIONES_DECISIONES.md",
+    "sha256_before": "8f81a3380102fcfc8be33244a46a6c2ef997b8a77f82c43ce3b9d4d7155152f8",
+    "sha256_immediately_after_move": "8f81a3380102fcfc8be33244a46a6c2ef997b8a77f82c43ce3b9d4d7155152f8",
+    "sha256_final": "e515245243f68e353ea0865e85ee9c4e98cdc1830c2eed8f9bcb2d330f66dbef",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_19_EXPORTACION_TRAZABILIDAD.md",
+    "new": "docs/H4/tareas_erika/tarea_19/H4_TAREA_19_EXPORTACION_TRAZABILIDAD.md",
+    "sha256_before": "cdb6fbdc3ac865b8c215eb2b3c1eb1a97f3e12dc87ff05f0c2277e4e87c3e9a3",
+    "sha256_immediately_after_move": "cdb6fbdc3ac865b8c215eb2b3c1eb1a97f3e12dc87ff05f0c2277e4e87c3e9a3",
+    "sha256_final": "45a77c7666cb5af21cbd4e2a625caab987b1c1f72a33f018ddc3070aa21cc44c",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/H4_TAREA_21_AUDITORIA_FINAL.md",
+    "new": "docs/H4/tareas_erika/tarea_21/H4_TAREA_21_AUDITORIA_FINAL.md",
+    "sha256_before": "45e321f027f07dc2090218feae66846f79e3700e456dc7b7fa5efe196a18409a",
+    "sha256_immediately_after_move": "45e321f027f07dc2090218feae66846f79e3700e456dc7b7fa5efe196a18409a",
+    "sha256_final": "73a90a7f741e6b87976156d13376cc14614caa0051c12701903b2ac050f8f32a",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/after.json",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/after.json",
+    "sha256_before": "6837f98c095565b4e88bf9fd98e27994b9881a9b8e2c57c23e69042e775ecaee",
+    "sha256_immediately_after_move": "6837f98c095565b4e88bf9fd98e27994b9881a9b8e2c57c23e69042e775ecaee",
+    "sha256_final": "6837f98c095565b4e88bf9fd98e27994b9881a9b8e2c57c23e69042e775ecaee",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/after_tests.txt",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/after_tests.txt",
+    "sha256_before": "fddeb8953ac029cf759edb21364c23619a9ed0ba55ddc40daf335622817239c5",
+    "sha256_immediately_after_move": "fddeb8953ac029cf759edb21364c23619a9ed0ba55ddc40daf335622817239c5",
+    "sha256_final": "fddeb8953ac029cf759edb21364c23619a9ed0ba55ddc40daf335622817239c5",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/baseline_tests.txt",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/baseline_tests.txt",
+    "sha256_before": "a3cf74a907da45d4c0d71a19e9202a2f27f30ed405ff0c8d702c6d30d1f12d45",
+    "sha256_immediately_after_move": "a3cf74a907da45d4c0d71a19e9202a2f27f30ed405ff0c8d702c6d30d1f12d45",
+    "sha256_final": "a3cf74a907da45d4c0d71a19e9202a2f27f30ed405ff0c8d702c6d30d1f12d45",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/before.json",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/before.json",
+    "sha256_before": "84eb08e8512688416bf6615706cf7bc0bd272c810072b56ca7cec48ad848b6fd",
+    "sha256_immediately_after_move": "84eb08e8512688416bf6615706cf7bc0bd272c810072b56ca7cec48ad848b6fd",
+    "sha256_final": "84eb08e8512688416bf6615706cf7bc0bd272c810072b56ca7cec48ad848b6fd",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/discovered_after.json",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/discovered_after.json",
+    "sha256_before": "880d388065a8aa0002387dcac0fef26e99046513dc7cf891a403b6f85447d990",
+    "sha256_immediately_after_move": "880d388065a8aa0002387dcac0fef26e99046513dc7cf891a403b6f85447d990",
+    "sha256_final": "880d388065a8aa0002387dcac0fef26e99046513dc7cf891a403b6f85447d990",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/git_diff_stat.txt",
+    "sha256_before": "109aea1ce72346b83dd52e778d7371a378f78637e756c3b5ef813365594ade17",
+    "sha256_immediately_after_move": "109aea1ce72346b83dd52e778d7371a378f78637e756c3b5ef813365594ade17",
+    "sha256_final": "109aea1ce72346b83dd52e778d7371a378f78637e756c3b5ef813365594ade17",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/git_status_after.txt",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/git_status_after.txt",
+    "sha256_before": "dc6e6612994391b56e8800cac03737f7a963890be7c59487e5eeddb1a0592d1e",
+    "sha256_immediately_after_move": "dc6e6612994391b56e8800cac03737f7a963890be7c59487e5eeddb1a0592d1e",
+    "sha256_final": "dc6e6612994391b56e8800cac03737f7a963890be7c59487e5eeddb1a0592d1e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/git_status_before.txt",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/git_status_before.txt",
+    "sha256_before": "195c4b3dbd8e1119806090e8a89d51dcee34fce8fb04abdac0b96407d3a45320",
+    "sha256_immediately_after_move": "195c4b3dbd8e1119806090e8a89d51dcee34fce8fb04abdac0b96407d3a45320",
+    "sha256_final": "195c4b3dbd8e1119806090e8a89d51dcee34fce8fb04abdac0b96407d3a45320",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/import_smoke.json",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/import_smoke.json",
+    "sha256_before": "c0392f74496c955eec13a02a401bac16dc472c55ecfe3da1dda81e26414f2e51",
+    "sha256_immediately_after_move": "c0392f74496c955eec13a02a401bac16dc472c55ecfe3da1dda81e26414f2e51",
+    "sha256_final": "c0392f74496c955eec13a02a401bac16dc472c55ecfe3da1dda81e26414f2e51",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/lifecycle_inventory.json",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/lifecycle_inventory.json",
+    "sha256_before": "12871e23893e8f42aceb1c2e49876d98f6458acb2653bb9ef65ac3d12a8db7c8",
+    "sha256_immediately_after_move": "12871e23893e8f42aceb1c2e49876d98f6458acb2653bb9ef65ac3d12a8db7c8",
+    "sha256_final": "12871e23893e8f42aceb1c2e49876d98f6458acb2653bb9ef65ac3d12a8db7c8",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/lifecycle_preservado.zip",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/lifecycle_preservado.zip",
+    "sha256_before": "2d4de62b2eaa99831ecab98ee4908a1b511f4f1022331bbb59cdef02eeade9a0",
+    "sha256_immediately_after_move": "2d4de62b2eaa99831ecab98ee4908a1b511f4f1022331bbb59cdef02eeade9a0",
+    "sha256_final": "2d4de62b2eaa99831ecab98ee4908a1b511f4f1022331bbb59cdef02eeade9a0",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/runner_discovery.txt",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/runner_discovery.txt",
+    "sha256_before": "2e1e3dc7a438389d2b06d7e991d2d724f41484b8dc30c71b12f0e778fbb4778f",
+    "sha256_immediately_after_move": "2e1e3dc7a438389d2b06d7e991d2d724f41484b8dc30c71b12f0e778fbb4778f",
+    "sha256_final": "2e1e3dc7a438389d2b06d7e991d2d724f41484b8dc30c71b12f0e778fbb4778f",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/organizacion_evidence/test_moves.json",
+    "new": "docs/H4/tareas_erika/organizacion/evidence/test_moves.json",
+    "sha256_before": "848412a633fa02668e1bd9a40f9f48eee0972c19d4ebb40f0a29ef15880acb26",
+    "sha256_immediately_after_move": "848412a633fa02668e1bd9a40f9f48eee0972c19d4ebb40f0a29ef15880acb26",
+    "sha256_final": "848412a633fa02668e1bd9a40f9f48eee0972c19d4ebb40f0a29ef15880acb26",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task10_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_10/evidence/full_tests.txt",
+    "sha256_before": "5ec400b5e418ae26d0ce70836daac7bd45ef770bfabb68d785d37f41a9b3e606",
+    "sha256_immediately_after_move": "5ec400b5e418ae26d0ce70836daac7bd45ef770bfabb68d785d37f41a9b3e606",
+    "sha256_final": "5ec400b5e418ae26d0ce70836daac7bd45ef770bfabb68d785d37f41a9b3e606",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task10_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_10/evidence/git_diff_stat.txt",
+    "sha256_before": "321eaeda172e00e2bdaf18517d428274a1cfcb74fc8618c8a30d0c62c8909118",
+    "sha256_immediately_after_move": "321eaeda172e00e2bdaf18517d428274a1cfcb74fc8618c8a30d0c62c8909118",
+    "sha256_final": "321eaeda172e00e2bdaf18517d428274a1cfcb74fc8618c8a30d0c62c8909118",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task10_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_10/evidence/git_status.txt",
+    "sha256_before": "e305bf83e4526f9c63e62709ef05e15d598a3e8fad51f61f3cd37d9c1f4e296f",
+    "sha256_immediately_after_move": "e305bf83e4526f9c63e62709ef05e15d598a3e8fad51f61f3cd37d9c1f4e296f",
+    "sha256_final": "e305bf83e4526f9c63e62709ef05e15d598a3e8fad51f61f3cd37d9c1f4e296f",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task10_evidence/integrity_after.json",
+    "new": "docs/H4/tareas_erika/tarea_10/evidence/integrity_after.json",
+    "sha256_before": "8c4fb7e538593351cf6620af757a8ec9e18802508caea19be875fda6398072e0",
+    "sha256_immediately_after_move": "8c4fb7e538593351cf6620af757a8ec9e18802508caea19be875fda6398072e0",
+    "sha256_final": "8c4fb7e538593351cf6620af757a8ec9e18802508caea19be875fda6398072e0",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task10_evidence/integrity_before.json",
+    "new": "docs/H4/tareas_erika/tarea_10/evidence/integrity_before.json",
+    "sha256_before": "9d779dda6f34705be7c7bd824c928c9c5dbdc8217a418012e0175fa403776c1d",
+    "sha256_immediately_after_move": "9d779dda6f34705be7c7bd824c928c9c5dbdc8217a418012e0175fa403776c1d",
+    "sha256_final": "9d779dda6f34705be7c7bd824c928c9c5dbdc8217a418012e0175fa403776c1d",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task11_evidence/activation.json",
+    "new": "docs/H4/tareas_erika/tarea_11/evidence/activation.json",
+    "sha256_before": "7dd2bc68e321c9625ce291bcf8e5b082597ec002800f467b8ab84d31dea33e86",
+    "sha256_immediately_after_move": "7dd2bc68e321c9625ce291bcf8e5b082597ec002800f467b8ab84d31dea33e86",
+    "sha256_final": "7dd2bc68e321c9625ce291bcf8e5b082597ec002800f467b8ab84d31dea33e86",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task11_evidence/attempt1.json",
+    "new": "docs/H4/tareas_erika/tarea_11/evidence/attempt1.json",
+    "sha256_before": "a26050e27132070c8503a4054e314ccecd59fdcf6bcbe39b3bbb92beeb660546",
+    "sha256_immediately_after_move": "a26050e27132070c8503a4054e314ccecd59fdcf6bcbe39b3bbb92beeb660546",
+    "sha256_final": "a26050e27132070c8503a4054e314ccecd59fdcf6bcbe39b3bbb92beeb660546",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task11_evidence/attempt1_log.txt",
+    "new": "docs/H4/tareas_erika/tarea_11/evidence/attempt1_log.txt",
+    "sha256_before": "5c9c0b3ba904f44790a605cc1257c8a641c134945e7736290b6cf85c6b4e2ccf",
+    "sha256_immediately_after_move": "5c9c0b3ba904f44790a605cc1257c8a641c134945e7736290b6cf85c6b4e2ccf",
+    "sha256_final": "5c9c0b3ba904f44790a605cc1257c8a641c134945e7736290b6cf85c6b4e2ccf",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task11_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_11/evidence/git_diff_stat.txt",
+    "sha256_before": "321eaeda172e00e2bdaf18517d428274a1cfcb74fc8618c8a30d0c62c8909118",
+    "sha256_immediately_after_move": "321eaeda172e00e2bdaf18517d428274a1cfcb74fc8618c8a30d0c62c8909118",
+    "sha256_final": "321eaeda172e00e2bdaf18517d428274a1cfcb74fc8618c8a30d0c62c8909118",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task11_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_11/evidence/git_status.txt",
+    "sha256_before": "8b15a7fb610f9743d015f4b38fe39795fae65169e88e61e491d95b04a9aeaa5d",
+    "sha256_immediately_after_move": "8b15a7fb610f9743d015f4b38fe39795fae65169e88e61e491d95b04a9aeaa5d",
+    "sha256_final": "8b15a7fb610f9743d015f4b38fe39795fae65169e88e61e491d95b04a9aeaa5d",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task11_evidence/integrity_final.json",
+    "new": "docs/H4/tareas_erika/tarea_11/evidence/integrity_final.json",
+    "sha256_before": "49e4e0c041ace106e3c6148fadd814a9d5c71aa8653f0cb525d5a6118077ee40",
+    "sha256_immediately_after_move": "49e4e0c041ace106e3c6148fadd814a9d5c71aa8653f0cb525d5a6118077ee40",
+    "sha256_final": "49e4e0c041ace106e3c6148fadd814a9d5c71aa8653f0cb525d5a6118077ee40",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task11_evidence/regression.txt",
+    "new": "docs/H4/tareas_erika/tarea_11/evidence/regression.txt",
+    "sha256_before": "ad05087b22db4f7bb3dc24f1a23ebc0ad9ba9e8c359fcdb1c9dc302cfdae21f4",
+    "sha256_immediately_after_move": "ad05087b22db4f7bb3dc24f1a23ebc0ad9ba9e8c359fcdb1c9dc302cfdae21f4",
+    "sha256_final": "ad05087b22db4f7bb3dc24f1a23ebc0ad9ba9e8c359fcdb1c9dc302cfdae21f4",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task11_evidence/validation.txt",
+    "new": "docs/H4/tareas_erika/tarea_11/evidence/validation.txt",
+    "sha256_before": "01260cf156018658d6fcc4e55792c00c074531d1d888302fd8d9be5abed0bf5f",
+    "sha256_immediately_after_move": "01260cf156018658d6fcc4e55792c00c074531d1d888302fd8d9be5abed0bf5f",
+    "sha256_final": "01260cf156018658d6fcc4e55792c00c074531d1d888302fd8d9be5abed0bf5f",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task12_evidence/example.json",
+    "new": "docs/H4/tareas_erika/tarea_12/evidence/example.json",
+    "sha256_before": "556bd266c53bda5aee932ec3a359a53a43a6e1c8a690e564f2c9e8d991360b0f",
+    "sha256_immediately_after_move": "556bd266c53bda5aee932ec3a359a53a43a6e1c8a690e564f2c9e8d991360b0f",
+    "sha256_final": "556bd266c53bda5aee932ec3a359a53a43a6e1c8a690e564f2c9e8d991360b0f",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task12_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_12/evidence/full_tests.txt",
+    "sha256_before": "ab6e739b7c5148f8ecea7a166d7d703ec86cb9569f0ff84332e5c793fc7b6ecf",
+    "sha256_immediately_after_move": "ab6e739b7c5148f8ecea7a166d7d703ec86cb9569f0ff84332e5c793fc7b6ecf",
+    "sha256_final": "ab6e739b7c5148f8ecea7a166d7d703ec86cb9569f0ff84332e5c793fc7b6ecf",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task12_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_12/evidence/git_diff_stat.txt",
+    "sha256_before": "986403e5f5a722010d72b909961db35f505fcba3226103555f8ca7e2fc1af597",
+    "sha256_immediately_after_move": "986403e5f5a722010d72b909961db35f505fcba3226103555f8ca7e2fc1af597",
+    "sha256_final": "986403e5f5a722010d72b909961db35f505fcba3226103555f8ca7e2fc1af597",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task12_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_12/evidence/git_status.txt",
+    "sha256_before": "8bf8345bb237bf34ec568ed6521e3fe2955de111542fe33ab09b6ad4ed1a3647",
+    "sha256_immediately_after_move": "8bf8345bb237bf34ec568ed6521e3fe2955de111542fe33ab09b6ad4ed1a3647",
+    "sha256_final": "8bf8345bb237bf34ec568ed6521e3fe2955de111542fe33ab09b6ad4ed1a3647",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task12_evidence/integrity.json",
+    "new": "docs/H4/tareas_erika/tarea_12/evidence/integrity.json",
+    "sha256_before": "d3f00571b3f6c7c4fa3858e6beaf403ccd84f38b65846ed2e0326a702851d6f7",
+    "sha256_immediately_after_move": "d3f00571b3f6c7c4fa3858e6beaf403ccd84f38b65846ed2e0326a702851d6f7",
+    "sha256_final": "d3f00571b3f6c7c4fa3858e6beaf403ccd84f38b65846ed2e0326a702851d6f7",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task13_evidence/fixture_validation.json",
+    "new": "docs/H4/tareas_erika/tarea_13/evidence/fixture_validation.json",
+    "sha256_before": "6b1f1d57b496175c3e7ee4c2b98690e0cccaf3be56755bd80d618f4cf671a6e1",
+    "sha256_immediately_after_move": "6b1f1d57b496175c3e7ee4c2b98690e0cccaf3be56755bd80d618f4cf671a6e1",
+    "sha256_final": "6b1f1d57b496175c3e7ee4c2b98690e0cccaf3be56755bd80d618f4cf671a6e1",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task13_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_13/evidence/full_tests.txt",
+    "sha256_before": "e55432b72edb550712bb1e5ca105fed34597fc7dd1d5ce74349dcec9220a5fac",
+    "sha256_immediately_after_move": "e55432b72edb550712bb1e5ca105fed34597fc7dd1d5ce74349dcec9220a5fac",
+    "sha256_final": "e55432b72edb550712bb1e5ca105fed34597fc7dd1d5ce74349dcec9220a5fac",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task13_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_13/evidence/git_diff_stat.txt",
+    "sha256_before": "b56034204bb6ba66d9388e6ebb6d3fa0446583332143cba5da0f70b164a3699b",
+    "sha256_immediately_after_move": "b56034204bb6ba66d9388e6ebb6d3fa0446583332143cba5da0f70b164a3699b",
+    "sha256_final": "b56034204bb6ba66d9388e6ebb6d3fa0446583332143cba5da0f70b164a3699b",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task13_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_13/evidence/git_status.txt",
+    "sha256_before": "fca30d003aec5b34e6d0bfdb0e7eeece75339c62867940cffedf677891459e00",
+    "sha256_immediately_after_move": "fca30d003aec5b34e6d0bfdb0e7eeece75339c62867940cffedf677891459e00",
+    "sha256_final": "fca30d003aec5b34e6d0bfdb0e7eeece75339c62867940cffedf677891459e00",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task13_evidence/integrity.json",
+    "new": "docs/H4/tareas_erika/tarea_13/evidence/integrity.json",
+    "sha256_before": "0303d20bf07310fe7fc852271a0b2f49f6c8d9dded502d9d3e5f700f4c5f2693",
+    "sha256_immediately_after_move": "0303d20bf07310fe7fc852271a0b2f49f6c8d9dded502d9d3e5f700f4c5f2693",
+    "sha256_final": "0303d20bf07310fe7fc852271a0b2f49f6c8d9dded502d9d3e5f700f4c5f2693",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task13_evidence/new_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_13/evidence/new_tests.txt",
+    "sha256_before": "958630166be79a87bbb05eb76b7b397fe7ddb111763d09dbdde8884b0b6edfd5",
+    "sha256_immediately_after_move": "958630166be79a87bbb05eb76b7b397fe7ddb111763d09dbdde8884b0b6edfd5",
+    "sha256_final": "958630166be79a87bbb05eb76b7b397fe7ddb111763d09dbdde8884b0b6edfd5",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task13_evidence/validation-60a54a1435134d62b247c71b8369d50c.json",
+    "new": "docs/H4/tareas_erika/tarea_13/evidence/validation-60a54a1435134d62b247c71b8369d50c.json",
+    "sha256_before": "b6f5f160328462ae976ab7e35843710508d03611ab697f303e3e3cc614342a89",
+    "sha256_immediately_after_move": "b6f5f160328462ae976ab7e35843710508d03611ab697f303e3e3cc614342a89",
+    "sha256_final": "b6f5f160328462ae976ab7e35843710508d03611ab697f303e3e3cc614342a89",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/audit_checks.json",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/audit_checks.json",
+    "sha256_before": "241e2c655777b13b66b9816e1eb2e6cda0bb1f3e7fd1cfc6311777ae96beb606",
+    "sha256_immediately_after_move": "241e2c655777b13b66b9816e1eb2e6cda0bb1f3e7fd1cfc6311777ae96beb606",
+    "sha256_final": "241e2c655777b13b66b9816e1eb2e6cda0bb1f3e7fd1cfc6311777ae96beb606",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/build_matrix.py",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/build_matrix.py",
+    "sha256_before": "4c8f1cf7c484d2dbc6d9edde4cc6ea1a91bc9efefae974e13b0177843c0a91e4",
+    "sha256_immediately_after_move": "4c8f1cf7c484d2dbc6d9edde4cc6ea1a91bc9efefae974e13b0177843c0a91e4",
+    "sha256_final": "c1b0067578e3019d6cb45a107696dbb8675907042a606c898d4af4c1914b0ef4",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task14_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/full_tests.txt",
+    "sha256_before": "d0a12fc03ea345a36d457e0004ae74f12468c77f16d6fd7a75e58dcd29665f2d",
+    "sha256_immediately_after_move": "d0a12fc03ea345a36d457e0004ae74f12468c77f16d6fd7a75e58dcd29665f2d",
+    "sha256_final": "d0a12fc03ea345a36d457e0004ae74f12468c77f16d6fd7a75e58dcd29665f2d",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/git_diff_stat.txt",
+    "sha256_before": "b56034204bb6ba66d9388e6ebb6d3fa0446583332143cba5da0f70b164a3699b",
+    "sha256_immediately_after_move": "b56034204bb6ba66d9388e6ebb6d3fa0446583332143cba5da0f70b164a3699b",
+    "sha256_final": "b56034204bb6ba66d9388e6ebb6d3fa0446583332143cba5da0f70b164a3699b",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/git_status.txt",
+    "sha256_before": "5d11dcfa943de6862d2f1b1b66224f0a6254bfe540457965976733247ba23435",
+    "sha256_immediately_after_move": "5d11dcfa943de6862d2f1b1b66224f0a6254bfe540457965976733247ba23435",
+    "sha256_final": "5d11dcfa943de6862d2f1b1b66224f0a6254bfe540457965976733247ba23435",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/integral.json",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/integral.json",
+    "sha256_before": "e345b6be187444ffda606ebe1b4f461d4a6ffe9dacc3042dc98b214b5071048b",
+    "sha256_immediately_after_move": "e345b6be187444ffda606ebe1b4f461d4a6ffe9dacc3042dc98b214b5071048b",
+    "sha256_final": "e345b6be187444ffda606ebe1b4f461d4a6ffe9dacc3042dc98b214b5071048b",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/integral_log.txt",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/integral_log.txt",
+    "sha256_before": "bde9a748394dffbe0e30aa08f3c8072d13931dd192914b69e298d89748afd2c4",
+    "sha256_immediately_after_move": "bde9a748394dffbe0e30aa08f3c8072d13931dd192914b69e298d89748afd2c4",
+    "sha256_final": "bde9a748394dffbe0e30aa08f3c8072d13931dd192914b69e298d89748afd2c4",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/integrity_after.json",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/integrity_after.json",
+    "sha256_before": "78105c0eee34765db934af4da20130d747aac71bd01b5b0b3389a1a08b1d666f",
+    "sha256_immediately_after_move": "78105c0eee34765db934af4da20130d747aac71bd01b5b0b3389a1a08b1d666f",
+    "sha256_final": "78105c0eee34765db934af4da20130d747aac71bd01b5b0b3389a1a08b1d666f",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/integrity_before.json",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/integrity_before.json",
+    "sha256_before": "9a8ba597cb76c2abe4c62acd7529a6c74cc3ed5c6452f6bdbd32c75b0715123e",
+    "sha256_immediately_after_move": "9a8ba597cb76c2abe4c62acd7529a6c74cc3ed5c6452f6bdbd32c75b0715123e",
+    "sha256_final": "9a8ba597cb76c2abe4c62acd7529a6c74cc3ed5c6452f6bdbd32c75b0715123e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/matrix.json",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/matrix.json",
+    "sha256_before": "e6e85d0209f584a81685fb71fe126f2fc1927b996f4d2599f01f9a39d032f21c",
+    "sha256_immediately_after_move": "e6e85d0209f584a81685fb71fe126f2fc1927b996f4d2599f01f9a39d032f21c",
+    "sha256_final": "e6e85d0209f584a81685fb71fe126f2fc1927b996f4d2599f01f9a39d032f21c",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/server_health.json",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/server_health.json",
+    "sha256_before": "b411764af82f016914d7338a8f33c083857e2190eb739a6867b9692e43c528c1",
+    "sha256_immediately_after_move": "b411764af82f016914d7338a8f33c083857e2190eb739a6867b9692e43c528c1",
+    "sha256_final": "b411764af82f016914d7338a8f33c083857e2190eb739a6867b9692e43c528c1",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/server_log.txt",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/server_log.txt",
+    "sha256_before": "9090bedad4bc7d8db967e13e5e3ee7ac5df1a91f0fed2aa2acf8e6376c8e01df",
+    "sha256_immediately_after_move": "9090bedad4bc7d8db967e13e5e3ee7ac5df1a91f0fed2aa2acf8e6376c8e01df",
+    "sha256_final": "9090bedad4bc7d8db967e13e5e3ee7ac5df1a91f0fed2aa2acf8e6376c8e01df",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task14_evidence/verify_evidence.py",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/verify_evidence.py",
+    "sha256_before": "8a5276363a607453929d08fba04f0ffe0965ede7eee0bace764a0446aaef3878",
+    "sha256_immediately_after_move": "8a5276363a607453929d08fba04f0ffe0965ede7eee0bace764a0446aaef3878",
+    "sha256_final": "15d61db6d2e5e435503c7255367571bd2bbfddf61d39e785aff69b18e59b0c33",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task14_evidence/visual_review.json",
+    "new": "docs/H4/tareas_erika/tarea_14/evidence/visual_review.json",
+    "sha256_before": "ab6b072b751cc6c0e81b9b7bc40317271ccfc4cfa6320d321b8dc94e896e94b3",
+    "sha256_immediately_after_move": "ab6b072b751cc6c0e81b9b7bc40317271ccfc4cfa6320d321b8dc94e896e94b3",
+    "sha256_final": "ab6b072b751cc6c0e81b9b7bc40317271ccfc4cfa6320d321b8dc94e896e94b3",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/audit_checks.json",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/audit_checks.json",
+    "sha256_before": "16fffc5a7f749acce7ff6b6690707746dcca184ea53adb52ba38c4b0a8eecf5c",
+    "sha256_immediately_after_move": "16fffc5a7f749acce7ff6b6690707746dcca184ea53adb52ba38c4b0a8eecf5c",
+    "sha256_final": "16fffc5a7f749acce7ff6b6690707746dcca184ea53adb52ba38c4b0a8eecf5c",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/full_tests.txt",
+    "sha256_before": "b9616a9f0f8ad1aafb12bb6a12ae44cfe09e64d32cd09260e1ff601aab767a97",
+    "sha256_immediately_after_move": "b9616a9f0f8ad1aafb12bb6a12ae44cfe09e64d32cd09260e1ff601aab767a97",
+    "sha256_final": "b9616a9f0f8ad1aafb12bb6a12ae44cfe09e64d32cd09260e1ff601aab767a97",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/functional_validation.json",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/functional_validation.json",
+    "sha256_before": "525eb40adc38e555e1f00ec7a7b816372ede552022c76d6209e495b54b90cf39",
+    "sha256_immediately_after_move": "525eb40adc38e555e1f00ec7a7b816372ede552022c76d6209e495b54b90cf39",
+    "sha256_final": "525eb40adc38e555e1f00ec7a7b816372ede552022c76d6209e495b54b90cf39",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/git_diff_stat.txt",
+    "sha256_before": "b8c2f9f31450e0816e83a1d824bcd5bbfd4c45bd3df137194863eca02a6a4dc4",
+    "sha256_immediately_after_move": "b8c2f9f31450e0816e83a1d824bcd5bbfd4c45bd3df137194863eca02a6a4dc4",
+    "sha256_final": "b8c2f9f31450e0816e83a1d824bcd5bbfd4c45bd3df137194863eca02a6a4dc4",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/git_status.txt",
+    "sha256_before": "13af5d93b3c59ec41c180245869a745590195ecb9e256774274bef49b31c082d",
+    "sha256_immediately_after_move": "13af5d93b3c59ec41c180245869a745590195ecb9e256774274bef49b31c082d",
+    "sha256_final": "13af5d93b3c59ec41c180245869a745590195ecb9e256774274bef49b31c082d",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/initial_regression.txt",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/initial_regression.txt",
+    "sha256_before": "b05592175d2d6dcaece91fccfba5bcd8660474e46d011fe9a4b20829b0aee363",
+    "sha256_immediately_after_move": "b05592175d2d6dcaece91fccfba5bcd8660474e46d011fe9a4b20829b0aee363",
+    "sha256_final": "b05592175d2d6dcaece91fccfba5bcd8660474e46d011fe9a4b20829b0aee363",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/integrity_after.json",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/integrity_after.json",
+    "sha256_before": "c61011b93b2877d30a3a246baa66a5d8a96ab37870de6d12ae687e82c7d57852",
+    "sha256_immediately_after_move": "c61011b93b2877d30a3a246baa66a5d8a96ab37870de6d12ae687e82c7d57852",
+    "sha256_final": "c61011b93b2877d30a3a246baa66a5d8a96ab37870de6d12ae687e82c7d57852",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/integrity_before.json",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/integrity_before.json",
+    "sha256_before": "9a8ba597cb76c2abe4c62acd7529a6c74cc3ed5c6452f6bdbd32c75b0715123e",
+    "sha256_immediately_after_move": "9a8ba597cb76c2abe4c62acd7529a6c74cc3ed5c6452f6bdbd32c75b0715123e",
+    "sha256_final": "9a8ba597cb76c2abe4c62acd7529a6c74cc3ed5c6452f6bdbd32c75b0715123e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/matrix.json",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/matrix.json",
+    "sha256_before": "94e04dd867eff203c7fcb0988cb42ce467eb2f1699bce0c333b5c8cf1fdcb1b2",
+    "sha256_immediately_after_move": "94e04dd867eff203c7fcb0988cb42ce467eb2f1699bce0c333b5c8cf1fdcb1b2",
+    "sha256_final": "94e04dd867eff203c7fcb0988cb42ce467eb2f1699bce0c333b5c8cf1fdcb1b2",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/new_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/new_tests.txt",
+    "sha256_before": "c4305943c2a93db258432b33f3c8e11450d4ae454ca68edf8bbc7d684c1d2fe5",
+    "sha256_immediately_after_move": "c4305943c2a93db258432b33f3c8e11450d4ae454ca68edf8bbc7d684c1d2fe5",
+    "sha256_final": "c4305943c2a93db258432b33f3c8e11450d4ae454ca68edf8bbc7d684c1d2fe5",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/record_validation.py",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/record_validation.py",
+    "sha256_before": "e62ffb9cd5c4f56226ae0898c2e86c7c723e3366896bec8d58976c9a96f958dc",
+    "sha256_immediately_after_move": "e62ffb9cd5c4f56226ae0898c2e86c7c723e3366896bec8d58976c9a96f958dc",
+    "sha256_final": "94e713af42cf91c0a519232e324b1d6ad82c8b2a6c61f8e54637c292160435fc",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task15_evidence/update_matrix.py",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/update_matrix.py",
+    "sha256_before": "26f3101c69b38d6739a31b55c00022f0cd0eecea993a70465f9623c7541aa0fa",
+    "sha256_immediately_after_move": "26f3101c69b38d6739a31b55c00022f0cd0eecea993a70465f9623c7541aa0fa",
+    "sha256_final": "5e0ffb2a65097baa80231941d0665f322b963af652f92e348bf7326f3dd69a65",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task15_evidence/validation_log.txt",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/validation_log.txt",
+    "sha256_before": "ebb474f7e7ddd92e2840c62e9fdae67dc248c52289c479d18681768c60a9f124",
+    "sha256_immediately_after_move": "ebb474f7e7ddd92e2840c62e9fdae67dc248c52289c479d18681768c60a9f124",
+    "sha256_final": "ebb474f7e7ddd92e2840c62e9fdae67dc248c52289c479d18681768c60a9f124",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task15_evidence/verify_evidence.py",
+    "new": "docs/H4/tareas_erika/tarea_15/evidence/verify_evidence.py",
+    "sha256_before": "8e45025c70ad8b1554f22474020d8aa46c5b39b122fdd1e3a3b2806f7351beaa",
+    "sha256_immediately_after_move": "8e45025c70ad8b1554f22474020d8aa46c5b39b122fdd1e3a3b2806f7351beaa",
+    "sha256_final": "0c9c48d9ed88ba9e00548859a7d3f402dcfcce0352e641ea61ae7e09b0f9365d",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task17_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_17/evidence/full_tests.txt",
+    "sha256_before": "812adf917d19b36a3e48ef2cac6ebe82f23c107ba6e3dce3b0bc7e3a695b88f5",
+    "sha256_immediately_after_move": "812adf917d19b36a3e48ef2cac6ebe82f23c107ba6e3dce3b0bc7e3a695b88f5",
+    "sha256_final": "812adf917d19b36a3e48ef2cac6ebe82f23c107ba6e3dce3b0bc7e3a695b88f5",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task17_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_17/evidence/git_diff_stat.txt",
+    "sha256_before": "d169ed801ec7e9f2f39e24c1bbf1de00c9e2019836b4047cfe4ba0adf27433c0",
+    "sha256_immediately_after_move": "d169ed801ec7e9f2f39e24c1bbf1de00c9e2019836b4047cfe4ba0adf27433c0",
+    "sha256_final": "d169ed801ec7e9f2f39e24c1bbf1de00c9e2019836b4047cfe4ba0adf27433c0",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task17_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_17/evidence/git_status.txt",
+    "sha256_before": "f7b4b311ddf6df21eb34792e571d77412c98a02c8c38259b2cab4d078572c664",
+    "sha256_immediately_after_move": "f7b4b311ddf6df21eb34792e571d77412c98a02c8c38259b2cab4d078572c664",
+    "sha256_final": "f7b4b311ddf6df21eb34792e571d77412c98a02c8c38259b2cab4d078572c664",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task17_evidence/integrity_after.json",
+    "new": "docs/H4/tareas_erika/tarea_17/evidence/integrity_after.json",
+    "sha256_before": "6599a994f89aca986adab6be6fbe03e35f5821cd554af3cfe6ea4f0b75969b84",
+    "sha256_immediately_after_move": "6599a994f89aca986adab6be6fbe03e35f5821cd554af3cfe6ea4f0b75969b84",
+    "sha256_final": "6599a994f89aca986adab6be6fbe03e35f5821cd554af3cfe6ea4f0b75969b84",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task17_evidence/integrity_before.json",
+    "new": "docs/H4/tareas_erika/tarea_17/evidence/integrity_before.json",
+    "sha256_before": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_immediately_after_move": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_final": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task17_evidence/matrix.json",
+    "new": "docs/H4/tareas_erika/tarea_17/evidence/matrix.json",
+    "sha256_before": "5c3f6353c306b430bbb26541308b3b2af812af785db1891713953b8eff44e632",
+    "sha256_immediately_after_move": "5c3f6353c306b430bbb26541308b3b2af812af785db1891713953b8eff44e632",
+    "sha256_final": "5c3f6353c306b430bbb26541308b3b2af812af785db1891713953b8eff44e632",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task17_evidence/pair_tests_initial.txt",
+    "new": "docs/H4/tareas_erika/tarea_17/evidence/pair_tests_initial.txt",
+    "sha256_before": "9d93ed9c9b7d980b02c9574b29c05fc3eab223ff2ac740ebf361fe735c0a845a",
+    "sha256_immediately_after_move": "9d93ed9c9b7d980b02c9574b29c05fc3eab223ff2ac740ebf361fe735c0a845a",
+    "sha256_final": "9d93ed9c9b7d980b02c9574b29c05fc3eab223ff2ac740ebf361fe735c0a845a",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task17_evidence/validation.json",
+    "new": "docs/H4/tareas_erika/tarea_17/evidence/validation.json",
+    "sha256_before": "a0d83b3e8072fc5143f324c6aafacc1d70779c05225630dd3dd8cae8eb2c1341",
+    "sha256_immediately_after_move": "a0d83b3e8072fc5143f324c6aafacc1d70779c05225630dd3dd8cae8eb2c1341",
+    "sha256_final": "a0d83b3e8072fc5143f324c6aafacc1d70779c05225630dd3dd8cae8eb2c1341",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example_log.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example_log.json",
+    "sha256_before": "8def0ef863cf2c1616a3b27bb15c32b04ef9569b178716ded2d02cdcdea6b3ce",
+    "sha256_immediately_after_move": "8def0ef863cf2c1616a3b27bb15c32b04ef9569b178716ded2d02cdcdea6b3ce",
+    "sha256_final": "8def0ef863cf2c1616a3b27bb15c32b04ef9569b178716ded2d02cdcdea6b3ce",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example_log_final.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example_log_final.json",
+    "sha256_before": "5231e73ff5b8c4adde7acf8b95da68e1ebaed23163d7d0679d96c44cc486f6f3",
+    "sha256_immediately_after_move": "5231e73ff5b8c4adde7acf8b95da68e1ebaed23163d7d0679d96c44cc486f6f3",
+    "sha256_final": "5231e73ff5b8c4adde7acf8b95da68e1ebaed23163d7d0679d96c44cc486f6f3",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/fixture_example.py",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/fixture_example.py",
+    "sha256_before": "dda0f9e3b9538d81045d126ac2a5b5106c63b972351ad47f92cfa68c00e0ec68",
+    "sha256_immediately_after_move": "dda0f9e3b9538d81045d126ac2a5b5106c63b972351ad47f92cfa68c00e0ec68",
+    "sha256_final": "00cf205c2069c29d7826e50941ca0068b4c40256f95abf6869a511821707c9b6",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task18_evidence/fixture_log.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/fixture_log.json",
+    "sha256_before": "3e285028dfdf1020ffc3a53c8ec56f02c52b95e0923a01a7237747488b690a31",
+    "sha256_immediately_after_move": "3e285028dfdf1020ffc3a53c8ec56f02c52b95e0923a01a7237747488b690a31",
+    "sha256_final": "3e285028dfdf1020ffc3a53c8ec56f02c52b95e0923a01a7237747488b690a31",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/full_tests.txt",
+    "sha256_before": "ab50c8b75c78275084f32839b4957ab26f6a8d384f84d662eb60eac18bc81d8b",
+    "sha256_immediately_after_move": "ab50c8b75c78275084f32839b4957ab26f6a8d384f84d662eb60eac18bc81d8b",
+    "sha256_final": "ab50c8b75c78275084f32839b4957ab26f6a8d384f84d662eb60eac18bc81d8b",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/git_diff_stat.txt",
+    "sha256_before": "8f8119ac59a84e58d2446e1a0e4ee66eee41fdc077966bdc74dc30d8d2277dc6",
+    "sha256_immediately_after_move": "8f8119ac59a84e58d2446e1a0e4ee66eee41fdc077966bdc74dc30d8d2277dc6",
+    "sha256_final": "8f8119ac59a84e58d2446e1a0e4ee66eee41fdc077966bdc74dc30d8d2277dc6",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/git_status.txt",
+    "sha256_before": "73c2e7c81763f30e4db73ad52ca1b579659a1d00a25b902bf79a5aec4fff763e",
+    "sha256_immediately_after_move": "73c2e7c81763f30e4db73ad52ca1b579659a1d00a25b902bf79a5aec4fff763e",
+    "sha256_final": "73c2e7c81763f30e4db73ad52ca1b579659a1d00a25b902bf79a5aec4fff763e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/integrity_after.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/integrity_after.json",
+    "sha256_before": "d8520b75c16847783355e9ee2486b2b325df6e9adbeb3482fe7ed681e357d392",
+    "sha256_immediately_after_move": "d8520b75c16847783355e9ee2486b2b325df6e9adbeb3482fe7ed681e357d392",
+    "sha256_final": "d8520b75c16847783355e9ee2486b2b325df6e9adbeb3482fe7ed681e357d392",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/integrity_before.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/integrity_before.json",
+    "sha256_before": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_immediately_after_move": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_final": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/matrix.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/matrix.json",
+    "sha256_before": "106393b654d436c88327ff99558542a3e4133cabbfe4fa3cd4f861b39bd6cbda",
+    "sha256_immediately_after_move": "106393b654d436c88327ff99558542a3e4133cabbfe4fa3cd4f861b39bd6cbda",
+    "sha256_final": "106393b654d436c88327ff99558542a3e4133cabbfe4fa3cd4f861b39bd6cbda",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/registry_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/registry_tests.txt",
+    "sha256_before": "c10ab87a6e078bc64a3bbc822677563e63c6f946a705bcb86a42bcfedb29c17e",
+    "sha256_immediately_after_move": "c10ab87a6e078bc64a3bbc822677563e63c6f946a705bcb86a42bcfedb29c17e",
+    "sha256_final": "c10ab87a6e078bc64a3bbc822677563e63c6f946a705bcb86a42bcfedb29c17e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/run_tests.py",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/run_tests.py",
+    "sha256_before": "e2e9256631ec30e4da96328e2890efbd561c619f5012373a5a90cace1785e080",
+    "sha256_immediately_after_move": "e2e9256631ec30e4da96328e2890efbd561c619f5012373a5a90cace1785e080",
+    "sha256_final": "1b52a61c4adbd4e32d64ec33890c51a20441f68a75ba8081d60aba1ae0ea7cff",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task18_evidence/validation.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/validation.json",
+    "sha256_before": "b40a6774f747fdf8fd3bf21041b9e74aa5477dd32a3c2e89eeb3f2e82e7f6550",
+    "sha256_immediately_after_move": "b40a6774f747fdf8fd3bf21041b9e74aa5477dd32a3c2e89eeb3f2e82e7f6550",
+    "sha256_final": "b40a6774f747fdf8fd3bf21041b9e74aa5477dd32a3c2e89eeb3f2e82e7f6550",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/summary.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/summary.json",
+    "sha256_before": "f8960ea042de4b67b6136e1bf3ce524cb49d8d5017096213e08a3bf5b6b10ba6",
+    "sha256_immediately_after_move": "f8960ea042de4b67b6136e1bf3ce524cb49d8d5017096213e08a3bf5b6b10ba6",
+    "sha256_final": "f8960ea042de4b67b6136e1bf3ce524cb49d8d5017096213e08a3bf5b6b10ba6",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/candidate.joblib",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/candidate.joblib",
+    "sha256_before": "d8bdfa200f6e1994f045fd0f68656453397003f2cfdb5cda085fd7b271dbccb2",
+    "sha256_immediately_after_move": "d8bdfa200f6e1994f045fd0f68656453397003f2cfdb5cda085fd7b271dbccb2",
+    "sha256_final": "d8bdfa200f6e1994f045fd0f68656453397003f2cfdb5cda085fd7b271dbccb2",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/incremental.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/incremental.json",
+    "sha256_before": "7685620766ff54c8bb46966ad98139274f450002c58d69b0e06edcc3d6c5648d",
+    "sha256_immediately_after_move": "7685620766ff54c8bb46966ad98139274f450002c58d69b0e06edcc3d6c5648d",
+    "sha256_final": "7685620766ff54c8bb46966ad98139274f450002c58d69b0e06edcc3d6c5648d",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/manifest.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/manifest.json",
+    "sha256_before": "031bb02a3fba224fa0fe2005d425d683e8a2e8b5e45f17098bee1d9f150f955e",
+    "sha256_immediately_after_move": "031bb02a3fba224fa0fe2005d425d683e8a2e8b5e45f17098bee1d9f150f955e",
+    "sha256_final": "031bb02a3fba224fa0fe2005d425d683e8a2e8b5e45f17098bee1d9f150f955e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/reserved.csv",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/reserved.csv",
+    "sha256_before": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+    "sha256_immediately_after_move": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+    "sha256_final": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/train.csv",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/candidates/f69c4a8eb1784203b3283f667e5e93dc/CAND-6b179cf114a246a0be13cd040ff24549/train.csv",
+    "sha256_before": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45",
+    "sha256_immediately_after_move": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45",
+    "sha256_final": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/decisions/f69c4a8eb1784203b3283f667e5e93dc/CMP-bfcb23c7a47f48e781cd1b60c5e8b73d.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/decisions/f69c4a8eb1784203b3283f667e5e93dc/CMP-bfcb23c7a47f48e781cd1b60c5e8b73d.json",
+    "sha256_before": "96d4658acc44f7791907595dc588fceca3fcb9820a588b7f27640185d6faac3c",
+    "sha256_immediately_after_move": "96d4658acc44f7791907595dc588fceca3fcb9820a588b7f27640185d6faac3c",
+    "sha256_final": "96d4658acc44f7791907595dc588fceca3fcb9820a588b7f27640185d6faac3c",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/decisions/f69c4a8eb1784203b3283f667e5e93dc/DEC-e78211a91578445abf67d824d28ab447.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/decisions/f69c4a8eb1784203b3283f667e5e93dc/DEC-e78211a91578445abf67d824d28ab447.json",
+    "sha256_before": "797536763ee2c83d0c1b768e1ac319205a86d75107f097263e54cc3fea3f3fd2",
+    "sha256_immediately_after_move": "797536763ee2c83d0c1b768e1ac319205a86d75107f097263e54cc3fea3f3fd2",
+    "sha256_final": "797536763ee2c83d0c1b768e1ac319205a86d75107f097263e54cc3fea3f3fd2",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000001-EVT-dbb6140f887a4d3088ad657137c35bf8.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000001-EVT-dbb6140f887a4d3088ad657137c35bf8.json",
+    "sha256_before": "524d9806d8c68e56885776ac6473a367e00d21ca4cb4e13b33f554d889590877",
+    "sha256_immediately_after_move": "524d9806d8c68e56885776ac6473a367e00d21ca4cb4e13b33f554d889590877",
+    "sha256_final": "524d9806d8c68e56885776ac6473a367e00d21ca4cb4e13b33f554d889590877",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000002-EVT-8d7bb2c1882a489e90d7b14765788d59.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000002-EVT-8d7bb2c1882a489e90d7b14765788d59.json",
+    "sha256_before": "4212a4b77e4bb47d1a5e47849650df185620c5e273ad10bc0923144f0008cf20",
+    "sha256_immediately_after_move": "4212a4b77e4bb47d1a5e47849650df185620c5e273ad10bc0923144f0008cf20",
+    "sha256_final": "4212a4b77e4bb47d1a5e47849650df185620c5e273ad10bc0923144f0008cf20",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000003-EVT-b8fa875fae814c038e19fbe90d2cffc5.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000003-EVT-b8fa875fae814c038e19fbe90d2cffc5.json",
+    "sha256_before": "6fa15065430a7b14f434f87d9ea75e4444463fff9790b494438df0a7a65b67af",
+    "sha256_immediately_after_move": "6fa15065430a7b14f434f87d9ea75e4444463fff9790b494438df0a7a65b67af",
+    "sha256_final": "6fa15065430a7b14f434f87d9ea75e4444463fff9790b494438df0a7a65b67af",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000004-EVT-a91e2b62890544eead2a50f093f7d41a.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000004-EVT-a91e2b62890544eead2a50f093f7d41a.json",
+    "sha256_before": "18b2243cbabcd8aefad6f2871033146d2080d160dda330c78205c06ced624116",
+    "sha256_immediately_after_move": "18b2243cbabcd8aefad6f2871033146d2080d160dda330c78205c06ced624116",
+    "sha256_final": "18b2243cbabcd8aefad6f2871033146d2080d160dda330c78205c06ced624116",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000005-EVT-dfcaa6f568a544aaac0ca8ede2f673f9.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000005-EVT-dfcaa6f568a544aaac0ca8ede2f673f9.json",
+    "sha256_before": "67db750f4c25bf059952a637b5e856f52aa47947674e09febf1b80e53838962c",
+    "sha256_immediately_after_move": "67db750f4c25bf059952a637b5e856f52aa47947674e09febf1b80e53838962c",
+    "sha256_final": "67db750f4c25bf059952a637b5e856f52aa47947674e09febf1b80e53838962c",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000006-EVT-109c2051234d40889ec51320b03cccb7.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000006-EVT-109c2051234d40889ec51320b03cccb7.json",
+    "sha256_before": "573e5f3beef443607ff2501908a5e858d38260c2d5eeb305678143e8a57187b3",
+    "sha256_immediately_after_move": "573e5f3beef443607ff2501908a5e858d38260c2d5eeb305678143e8a57187b3",
+    "sha256_final": "573e5f3beef443607ff2501908a5e858d38260c2d5eeb305678143e8a57187b3",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000007-EVT-59879cbe5646413baca8b9a3490964a2.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000007-EVT-59879cbe5646413baca8b9a3490964a2.json",
+    "sha256_before": "b449c58fdaa55144031f05b4e0a4c1bc425958f7dc4bc1203fe73b75bfadb207",
+    "sha256_immediately_after_move": "b449c58fdaa55144031f05b4e0a4c1bc425958f7dc4bc1203fe73b75bfadb207",
+    "sha256_final": "b449c58fdaa55144031f05b4e0a4c1bc425958f7dc4bc1203fe73b75bfadb207",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000008-EVT-6bc9a672dcc74096931234a1e39a835a.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000008-EVT-6bc9a672dcc74096931234a1e39a835a.json",
+    "sha256_before": "f1aa4d30ceaab53e6bc3f9b0fc9973a7bedfcdeca687b00be4d062017b2bdb89",
+    "sha256_immediately_after_move": "f1aa4d30ceaab53e6bc3f9b0fc9973a7bedfcdeca687b00be4d062017b2bdb89",
+    "sha256_final": "f1aa4d30ceaab53e6bc3f9b0fc9973a7bedfcdeca687b00be4d062017b2bdb89",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000009-EVT-29562d11949347e2a79fc59674754416.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000009-EVT-29562d11949347e2a79fc59674754416.json",
+    "sha256_before": "7ad8a0d73a4bb75f0275ab3e0322292f702aec438b96ebdbc1481ea7694f7a67",
+    "sha256_immediately_after_move": "7ad8a0d73a4bb75f0275ab3e0322292f702aec438b96ebdbc1481ea7694f7a67",
+    "sha256_final": "7ad8a0d73a4bb75f0275ab3e0322292f702aec438b96ebdbc1481ea7694f7a67",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000010-EVT-8fb2679236f74a5e826d0bee60e27be3.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-c84179d4d0614c7dbaf89155f796ed8a/events/f69c4a8eb1784203b3283f667e5e93dc/00000010-EVT-8fb2679236f74a5e826d0bee60e27be3.json",
+    "sha256_before": "e1b01849c4a9f6f8db4665d66f4ba75278a102e37a5e2f720fa655d23bd2a5cb",
+    "sha256_immediately_after_move": "e1b01849c4a9f6f8db4665d66f4ba75278a102e37a5e2f720fa655d23bd2a5cb",
+    "sha256_final": "e1b01849c4a9f6f8db4665d66f4ba75278a102e37a5e2f720fa655d23bd2a5cb",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/summary.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/summary.json",
+    "sha256_before": "0c057fcd68d81e08449b0fe0385a652e616e4a541c5acfb78f98b127e69c4fed",
+    "sha256_immediately_after_move": "0c057fcd68d81e08449b0fe0385a652e616e4a541c5acfb78f98b127e69c4fed",
+    "sha256_final": "0c057fcd68d81e08449b0fe0385a652e616e4a541c5acfb78f98b127e69c4fed",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/candidate.joblib",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/candidate.joblib",
+    "sha256_before": "adbce4e218a725cfceaad91bb471da9950f2902821abf3aa6d8320f62221a735",
+    "sha256_immediately_after_move": "adbce4e218a725cfceaad91bb471da9950f2902821abf3aa6d8320f62221a735",
+    "sha256_final": "adbce4e218a725cfceaad91bb471da9950f2902821abf3aa6d8320f62221a735",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/incremental.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/incremental.json",
+    "sha256_before": "0f15d846a55bd2f20727c546b5f7c1fa5186e0f9fa4eaf05842c7898f89223f7",
+    "sha256_immediately_after_move": "0f15d846a55bd2f20727c546b5f7c1fa5186e0f9fa4eaf05842c7898f89223f7",
+    "sha256_final": "0f15d846a55bd2f20727c546b5f7c1fa5186e0f9fa4eaf05842c7898f89223f7",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/manifest.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/manifest.json",
+    "sha256_before": "83387f067142c489db5d75c62528c10d77636f8ba2fc6178a0bda82136458d9e",
+    "sha256_immediately_after_move": "83387f067142c489db5d75c62528c10d77636f8ba2fc6178a0bda82136458d9e",
+    "sha256_final": "83387f067142c489db5d75c62528c10d77636f8ba2fc6178a0bda82136458d9e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/reserved.csv",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/reserved.csv",
+    "sha256_before": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+    "sha256_immediately_after_move": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+    "sha256_final": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/train.csv",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/candidates/1eae9454a5d04755b067b1e1df00525f/CAND-2ddcf83d811a478595b5293cb7b35eb7/train.csv",
+    "sha256_before": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45",
+    "sha256_immediately_after_move": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45",
+    "sha256_final": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/decisions/1eae9454a5d04755b067b1e1df00525f/CMP-e4e3c1047ab846e9a00fada5eb703580.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/decisions/1eae9454a5d04755b067b1e1df00525f/CMP-e4e3c1047ab846e9a00fada5eb703580.json",
+    "sha256_before": "9a8d539dc935db2df5878039c7c4f5c462d24a761e5547d70d3e133075837cff",
+    "sha256_immediately_after_move": "9a8d539dc935db2df5878039c7c4f5c462d24a761e5547d70d3e133075837cff",
+    "sha256_final": "9a8d539dc935db2df5878039c7c4f5c462d24a761e5547d70d3e133075837cff",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/decisions/1eae9454a5d04755b067b1e1df00525f/DEC-ce1abeb2b8c648e296d4330dea7f6c21.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/decisions/1eae9454a5d04755b067b1e1df00525f/DEC-ce1abeb2b8c648e296d4330dea7f6c21.json",
+    "sha256_before": "a3c6c7ddbe6ff719633972bc45d164ffdb31725e884667dfcaa49280d58cda5e",
+    "sha256_immediately_after_move": "a3c6c7ddbe6ff719633972bc45d164ffdb31725e884667dfcaa49280d58cda5e",
+    "sha256_final": "a3c6c7ddbe6ff719633972bc45d164ffdb31725e884667dfcaa49280d58cda5e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000001-EVT-b850df77003749588aff4bfe691ac57e.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000001-EVT-b850df77003749588aff4bfe691ac57e.json",
+    "sha256_before": "7f43b1e3f76aae9c2d53696824ff339da0dede4728c03563461fd020e88e706b",
+    "sha256_immediately_after_move": "7f43b1e3f76aae9c2d53696824ff339da0dede4728c03563461fd020e88e706b",
+    "sha256_final": "7f43b1e3f76aae9c2d53696824ff339da0dede4728c03563461fd020e88e706b",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000002-EVT-6c5bc295e5144f21ada8c9b0d3047cc2.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000002-EVT-6c5bc295e5144f21ada8c9b0d3047cc2.json",
+    "sha256_before": "5c6478e117530f831d52df66d30aeb05822698068ac3738b70c639351b87608b",
+    "sha256_immediately_after_move": "5c6478e117530f831d52df66d30aeb05822698068ac3738b70c639351b87608b",
+    "sha256_final": "5c6478e117530f831d52df66d30aeb05822698068ac3738b70c639351b87608b",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000003-EVT-fbbb6d0b6efb4c709d298f9c5cda501d.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000003-EVT-fbbb6d0b6efb4c709d298f9c5cda501d.json",
+    "sha256_before": "52e94bef81a7efacbc6fa20f72cc777baa6dbac9c6ee8a9fbd35858aaf047dde",
+    "sha256_immediately_after_move": "52e94bef81a7efacbc6fa20f72cc777baa6dbac9c6ee8a9fbd35858aaf047dde",
+    "sha256_final": "52e94bef81a7efacbc6fa20f72cc777baa6dbac9c6ee8a9fbd35858aaf047dde",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000004-EVT-e772e2300d5242369a0e56655a0f2385.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000004-EVT-e772e2300d5242369a0e56655a0f2385.json",
+    "sha256_before": "8a3545c2620234409c7e386c3960008e3b4af6c99363cba6e788e1d3032164d1",
+    "sha256_immediately_after_move": "8a3545c2620234409c7e386c3960008e3b4af6c99363cba6e788e1d3032164d1",
+    "sha256_final": "8a3545c2620234409c7e386c3960008e3b4af6c99363cba6e788e1d3032164d1",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000005-EVT-7529850932044aa79781ee88d7e679a7.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000005-EVT-7529850932044aa79781ee88d7e679a7.json",
+    "sha256_before": "59df869e81eb556dd5c958ec5e210e62db4bcbd686c23b7942396f393def45d3",
+    "sha256_immediately_after_move": "59df869e81eb556dd5c958ec5e210e62db4bcbd686c23b7942396f393def45d3",
+    "sha256_final": "59df869e81eb556dd5c958ec5e210e62db4bcbd686c23b7942396f393def45d3",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000006-EVT-a941107780884d60b147f809a7fd9d7f.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000006-EVT-a941107780884d60b147f809a7fd9d7f.json",
+    "sha256_before": "5b22f471962ba2f79d0fade010bce781b9d5f1705b23493e36c75d0fc9f371d2",
+    "sha256_immediately_after_move": "5b22f471962ba2f79d0fade010bce781b9d5f1705b23493e36c75d0fc9f371d2",
+    "sha256_final": "5b22f471962ba2f79d0fade010bce781b9d5f1705b23493e36c75d0fc9f371d2",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000007-EVT-aa125b7553cd409fbe07ee124184c5cf.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000007-EVT-aa125b7553cd409fbe07ee124184c5cf.json",
+    "sha256_before": "8c8ef8683fe11acf3d027e32badc4ed0d0b1126e4ca15c972da36258d5f93930",
+    "sha256_immediately_after_move": "8c8ef8683fe11acf3d027e32badc4ed0d0b1126e4ca15c972da36258d5f93930",
+    "sha256_final": "8c8ef8683fe11acf3d027e32badc4ed0d0b1126e4ca15c972da36258d5f93930",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000008-EVT-f7ce2c235a02410abdd63cca453c1fcc.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000008-EVT-f7ce2c235a02410abdd63cca453c1fcc.json",
+    "sha256_before": "53eb4c94c2743a0507029652f90ba30273276be7acbafbca73309408d32d005e",
+    "sha256_immediately_after_move": "53eb4c94c2743a0507029652f90ba30273276be7acbafbca73309408d32d005e",
+    "sha256_final": "53eb4c94c2743a0507029652f90ba30273276be7acbafbca73309408d32d005e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000009-EVT-2f0a8df57d3e475b95c7d8545a7ba806.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000009-EVT-2f0a8df57d3e475b95c7d8545a7ba806.json",
+    "sha256_before": "7bea26d17741593597667ca947fe0fc933c98f0be2e82f583b30ea90c6fb7bbb",
+    "sha256_immediately_after_move": "7bea26d17741593597667ca947fe0fc933c98f0be2e82f583b30ea90c6fb7bbb",
+    "sha256_final": "7bea26d17741593597667ca947fe0fc933c98f0be2e82f583b30ea90c6fb7bbb",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000010-EVT-832d59817a0949988ff2181068cbb91e.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/example/example-faf0febac551496fa75584c293ca75a9/events/1eae9454a5d04755b067b1e1df00525f/00000010-EVT-832d59817a0949988ff2181068cbb91e.json",
+    "sha256_before": "7ae9599d79d60c2e9545091d8dbebb910e2be5550ea868e3a0ce0ddefedd383a",
+    "sha256_immediately_after_move": "7ae9599d79d60c2e9545091d8dbebb910e2be5550ea868e3a0ce0ddefedd383a",
+    "sha256_final": "7ae9599d79d60c2e9545091d8dbebb910e2be5550ea868e3a0ce0ddefedd383a",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/fixture_events/fixture-summary-0250ba565dad4c2faada858bd4d8d7ee.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/fixture_events/fixture-summary-0250ba565dad4c2faada858bd4d8d7ee.json",
+    "sha256_before": "f96caf240d38f163e1f688066a9a70e490be137e22ae7a7d0f50c7e7096787f2",
+    "sha256_immediately_after_move": "f96caf240d38f163e1f688066a9a70e490be137e22ae7a7d0f50c7e7096787f2",
+    "sha256_final": "f96caf240d38f163e1f688066a9a70e490be137e22ae7a7d0f50c7e7096787f2",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/fixture_events/0250ba565dad4c2faada858bd4d8d7ee/00000001-EVT-2b1f465b832a47c4937a2af778bf8671.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/fixture_events/0250ba565dad4c2faada858bd4d8d7ee/00000001-EVT-2b1f465b832a47c4937a2af778bf8671.json",
+    "sha256_before": "390b7b16bbf49c57c72fab04273024e6388ca94f083a380884394e52098b4233",
+    "sha256_immediately_after_move": "390b7b16bbf49c57c72fab04273024e6388ca94f083a380884394e52098b4233",
+    "sha256_final": "390b7b16bbf49c57c72fab04273024e6388ca94f083a380884394e52098b4233",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/fixture_events/0250ba565dad4c2faada858bd4d8d7ee/00000002-EVT-174a489c656c464e9f8c6c0e3c270820.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/fixture_events/0250ba565dad4c2faada858bd4d8d7ee/00000002-EVT-174a489c656c464e9f8c6c0e3c270820.json",
+    "sha256_before": "6bb6ded045b26397e06ae008083da5b2ad44419fb3a67d32d0e63bf623409c08",
+    "sha256_immediately_after_move": "6bb6ded045b26397e06ae008083da5b2ad44419fb3a67d32d0e63bf623409c08",
+    "sha256_final": "6bb6ded045b26397e06ae008083da5b2ad44419fb3a67d32d0e63bf623409c08",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/fixture_events/0250ba565dad4c2faada858bd4d8d7ee/00000003-EVT-1087b9963d7c44bcb19e08c56f7735bd.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/fixture_events/0250ba565dad4c2faada858bd4d8d7ee/00000003-EVT-1087b9963d7c44bcb19e08c56f7735bd.json",
+    "sha256_before": "2bf603132ae9edebc5a24d91cccdf9bf8b66c9ab7a3fce986f01044cbca668d3",
+    "sha256_immediately_after_move": "2bf603132ae9edebc5a24d91cccdf9bf8b66c9ab7a3fce986f01044cbca668d3",
+    "sha256_final": "2bf603132ae9edebc5a24d91cccdf9bf8b66c9ab7a3fce986f01044cbca668d3",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task18_evidence/fixture_events/0250ba565dad4c2faada858bd4d8d7ee/00000004-EVT-278ee615cf0b466da2339e26b7d7d14a.json",
+    "new": "docs/H4/tareas_erika/tarea_18/evidence/fixture_events/0250ba565dad4c2faada858bd4d8d7ee/00000004-EVT-278ee615cf0b466da2339e26b7d7d14a.json",
+    "sha256_before": "01c363a6e1ebf5456cdc30175989524ed6806fe532aa884f5358bb5e16f50f0f",
+    "sha256_immediately_after_move": "01c363a6e1ebf5456cdc30175989524ed6806fe532aa884f5358bb5e16f50f0f",
+    "sha256_final": "01c363a6e1ebf5456cdc30175989524ed6806fe532aa884f5358bb5e16f50f0f",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example_log.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example_log.json",
+    "sha256_before": "0b3df85d0156237ffa85f083fa5bcb668aec0341aac1de3f6d71ba76fbf2ea76",
+    "sha256_immediately_after_move": "0b3df85d0156237ffa85f083fa5bcb668aec0341aac1de3f6d71ba76fbf2ea76",
+    "sha256_final": "0b3df85d0156237ffa85f083fa5bcb668aec0341aac1de3f6d71ba76fbf2ea76",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/export_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/export_tests.txt",
+    "sha256_before": "ee5bb627148065c2c6707ecda8a671e8d733a02b8215127e011b343d2a870887",
+    "sha256_immediately_after_move": "ee5bb627148065c2c6707ecda8a671e8d733a02b8215127e011b343d2a870887",
+    "sha256_final": "ee5bb627148065c2c6707ecda8a671e8d733a02b8215127e011b343d2a870887",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/full_tests.txt",
+    "sha256_before": "7f3493257991159e39be270428b64d2427750ec2900388ec1823febb58cefa77",
+    "sha256_immediately_after_move": "7f3493257991159e39be270428b64d2427750ec2900388ec1823febb58cefa77",
+    "sha256_final": "7f3493257991159e39be270428b64d2427750ec2900388ec1823febb58cefa77",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/git_diff_stat.txt",
+    "sha256_before": "d42baf342e8a459a454f03b1bbca0b433b7e753c4316054a08c2116dc2efac13",
+    "sha256_immediately_after_move": "d42baf342e8a459a454f03b1bbca0b433b7e753c4316054a08c2116dc2efac13",
+    "sha256_final": "d42baf342e8a459a454f03b1bbca0b433b7e753c4316054a08c2116dc2efac13",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/git_status.txt",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/git_status.txt",
+    "sha256_before": "af717c48d73a6f4b341fd224f0b76f421448ec585b4457061370f43f3ce6b9b2",
+    "sha256_immediately_after_move": "af717c48d73a6f4b341fd224f0b76f421448ec585b4457061370f43f3ce6b9b2",
+    "sha256_final": "af717c48d73a6f4b341fd224f0b76f421448ec585b4457061370f43f3ce6b9b2",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/integrity_after.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/integrity_after.json",
+    "sha256_before": "84c05202e7bd4090dafdf24042bc1b32c0344fde2d4d9002a4ed1035586c5362",
+    "sha256_immediately_after_move": "84c05202e7bd4090dafdf24042bc1b32c0344fde2d4d9002a4ed1035586c5362",
+    "sha256_final": "84c05202e7bd4090dafdf24042bc1b32c0344fde2d4d9002a4ed1035586c5362",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/integrity_before.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/integrity_before.json",
+    "sha256_before": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_immediately_after_move": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_final": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/matrix.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/matrix.json",
+    "sha256_before": "d09507f19c953ed5e06490f75d1e2468d05957526bbade4646711126839ae9b7",
+    "sha256_immediately_after_move": "d09507f19c953ed5e06490f75d1e2468d05957526bbade4646711126839ae9b7",
+    "sha256_final": "d09507f19c953ed5e06490f75d1e2468d05957526bbade4646711126839ae9b7",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/run_tests.py",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/run_tests.py",
+    "sha256_before": "3c90b14d09b304f1730948e31aebc9ec259fa3110540e1d70ac391a547113ae6",
+    "sha256_immediately_after_move": "3c90b14d09b304f1730948e31aebc9ec259fa3110540e1d70ac391a547113ae6",
+    "sha256_final": "d70a6a5514d7272751a78e3f71ce2dd3d8dd2abfd0a7119d2e813600baa43087",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task19_evidence/validation.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/validation.json",
+    "sha256_before": "1f26ca44dac4e6b1f6295337764aada58f0160c9ab64f0791b63529ed4109f95",
+    "sha256_immediately_after_move": "1f26ca44dac4e6b1f6295337764aada58f0160c9ab64f0791b63529ed4109f95",
+    "sha256_final": "1f26ca44dac4e6b1f6295337764aada58f0160c9ab64f0791b63529ed4109f95",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/after_reset.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/after_reset.json",
+    "sha256_before": "d181114fea0461d2b4379484b449d4ae07443663991d35d188f52f7824b0db6d",
+    "sha256_immediately_after_move": "d181114fea0461d2b4379484b449d4ae07443663991d35d188f52f7824b0db6d",
+    "sha256_final": "d181114fea0461d2b4379484b449d4ae07443663991d35d188f52f7824b0db6d",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/current.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/current.json",
+    "sha256_before": "38537b4fda89c34d9f9bb0ae03d9a78beed97471ba2f406b76c81d65e242d6a0",
+    "sha256_immediately_after_move": "38537b4fda89c34d9f9bb0ae03d9a78beed97471ba2f406b76c81d65e242d6a0",
+    "sha256_final": "38537b4fda89c34d9f9bb0ae03d9a78beed97471ba2f406b76c81d65e242d6a0",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/rollback.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/rollback.json",
+    "sha256_before": "f7e52367938a9d044bb6799ddfa4d3212e5b8470332f989032fdfaf739874e33",
+    "sha256_immediately_after_move": "f7e52367938a9d044bb6799ddfa4d3212e5b8470332f989032fdfaf739874e33",
+    "sha256_final": "f7e52367938a9d044bb6799ddfa4d3212e5b8470332f989032fdfaf739874e33",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/summary.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/summary.json",
+    "sha256_before": "e4be182b2320ac3c9ff9a2ce4355f34fdcf9e11ebe8980acc1253d2b5b24c6da",
+    "sha256_immediately_after_move": "e4be182b2320ac3c9ff9a2ce4355f34fdcf9e11ebe8980acc1253d2b5b24c6da",
+    "sha256_final": "e4be182b2320ac3c9ff9a2ce4355f34fdcf9e11ebe8980acc1253d2b5b24c6da",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000001-EVT-783e1a1bc3e84916988ca2246636d6b0.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000001-EVT-783e1a1bc3e84916988ca2246636d6b0.json",
+    "sha256_before": "74960251d7efa7d5948282538af607ba1c415595ffc2d514df1be1e507b13ade",
+    "sha256_immediately_after_move": "74960251d7efa7d5948282538af607ba1c415595ffc2d514df1be1e507b13ade",
+    "sha256_final": "74960251d7efa7d5948282538af607ba1c415595ffc2d514df1be1e507b13ade",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000002-EVT-5a77188e58d94bafb0f3c23a12b34bf5.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000002-EVT-5a77188e58d94bafb0f3c23a12b34bf5.json",
+    "sha256_before": "73d40ef4a2edb509e538eb904c5a489b69bfb4853b374e2df002cde68d76a803",
+    "sha256_immediately_after_move": "73d40ef4a2edb509e538eb904c5a489b69bfb4853b374e2df002cde68d76a803",
+    "sha256_final": "73d40ef4a2edb509e538eb904c5a489b69bfb4853b374e2df002cde68d76a803",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000003-EVT-904675b4c64445ad95a8131764a4651e.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000003-EVT-904675b4c64445ad95a8131764a4651e.json",
+    "sha256_before": "d72f8780ae31da3e5ed3e08eec7b2e1c5ab863de59bee3cc1e2be77813e84403",
+    "sha256_immediately_after_move": "d72f8780ae31da3e5ed3e08eec7b2e1c5ab863de59bee3cc1e2be77813e84403",
+    "sha256_final": "d72f8780ae31da3e5ed3e08eec7b2e1c5ab863de59bee3cc1e2be77813e84403",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000004-EVT-59637f4bf857422596791a309ee0f27a.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000004-EVT-59637f4bf857422596791a309ee0f27a.json",
+    "sha256_before": "6e5f2bf649d6e7b5569e5eb8bf542e39c4767dcfe555c6aea5c1c2081d538b54",
+    "sha256_immediately_after_move": "6e5f2bf649d6e7b5569e5eb8bf542e39c4767dcfe555c6aea5c1c2081d538b54",
+    "sha256_final": "6e5f2bf649d6e7b5569e5eb8bf542e39c4767dcfe555c6aea5c1c2081d538b54",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000005-EVT-93216f23ab5140f4a25c1098908eb126.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000005-EVT-93216f23ab5140f4a25c1098908eb126.json",
+    "sha256_before": "4eed4f8efc44d479bb813e7cff8c30bebc4ae7293516a236928d73e5b7be3634",
+    "sha256_immediately_after_move": "4eed4f8efc44d479bb813e7cff8c30bebc4ae7293516a236928d73e5b7be3634",
+    "sha256_final": "4eed4f8efc44d479bb813e7cff8c30bebc4ae7293516a236928d73e5b7be3634",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000006-EVT-d494c00e732a4ba7a1dd84d2cd36ab27.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000006-EVT-d494c00e732a4ba7a1dd84d2cd36ab27.json",
+    "sha256_before": "9deafa64af4104ca3ef9bad50f1a3cf6414a51eba1942e511515d467349c39c1",
+    "sha256_immediately_after_move": "9deafa64af4104ca3ef9bad50f1a3cf6414a51eba1942e511515d467349c39c1",
+    "sha256_final": "9deafa64af4104ca3ef9bad50f1a3cf6414a51eba1942e511515d467349c39c1",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000007-EVT-fc1e33af21f34f308e96418ba49e193a.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000007-EVT-fc1e33af21f34f308e96418ba49e193a.json",
+    "sha256_before": "97ff07a36c0d81de0303c2f84165a037d8a2fc5fe7b939ebb9e34b2ade1d531c",
+    "sha256_immediately_after_move": "97ff07a36c0d81de0303c2f84165a037d8a2fc5fe7b939ebb9e34b2ade1d531c",
+    "sha256_final": "97ff07a36c0d81de0303c2f84165a037d8a2fc5fe7b939ebb9e34b2ade1d531c",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000008-EVT-fd3e1f30c7fc48a9ad2e09fedf7db0de.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/156a9e39894041f9a28c602bf57ad52e/00000008-EVT-fd3e1f30c7fc48a9ad2e09fedf7db0de.json",
+    "sha256_before": "6fb1d412fb73d2e9be033f72fb9517a4c93b379519171daf5c9c9af723224156",
+    "sha256_immediately_after_move": "6fb1d412fb73d2e9be033f72fb9517a4c93b379519171daf5c9c9af723224156",
+    "sha256_final": "6fb1d412fb73d2e9be033f72fb9517a4c93b379519171daf5c9c9af723224156",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/4e5303c6a8d44fcd900e17f749adb2f9/00000001-EVT-27d6bde537c84f48a35aa631607df5fd.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/4e5303c6a8d44fcd900e17f749adb2f9/00000001-EVT-27d6bde537c84f48a35aa631607df5fd.json",
+    "sha256_before": "c81743607ae4a658456002c6f07ff6124153f918a4caf9b1fc767db32a8f978e",
+    "sha256_immediately_after_move": "c81743607ae4a658456002c6f07ff6124153f918a4caf9b1fc767db32a8f978e",
+    "sha256_final": "c81743607ae4a658456002c6f07ff6124153f918a4caf9b1fc767db32a8f978e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task19_evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/4e5303c6a8d44fcd900e17f749adb2f9/00000002-EVT-f607cc4da84f4720bd8a3ee9de5c82ec.json",
+    "new": "docs/H4/tareas_erika/tarea_19/evidence/example/example-e77c656488a945e18f746f5d017b50a5/events/4e5303c6a8d44fcd900e17f749adb2f9/00000002-EVT-f607cc4da84f4720bd8a3ee9de5c82ec.json",
+    "sha256_before": "4503e42f4576cf86689815ff6336e4195990521debec6926fec746c33ec40a88",
+    "sha256_immediately_after_move": "4503e42f4576cf86689815ff6336e4195990521debec6926fec746c33ec40a88",
+    "sha256_final": "4503e42f4576cf86689815ff6336e4195990521debec6926fec746c33ec40a88",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task20_evidence/integrity_after.json",
+    "new": "docs/H4/tareas_erika/tarea_20/evidence/integrity_after.json",
+    "sha256_before": "767d1dbb57b13b03d165d95c9b4a67612bcfe755714301b5ad840991331280f0",
+    "sha256_immediately_after_move": "767d1dbb57b13b03d165d95c9b4a67612bcfe755714301b5ad840991331280f0",
+    "sha256_final": "767d1dbb57b13b03d165d95c9b4a67612bcfe755714301b5ad840991331280f0",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task20_evidence/integrity_before.json",
+    "new": "docs/H4/tareas_erika/tarea_20/evidence/integrity_before.json",
+    "sha256_before": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_immediately_after_move": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_final": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task20_evidence/tests_full.txt",
+    "new": "docs/H4/tareas_erika/tarea_20/evidence/tests_full.txt",
+    "sha256_before": "969f50acc94ff102464a73c4e9d7ed6dc707a3efcc42e60a75957ec4a1616276",
+    "sha256_immediately_after_move": "969f50acc94ff102464a73c4e9d7ed6dc707a3efcc42e60a75957ec4a1616276",
+    "sha256_final": "969f50acc94ff102464a73c4e9d7ed6dc707a3efcc42e60a75957ec4a1616276",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/build_closure.py",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/build_closure.py",
+    "sha256_before": "ad7af8e7bc2bd997d639514b461e214ed92601e59f114f5c1bed57cf49e71b50",
+    "sha256_immediately_after_move": "ad7af8e7bc2bd997d639514b461e214ed92601e59f114f5c1bed57cf49e71b50",
+    "sha256_final": "ef52d55432bf9943a7097b142b2b2912aad4c3b17684ab9c294690e443cef369",
+    "reference_updated_after_move": true
+  },
+  {
+    "old": "docs/H4/task21_evidence/discovered_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/discovered_tests.txt",
+    "sha256_before": "2e1e3dc7a438389d2b06d7e991d2d724f41484b8dc30c71b12f0e778fbb4778f",
+    "sha256_immediately_after_move": "2e1e3dc7a438389d2b06d7e991d2d724f41484b8dc30c71b12f0e778fbb4778f",
+    "sha256_final": "2e1e3dc7a438389d2b06d7e991d2d724f41484b8dc30c71b12f0e778fbb4778f",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/final_checks.json",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/final_checks.json",
+    "sha256_before": "120ba867567dd962ae43b8303b0683686450c57c3b409030547f1a6c85471262",
+    "sha256_immediately_after_move": "120ba867567dd962ae43b8303b0683686450c57c3b409030547f1a6c85471262",
+    "sha256_final": "120ba867567dd962ae43b8303b0683686450c57c3b409030547f1a6c85471262",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/flows.json",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/flows.json",
+    "sha256_before": "1d912ea5631bc4765800d032f315209e829c729268b62adf935c883b63caaa77",
+    "sha256_immediately_after_move": "1d912ea5631bc4765800d032f315209e829c729268b62adf935c883b63caaa77",
+    "sha256_final": "1d912ea5631bc4765800d032f315209e829c729268b62adf935c883b63caaa77",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/flows_log.txt",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/flows_log.txt",
+    "sha256_before": "66971ea6fe0e71338146ceff6000c5bec242bec08c8aa0956f7e91eac81ac0b4",
+    "sha256_immediately_after_move": "66971ea6fe0e71338146ceff6000c5bec242bec08c8aa0956f7e91eac81ac0b4",
+    "sha256_final": "66971ea6fe0e71338146ceff6000c5bec242bec08c8aa0956f7e91eac81ac0b4",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/full_tests.txt",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/full_tests.txt",
+    "sha256_before": "4de9b449f364667e56550ac8a29b76dbca284e618ea0d86a2796039b9af90d55",
+    "sha256_immediately_after_move": "4de9b449f364667e56550ac8a29b76dbca284e618ea0d86a2796039b9af90d55",
+    "sha256_final": "4de9b449f364667e56550ac8a29b76dbca284e618ea0d86a2796039b9af90d55",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/git_diff_check.txt",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/git_diff_check.txt",
+    "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sha256_immediately_after_move": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sha256_final": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/git_diff_stat.txt",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/git_diff_stat.txt",
+    "sha256_before": "109aea1ce72346b83dd52e778d7371a378f78637e756c3b5ef813365594ade17",
+    "sha256_immediately_after_move": "109aea1ce72346b83dd52e778d7371a378f78637e756c3b5ef813365594ade17",
+    "sha256_final": "109aea1ce72346b83dd52e778d7371a378f78637e756c3b5ef813365594ade17",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/git_status_after.txt",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/git_status_after.txt",
+    "sha256_before": "c42088c04d99ca1c6f7024d0532dd5e3067c731101cf183f75eb3ab3c51a4ce4",
+    "sha256_immediately_after_move": "c42088c04d99ca1c6f7024d0532dd5e3067c731101cf183f75eb3ab3c51a4ce4",
+    "sha256_final": "c42088c04d99ca1c6f7024d0532dd5e3067c731101cf183f75eb3ab3c51a4ce4",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/git_status_before.txt",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/git_status_before.txt",
+    "sha256_before": "e8caf9c052a5cae2a356993d709214219cef416d2e7a25266ba314f61424787c",
+    "sha256_immediately_after_move": "e8caf9c052a5cae2a356993d709214219cef416d2e7a25266ba314f61424787c",
+    "sha256_final": "e8caf9c052a5cae2a356993d709214219cef416d2e7a25266ba314f61424787c",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/initial_audit.json",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/initial_audit.json",
+    "sha256_before": "671412919351d0ee598b07122859e1c41341dbaef28bc681fc29de2fbdd65b3e",
+    "sha256_immediately_after_move": "671412919351d0ee598b07122859e1c41341dbaef28bc681fc29de2fbdd65b3e",
+    "sha256_final": "671412919351d0ee598b07122859e1c41341dbaef28bc681fc29de2fbdd65b3e",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/integrity_after.json",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/integrity_after.json",
+    "sha256_before": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_immediately_after_move": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_final": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/integrity_before.json",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/integrity_before.json",
+    "sha256_before": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_immediately_after_move": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "sha256_final": "7bec156bfe3434949fac2c0f4b48291bb093774de2fdaa5ecc4bd027a4940e19",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/matrix_summary.json",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/matrix_summary.json",
+    "sha256_before": "3d1994bd0fd0f26c2170057621458304cc6943d0b43349d9d79d66af78758182",
+    "sha256_immediately_after_move": "3d1994bd0fd0f26c2170057621458304cc6943d0b43349d9d79d66af78758182",
+    "sha256_final": "3d1994bd0fd0f26c2170057621458304cc6943d0b43349d9d79d66af78758182",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/scenario_progress.json",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/scenario_progress.json",
+    "sha256_before": "3a75ed1bdd409c658493b978724c8fffd4d39f946aee7508df3f1ec638baa722",
+    "sha256_immediately_after_move": "3a75ed1bdd409c658493b978724c8fffd4d39f946aee7508df3f1ec638baa722",
+    "sha256_final": "3a75ed1bdd409c658493b978724c8fffd4d39f946aee7508df3f1ec638baa722",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/source_before.json",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/source_before.json",
+    "sha256_before": "8445164a63bda2d5f964ebdfaf0342b61f434accf4fa47cda48b2d4dfc529539",
+    "sha256_immediately_after_move": "8445164a63bda2d5f964ebdfaf0342b61f434accf4fa47cda48b2d4dfc529539",
+    "sha256_final": "8445164a63bda2d5f964ebdfaf0342b61f434accf4fa47cda48b2d4dfc529539",
+    "reference_updated_after_move": false
+  },
+  {
+    "old": "docs/H4/task21_evidence/validate_flows.py",
+    "new": "docs/H4/tareas_erika/tarea_21/evidence/validate_flows.py",
+    "sha256_before": "0e141b9323874ee01196b40b140af16544b8d00bdae51d91e94e7c8056f202b6",
+    "sha256_immediately_after_move": "0e141b9323874ee01196b40b140af16544b8d00bdae51d91e94e7c8056f202b6",
+    "sha256_final": "7022962e40c2cd2f6be64091bddfba83a72b7c7c6c592fb1f26dbf6f3b741f25",
+    "reference_updated_after_move": true
+  }
+]

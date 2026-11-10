@@ -8,7 +8,7 @@ from dataclasses import replace
 from streamlit.testing.v1 import AppTest
 
 from simulator_inputs import FEATURE_NAMES, HERE, InputError, build_inputs, load_reference, offset_month
-from test_simulator_ui import protected_hashes
+from .test_simulator_ui import protected_hashes
 from ui_analysis import comparison_table, evaluate, group_errors, metric_values, monitor, parse_comparison, update_uploaded_comparison
 from ui_runtime import ClosedObservation, ModelInfo, ObservationJournal, checked_number, issue_forecast, model_info
 

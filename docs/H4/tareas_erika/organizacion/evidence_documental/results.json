@@ -1,0 +1,26 @@
+{
+  "moved_files": 191,
+  "discovered_unique_tests": 464,
+  "passed": 464,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "seconds": 107.749,
+  "scenarios": 8,
+  "scenario_closed_months": 48,
+  "manual_case": {
+    "incomplete_rejected": true,
+    "clock_history_rng_unchanged": true,
+    "complete_allowed": true,
+    "manual_observed": 10,
+    "status": "PASSED"
+  },
+  "protected_files": 29,
+  "historical_lifecycle_events": 442,
+  "zip_entries": 442,
+  "ignored_moved_files": 0,
+  "broken_markdown_links": 0,
+  "reference_files_edited": 38,
+  "official_test_reevaluated": false,
+  "official_models_trained": false
+}

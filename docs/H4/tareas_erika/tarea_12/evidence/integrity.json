@@ -1,0 +1,21 @@
+{
+  "protected_unchanged": true,
+  "files": {
+    "ml\\demand\\data\\escenarios_v1_1\\base_mensual.csv": "eb0d921027e6ef376b2d7228c7e99dd41d1dafaa7a1b03883d3d1152df73469b",
+    "ml\\demand\\data\\escenarios_v1_1\\casos_grises.json": "f18773f63240ab6980097afcf7ea77a726b75e913325f370011287bcbf4ea715",
+    "ml\\demand\\data\\escenarios_v1_1\\casos_invalidos.json": "49f6787f87efc039ddcacc515a8a813542220c489bcd5e2ec3998f3dfdc06596",
+    "ml\\demand\\data\\escenarios_v1_1\\dataset_supervisado.csv": "c04e65b77c3912245966ce54f0eb4eca18c94c2dbec4eb269374e8620d7d1817",
+    "ml\\demand\\data\\escenarios_v1_1\\escenarios_metadatos.csv": "70b35dabe28abeceff10c92ba77a13013d007650578bd3527d2bbe5b8aa016e0",
+    "ml\\demand\\data\\escenarios_v1_1\\manifest.json": "ba0cc67fef566c3a9d0745828ce40c82be2c11605121ff3e59c7bdcc9b6f7425",
+    "ml\\demand\\data\\escenarios_v1_1\\validacion.json": "19b32e2271a8de819d85d94f5f7f3a70b290e67a92af2c8dc656b4a56a606b56",
+    "ml\\demand\\models\\linear_regression_candidate.joblib": "55c7f1e152b485fc75150b506da541897948e4920aaabe95248aa433ff9dcbb8",
+    "ml\\demand\\models\\random_forest_candidate.joblib": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+    "ml\\demand\\reports\\experiments.csv": "1db9f324731f3c06fd16d2058e496e59a0c0df91ce888962b8644d6c876726a8",
+    "ml\\demand\\reports\\v1_selection_manifest.json": "41a10f4d196979cfff67410b21bf8ae527f6547aeca413e58811b4be920935f6",
+    "ml\\demand\\reports\\v1_test_evaluation.json": "f244f3209e3143eeeebd9a7f798f86a198582573e8d761930e3870c1a0a5351d"
+  },
+  "dataset_hashes_verified": true,
+  "catalog_verified": true,
+  "generator_verified": true,
+  "candidate_files_verified": true
+}

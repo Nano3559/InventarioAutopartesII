@@ -1,0 +1,42 @@
+ M ml/demand/README.md
+ M ml/demand/simulator_inputs.py
+ M ml/demand/streamlit_app.py
+ M ml/demand/ui_panels.py
+?? docs/H4/H4_TAREA_10_INFORME.md
+?? docs/H4/H4_TAREA_11_ACTIVACION_V1.md
+?? docs/H4/H4_TAREA_12_REENTRENAMIENTO.md
+?? docs/H4/H4_TAREA_13_COMPARACION_DECISION.md
+?? docs/H4/task10_evidence/
+?? docs/H4/task11_evidence/
+?? docs/H4/task12_evidence/
+?? docs/H4/task13_evidence/
+?? ml/demand/candidates/
+?? ml/demand/decisions/
+?? ml/demand/demand_engine.py
+?? ml/demand/demand_runtime.py
+?? ml/demand/evaluate_v1.py
+?? ml/demand/example_retraining.py
+?? ml/demand/ml_pipeline.py
+?? ml/demand/model_comparison.py
+?? ml/demand/models/
+?? ml/demand/reports/
+?? ml/demand/requirements-training.txt
+?? ml/demand/retraining.py
+?? ml/demand/select_v1.py
+?? ml/demand/test_demand_engine.py
+?? ml/demand/test_demand_runtime.py
+?? ml/demand/test_engine_integration.py
+?? ml/demand/test_evaluate_v1.py
+?? ml/demand/test_integrity.py
+?? ml/demand/test_linear_regression.py
+?? ml/demand/test_ml_pipeline.py
+?? ml/demand/test_model_comparison.py
+?? ml/demand/test_random_forest.py
+?? ml/demand/test_retraining.py
+?? ml/demand/test_runtime_integration.py
+?? ml/demand/test_select_v1.py
+?? ml/demand/test_simulator_validation.py
+?? ml/demand/train_linear_regression.py
+?? ml/demand/train_random_forest.py
+?? ml/demand/validate_candidate_comparison.py
+?? ml/demand/validate_v1_activation.py

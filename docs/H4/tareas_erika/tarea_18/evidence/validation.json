@@ -1,0 +1,25 @@
+{
+  "requirement": "R49",
+  "suite": {
+    "previous": 404,
+    "new": 16,
+    "total": 420,
+    "seconds": 75.38,
+    "result": "OK",
+    "log": "full_tests.txt"
+  },
+  "protected_count": 29,
+  "protected_unchanged": true,
+  "example": {
+    "session_id": "f69c4a8eb1784203b3283f667e5e93dc",
+    "candidate_id": "CAND-6b179cf114a246a0be13cd040ff24549",
+    "n_train": 6,
+    "n_series": 1,
+    "n_comparison": 3,
+    "events": 10,
+    "head_sha256": "5dd3ec6b276eaacee5255903171056cbe4828137c9f7874c9ac0c46ed8da5385",
+    "final_active": null
+  },
+  "real_candidate_promotion": "BLOCKED",
+  "visual_review": "NOT_PERFORMED"
+}

@@ -1,0 +1,32 @@
+{
+  "imported": [
+    "generate_synthetic",
+    "ml_pipeline",
+    "train_linear_regression",
+    "train_random_forest",
+    "select_v1",
+    "evaluate_v1",
+    "demand_engine",
+    "demand_runtime",
+    "reference_runtime",
+    "retraining",
+    "model_comparison",
+    "pair_contexts",
+    "lifecycle_registry",
+    "session_trace",
+    "session_export",
+    "simulator_inputs",
+    "ui_runtime",
+    "ui_analysis",
+    "ui_panels",
+    "streamlit_app",
+    "run_tests"
+  ],
+  "training_executed": false,
+  "model_loading_executed": false,
+  "training_signatures": {
+    "train_linear_regression": "(dataset_path=WindowsPath('C:/Universidad/Sistemas/9vosemestre/programacion/InventarioAutopartesII/ml/demand/data/escenarios_v1_1/dataset_supervisado.csv'), registry_path=WindowsPath('C:/Universidad/Sistemas/9vosemestre/programacion/InventarioAutopartesII/ml/demand/reports/experiments.csv'), artifact_path=WindowsPath('C:/Universidad/Sistemas/9vosemestre/programacion/InventarioAutopartesII/ml/demand/models/linear_regression_candidate.joblib'), expected_hash=None)",
+    "train_random_forest": "(dataset_path=WindowsPath('C:/Universidad/Sistemas/9vosemestre/programacion/InventarioAutopartesII/ml/demand/data/escenarios_v1_1/dataset_supervisado.csv'), registry_path=WindowsPath('C:/Universidad/Sistemas/9vosemestre/programacion/InventarioAutopartesII/ml/demand/reports/experiments.csv'), artifact_path=WindowsPath('C:/Universidad/Sistemas/9vosemestre/programacion/InventarioAutopartesII/ml/demand/models/random_forest_candidate.joblib'), expected_hash=None)"
+  },
+  "retraining_signature": "(self, engine, journal)"
+}

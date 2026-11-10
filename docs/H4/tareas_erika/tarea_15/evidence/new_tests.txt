@@ -1,0 +1,33 @@
+test_complete_manual_zero_is_valid_and_advance_is_explicit (test_h4_functional_fixes.MonthClosureTests.test_complete_manual_zero_is_valid_and_advance_is_explicit) ... ok
+test_incomplete_close_rejects_without_mutating_state_or_rng (test_h4_functional_fixes.MonthClosureTests.test_incomplete_close_rejects_without_mutating_state_or_rng) ... ok
+test_journal_contradiction_rejects_before_engine_write (test_h4_functional_fixes.MonthClosureTests.test_journal_contradiction_rejects_before_engine_write) ... ok
+test_missing_emission_rejects_before_engine_write (test_h4_functional_fixes.MonthClosureTests.test_missing_emission_rejects_before_engine_write) ... ok
+test_missing_observed_never_fabricates_zero (test_h4_functional_fixes.MonthClosureTests.test_missing_observed_never_fabricates_zero) ... ok
+test_new_product_can_close_observed_despite_inference_abstention (test_h4_functional_fixes.MonthClosureTests.test_new_product_can_close_observed_despite_inference_abstention) ... ok
+test_activation_is_local_and_reset_requires_new_action (test_h4_functional_fixes.NormalStreamlitFixTests.test_activation_is_local_and_reset_requires_new_action) ... 2026-11-09 16:18:51.721 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-09 16:18:52.298 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_explicit_manual_register_closes_without_advancing (test_h4_functional_fixes.NormalStreamlitFixTests.test_explicit_manual_register_closes_without_advancing) ... 2026-11-09 16:18:52.725 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_generated_month_is_complete_without_manual_confirmation (test_h4_functional_fixes.NormalStreamlitFixTests.test_generated_month_is_complete_without_manual_confirmation) ... 2026-11-09 16:18:53.344 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_imported_approval_cannot_change_candidate_promotion_policy (test_h4_functional_fixes.NormalStreamlitFixTests.test_imported_approval_cannot_change_candidate_promotion_policy) ... 2026-11-09 16:18:53.858 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_manual_confirmation_allows_close_and_advance (test_h4_functional_fixes.NormalStreamlitFixTests.test_manual_confirmation_allows_close_and_advance) ... 2026-11-09 16:18:54.204 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_manual_incomplete_disables_both_close_routes (test_h4_functional_fixes.NormalStreamlitFixTests.test_manual_incomplete_disables_both_close_routes) ... 2026-11-09 16:18:54.731 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_normal_v1_activation_real_inference_and_rollback (test_h4_functional_fixes.NormalStreamlitFixTests.test_normal_v1_activation_real_inference_and_rollback) ... 2026-11-09 16:18:55.102 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_v1_verification_failure_preserves_inactive_state (test_h4_functional_fixes.NormalStreamlitFixTests.test_v1_verification_failure_preserves_inactive_state) ... 2026-11-09 16:18:56.263 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_generation_and_closing_do_not_mutate_other_pair (test_h4_functional_fixes.PairRandomnessTests.test_generation_and_closing_do_not_mutate_other_pair) ... ok
+test_interleaving_other_pair_does_not_change_any_scenario (test_h4_functional_fixes.PairRandomnessTests.test_interleaving_other_pair_does_not_change_any_scenario) ... ok
+test_reset_restores_all_pair_sequences (test_h4_functional_fixes.PairRandomnessTests.test_reset_restores_all_pair_sequences) ... ok
+test_seed_and_pair_determine_distinct_stable_streams (test_h4_functional_fixes.PairRandomnessTests.test_seed_and_pair_determine_distinct_stable_streams) ... ok
+test_selection_order_does_not_change_pair_stream (test_h4_functional_fixes.PairRandomnessTests.test_selection_order_does_not_change_pair_stream) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 4.835s
+
+OK

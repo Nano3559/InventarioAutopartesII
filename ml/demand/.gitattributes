@@ -1,0 +1,8 @@
+# Estos paquetes/manifiestos usan además hashes binarios independientes.
+# Preservar sus bytes al incorporarlos a Git; no sustituye content_sha256().
+models/*.joblib -text
+reports/experiments.csv -text
+reports/v1_selection_manifest.json -text
+reports/v1_test_evaluation.json -text
+candidates/** -text
+decisions/** -text

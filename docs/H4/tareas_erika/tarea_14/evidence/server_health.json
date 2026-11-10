@@ -1,0 +1,6 @@
+{
+  "url": "http://127.0.0.1:8502/_stcore/health",
+  "status": 200,
+  "body": "ok",
+  "visual_review": false
+}

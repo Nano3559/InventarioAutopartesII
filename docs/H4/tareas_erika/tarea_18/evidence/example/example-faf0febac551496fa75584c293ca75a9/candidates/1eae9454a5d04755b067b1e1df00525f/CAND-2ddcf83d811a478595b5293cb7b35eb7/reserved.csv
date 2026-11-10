@@ -1,0 +1,4 @@
+mes_objetivo,productId,locationId,ventas_mes_anterior,ventas_hace_2_meses,ventas_hace_3_meses,mes_sin,mes_cos,target_ventas_mes
+2027-07,1,5,18,17,16,1.2246467991473532e-16,-1.0,19
+2027-08,1,5,19,18,17,-0.4999999999999997,-0.8660254037844388,20
+2027-09,1,5,20,19,18,-0.8660254037844385,-0.5000000000000004,21

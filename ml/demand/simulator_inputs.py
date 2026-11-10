@@ -82,16 +82,42 @@ class Reference:
             raise InputError("TIENDA INVÁLIDA en el catálogo de referencia.")
 
 
+def read_required(path, label):
+    """Lectura de un archivo textual conocido. Un archivo ausente se rechaza."""
+    try:
+        return path.read_bytes()
+    except OSError as exc:
+        raise InputError(f"REFERENCIA NO VÁLIDA: falta el archivo {label}.") from exc
+
+
+def normalize_eol(data):
+    """CRLF→LF. Las huellas oficiales se calcularon sobre contenido LF."""
+    if type(data) is not bytes:
+        raise InputError("REFERENCIA NO VÁLIDA: contenido no binario al verificar huellas.")
+    return data.replace(b"\r\n", b"\n")
+
+
+def content_sha256(data):
+    """SHA256 del contenido con finales de línea normalizados."""
+    return hashlib.sha256(normalize_eol(data)).hexdigest()
+
+
+def verified_bytes(path, expected, label):
+    """Exige la huella oficial de un archivo textual, con LF o CRLF en disco."""
+    data = read_required(path, label)
+    if content_sha256(data) != expected:
+        raise InputError(f"REFERENCIA NO VÁLIDA: la huella de {label} no coincide.")
+    return data
+
+
 def load_reference(folder=HERE):
     """Lee únicamente la referencia y el panel 1.1 con sus huellas verificadas."""
     data = folder / "data" / "escenarios_v1_1"
-    manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
-    catalog_bytes = (folder / "catalog_reference.json").read_bytes()
-    base_bytes = (data / "base_mensual.csv").read_bytes()
-    if (hashlib.sha256(catalog_bytes).hexdigest() != manifest["catalog_snapshot_hash"]
-            or hashlib.sha256(base_bytes).hexdigest()
-            != manifest["hashes"]["base_mensual.csv"]):
-        raise InputError("REFERENCIA NO VÁLIDA: las huellas del catálogo o del panel no coinciden.")
+    manifest = json.loads(read_required(data / "manifest.json", "manifest.json").decode("utf-8"))
+    catalog_bytes = verified_bytes(folder / "catalog_reference.json",
+                                   manifest["catalog_snapshot_hash"], "catalog_reference.json")
+    base_bytes = verified_bytes(data / "base_mensual.csv",
+                                manifest["hashes"]["base_mensual.csv"], "base_mensual.csv")
     catalog = json.loads(catalog_bytes)
     included = set(catalog["included_product_ids"])
     products = {r["id"]: r for r in catalog["products"] if r["id"] in included}
@@ -110,12 +136,17 @@ def load_reference(folder=HERE):
 
 
 def build_inputs(reference, product_id, location_id, month, chronological_values,
-                 complete=True, scenario="NORMAL"):
-    """Los valores llegan en orden lag3, lag2, lag1. El target no es un argumento."""
+                 complete=True, scenario="NORMAL", history=None):
+    """Los valores llegan en orden lag3, lag2, lag1. El target no es un argumento.
+
+    history permite validar contra la historia de sesión (meses cerrados por el
+    motor) cuando el mes objetivo es posterior al panel 1.1. Sin ese argumento
+    se usa la referencia, como hasta ahora.
+    """
     reference.check_ids(product_id, location_id)
     _, month_number = parse_month(month)
     # También comprueba los tres meses anteriores en el calendario soportado.
-    recent = reference.recent(product_id, location_id, month)
+    recent = reference.recent(product_id, location_id, month) if history is None else tuple(history)
     if scenario not in SCENARIOS:
         raise InputError("ESCENARIO INVÁLIDO.")
     if scenario == "PRODUCTO NUEVO":

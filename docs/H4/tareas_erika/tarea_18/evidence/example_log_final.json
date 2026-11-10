@@ -1,0 +1,21 @@
+{
+  "folder": "C:\\Universidad\\Sistemas\\9vosemestre\\programacion\\InventarioAutopartesII\\docs\\H4\\task18_evidence\\example\\example-c84179d4d0614c7dbaf89155f796ed8a",
+  "session_id": "f69c4a8eb1784203b3283f667e5e93dc",
+  "candidate_id": "CAND-6b179cf114a246a0be13cd040ff24549",
+  "n_train": 6,
+  "n_comparison": 3,
+  "event_types": [
+    "V1_AVAILABLE",
+    "RUNTIME_CONNECTED",
+    "ACTIVATE_V1",
+    "CANDIDATE_CREATED",
+    "MODELS_COMPARED",
+    "INSUFFICIENT_EVIDENCE",
+    "CANDIDATE_REJECTED",
+    "PROMOTION_BLOCKED",
+    "ROLLBACK",
+    "RESET"
+  ],
+  "head_sha256": "5dd3ec6b276eaacee5255903171056cbe4828137c9f7874c9ac0c46ed8da5385",
+  "final_active": null
+}

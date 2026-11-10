@@ -1,0 +1,18 @@
+{
+  "requirement": "R21",
+  "suite": {
+    "previous": 394,
+    "new": 10,
+    "total": 404,
+    "seconds": 61.861,
+    "result": "OK",
+    "log": "full_tests.txt"
+  },
+  "evidence": "ml/demand/test_pair_contexts.py",
+  "protected_count": 29,
+  "protected_unchanged": true,
+  "active_scope": "session/product_id/location_id",
+  "reset": "ALL_CONTEXTS_DISCARDED_NO_ACTIVE",
+  "real_candidate_promotion": "BLOCKED",
+  "visual_review": "NOT_PERFORMED"
+}

@@ -1,0 +1,149 @@
+{
+  "schema": "h4-v1-test-evaluation-1",
+  "v1_id": "V1",
+  "selection_id": "SEL-V1-RANDOMFOREST-20261109T041158351931Z",
+  "manifest_path": "ml/demand/reports/v1_selection_manifest.json",
+  "evaluated_utc": "2026-11-09T04:30:40Z",
+  "status": "TEST_EVALUATED_COMPLETED",
+  "artifact": {
+    "path": "ml\\demand\\models\\random_forest_candidate.joblib",
+    "sha256": "3e3cf6d1ef75567a69ff6f604bcb2a93f629f6d0fa503bdf734f3c6118c03883"
+  },
+  "dataset": {
+    "version": "1.1.0-escenarios",
+    "hash": "d25257286ccf08b41fedd2bdb5249be9bcd6aa7076fdb16ba13e7af21a825662"
+  },
+  "test": {
+    "period": "2026-07..2026-09",
+    "rows": 504,
+    "months": [
+      "2026-07",
+      "2026-08",
+      "2026-09"
+    ]
+  },
+  "metrics": {
+    "n": 504,
+    "n_con_prediccion": 504,
+    "mae": 4.814178503040102,
+    "rmse": 8.182890558417325,
+    "r2": 0.42304686389766555,
+    "cobertura": 1.0,
+    "predicciones_negativas": 0
+  },
+  "groups": {
+    "por_tienda": {
+      "5": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 4.914645699629024,
+        "rmse": 8.868135770791758,
+        "r2": 0.48123837635270306,
+        "cobertura": 1.0
+      },
+      "6": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 4.517655116026124,
+        "rmse": 7.7794349492464505,
+        "r2": 0.407842133852484,
+        "cobertura": 1.0
+      },
+      "7": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 5.010234693465158,
+        "rmse": 7.855931102953537,
+        "r2": 0.32749292046508827,
+        "cobertura": 1.0
+      }
+    },
+    "por_mes": {
+      "2026-07": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 4.8650212610364445,
+        "rmse": 8.109252751929272,
+        "r2": 0.36448101516285747,
+        "cobertura": 1.0
+      },
+      "2026-08": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 4.49143839909877,
+        "rmse": 7.61034594985426,
+        "r2": 0.5085917476709028,
+        "cobertura": 1.0
+      },
+      "2026-09": {
+        "n": 168,
+        "n_con_prediccion": 168,
+        "mae": 5.086075848985093,
+        "rmse": 8.786452526587203,
+        "r2": 0.3859683891830571,
+        "cobertura": 1.0
+      }
+    },
+    "por_rotacion": {
+      "ALTA": {
+        "n": 162,
+        "n_con_prediccion": 162,
+        "mae": 6.491090423590055,
+        "rmse": 9.754353977365401,
+        "r2": 0.14842781770942426,
+        "cobertura": 1.0
+      },
+      "BAJA": {
+        "n": 171,
+        "n_con_prediccion": 171,
+        "mae": 2.6671846999436917,
+        "rmse": 4.952793286291499,
+        "r2": -0.0641379587502533,
+        "cobertura": 1.0
+      },
+      "MEDIA": {
+        "n": 171,
+        "n_con_prediccion": 171,
+        "mae": 5.372518907720768,
+        "rmse": 9.093133410542723,
+        "r2": -0.028144243545658698,
+        "cobertura": 1.0
+      }
+    }
+  },
+  "validation_metrics": {
+    "n": 504,
+    "n_con_prediccion": 504,
+    "mae": 5.158657249544053,
+    "rmse": 8.441614483508094,
+    "r2": 0.3464685883046653,
+    "cobertura": 1.0
+  },
+  "comparison_descriptive": {
+    "mae_test_menos_val": -0.3444787465039507,
+    "rmse_test_menos_val": -0.25872392509076825,
+    "r2_test_menos_val": 0.07657827559300023
+  },
+  "versions": {
+    "python": "3.11.0",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.17.1",
+    "joblib": "1.6.0"
+  },
+  "tool_versions": "python 3.11.0; numpy 2.4.6; pandas 3.1.0; scikit-learn 1.9.1; scipy 1.17.1; joblib 1.6.0",
+  "registry": {
+    "path": "ml/demand/reports/experiments.csv",
+    "experiment_id": "EXP-RANDOMFOREST-20261109T040027015455Z",
+    "updated_fields": [
+      "mae_test",
+      "rmse_test",
+      "r2_test"
+    ]
+  },
+  "retrained": false,
+  "model_changed": false,
+  "hyperparameters_changed": false,
+  "next": "Pendiente: demand_runtime.py (contrato ACTIVE) y activación posterior de V1; ninguna decisión se toma con este resultado."
+}

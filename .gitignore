@@ -167,3 +167,7 @@ __pycache__/
 # ARTEFACTOS LOCALES DE OCR
 # ==========================================
 eng.traineddata
+
+# H4: eventos locales por sesión (no son modelos, datasets ni experimentos).
+# Originales preservados; respaldo verificable en docs/H4/tareas_erika/organizacion/evidence/.
+/ml/demand/lifecycle/
