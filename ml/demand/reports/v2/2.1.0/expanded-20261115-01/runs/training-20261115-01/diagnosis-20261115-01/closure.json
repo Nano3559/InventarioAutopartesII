@@ -1,0 +1,133 @@
+{
+  "status": "DIAGNOSIS_COMPLETE_SELECTION_REVIEW_PENDING",
+  "fit_calls": 0,
+  "test_evaluated": false,
+  "candidate_changed": false,
+  "selection_changed": false,
+  "neon_used": false,
+  "git_used": false,
+  "new_markdown_created": false,
+  "artifact_tests": {
+    "run": 8,
+    "passed": 8,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "no_fit": true
+  },
+  "diagnostic_checks": [
+    {
+      "check": "No fits or TEST in diagnosis",
+      "passed": true
+    },
+    {
+      "check": "Product cohorts reconcile to 504 validation rows",
+      "passed": true
+    },
+    {
+      "check": "Exactly the same 17 worsened products as frozen review",
+      "passed": true
+    },
+    {
+      "check": "Rotation metrics agree with frozen report: HIGH",
+      "passed": true
+    },
+    {
+      "check": "Rotation metrics agree with frozen report: MEDIUM",
+      "passed": true
+    },
+    {
+      "check": "Rotation metrics agree with frozen report: LOW",
+      "passed": true
+    },
+    {
+      "check": "Rotation metrics agree with frozen report: ZERO",
+      "passed": true
+    },
+    {
+      "check": "Unknown/partial mode reproduces frozen grouping",
+      "passed": true
+    },
+    {
+      "check": "Missing share and partial coverage are separate exhaustive subsets",
+      "passed": true
+    },
+    {
+      "check": "Zero-history example is not a perfect future-zero rule",
+      "passed": true
+    },
+    {
+      "check": "Global benefit reconciles to rotation contributions",
+      "passed": true
+    },
+    {
+      "check": "Executable diagnostic source parses",
+      "passed": true
+    },
+    {
+      "check": "Future training permission remains blocked",
+      "passed": true
+    },
+    {
+      "check": "CSV contains only VALIDATION months with unique keys",
+      "passed": true
+    },
+    {
+      "check": "Served order quantities reconcile row by row",
+      "passed": true
+    }
+  ],
+  "integrity": {
+    "data": {
+      "files_checked": 59,
+      "unchanged": true
+    },
+    "reports": {
+      "files_checked": 83,
+      "unchanged": true
+    },
+    "models": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "candidates": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "decisions": {
+      "files_checked": 4,
+      "unchanged": true
+    },
+    "lifecycle": {
+      "files_checked": 13,
+      "unchanged": true
+    },
+    "raw": {
+      "files_checked": 136,
+      "unchanged": true
+    },
+    "manifests": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "protected": {
+      "files_checked": 44,
+      "unchanged": true
+    }
+  },
+  "evidence_hashes": {
+    "analysis_script.py": "139754b099e43d3f611207a6ce6d2c3ec5ec73ac77366f574957a7f62be08773",
+    "error_diagnosis.json": "6439967ffc517669ef991d8b2a6b3be6aa3da9b281c0106830a916d67088c6b1",
+    "product_examples.csv": "869ff603bec8ffc15ea93651ebc313667ddbdc1d535dbcf1f94aa3276160a3bf",
+    "recommendations.json": "88ca4b2f5ef649b7a55393a7a0687f9b77cb201216bf4182ea3d82c5eb36a06b",
+    "tests.txt": "1b610365ab7c7e23180d88ef36800640b10615a6c2ea902a9f1829b9f8bfa758",
+    "validation_row_errors.csv": "868231acc108c0077431156e7d21a63df916c0981155e4ab0f6ab9b22153017a",
+    "worsened_products.csv": "f0eec081ea51579e1dda3f741aa6c7b185b6febbebc0667045b5a1e35345082e"
+  },
+  "input_comparison_sha256": "6941f7277704fbe2f33c98de419406fde090cfcbc7e21eb1465505245e464115",
+  "limitations": [
+    "Post-hoc descriptive analysis of reused VALIDATION, not independent confirmation.",
+    "No causal claim or proof that suggested changes improve predictions.",
+    "No significance claim from three validation months."
+  ]
+}

@@ -1,6 +1,10 @@
+import { spanishOrder } from "../services/scenarioPresentation";
 import { formatBusinessDate } from "../utils/businessDate";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../services/api";
+import { dashboardError } from "../utils/dashboardError";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../stores/authStore";
 import {
   Package,
   ShoppingCart,
@@ -27,14 +31,18 @@ import {
 } from "recharts";
 
 interface DashboardData {
+  availableLocations?: {id:number;name:string;type:string}[];
+  period?: { month: string; timeZone: string; generatedAt: string; inventory: string };
+  analytics?: { soldUnits: number; topProducts: { productId: number; name: string; itemCode: string; units: number; amount: number }[] } | null;
+  availability?: { sales: "AVAILABLE" | "SCHEMA_UNAVAILABLE" };
   summary: {
     totalProducts: number;
     productsWithoutStock: number;
     productsWithLowStock: number;
-    salesToday: number;
-    salesTodayTotal: number;
-    salesMonth: number;
-    salesMonthTotal: number;
+    salesToday: number | null;
+    salesTodayTotal: number | null;
+    salesMonth: number | null;
+    salesMonthTotal: number | null;
     pendingRequests: number;
     criticalStock: number;
   };
@@ -108,7 +116,8 @@ const PIE_COLORS = [
   "#ec4899",
 ];
 
-function formatCurrency(value: number) {
+function formatCurrency(value: number | null) {
+  if (value === null) return "No disponible";
   return `Bs. ${value.toLocaleString("es-BO", { minimumFractionDigits: 2 })}`;
 }
 
@@ -122,26 +131,37 @@ function formatDate(dateStr: string) {
 }
 
 export default function DashboardPage() {
+  const isAdmin = useAuthStore((state) => state.user?.role === "ADMIN");
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [month, setMonth] = useState("");
+  const [selectedPeriod, setSelectedPeriod] = useState("");
+  const [locationDraft, setLocationDraft] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const generation = useRef(0);
+  const request = useRef<AbortController | null>(null);
 
   const fetchDashboard = async () => {
+    const seq = ++generation.current; request.current?.abort();
+    const abort = new AbortController(); request.current = abort;
     try {
       setLoading(true);
-      const res = await api.get("/dashboard");
+      const res = await api.get("/dashboard", { params: selectedPeriod || selectedLocation ? { ...(selectedPeriod ? { month: selectedPeriod } : {}), ...(selectedLocation ? { locationId: selectedLocation } : {}) } : undefined, signal: abort.signal });
+      if (seq !== generation.current || abort.signal.aborted) return;
       setData(res.data);
       setError("");
-    } catch {
-      setError("Error al cargar los datos del dashboard");
+    } catch (error: unknown) {
+      if (seq === generation.current && !abort.signal.aborted) setError(dashboardError(error));
     } finally {
-      setLoading(false);
+      if (seq === generation.current) setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchDashboard();
-  }, []);
+    return () => { generation.current++; request.current?.abort(); };
+  }, [selectedPeriod, selectedLocation]);
 
   if (loading) {
     return (
@@ -162,11 +182,14 @@ export default function DashboardPage() {
         >
           Reintentar
         </button>
+        {isAdmin && <Link to="/panel/prediccion" className="text-primary-400 underline">Abrir predicción de ventas con datos sintéticos</Link>}
+        {(selectedPeriod || selectedLocation) && <button className="text-sm underline" onClick={() => { setMonth(""); setSelectedPeriod(""); setSelectedLocation(""); setLocationDraft(""); }}>Volver al mes actual</button>}
       </div>
     );
   }
 
   const { summary } = data;
+  const salesUnavailable = data.availability?.sales === "SCHEMA_UNAVAILABLE";
 
   const mainStats = [
     {
@@ -179,12 +202,12 @@ export default function DashboardPage() {
     },
     {
       label: "Ventas del Día",
-      value: summary.salesToday,
+      value: summary.salesToday ?? "No disponible",
       icon: ShoppingCart,
       color: "text-green-400",
       bg: "bg-green-500/10",
       border: "border-green-500/20",
-      sub: formatCurrency(summary.salesTodayTotal),
+      sub: summary.salesTodayTotal === null ? undefined : formatCurrency(summary.salesTodayTotal),
     },
     {
       label: "Ventas brutas del mes",
@@ -193,7 +216,7 @@ export default function DashboardPage() {
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
       border: "border-emerald-500/20",
-      sub: `${summary.salesMonth} ventas`,
+      sub: summary.salesMonth === null ? undefined : `${summary.salesMonth} ventas`,
     },
     {
       label: "Sin Stock",
@@ -237,13 +260,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
           <p className="text-gray-400 text-sm mt-1">
-            Resumen general del sistema
+            Ventas del periodo seleccionado. Inventario actual.
           </p>
         </div>
+        <form className="flex flex-wrap items-end gap-2" onSubmit={e => { e.preventDefault(); setSelectedPeriod(month); setSelectedLocation(locationDraft); }}><label className="flex flex-col gap-1 text-xs text-gray-400">Periodo de ventas<input aria-label="Periodo de ventas" type="month" value={month} onChange={e => setMonth(e.target.value)} className="rounded-lg border border-slate-700 bg-dark-800 px-3 py-2 text-sm text-white" /></label>{data.availableLocations && <label className="flex flex-col gap-1 text-xs text-gray-400">Ubicación<select aria-label="Ubicación del dashboard" className="rounded-lg border border-slate-700 bg-dark-800 px-3 py-2 text-sm text-white" value={locationDraft} onChange={e => setLocationDraft(e.target.value)}><option value="">Ubicaciones autorizadas</option>{[...data.availableLocations].sort((a,b) => spanishOrder.compare(a.name,b.name)).map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>}<button type="submit" className="rounded-lg bg-primary-600 px-3 py-2 text-sm text-white">Consultar periodo</button><button type="button" onClick={() => { setMonth(""); setSelectedPeriod(""); }} className="px-3 py-2 text-sm text-gray-400">Mes actual</button></form>
         <button
           onClick={fetchDashboard}
           className="p-2 bg-dark-800 border border-dark-700/50 rounded-xl text-gray-400 hover:text-white hover:border-primary-600/50 transition-all"
@@ -253,12 +277,17 @@ export default function DashboardPage() {
         </button>
       </div>
 
+      {data.period && <p className="text-xs text-gray-400">Ventas: {data.period.month} · America/La_Paz · Actualizado: {formatDate(data.period.generatedAt)}</p>}
+      {data.analytics && <section className="rounded-xl border border-slate-700/50 bg-dark-800/40 p-4"><div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-medium">Productos más vendidos del periodo</h2><span className="text-sm text-blue-400">{data.analytics.soldUnits.toLocaleString("es-BO")} unidades brutas</span></div>{data.analytics.topProducts.length ? <div className="mt-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-2">{data.analytics.topProducts.slice(0, 5).map(p => <div key={p.productId} className="rounded-lg bg-dark-900/60 p-3"><p className="truncate text-sm" title={p.name}>{p.name}</p><p className="mt-1 text-xs text-gray-400">{p.itemCode} · {p.units} unidades</p></div>)}</div> : <p className="mt-2 text-sm text-gray-400">No hay ventas confirmadas en este periodo. Puedes consultar otro mes.</p>}</section>}
+
+      {salesUnavailable && <p role="status" className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-amber-200">Inventario y solicitudes disponibles. Las cifras de ventas requieren actualizar la estructura de datos.</p>}
+
       {/* Main Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {mainStats.map((stat) => (
           <div
             key={stat.label}
-            className={`bg-dark-800/50 border ${stat.border} rounded-2xl p-4 hover:scale-[1.02] transition-all`}
+            className={`min-w-0 bg-dark-800/50 border ${stat.border} rounded-2xl p-4 hover:scale-[1.02] transition-all`}
           >
             <div className="flex items-center justify-between mb-3">
               <div
@@ -267,7 +296,7 @@ export default function DashboardPage() {
                 <stat.icon size={18} className={stat.color} />
               </div>
             </div>
-            <p className="text-2xl font-bold text-white">{stat.value}</p>
+            <p className={stat.value === "No disponible" ? "text-sm font-medium text-gray-400" : "break-words text-2xl font-bold text-white"}>{stat.value}</p>
             <p className="text-xs text-gray-400 mt-1">{stat.label}</p>
             {stat.sub && (
               <p className="text-xs text-gray-500 mt-0.5">{stat.sub}</p>
@@ -304,7 +333,7 @@ export default function DashboardPage() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-gray-400 text-sm">Sin datos de ventas este mes</p>
+            <p className="text-gray-400 text-sm">{salesUnavailable ? "Ventas no disponibles temporalmente" : "Sin datos de ventas este mes"}</p>
           )}
         </div>
 
@@ -317,7 +346,7 @@ export default function DashboardPage() {
           </div>
           {data.stockByLocation.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={data.stockByLocation}>
+              <BarChart data={[...data.stockByLocation].sort((a,b) => spanishOrder.compare(a.name,b.name))}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="name" tick={{ fill: "#9ca3af", fontSize: 11 }} />
                 <YAxis tick={{ fill: "#9ca3af", fontSize: 12 }} />
@@ -375,7 +404,7 @@ export default function DashboardPage() {
               })}
             </div>
           ) : (
-            <p className="text-gray-400 text-sm">Sin datos de ventas por marca</p>
+            <p className="text-gray-400 text-sm">{salesUnavailable ? "Ventas no disponibles temporalmente" : "Sin datos de ventas por marca"}</p>
           )}
         </div>
 
@@ -416,7 +445,7 @@ export default function DashboardPage() {
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-gray-400 text-sm">Sin datos por modelo</p>
+            <p className="text-gray-400 text-sm">{salesUnavailable ? "Ventas no disponibles temporalmente" : "Sin datos por modelo"}</p>
           )}
         </div>
       </div>
@@ -497,7 +526,7 @@ export default function DashboardPage() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-400 text-sm">Sin ventas recientes</p>
+            <p className="text-gray-400 text-sm">{salesUnavailable ? "Ventas no disponibles temporalmente" : "Sin ventas recientes"}</p>
           )}
         </div>
 

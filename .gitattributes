@@ -1,0 +1,3 @@
+# H4 preserves exact bytes used by dataset, artifact and provenance hashes.
+# This also prevents automatic CRLF/LF conversion on another computer.
+/ml/demand/** -text

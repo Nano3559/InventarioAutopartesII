@@ -1,0 +1,100 @@
+{
+  "runner_version": "experiments-2.1-1",
+  "status": "DRY_RUN_READY_NOT_TRAINED",
+  "dataset_version": "2.1.0",
+  "input_manifest_sha256": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+  "candidate_count": 30,
+  "planned_fit_count": 102,
+  "actual_model_fit_count": 0,
+  "actual_preprocessing_fit_count": 0,
+  "actual_predict_calls": 0,
+  "actual_predictive_metrics": false,
+  "slices": [
+    {
+      "partition": "TRAIN",
+      "fold_id": null,
+      "rows": 2520,
+      "first_month": "2025-01",
+      "last_month": "2026-03",
+      "row_keys_sha256": "4ace13456b3b8b44fd3cadca556539e983ec2f786bb1b7c6d52b22e19fbb7a08",
+      "aligned_targets_sha256": "ae9cbdb448553fa6f9afdc0293051f843976658e60183344e6e260ae53a8405a",
+      "index_equal": true
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": null,
+      "rows": 504,
+      "first_month": "2026-04",
+      "last_month": "2026-06",
+      "row_keys_sha256": "1876ccfca90bd43735f868440b4f2251dae9f7c493f9dad5b386ce80884c6539",
+      "aligned_targets_sha256": "daed4dea4905ee502813b9e750139c176518b827edf834158ea1c1e0593b4ae6",
+      "index_equal": true
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": "F1",
+      "rows": 1008,
+      "first_month": "2025-01",
+      "last_month": "2025-06",
+      "row_keys_sha256": "aef31a81adc43b70f6893629f3ef215b4079203103a8b40b04202145ca3d8c27",
+      "aligned_targets_sha256": "c1020d1cc43bae8c5a67361fb748f35b7c3cde813786d159ac73396ecc8eb097",
+      "index_equal": true
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F1",
+      "rows": 504,
+      "first_month": "2025-07",
+      "last_month": "2025-09",
+      "row_keys_sha256": "5bf2f59e94f23e70902dbe7ab99adac568f8e70f5a68c6492822a091e7ee3e35",
+      "aligned_targets_sha256": "fb6d6e4cb3995c97ed55fccfb35b508b1af821ac49b9ce4d7422514e6accdb6c",
+      "index_equal": true
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": "F2",
+      "rows": 1512,
+      "first_month": "2025-01",
+      "last_month": "2025-09",
+      "row_keys_sha256": "66ffe6aaeb8cd0edf325e28b4de111575f0c3fb19bc7f18c6e5dde261a8d3c7f",
+      "aligned_targets_sha256": "66a4e178def8837557588aa1254d91d85dfd243962026ef3fd3f68dfa23a3d9b",
+      "index_equal": true
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F2",
+      "rows": 504,
+      "first_month": "2025-10",
+      "last_month": "2025-12",
+      "row_keys_sha256": "306da1e7d05bfc538c56d2e9e52e20758254c1e39336e57c4517345a09bc64fb",
+      "aligned_targets_sha256": "8a3fbfe6ca571492b9e2cbbb0c70bc669fdf7ac90015a2b6e61b0ba549e72daf",
+      "index_equal": true
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": "F3",
+      "rows": 2016,
+      "first_month": "2025-01",
+      "last_month": "2025-12",
+      "row_keys_sha256": "43bc3f573909bf1a2a8d0c39a1e4256c28b89fc9d4b01741b20df2037454b50f",
+      "aligned_targets_sha256": "cdb62f288dffe5674258003ab04625b2f9973b71dfd71a54d8548da080d74f55",
+      "index_equal": true
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F3",
+      "rows": 504,
+      "first_month": "2026-01",
+      "last_month": "2026-03",
+      "row_keys_sha256": "d9be6d62891cdfdb8a0de25d50af4ad6fda7cbca30825009f9bea2903c4ad3ec",
+      "aligned_targets_sha256": "1ac40a13f7f6e3361f47c824f8b73daf0135e25be429dd0b013fbced035fb580",
+      "index_equal": true
+    }
+  ],
+  "targets_loaded_for_alignment_only": true,
+  "test_targets_loaded": false,
+  "model_training_authorized": false,
+  "preprocessing_implementation_sha256": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+  "experiment_contract_sha256": "651ba7393487ea05d996dc285f36d995f36309073ca28f1cda4dd30e9d153abd",
+  "runner_implementation_sha256": "abe20673fab4d9cc8fb7ec4d4052a8fa8e1c448384e0fba998fa5571b3211e0c"
+}

@@ -1,0 +1,1 @@
+{"checks":2,"passed":true,"source":"Actual admin_prediction_v2 bridge with April VALIDATION replay","prediction":40.225,"targetMonth":"2026-04","artifactSha256":"e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc"}

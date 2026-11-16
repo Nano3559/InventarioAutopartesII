@@ -1,0 +1,436 @@
+{
+  "request": {
+    "productId": 20,
+    "locationId": 5,
+    "targetMonth": "2026-04"
+  },
+  "catalog": {
+    "origin": "SYNTHETIC",
+    "mode": "ACADEMIC_REPLAY",
+    "version": "V2.1.0",
+    "model": "RandomForestRegressor",
+    "datasetVersion": "2.1.0",
+    "buildId": "expanded-20261115-01",
+    "selectionId": "accepted-absolute-2.1-20261115-01",
+    "artifactSha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+    "policyVersion": "NONNEGATIVE_V1",
+    "catalogObservedAt": "2026-10-28T01:08:41.263Z",
+    "horizon": 1,
+    "products": [
+      {
+        "categoryId": 1,
+        "id": 1,
+        "itemCode": "FRN-001",
+        "name": "Pastillas de Freno Delanteras"
+      },
+      {
+        "categoryId": 1,
+        "id": 2,
+        "itemCode": "FRN-002",
+        "name": "Disco de Freno Delantero"
+      },
+      {
+        "categoryId": 1,
+        "id": 3,
+        "itemCode": "FRN-003",
+        "name": "Pastillas de Freno Traseras"
+      },
+      {
+        "categoryId": 2,
+        "id": 4,
+        "itemCode": "MTR-001",
+        "name": "Bujía de Encendido"
+      },
+      {
+        "categoryId": 2,
+        "id": 5,
+        "itemCode": "MTR-002",
+        "name": "Bujía de Encendido"
+      },
+      {
+        "categoryId": 2,
+        "id": 6,
+        "itemCode": "MTR-003",
+        "name": "Bobina de Encendido"
+      },
+      {
+        "categoryId": 3,
+        "id": 7,
+        "itemCode": "SUS-001",
+        "name": "Amortiguador Delantero"
+      },
+      {
+        "categoryId": 3,
+        "id": 8,
+        "itemCode": "SUS-002",
+        "name": "Amortiguador Trasero"
+      },
+      {
+        "categoryId": 3,
+        "id": 9,
+        "itemCode": "SUS-003",
+        "name": "Brazo de Suspensión Inferior"
+      },
+      {
+        "categoryId": 7,
+        "id": 10,
+        "itemCode": "FLT-001",
+        "name": "Filtro de Aceite"
+      },
+      {
+        "categoryId": 7,
+        "id": 11,
+        "itemCode": "FLT-002",
+        "name": "Filtro de Aire"
+      },
+      {
+        "categoryId": 7,
+        "id": 12,
+        "itemCode": "FLT-003",
+        "name": "Filtro de Combustible"
+      },
+      {
+        "categoryId": 4,
+        "id": 13,
+        "itemCode": "ELC-001",
+        "name": "Alternador"
+      },
+      {
+        "categoryId": 4,
+        "id": 14,
+        "itemCode": "ELC-002",
+        "name": "Marcha de Arranque"
+      },
+      {
+        "categoryId": 4,
+        "id": 15,
+        "itemCode": "ELC-003",
+        "name": "Foco Halógeno H7"
+      },
+      {
+        "categoryId": 5,
+        "id": 16,
+        "itemCode": "CAR-001",
+        "name": "Parachoque Delantero"
+      },
+      {
+        "categoryId": 5,
+        "id": 17,
+        "itemCode": "CAR-002",
+        "name": "Retrovisor Lateral Izquierdo"
+      },
+      {
+        "categoryId": 6,
+        "id": 18,
+        "itemCode": "TRN-001",
+        "name": "Kit de Embrague"
+      },
+      {
+        "categoryId": 6,
+        "id": 19,
+        "itemCode": "TRN-002",
+        "name": "Kit de Embrague"
+      },
+      {
+        "categoryId": 1,
+        "id": 20,
+        "itemCode": "FRN-004",
+        "name": "Disco de Freno Trasero"
+      },
+      {
+        "categoryId": 1,
+        "id": 21,
+        "itemCode": "FRN-005",
+        "name": "Caliper de Freno Delantero"
+      },
+      {
+        "categoryId": 1,
+        "id": 22,
+        "itemCode": "FRN-006",
+        "name": "Manguera de Freno Delantera"
+      },
+      {
+        "categoryId": 1,
+        "id": 23,
+        "itemCode": "FRN-007",
+        "name": "Retenedor de Caliper"
+      },
+      {
+        "categoryId": 1,
+        "id": 24,
+        "itemCode": "FRN-008",
+        "name": "Pastillas Cerámicas Premium"
+      },
+      {
+        "categoryId": 2,
+        "id": 25,
+        "itemCode": "MTR-004",
+        "name": "Bomba de Agua"
+      },
+      {
+        "categoryId": 2,
+        "id": 26,
+        "itemCode": "MTR-005",
+        "name": "Correa de Distribución"
+      },
+      {
+        "categoryId": 2,
+        "id": 27,
+        "itemCode": "MTR-006",
+        "name": "Juego de Juntas"
+      },
+      {
+        "categoryId": 2,
+        "id": 28,
+        "itemCode": "MTR-007",
+        "name": "Válvula EGR"
+      },
+      {
+        "categoryId": 2,
+        "id": 29,
+        "itemCode": "MTR-008",
+        "name": "Rodamiento de Cigüeñal"
+      },
+      {
+        "categoryId": 3,
+        "id": 30,
+        "itemCode": "SUS-004",
+        "name": "Rótula Inferior"
+      },
+      {
+        "categoryId": 3,
+        "id": 31,
+        "itemCode": "SUS-005",
+        "name": "Estabilizadora Delantera"
+      },
+      {
+        "categoryId": 3,
+        "id": 32,
+        "itemCode": "SUS-006",
+        "name": "Buje de Suspensión"
+      },
+      {
+        "categoryId": 4,
+        "id": 33,
+        "itemCode": "ELC-004",
+        "name": "Sensor de Oxígeno"
+      },
+      {
+        "categoryId": 4,
+        "id": 34,
+        "itemCode": "ELC-005",
+        "name": "Módulo de Encendido"
+      },
+      {
+        "categoryId": 4,
+        "id": 35,
+        "itemCode": "ELC-006",
+        "name": "Foco LED H11"
+      },
+      {
+        "categoryId": 7,
+        "id": 36,
+        "itemCode": "FLT-004",
+        "name": "Filtro de Aire Deportivo"
+      },
+      {
+        "categoryId": 7,
+        "id": 37,
+        "itemCode": "FLT-005",
+        "name": "Filtro de Cabina"
+      },
+      {
+        "categoryId": 7,
+        "id": 38,
+        "itemCode": "FLT-006",
+        "name": "Filtro de Aceite Hidráulico"
+      },
+      {
+        "categoryId": 5,
+        "id": 39,
+        "itemCode": "CAR-003",
+        "name": "Farola Delantera Derecha"
+      },
+      {
+        "categoryId": 5,
+        "id": 40,
+        "itemCode": "CAR-004",
+        "name": "Parrilla Delantera"
+      },
+      {
+        "categoryId": 5,
+        "id": 41,
+        "itemCode": "CAR-005",
+        "name": "Parachoque Trasero"
+      },
+      {
+        "categoryId": 5,
+        "id": 42,
+        "itemCode": "CAR-006",
+        "name": "Tapa de Combustible"
+      },
+      {
+        "categoryId": 6,
+        "id": 43,
+        "itemCode": "TRN-003",
+        "name": "Cilindro Maestro de Embrague"
+      },
+      {
+        "categoryId": 6,
+        "id": 44,
+        "itemCode": "TRN-004",
+        "name": "Amortiguador de Transmisión"
+      },
+      {
+        "categoryId": 6,
+        "id": 45,
+        "itemCode": "TRN-005",
+        "name": "Retén de Transmisión"
+      },
+      {
+        "categoryId": 2,
+        "id": 46,
+        "itemCode": "ADI-001",
+        "name": "Radiador de Agua"
+      },
+      {
+        "categoryId": 2,
+        "id": 47,
+        "itemCode": "ADI-002",
+        "name": "Tapa de Radiador"
+      },
+      {
+        "categoryId": 2,
+        "id": 48,
+        "itemCode": "ADI-003",
+        "name": "Correa Serpentina"
+      },
+      {
+        "categoryId": 2,
+        "id": 49,
+        "itemCode": "ADI-004",
+        "name": "Soporte de Motor"
+      },
+      {
+        "categoryId": 2,
+        "id": 50,
+        "itemCode": "ADI-005",
+        "name": "Manguera de Radiador"
+      },
+      {
+        "categoryId": 2,
+        "id": 51,
+        "itemCode": "ADI-006",
+        "name": "Depósito de Expansión"
+      },
+      {
+        "categoryId": 2,
+        "id": 52,
+        "itemCode": "ADI-007",
+        "name": "Serpentina AC"
+      },
+      {
+        "categoryId": 2,
+        "id": 53,
+        "itemCode": "ADI-008",
+        "name": "Tensador de Correa"
+      },
+      {
+        "categoryId": 6,
+        "id": 54,
+        "itemCode": "ADI-009",
+        "name": "Soporte de Transmisión"
+      },
+      {
+        "categoryId": 4,
+        "id": 55,
+        "itemCode": "ADI-010",
+        "name": "Sensor MAP"
+      },
+      {
+        "categoryId": 2,
+        "id": 56,
+        "itemCode": "ADI-011",
+        "name": "Termostato"
+      }
+    ],
+    "locations": [
+      {
+        "id": 5,
+        "name": "Tienda 1",
+        "type": "TIENDA"
+      },
+      {
+        "id": 6,
+        "name": "Tienda 2",
+        "type": "TIENDA"
+      },
+      {
+        "id": 7,
+        "name": "Tienda 3",
+        "type": "TIENDA"
+      }
+    ],
+    "availableTargetMonths": [
+      "2026-04",
+      "2026-05",
+      "2026-06"
+    ],
+    "defaultTargetMonth": "2026-06"
+  },
+  "result": {
+    "status": "OK",
+    "contractVersion": "v2-inference-2.1-1",
+    "productId": 20,
+    "locationId": 5,
+    "targetMonth": "2026-04",
+    "issuedAt": "2026-11-15T14:54:48.789648+00:00",
+    "historyCutoff": "2026-04-01T00:00:00-04:00",
+    "horizonMonths": 1,
+    "prediction": 40.225,
+    "modelVersion": "accepted-absolute-2.1-20261115-01",
+    "datasetVersion": "2.1.0",
+    "buildId": "expanded-20261115-01",
+    "historySnapshotId": "history-v2-8e29c61949e6ff51d9209ec3",
+    "origin": "SYNTHETIC",
+    "mode": "ACADEMIC_REPLAY",
+    "selectionId": "accepted-absolute-2.1-20261115-01",
+    "artifactSha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+    "policyVersion": "NONNEGATIVE_V1",
+    "warnings": [
+      "DATOS_SINTETICOS_NO_VALIDA_VENTAS_REALES",
+      "NO_REPOSICION_AUTOMATICA",
+      "PEDIDOS_EXTRAORDINARIOS_NO_INCLUIDOS"
+    ],
+    "evaluationContext": {
+      "origin": "SYNTHETIC",
+      "split": "TEST",
+      "mae": 7.632738095238095,
+      "rmse": 15.425266214001542,
+      "r2": 0.6428720792171163
+    },
+    "featureSnapshotSha256": "9a409a3ebe6646ac25f7bb2353c17026b51598ed18c985f3d73d3f1b0932d575",
+    "version": "V2.1.0",
+    "model": "RandomForestRegressor",
+    "baseline": 40,
+    "history": [
+      {
+        "month": "2026-01",
+        "units": 41
+      },
+      {
+        "month": "2026-02",
+        "units": 81
+      },
+      {
+        "month": "2026-03",
+        "units": 40
+      }
+    ],
+    "metrics": {
+      "mae": 7.632738095238095,
+      "rmse": 15.425266214001542,
+      "r2": 0.6428720792171163
+    }
+  }
+}

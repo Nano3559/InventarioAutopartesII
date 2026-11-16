@@ -1,0 +1,384 @@
+{
+  "contract_version": "retail-reference-transformation-1",
+  "status": "DESIGN_DEFINED_NOT_EXECUTED",
+  "recorded_at": "2026-11-15T16:34:15.525070+00:00",
+  "owner": "ROSS",
+  "scope": "Diseño de transformación de referencias externas académicas. No ejecuta limpieza, curated, calibración, construcción o entrenamiento.",
+  "sources": {
+    "m5_walmart": {
+      "selected_sales_file": "sales_train_evaluation.csv",
+      "excluded_sales_file": "sales_train_validation.csv",
+      "reason": "El segundo archivo está contenido exactamente en los primeros 1913 días del primero. No concatenarlos.",
+      "exclude_from_sales": [
+        "sample_submission.csv"
+      ],
+      "observed_window": {
+        "start": "2011-01-29",
+        "end": "2016-05-22"
+      },
+      "complete_calendar_months": {
+        "start": "2011-02",
+        "end": "2016-04"
+      },
+      "reference_estimation_window": {
+        "start": "2011-02",
+        "end": "2014-12"
+      },
+      "descriptive_comparison_window": {
+        "start": "2015-01",
+        "end": "2016-04"
+      },
+      "windows_status": "Design fixed now after reading global profiles. Comparison is a descriptive check, not an untouched test.",
+      "sales": {
+        "key": [
+          "item_id",
+          "store_id",
+          "d"
+        ],
+        "calendar_join": "d -> calendar.d, many-to-one, validate key uniqueness and 100% day mapping before aggregation.",
+        "quantity": "Conservar enteros no negativos y ceros explícitos como ventas observadas. No atribuirlos a demanda inexistente ni a falta de stock.",
+        "monthly": "Suma por producto, tienda y mes dentro de meses calendario completos. Emitir días esperados, días observados y cobertura. Bloquear referencia mensual si falta cualquier día, sin rellenar.",
+        "availability": "No inferir fecha de alta, baja o stock disponible a partir de ceros. Patrones describen ventas observadas."
+      },
+      "price": {
+        "key": [
+          "item_id",
+          "store_id",
+          "wm_yr_wk"
+        ],
+        "calendar_relation": "calendar.wm_yr_wk enlaza semana y días. Validar ausencia de duplicados y controlar expansión de cardinalidad. No unir directamente precios semanales y ventas anchas.",
+        "missing": "Precio ausente no es cero ni stockout. No rellenar hacia atrás o hacia adelante en la primera transformación.",
+        "changes": "p(t)/p(t-1)-1 solo entre semanas calendario adyacentes del mismo producto y tienda, con ambos precios finitos y positivos. Resolver adyacencia con calendar, no con resta de códigos wm_yr_wk.",
+        "denominator": "Contar cambios elegibles, subidas, bajadas, sin cambio, faltantes y saltos de semana por separado. El perfil previo compara observaciones consecutivas y no basta para esta regla estricta.",
+        "unit": "Conservar precio original y unidad documentada. Usar cambios relativos como referencia potencial, sin copiar valores nominales a Bs ni inferir precio por mayor.",
+        "asof": "No hay received_at o published_at verificable. En simulación, un precio observado solo podrá considerarse disponible después de cerrar su semana, con marca ASSUMED_SIMULATION_AVAILABILITY, no conocimiento real certificado. En cada corte usar únicamente semanas cerradas antes o en ese corte. Si la semana de fin de mes sigue abierta, no usar su precio aunque figure en el archivo histórico.",
+        "no_elasticity": "No estimar efecto causal del precio, elasticidad o descuento mayorista por correlación simple."
+      },
+      "calendar": "Conservar eventos, SNAP y geografía como metadatos de la fuente. No copiar programas o feriados de Estados Unidos a Bolivia. Solo evaluar patrones de calendario externos por separado."
+    },
+    "corporacion_favorita": {
+      "selected_sales_file": "train.csv.7z",
+      "exclude_from_sales": [
+        "test.csv.7z",
+        "sample_submission.csv.7z"
+      ],
+      "observed_window": {
+        "start": "2013-01-01",
+        "end": "2017-08-15"
+      },
+      "complete_calendar_months": {
+        "start": "2013-01",
+        "end": "2017-07"
+      },
+      "reference_estimation_window": {
+        "start": "2013-01",
+        "end": "2015-12"
+      },
+      "descriptive_comparison_window": {
+        "start": "2016-01",
+        "end": "2017-07"
+      },
+      "windows_status": "Design fixed after global profiles. Not a blind or untouched test.",
+      "sales": {
+        "key": [
+          "date",
+          "store_nbr",
+          "item_nbr"
+        ],
+        "positive": "unit_sales > 0 se conserva como cantidad positiva registrada, sin certificar que sea venta bruta transaccional o demanda total.",
+        "negative": "unit_sales < 0 queda en tabla separada de ajustes/devoluciones no vinculados, conservando signo y fecha. No aplicar abs(), no restarlo a la etiqueta bruta de RepuestoPro y no enlazarlo a una venta anterior sin evidencia.",
+        "fractional": "Conservar cantidades decimales. Para patrones de conteos enteros usar solo ítems cuya historia de referencia sea entera. Una sola cantidad fraccionaria en referencia clasifica el ítem como unidad no compatible con conteos enteros. La clasificación se congela antes de la ventana de comparación.",
+        "fractional_limit": "Que no existan fracciones observadas no prueba que el producto sea un repuesto. Ítems fraccionarios solo aportan patrones adimensionales separados, sin redondeo o cambio de unidad ficticio.",
+        "missing_days": "No crear combinaciones ausentes ni convertirlas en ceros. No calibrar intermitencia, días sin stock o frecuencia de demanda cero con la ausencia de filas de Favorita.",
+        "monthly": "Solo resúmenes de registros observados, separados en cantidades positivas y ajustes negativos, con días y filas observados. Mes calendario completo no certifica cobertura completa producto-tienda. No tratar este resumen como target bruto completo.",
+        "reconciliation": "Suma original de cantidades = suma positiva + suma negativa + suma de ceros, manteniendo su precisión y tolerancia numérica documentada.",
+        "new_items": "Ítems sin observaciones en la ventana de referencia quedan UNKNOWN_UNIT_COHORT. No clasificarlos usando la ventana de comparación. Una fracción posterior no modifica retroactivamente la cohorte, pero obliga a separar esa observación de los patrones de conteo entero y registrar el cambio."
+      },
+      "promotion": {
+        "values": [
+          "TRUE",
+          "FALSE",
+          "UNKNOWN"
+        ],
+        "missing": "Faltante permanece UNKNOWN, nunca False. Valor no reconocido va a cuarentena.",
+        "denominator": "Frecuencia de promociones entre filas registradas con valor conocido, junto con cobertura de promociones conocidas y total de filas observadas. No llamarla proporción de días promocionados.",
+        "asof": "No hay fecha de publicación verificable de la promoción. No usar promociones del mes objetivo como feature futura conocida. Su calendario simulado deberá programarse y registrarse antes del corte.",
+        "no_causal_effect": "Sin estimar uplift o efecto causal por diferencia simple de ventas. No hay precio unitario que permita medir un descuento."
+      },
+      "auxiliary": {
+        "items": "many-to-one por item_nbr, validar unicidad y referencias. Familias externas no equivalen a categoryId.",
+        "stores": "many-to-one por store_nbr, validar unicidad y referencias. No asignar tiendas ecuatorianas a Location.id.",
+        "holidays_events": "Puede haber varios eventos válidos en una fecha y ámbitos nacionales, regionales o locales. No deduplicar por date ni unir provocando multiplicación de ventas. Mantener tabla aparte, tipo, ámbito y transferred.",
+        "transactions": "Tabla tienda-fecha separada. No repartir transactions a productos ni interpretarlas como cantidades vendidas o modalidad comercial. Solo diagnóstico de contexto.",
+        "oil": "Excluir de features y calibración inicial. El petróleo no equivale a tipo de cambio, costo de compra o precio de repuesto.",
+        "test_and_submission": "No usar como observaciones con target ni completar agosto 2017 con predicciones o ceros."
+      }
+    }
+  },
+  "source_identity": {
+    "m5_walmart": {
+      "manifest_path": "ml/demand/sources/manifests/m5_walmart/sha256-aa5d519ab121b284a7b07f4d.json",
+      "snapshot_id": "sha256-aa5d519ab121b284a7b07f4d",
+      "inventory_sha256": "aa5d519ab121b284a7b07f4da781082c491dfba802491ae55497a30fd178c35a",
+      "files": [
+        {
+          "relative_path": "calendar.csv",
+          "sha256": "d12b5914ef03e66649adf5dd9e996e6602251c22b7a6af8f1f7e3aa12f8860f5"
+        },
+        {
+          "relative_path": "sales_train_evaluation.csv",
+          "sha256": "4b4a47c44c38380d2a9168216fea8c9ff2f31b1ddb772f8a0995952a038b8aa0"
+        },
+        {
+          "relative_path": "sales_train_validation.csv",
+          "sha256": "f368e66ed1dbecb48b2cc8fc589bf68b3deddbbb36bf5c88b4d6d0a09b9b6724"
+        },
+        {
+          "relative_path": "sample_submission.csv",
+          "sha256": "eb7597afbec367475ef25dc6dbbc009b8faa47fa2107252c72a029e3cdf72343"
+        },
+        {
+          "relative_path": "sell_prices.csv",
+          "sha256": "9da3ad1f8b8ccacdbdc70612191dd375ec24a4ac6625c24b75b3bc60b0bed2ef"
+        }
+      ]
+    },
+    "corporacion_favorita": {
+      "manifest_path": "ml/demand/sources/manifests/corporacion_favorita/sha256-b69a1fa872a46632efa647d8.json",
+      "snapshot_id": "sha256-b69a1fa872a46632efa647d8",
+      "inventory_sha256": "b69a1fa872a46632efa647d8c5592a5963c64cc2c2a26df7d01ef3c36c1bb938",
+      "files": [
+        {
+          "relative_path": "holidays_events.csv.7z",
+          "sha256": "1d514622ed75f2fa28e8cc5cba40953fb6c5df9e55eac88bdef1cccfa226ce5c"
+        },
+        {
+          "relative_path": "items.csv.7z",
+          "sha256": "80d5bc389b4a89251697a0c92a160feecb8e1d38bc1ffb81de3aa1faf58f30e3"
+        },
+        {
+          "relative_path": "oil.csv.7z",
+          "sha256": "1c71799ea0a32a9b32743135f59d335ad0eb24947fd186cd215341ab31b85bb9"
+        },
+        {
+          "relative_path": "sample_submission.csv.7z",
+          "sha256": "c5ef726c61509dcea74f9dc463e4eeb33feefd32fc546069cb787142b34daee0"
+        },
+        {
+          "relative_path": "stores.csv.7z",
+          "sha256": "eb82e34b2e51fff66e3fdd04885db1125fe1d5de8ebb102546f29741c3b9fee4"
+        },
+        {
+          "relative_path": "test.csv.7z",
+          "sha256": "ef20570313bcf3bcef8ff66203409fa42082db04eb94e67d386c89296c5b5f90"
+        },
+        {
+          "relative_path": "train.csv.7z",
+          "sha256": "7d14532d53b12f5e5e69f2dec72ff081bfa6081dc59ad4ca4fa030c7a7a3cce1"
+        },
+        {
+          "relative_path": "transactions.csv.7z",
+          "sha256": "ec2e21c10b7d3f9b4c856858a245e9dbfbb8ca68d6d28f669857102892d270d4"
+        }
+      ]
+    }
+  },
+  "frozen_references": {
+    "v2/contracts/dataset_columns.v2_1.json": "8f0444a9de6bd696d02cdeab95722fa2b4d147f26dbf385b2ccd8867d2a18635",
+    "v2/contracts/selection.v2_1.json": "e4881d38ec32a087904d499fc122e14953cc23946b0c4123e6ce15630ee9f3e0"
+  },
+  "rules": [
+    {
+      "rule_id": "IDENTITY",
+      "decision": "Conservar source_id, snapshot_id, nombre de archivo, hash original, fila o clave original y versión de procesamiento. Los IDs externos nunca sustituyen Product.id, Location.id o categoryId.",
+      "reason": "La procedencia no equivale a ventas propias."
+    },
+    {
+      "rule_id": "IMMUTABILITY",
+      "decision": "Leer RAW sin escritura. Salidas nuevas bajo sources/external_curated/<source_id>/<snapshot_id>/<processing_version>/, con build de ejecución único y manifiesto exclusivo. Ante destino existente, detener. Temporales solo en tmp/<run_id>/.",
+      "reason": "No sobrescribir originales o derivados previos."
+    },
+    {
+      "rule_id": "AUDIT",
+      "decision": "Toda futura ejecución debe conservar conteos de entrada, aceptados, cuarentena, duplicados y faltantes, además de sumas antes y después. Las particiones deben reconciliar todas las filas.",
+      "reason": "Ninguna eliminación o modificación silenciosa."
+    },
+    {
+      "rule_id": "DUPLICATES",
+      "decision": "Claves repetidas idénticas: conservar una observación solo en la tabla derivada y registrar multiplicidad y procedencia. Claves iguales con valores distintos: cuarentena, sin sumar, promediar o elegir una versión automáticamente.",
+      "reason": "Una duplicación técnica no debe aumentar ventas."
+    },
+    {
+      "rule_id": "INVALID",
+      "decision": "Valores no numéricos o no finitos, fechas inválidas, claves incompletas y referencias inexistentes van a cuarentena identificada. No imputar cero.",
+      "reason": "Separar ausencia de error y de cero observado."
+    },
+    {
+      "rule_id": "OUTLIERS",
+      "decision": "Conservar extremos finitos con indicador de revisión. No recortar, winsorizar o descartar por magnitud en esta política. Si se justifican límites, fijarlos solo con la ventana de referencia y versionar una política nueva.",
+      "reason": "Un pico puede ser real y no demuestra venta mayorista."
+    },
+    {
+      "rule_id": "TEMPORAL",
+      "decision": "Mantener fechas locales sin inventar zona horaria, agregar por mes calendario y marcar meses parciales. Nunca extrapolar un mes incompleto multiplicando ventas.",
+      "reason": "No equiparar 28 días con un mes ni crear horas de conocimiento reales inexistentes."
+    },
+    {
+      "rule_id": "NO_FORWARD_INFORMATION",
+      "decision": "No usar precios, promociones, eventos conocidos solo después del corte, devoluciones posteriores o agregados futuros como features. La fecha de observación no certifica cuándo estuvo disponible el dato.",
+      "reason": "Evitar información futura en cualquier implementación posterior."
+    },
+    {
+      "rule_id": "NO_BLEND",
+      "decision": "No concatenar tablas entre empresas. Obtener referencias por fuente, producto y unidad por separado. No combinar porcentajes con denominadores distintos.",
+      "reason": "Más filas no justifican mezclar dominios, unidades o poblaciones."
+    },
+    {
+      "rule_id": "PUBLICATION",
+      "decision": "Procesamiento académico local para Ross bajo las condiciones registradas. No publicar RAW, extractos o derivados que redistribuyan observaciones. Revisar derechos de cualquier dataset sintético, código, parámetros o modelo antes de su publicación o uso comercial.",
+      "reason": "Aceptación de acceso no es autorización universal de distribución."
+    }
+  ],
+  "selected_patterns": [
+    {
+      "id": "M5_OBSERVED_ZERO_RATE",
+      "source": "m5_walmart",
+      "decision": "SELECTED_REFERENCE",
+      "measure": "Proporción de ceros explícitos y rachas dentro de la ventana de referencia por serie, con cobertura completa.",
+      "limit": "Ventas observadas, sin inferir stock o demanda perdida."
+    },
+    {
+      "id": "M5_RELATIVE_VOLUME",
+      "source": "m5_walmart",
+      "decision": "SELECTED_REFERENCE",
+      "measure": "Variación mensual, coeficiente de variación cuando media > 0 y distribución de cambios por serie.",
+      "limit": "Medidas adimensionales por cohortes, no nivel nominal de ventas de repuestos."
+    },
+    {
+      "id": "M5_STORE_HETEROGENEITY",
+      "source": "m5_walmart",
+      "decision": "SELECTED_REFERENCE",
+      "measure": "Diferencias de ventas normalizadas dentro del mismo producto y ventana con cobertura comparable. Agregar primero por serie para evitar que filas dominantes oculten tiendas pequeñas.",
+      "limit": "Comparación descriptiva, no ranking trasladado a las sucursales propias."
+    },
+    {
+      "id": "M5_PRICE_CHANGE",
+      "source": "m5_walmart",
+      "decision": "SELECTED_REFERENCE",
+      "measure": "Frecuencia y tamaño relativo de cambios elegibles en semanas adyacentes, por serie y luego resumen entre series.",
+      "limit": "Sin elasticidad, conversión monetaria o separación mayorista/minorista."
+    },
+    {
+      "id": "M5_CALENDAR_VARIATION",
+      "source": "m5_walmart",
+      "decision": "SELECTED_REFERENCE",
+      "measure": "Variación por mes del año dentro de cada serie con historia suficiente, normalizada dentro de esa serie y ventana.",
+      "limit": "No copiar feriados, SNAP ni factores estadounidenses como efectos comerciales bolivianos."
+    },
+    {
+      "id": "FAVORITA_RECORDED_POSITIVE_TAIL",
+      "source": "corporacion_favorita",
+      "decision": "SELECTED_REFERENCE",
+      "measure": "Mediana, p95 y p99 de cantidades positivas registradas, separados por cohorte de unidades, con ratios solo si denominador > 0.",
+      "limit": "Cola condicionada a filas observadas. No equivale a pedidos mayoristas ni a distribución diaria completa."
+    },
+    {
+      "id": "FAVORITA_PROMOTION_COVERAGE",
+      "source": "corporacion_favorita",
+      "decision": "SELECTED_REFERENCE",
+      "measure": "Frecuencia TRUE entre promociones conocidas y cobertura de valores conocidos sobre filas registradas, por grupo y ventana.",
+      "limit": "No frecuencia diaria de promoción ni efecto causal en ventas."
+    },
+    {
+      "id": "FAVORITA_RECORDED_VARIABILITY",
+      "source": "corporacion_favorita",
+      "decision": "SELECTED_REFERENCE",
+      "measure": "Variabilidad normalizada de cantidades positivas observadas por serie y cohorte.",
+      "limit": "Sin panel completado con ceros ni interpretación como demanda total."
+    },
+    {
+      "id": "FAVORITA_CALENDAR_CONTEXT",
+      "source": "corporacion_favorita",
+      "decision": "DIAGNOSTIC_ONLY",
+      "measure": "Comparar cobertura de filas por mes y eventos en su geografía original.",
+      "limit": "No copiar estacionalidad aparente de una muestra condicionada a ventas positivas ni feriados a Bolivia."
+    }
+  ],
+  "unsupported_variables": [
+    "tipo_cambio_bs_usd_conocido",
+    "variacion_tipo_cambio_ultimo_mes",
+    "antiguedad_tipo_cambio_dias",
+    "dias_sin_stock_mes_anterior",
+    "cobertura_stock_mes_anterior",
+    "proporcion_por_mayor_mes_anterior",
+    "cobertura_modalidad_mes_anterior",
+    "purchase_cost",
+    "supplier_lead_time",
+    "restock_lead_time"
+  ],
+  "unsupported_policy": "Mantener supuestos académicos identificados por separado o buscar evidencia propia autorizada. No presentarlos como parámetros medidos de M5 o Favorita. No cambiar el contrato de features actual.",
+  "statistics_policy": {
+    "count_and_sums": "Exactos sobre todas las filas elegibles. Documentar tolerancia de sumas de coma flotante.",
+    "quantiles": "Para calibración futura exigir cuantiles exactos o algoritmo de aproximación con error y configuración documentados. No usar directamente la muestra sistemática cada 997 del perfil para fijar parámetros.",
+    "weighting": "Distinguir resúmenes por observación y por serie. Para parámetros de simulador usar resumen por serie con pesos iguales dentro de cada cohorte y documentar tamaños.",
+    "external_comparison": "No seleccionar entre patrones mirando el TEST propio ya cerrado. Ventanas externas de comparación ya fueron vistas globalmente y no son un nuevo test independiente.",
+    "future_simulated_split": "Fijar receta y parámetros antes de generar una ejecución de evaluación independiente. Ajustar escaladores e imputadores solo con TRAIN. No reutilizar TEST 2.1.0 como prueba nueva."
+  },
+  "future_curated_contract": {
+    "manifest_schema": "v2/contracts/curated_manifest.schema.json",
+    "required_trace": [
+      "source_id",
+      "snapshot_id",
+      "processing_version",
+      "script_sha256",
+      "parameters",
+      "executed_at",
+      "original_files",
+      "outputs"
+    ],
+    "additional_parameters": [
+      "rules_contract_path",
+      "rules_contract_sha256",
+      "reference_windows",
+      "duplicate_policy",
+      "missing_policy",
+      "unit_cohort_policy",
+      "availability_assumptions",
+      "counts_reconciliation",
+      "private_use_scope"
+    ],
+    "source_tables_separate": true,
+    "final_repuestopro_dataset_created": false
+  },
+  "acceptance_gates": [
+    "Autorización posterior para ejecutar transformación y condiciones de acceso de cada persona.",
+    "Hashes RAW coinciden antes y después. Automotive no entra en la ejecución.",
+    "Claves y cardinalidades de cada relación verificadas. Ningún join multiplica ventas.",
+    "Todas las filas se reconcilian entre aceptadas, duplicados y cuarentena.",
+    "Negativos, fracciones, ausencias y promociones UNKNOWN permanecen distinguibles.",
+    "Meses parciales y paneles incompletos no se convierten en targets completos.",
+    "Precios solo entre semanas adyacentes y disponibilidad simulada identificada.",
+    "Patrones se calculan por fuente y cohorte con unidades y denominadores explícitos.",
+    "Sin efecto causal inventado, sin modalidades comerciales inferidas.",
+    "Sin nuevo build, cambios a features o entrenamiento implícitos.",
+    "Revisar publicación de derivados antes de distribución o uso comercial."
+  ],
+  "execution": {
+    "transformation_run": false,
+    "curated_created": false,
+    "calibration_run": false,
+    "dataset_built": false,
+    "trained": false,
+    "raw_modified": false,
+    "database_used": false
+  },
+  "pattern_eligibility": {
+    "unit_cohort": "Con al menos una cantidad positiva finita de referencia y ninguna fracción observada: OBSERVED_INTEGER. Con alguna fracción en referencia: OBSERVED_FRACTIONAL. Sin cantidades positivas observadas: UNKNOWN. No certifica unidad física real.",
+    "ratios": "Denominador cero o ausente produce null e indicador INSUFFICIENT_REFERENCE, nunca infinito o cero inventado.",
+    "variation": "Requiere al menos dos observaciones comparables. CV solo con media estrictamente positiva y desviación poblacional especificada ddof=0.",
+    "calendar": "Para un perfil por mes del año exigir al menos dos años calendario distintos con observaciones elegibles en cada uno de los 12 meses. Si no, marcar INSUFFICIENT_REFERENCE.",
+    "price": "Cada cambio requiere dos semanas adyacentes con precio válido. No calcular cambio a través de un hueco.",
+    "positive_tail": "Solo valores positivos registrados dentro de su cohorte. Informar n, días y series que contribuyen. Un cuantil numéricamente calculable no garantiza estabilidad o representatividad.",
+    "no_silent_fallback": "Una referencia insuficiente no se sustituye automáticamente por estadísticas de otra fuente o cohorte. La calibración deberá mantener un supuesto explícito o excluir ese patrón."
+  }
+}

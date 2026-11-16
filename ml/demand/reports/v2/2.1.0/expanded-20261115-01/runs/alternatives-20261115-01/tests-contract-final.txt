@@ -1,0 +1,13 @@
+test_derived_columns_use_only_three_known_lags (test_v2_alternatives.AlternativeContractTests.test_derived_columns_use_only_three_known_lags) ... ok
+test_fixed_small_search_and_no_test_option (test_v2_alternatives.AlternativeContractTests.test_fixed_small_search_and_no_test_option) ... ok
+test_no_prediction_in_fit_months (test_v2_alternatives.AlternativeContractTests.test_no_prediction_in_fit_months) ... ok
+test_simple_rules_have_exact_expected_outputs (test_v2_alternatives.AlternativeContractTests.test_simple_rules_have_exact_expected_outputs) ... ok
+test_tsb_future_rows_cannot_change_first_month_prediction (test_v2_alternatives.AlternativeContractTests.test_tsb_future_rows_cannot_change_first_month_prediction) ... ok
+test_tsb_predict_does_not_mutate_history (test_v2_alternatives.AlternativeContractTests.test_tsb_predict_does_not_mutate_history) ... ok
+test_tsb_zero_and_probability_decay (test_v2_alternatives.AlternativeContractTests.test_tsb_zero_and_probability_decay) ... ok
+test_validation_fit_rejected_before_any_forest (test_v2_alternatives.AlternativeContractTests.test_validation_fit_rejected_before_any_forest) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 2.984s
+
+OK

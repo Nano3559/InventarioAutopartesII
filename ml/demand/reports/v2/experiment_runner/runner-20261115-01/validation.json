@@ -1,0 +1,67 @@
+{
+  "status": "INTEGRATED_DRY_RUN_VALIDATED_NOT_TRAINED",
+  "tests": {
+    "run": 222,
+    "passed": 222,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "new_tests": 21,
+    "test_doubles_do_not_learn": true
+  },
+  "actual_model_fit_count": 0,
+  "published_dataset_preprocessing_fit_count": 0,
+  "actual_model_predictions": 0,
+  "test_partition_loaded_by_runner": false,
+  "actual_model_metrics": false,
+  "planned_maximum_future_fits": 102,
+  "dry_run_partitions_checked": 8,
+  "execution_guard": "TRAINING_DISABLED before loaders or factories",
+  "integrity": {
+    "data": {
+      "files_checked": 59,
+      "unchanged": true,
+      "changed_files": []
+    },
+    "raw": {
+      "files_checked": 136,
+      "unchanged": true,
+      "changed_files": []
+    },
+    "reports": {
+      "files_checked": 68,
+      "unchanged": true,
+      "changed_files": []
+    },
+    "models": {
+      "files_checked": 2,
+      "unchanged": true,
+      "changed_files": []
+    },
+    "manifests": {
+      "files_checked": 5,
+      "unchanged": true,
+      "changed_files": []
+    },
+    "protected": {
+      "files_checked": 44,
+      "unchanged": true,
+      "changed_files": []
+    }
+  },
+  "no_new_markdown": true,
+  "neon_used": false,
+  "git_used": false,
+  "implementation_hashes": {
+    "v2/experiments.py": "abe20673fab4d9cc8fb7ec4d4052a8fa8e1c448384e0fba998fa5571b3211e0c",
+    "v2/run_experiments.py": "f89de6113a064ca0b691c1714e48d6d001278bda11c5353fdb7c3ddb8525fdbd",
+    "v2/contracts/runner.v2_1.json": "3258e6bd10f2f1ac3f2e05edcc4880db39c814475432d5f1760fd54d1e9fe3f6",
+    "tests/test_v2_experiments.py": "d7eece66d27831d42500ac854d0fc3b754a9b07a7312e225868199d90d4d5f1d"
+  },
+  "run_plan_sha256": "e3e69a5b7f8b997ca44a4cf3c59d26bb79726d86ea5c20cd4daa6d45914dbb4e",
+  "test_log_sha256": "b3f1537d9915eed155b4c3948754facbf02d358bd46e10722d3477722f2456d1",
+  "limitations": [
+    "No real regressor execution or learned-model artifact was validated.",
+    "TEST evaluation and joint artifact review remain pending explicit training authorization."
+  ]
+}

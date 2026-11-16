@@ -1,0 +1,8 @@
+{
+  "result_sha256": "3a5f4b87c158b49eb447bc37cbf4a541e7b046ef69559e73e3c3c9a42143e283",
+  "selection_sha256": "7d9f49856b44703021f57fc83f9d763d5d787c428b3d4dedcddac6955babff23",
+  "artifact_sha256_after": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+  "preprocessing_state_unchanged": true,
+  "model_fit_calls": 0,
+  "model_predict_calls": 1
+}

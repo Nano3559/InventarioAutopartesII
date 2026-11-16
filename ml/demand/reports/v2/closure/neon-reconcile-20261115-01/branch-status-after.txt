@@ -1,0 +1,8 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "inventario_db", schema "public" at "ep-proud-hall-ay0tq2yk.c-5.us-east-2.aws.neon.tech"
+
+10 migrations found in prisma/migrations
+
+Database schema is up to date!
+

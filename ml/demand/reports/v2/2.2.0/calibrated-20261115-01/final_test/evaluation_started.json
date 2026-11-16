@@ -1,0 +1,7 @@
+{
+  "status": "CONSUMED_BEFORE_TEST_ACCESS",
+  "selection_sha256": "7d9f49856b44703021f57fc83f9d763d5d787c428b3d4dedcddac6955babff23",
+  "artifact_sha256": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+  "at": "2026-11-15T20:05:54.364853+00:00",
+  "retry_policy": "NEVER_RETRY_AFTER_FAILURE_OR_CRASH"
+}

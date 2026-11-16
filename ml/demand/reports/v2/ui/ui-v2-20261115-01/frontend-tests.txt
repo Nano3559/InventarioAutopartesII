@@ -1,0 +1,1091 @@
+
+ RUN  v2.1.9 E:/NOVENO_SEMESTRE/ProgramaciónAvanzada/Inventario/frontend
+
+ ❯ src/pages/__tests__/PredictionsPage.test.tsx (12 tests | 1 failed) 2215ms
+   ✓ pantalla administrativa V2 > ofrece solo meses aprobados y horizonte fijo sin enviar features 499ms
+   × pantalla administrativa V2 > presenta resultado, gráfico sin target observado, tabla, métricas y trazabilidad 158ms
+     → Found multiple elements with the text: /America\/La_Paz/
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-gray-300 text-sm"[39m
+[36m>[39m
+  [0mCatálogo histórico observado: [0m
+  [0m27 oct de 2026, 9:08 p. m.[0m
+  [0m (America/La_Paz).[0m
+[36m</p>[39m
+
+Ignored nodes: comments, script, style
+[36m<dt[39m
+  [33mclass[39m=[32m"text-gray-400"[39m
+[36m>[39m
+  [0mCorte de historia (America/La_Paz)[0m
+[36m</dt>[39m
+
+Ignored nodes: comments, script, style
+[36m<dt[39m
+  [33mclass[39m=[32m"text-gray-400"[39m
+[36m>[39m
+  [0mConsulta emitida (America/La_Paz)[0m
+[36m</dt>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"space-y-6 min-w-0 max-w-full"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-2xl font-bold text-white"[39m
+        [36m>[39m
+          [0mPredicción de ventas V2[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-gray-400"[39m
+        [36m>[39m
+          [0mConsulta de un mes por producto y tienda. El simulador editable permanece separado en Streamlit.[0m
+        [36m</p>[39m
+      [36m</header>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-xl border border-amber-500 p-4 text-amber-200 space-y-2"[39m
+      [36m>[39m
+        [36m<p>[39m
+          [36m<strong>[39m
+            [0mDemostración con DATOS SINTÉTICOS.[0m
+          [36m</strong>[39m
+          [0m Reproducción académica de abril a junio de 2026. No es un pronóstico del mes actual ni historia comercial certificada.[0m
+        [36m</p>[39m
+        [36m<p>[39m
+          [0mLos snapshots son referencias aprobadas del servidor. No se modifican inventario, datasets o base de datos al consultar.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-xl bg-slate-800 p-4 space-y-4"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-gray-300 text-sm"[39m
+        [36m>[39m
+          [0mCatálogo histórico observado: [0m
+          [0m27 oct de 2026, 9:08 p. m.[0m
+          [0m (America/La_Paz).[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"flex flex-col min-w-0 gap-1"[39m
+          [36m>[39m
+            [0mProducto[0m
+            [36m<select[39m
+              [33mclass[39m=[32m"bg-slate-900 p-3 rounded w-full min-w-0"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"1"[39m
+              [36m>[39m
+                [0mF-1[0m
+                [0m · [0m
+                [0mFiltro[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2"[39m
+              [36m>[39m
+                [0mB-2[0m
+                [0m · [0m
+                [0mBujía[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"flex flex-col min-w-0 gap-1"[39m
+          [36m>[39m
+            [0mTienda[0m
+            [36m<select[39m
+              [33mclass[39m=[32m"bg-slate-900 p-3 rounded w-full"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"5"[39m
+              [36m>[39m
+                [0mTienda 1[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"6"[39m
+              [36m>[39m
+                [0mTienda 2[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"flex flex-col min-w-0 gap-1"[39m
+          [36m>[39m
+            [0mMes de reproducción[0m
+            [36m<select[39m
+              [33mclass[39m=[32m"bg-slate-900 p-3 rounded w-full"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2026-04"[39m
+              [36m>[39m
+                [0mabril de 2026[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2026-05"[39m
+              [36m>[39m
+                [0mmayo de 2026[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"2026-06"[39m
+              [36m>[39m
+                [0mjunio de 2026[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"flex flex-col min-w-0 gap-1"[39m
+          [36m>[39m
+            [0mHorizonte[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"bg-slate-900 p-3 rounded w-full text-gray-300"[39m
+              [33mreadonly[39m=[32m""[39m
+              [33mvalue[39m=[32m"1 mes"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"bg-primary-600 rounded p-3 disabled:opacity-50"[39m
+          [36m>[39m
+            [0mConsultar predicción[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"border border-slate-500 rounded p-3"[39m
+          [36m>[39m
+            [0mActualizar referencias[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-sm text-gray-400"[39m
+        [36m>[39m
+          [0mSolo se ofrecen meses con snapshot aprobado. No se permite editar cantidades, precios, cotización o variables del modelo desde esta pantalla.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33mclass[39m=[32m"space-y-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl bg-slate-800 p-5 space-y-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-xl"[39m
+          [36m>[39m
+            [0mMes objetivo: [0m
+            [0m2026-06[0m
+          [36m</h2>[39m
+          [36m<p>[39m
+            [0mFiltro[0m
+            [0m · [0m
+            [0mTienda 1[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-1 sm:grid-cols-2 gap-4"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"rounded-lg bg-slate-900 p-4"[39m
+            [36m>[39m
+              [0mVentas previstas[0m
+              [36m<br />[39m
+              [36m<strong[39m
+                [33mclass[39m=[32m"text-3xl"[39m
+              [36m>[39m
+                [0m40.87[0m
+                [0m unidades[0m
+              [36m</strong>[39m
+            [36m</p>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"rounded-lg bg-slate-900 p-4"[39m
+            [36m>[39m
+              [0mReferencia del mes anterior[0m
+              [36m<br />[39m
+              [36m<strong[39m
+                [33mclass[39m=[32m"text-3xl"[39m
+              [36m>[39m
+                [0m21[0m
+                [0m unidades[0m
+              [36m</strong>[39m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<p>[39m
+            [0mModelo: [0m
+            [0mRandomForestRegressor[0m
+            [0m · [0m
+            [0mV2.1.0[0m
+            [0m · error absoluto[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-gray-400"[39m
+          [36m>[39m
+            [0mLos decimales se muestran para lectura. La API conserva la predicción sin redondear. No es una orden de compra.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl bg-slate-800 p-4 min-w-0"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-xl mb-2"[39m
+          [36m>[39m
+            [0mHistórico y predicción[0m
+          [36m</h2>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-gray-400 mb-3"[39m
+          [36m>[39m
+            [0mTres meses cerrados anteriores. No se muestra una venta real del mes objetivo para compararla con la predicción.[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"Gráfico de tres meses simulados, predicción y baseline"[39m
+            [33mclass[39m=[32m"h-80 w-full min-w-0"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<div[39m
+                [33mdata-points[39m=[32m"[{\"month\":\"2026-03\",\"observed\":25,\"forecast\":null,\"baseline\":null},{\"month\":\"2026-04\",\"observed\":25,\"forecast\":null,\"baseline\":null},{\"month\":\"2026-05\",\"observed\":21,\"forecast\":21,\"baseline\":21},{\"month\":\"2026-06\",\"observed\":null,\"forecast\":40.8725,\"baseline\":21}]"[39m
+                [33mdata-testid[39m=[32m"chart"[39m
+              [36m>[39m
+                [0mGráfico[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<details[39m
+            [33mclass[39m=[32m"mt-4"[39m
+          [36m>[39m
+            [36m<summary[39m
+              [33mclass[39m=[32m"cursor-pointer"[39m
+            [36m>[39m
+              [0mDatos del gráfico[0m
+            [36m</summary>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"overflow-x-auto"[39m
+            [36m>[39m
+              [36m<table[39m
+                [33mclass[39m=[32m"w-full text-left mt-2"[39m
+              [36m>[39m
+                [36m<caption[39m
+                  [33mclass[39m=[32m"sr-only"[39m
+                [36m>[39m
+                  [0mValores usados en el gráfico[0m
+                [36m</caption>[39m
+                [36m<thead>[39m
+                  [36m<tr>[39m
+                    [36m<th[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0mMes[0m
+                    [36m</th>[39m
+                    [36m<th[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0mTipo[0m
+                    [36m</th>[39m
+                    [36m<th[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0mUnidades[0m
+                    [36m</th>[39m
+                  [36m</tr>[39m
+                [36m</thead>[39m
+                [36m<tbody>[39m
+                  [36m<tr>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0m2026-03[0m
+                    [36m</td>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0mHistórico simulado[0m
+                    [36m</td>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0m25[0m
+                    [36m</td>[39m
+                  [36m</tr>[39m
+                  [36m<tr>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0m2026-04[0m
+                    [36m</td>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0mHistórico simulado[0m
+                    [36m</td>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0m25[0m
+                    [36m</td>[39m
+                  [36m</tr>[39m
+                  [36m<tr>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0m2026-05[0m
+                    [36m</td>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0mHistórico simulado[0m
+                    [36m</td>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0m21[0m
+                    [36m</td>[39m
+                  [36m</tr>[39m
+                  [36m<tr>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0m2026-06[0m
+                    [36m</td>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0mPredicción[0m
+                    [36m</td>[39m
+                    [36m<td[39m
+                      [33mclass[39m=[32m"p-2"[39m
+                    [36m>[39m
+                      [0m40.87[0m
+                    [36m</td>[39m
+                  [36m</tr>[39m
+                [36m</tbody>[39m
+              [36m</table>[39m
+            [36m</div>[39m
+          [36m</details>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl bg-slate-800 p-5 space-y-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-xl"[39m
+          [36m>[39m
+            [0mEvaluación guardada del modelo[0m
+          [36m</h2>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-1 sm:grid-cols-3 gap-3"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mMAE TEST sintético[0m
+              [36m<br />[39m
+              [36m<strong>[39m
+                [0m7.63[0m
+                [0m unidades[0m
+              [36m</strong>[39m
+            [36m</p>[39m
+            [36m<p>[39m
+              [0mRMSE TEST[0m
+              [36m<br />[39m
+              [36m<strong>[39m
+                [0m15.43[0m
+                [0m unidades[0m
+              [36m</strong>[39m
+            [36m</p>[39m
+            [36m<p>[39m
+              [0mR² TEST[0m
+              [36m<br />[39m
+              [36m<strong>[39m
+                [0m0.643[0m
+              [36m</strong>[39m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-gray-400"[39m
+          [36m>[39m
+            [0mEstas métricas pertenecen a la evaluación final ya realizada sobre datos sintéticos. No se recalcula TEST al consultar y no describen el error conocido de esta fila. R² no es un porcentaje de precisión. No hay una banda de confianza validada para mostrar.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<aside[39m
+          [33maria-label[39m=[32m"Límites del pronóstico"[39m
+          [33mclass[39m=[32m"rounded-xl border border-amber-500 p-4 text-amber-200 space-y-2"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-semibold"[39m
+          [36m>[39m
+            [0mLímites que debes considerar[0m
+          [36m</h2>[39m
+          [36m<p>[39m
+            [0mEl modelo puede subestimar pedidos grandes. Los compromisos mayoristas conocidos no son una variable explícita de este modelo.[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mVentas observadas no equivalen a toda la demanda. Un mes sin ventas puede incluir falta de stock. Revisa el resultado antes de tomar decisiones.[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mNo se calcula reposición ni se modifican existencias. Este experimento no acredita precisión comercial.[0m
+          [36m</p>[39m
+        [36m</aside>[39m
+        [36m<details[39m
+          [33mclass[39m=[32m"rounded-xl bg-slate-800 p-4"[39m
+        [36m>[39m
+          [36m<summary[39m
+            [33mclass[39m=[32m"cursor-pointer font-semibold"[39m
+          [36m>[39m
+            [0mModelo y snapshot de la consulta[0m
+          [36m</summary>[39m
+          [36m<dl[39m
+            [33mclass[39m=[32m"mt-3 space-y-3 text-sm break-words"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-gray-400"[39m
+              [36m>[39m
+                [0mSnapshot aprobado[0m
+              [36m</dt>[39m
+              [36m<dd[39m
+                [33mclass[39m=[32m"break-all"[39m
+              [36m>[39m
+                [0mfixture-approved[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-gray-400"[39m
+              [36m>[39m
+                [0mCorte de historia (America/La_Paz)[0m
+              [36m</dt>[39m
+              [36m<dd>[39m
+                [0m1 jun de 2026, 12:00 a. m.[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-gray-400"[39m
+              [36m>[39m
+                [0mConsulta emitida (America/La_Paz)[0m
+              [36m</dt>[39m
+              [36m<dd>[39m
+                [0m15 nov de 2026, 2:00 a. m.[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-gray-400"[39m
+              [36m>[39m
+                [0mSelección y dataset[0m
+              [36m</dt>[39m
+              [36m<dd[39m
+                [33mclass[39m=[32m"break-all"[39m
+              [36m>[39m
+                [0maccepted-absolute-2.1-20261115-01[0m
+                [0m · [0m
+                [0m2.1.0[0m
+                [0m · [0m
+                [0mexpanded-20261115-01[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-gray-400"[39m
+              [36m>[39m
+                [0mSHA-256 del artefacto[0m
+              [36m</dt>[39m
+              [36m<dd[39m
+                [33mclass[39m=[32m"break-all"[39m
+              [36m>[39m
+                [0me53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-gray-400"[39m
+              [36m>[39m
+                [0mHuella del snapshot de variables[0m
+              [36m</dt>[39m
+              [36m<dd[39m
+                [33mclass[39m=[32m"break-all"[39m
+              [36m>[39m
+                [0maaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-gray-400"[39m
+              [36m>[39m
+                [0mPolítica[0m
+              [36m</dt>[39m
+              [36m<dd>[39m
+                [0mNONNEGATIVE_V1[0m
+                [0m: valores no finitos rechazados, negativos limitados a cero y salida sin redondeo en la API.[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+          [36m</dl>[39m
+        [36m</details>[39m
+      [36m</div>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   ✓ pantalla administrativa V2 > limpia resultados al cambiar producto, tienda o mes 418ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/__tests__/PredictionsPage.test.tsx > pantalla administrativa V2 > presenta resultado, gráfico sin target observado, tabla, métricas y trazabilidad
+TestingLibraryElementError: Found multiple elements with the text: /America\/La_Paz/
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<p
+  class="text-gray-300 text-sm"
+>
+  Catálogo histórico observado: 
+  27 oct de 2026, 9:08 p. m.
+   (America/La_Paz).
+</p>
+
+Ignored nodes: comments, script, style
+<dt
+  class="text-gray-400"
+>
+  Corte de historia (America/La_Paz)
+</dt>
+
+Ignored nodes: comments, script, style
+<dt
+  class="text-gray-400"
+>
+  Consulta emitida (America/La_Paz)
+</dt>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="space-y-6 min-w-0 max-w-full"
+    >
+      <header
+        class="space-y-2"
+      >
+        <h1
+          class="text-2xl font-bold text-white"
+        >
+          Predicción de ventas V2
+        </h1>
+        <p
+          class="text-gray-400"
+        >
+          Consulta de un mes por producto y tienda. El simulador editable permanece separado en Streamlit.
+        </p>
+      </header>
+      <div
+        class="rounded-xl border border-amber-500 p-4 text-amber-200 space-y-2"
+      >
+        <p>
+          <strong>
+            Demostración con DATOS SINTÉTICOS.
+          </strong>
+           Reproducción académica de abril a junio de 2026. No es un pronóstico del mes actual ni historia comercial certificada.
+        </p>
+        <p>
+          Los snapshots son referencias aprobadas del servidor. No se modifican inventario, datasets o base de datos al consultar.
+        </p>
+      </div>
+      <div
+        class="rounded-xl bg-slate-800 p-4 space-y-4"
+      >
+        <p
+          class="text-gray-300 text-sm"
+        >
+          Catálogo histórico observado: 
+          27 oct de 2026, 9:08 p. m.
+           (America/La_Paz).
+        </p>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"
+        >
+          <label
+            class="flex flex-col min-w-0 gap-1"
+          >
+            Producto
+            <select
+              class="bg-slate-900 p-3 rounded w-full min-w-0"
+            >
+              <option
+                value="1"
+              >
+                F-1
+                 · 
+                Filtro
+              </option>
+              <option
+                value="2"
+              >
+                B-2
+                 · 
+                Bujía
+              </option>
+            </select>
+          </label>
+          <label
+            class="flex flex-col min-w-0 gap-1"
+          >
+            Tienda
+            <select
+              class="bg-slate-900 p-3 rounded w-full"
+            >
+              <option
+                value="5"
+              >
+                Tienda 1
+              </option>
+              <option
+                value="6"
+              >
+                Tienda 2
+              </option>
+            </select>
+          </label>
+          <label
+            class="flex flex-col min-w-0 gap-1"
+          >
+            Mes de reproducción
+            <select
+              class="bg-slate-900 p-3 rounded w-full"
+            >
+              <option
+                value="2026-04"
+              >
+                abril de 2026
+              </option>
+              <option
+                value="2026-05"
+              >
+                mayo de 2026
+              </option>
+              <option
+                value="2026-06"
+              >
+                junio de 2026
+              </option>
+            </select>
+          </label>
+          <label
+            class="flex flex-col min-w-0 gap-1"
+          >
+            Horizonte
+            <input
+              class="bg-slate-900 p-3 rounded w-full text-gray-300"
+              readonly=""
+              value="1 mes"
+            />
+          </label>
+        </div>
+        <div
+          class="flex flex-wrap gap-3"
+        >
+          <button
+            class="bg-primary-600 rounded p-3 disabled:opacity-50"
+          >
+            Consultar predicción
+          </button>
+          <button
+            class="border border-slate-500 rounded p-3"
+          >
+            Actualizar referencias
+          </button>
+        </div>
+        <p
+          class="text-sm text-gray-400"
+        >
+          Solo se ofrecen meses con snapshot aprobado. No se permite editar cantidades, precios, cotización o variables del modelo desde esta pantalla.
+        </p>
+      </div>
+      <div
+        aria-live="polite"
+        class="space-y-6"
+      >
+        <div
+          class="rounded-xl bg-slate-800 p-5 space-y-3"
+        >
+          <h2
+            class="text-xl"
+          >
+            Mes objetivo: 
+            2026-06
+          </h2>
+          <p>
+            Filtro
+             · 
+            Tienda 1
+          </p>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          >
+            <p
+              class="rounded-lg bg-slate-900 p-4"
+            >
+              Ventas previstas
+              <br />
+              <strong
+                class="text-3xl"
+              >
+                40.87
+                 unidades
+              </strong>
+            </p>
+            <p
+              class="rounded-lg bg-slate-900 p-4"
+            >
+              Referencia del mes anterior
+              <br />
+              <strong
+                class="text-3xl"
+              >
+                21
+                 unidades
+              </strong>
+            </p>
+          </div>
+          <p>
+            Modelo: 
+            RandomForestRegressor
+             · 
+            V2.1.0
+             · error absoluto
+          </p>
+          <p
+            class="text-sm text-gray-400"
+          >
+            Los decimales se muestran para lectura. La API conserva la predicción sin redondear. No es una orden de compra.
+          </p>
+        </div>
+        <div
+          class="rounded-xl bg-slate-800 p-4 min-w-0"
+        >
+          <h2
+            class="text-xl mb-2"
+          >
+            Histórico y predicción
+          </h2>
+          <p
+            class="text-sm text-gray-400 mb-3"
+          >
+            Tres meses cerrados anteriores. No se muestra una venta real del mes objetivo para compararla con la predicción.
+          </p>
+          <div
+            aria-label="Gráfico de tres meses simulados, predicción y baseline"
+            class="h-80 w-full min-w-0"
+            role="img"
+          >
+            <div>
+              <div
+                data-points="[{\"month\":\"2026-03\",\"observed\":25,\"forecast\":null,\"baseline\":null},{\"month\":\"2026-04\",\"observed\":25,\"forecast\":null,\"baseline\":null},{\"month\":\"2026-05\",\"observed\":21,\"forecast\":21,\"baseline\":21},{\"month\":\"2026-06\",\"observed\":null,\"forecast\":40.8725,\"baseline\":21}]"
+                data-testid="chart"
+              >
+                Gráfico
+              </div>
+            </div>
+          </div>
+          <details
+            class="mt-4"
+          >
+            <summary
+              class="cursor-pointer"
+            >
+              Datos del gráfico
+            </summary>
+            <div
+              class="overflow-x-auto"
+            >
+              <table
+                class="w-full text-left mt-2"
+              >
+                <caption
+                  class="sr-only"
+                >
+                  Valores usados en el gráfico
+                </caption>
+                <thead>
+                  <tr>
+                    <th
+                      class="p-2"
+                    >
+                      Mes
+                    </th>
+                    <th
+                      class="p-2"
+                    >
+                      Tipo
+                    </th>
+                    <th
+                      class="p-2"
+                    >
+                      Unidades
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td
+                      class="p-2"
+                    >
+                      2026-03
+                    </td>
+                    <td
+                      class="p-2"
+                    >
+                      Histórico simulado
+                    </td>
+                    <td
+                      class="p-2"
+                    >
+                      25
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      class="p-2"
+                    >
+                      2026-04
+                    </td>
+                    <td
+                      class="p-2"
+                    >
+                      Histórico simulado
+                    </td>
+                    <td
+                      class="p-2"
+                    >
+                      25
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      class="p-2"
+                    >
+                      2026-05
+                    </td>
+                    <td
+                      class="p-2"
+                    >
+                      Histórico simulado
+                    </td>
+                    <td
+                      class="p-2"
+                    >
+                      21
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      class="p-2"
+                    >
+                      2026-06
+                    </td>
+                    <td
+                      class="p-2"
+                    >
+                      Predicción
+                    </td>
+                    <td
+                      class="p-2"
+                    >
+                      40.87
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+        <div
+          class="rounded-xl bg-slate-800 p-5 space-y-3"
+        >
+          <h2
+            class="text-xl"
+          >
+            Evaluación guardada del modelo
+          </h2>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-3 gap-3"
+          >
+            <p>
+              MAE TEST sintético
+              <br />
+              <strong>
+                7.63
+                 unidades
+              </strong>
+            </p>
+            <p>
+              RMSE TEST
+              <br />
+              <strong>
+                15.43
+                 unidades
+              </strong>
+            </p>
+            <p>
+              R² TEST
+              <br />
+              <strong>
+                0.643
+              </strong>
+            </p>
+          </div>
+          <p
+            class="text-sm text-gray-400"
+          >
+            Estas métricas pertenecen a la evaluación final ya realizada sobre datos sintéticos. No se recalcula TEST al consultar y no describen el error conocido de esta fila. R² no es un porcentaje de precisión. No hay una banda de confianza validada para mostrar.
+          </p>
+        </div>
+        <aside
+          aria-label="Límites del pronóstico"
+          class="rounded-xl border border-amber-500 p-4 text-amber-200 space-y-2"
+        >
+          <h2
+            class="font-semibold"
+          >
+            Límites que debes considerar
+          </h2>
+          <p>
+            El modelo puede subestimar pedidos grandes. Los compromisos mayoristas conocidos no son una variable explícita de este modelo.
+          </p>
+          <p>
+            Ventas observadas no equivalen a toda la demanda. Un mes sin ventas puede incluir falta de stock. Revisa el resultado antes de tomar decisiones.
+          </p>
+          <p>
+            No se calcula reposición ni se modifican existencias. Este experimento no acredita precisión comercial.
+          </p>
+        </aside>
+        <details
+          class="rounded-xl bg-slate-800 p-4"
+        >
+          <summary
+            class="cursor-pointer font-semibold"
+          >
+            Modelo y snapshot de la consulta
+          </summary>
+          <dl
+            class="mt-3 space-y-3 text-sm break-words"
+          >
+            <div>
+              <dt
+                class="text-gray-400"
+              >
+                Snapshot aprobado
+              </dt>
+              <dd
+                class="break-all"
+              >
+                fixture-approved
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-gray-400"
+              >
+                Corte de historia (America/La_Paz)
+              </dt>
+              <dd>
+                1 jun de 2026, 12:00 a. m.
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-gray-400"
+              >
+                Consulta emitida (America/La_Paz)
+              </dt>
+              <dd>
+                15 nov de 2026, 2:00 a. m.
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-gray-400"
+              >
+                Selección y dataset
+              </dt>
+              <dd
+                class="break-all"
+              >
+                accepted-absolute-2.1-20261115-01
+                 · 
+                2.1.0
+                 · 
+                expanded-20261115-01
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-gray-400"
+              >
+                SHA-256 del artefacto
+              </dt>
+              <dd
+                class="break-all"
+              >
+                e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-gray-400"
+              >
+                Huella del snapshot de variables
+              </dt>
+              <dd
+                class="break-all"
+              >
+                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+              </dd>
+            </div>
+            <div>
+              <dt
+                class="text-gray-400"
+              >
+                Política
+              </dt>
+              <dd>
+                NONNEGATIVE_V1
+                : valores no finitos rechazados, negativos limitados a cero y salida sin redondeo en la API.
+              </dd>
+            </div>
+          </dl>
+        </details>
+      </div>
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/pages/__tests__/PredictionsPage.test.tsx:43:19
+     41|     expect(screen.getByText("fixture-approved")).toBeInTheDocument();
+     42|     expect(screen.getByText(/NONNEGATIVE_V1/)).toBeInTheDocument();
+     43|     expect(screen.getByText(/America\/La_Paz/)).toBeInTheDocument();
+       |                   ^
+     44|   });
+     45|   it("limpia resultados al cambiar producto, tienda o mes", async () =…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 passed (12)
+   Start at  10:39:58
+   Duration  7.99s (transform 178ms, setup 646ms, collect 519ms, tests 2.22s, environment 2.84s, prepare 230ms)
+

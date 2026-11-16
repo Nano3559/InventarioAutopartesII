@@ -1,0 +1,55 @@
+{
+  "status": "VERSIONED_GENERATOR_VERIFIED_WITH_REDUCED_FIXTURES_NO_BUILD",
+  "generator_version": "retail-reference-generator-1.0.0",
+  "recipe_sha256": "da30e4efe583e7a21e3886714f861e3047b816e82e171b7ad1952d78e79b093f",
+  "implementation_sha256": {
+    "v2/generate_calibrated.py": "d08ea5b28f70e5aee1b5d84e885f7da49b3ade87911168ccebdb30e599f9260a",
+    "v2/retail_mechanisms.py": "42cbc5e01c406c958917e7c1479b67a5a296ec698cdb72987a2c0a484ece52c7"
+  },
+  "tests_passed": 74,
+  "tests_failed": 0,
+  "new_tests": 16,
+  "baseline_files_checked": 483,
+  "immutable_files_unchanged": 482,
+  "approved_metadata_change": [
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "unchanged_counts": {
+    "sources/external_raw": 136,
+    "sources/external_curated": 16,
+    "data": 59,
+    "models": 14,
+    "reports": 188
+  },
+  "full_catalog_simulated": false,
+  "fixture_products": 1,
+  "fixture_stores": 1,
+  "fixture_months": [
+    4,
+    5
+  ],
+  "published_builds": 0,
+  "csv_written": false,
+  "new_dataset_version_assigned": false,
+  "existing_generators_changed": false,
+  "old_calibration_changed": false,
+  "raw_modified": false,
+  "curated_modified": false,
+  "neon_used": false,
+  "trained": false,
+  "test_reevaluated": false,
+  "new_markdown_files": 0,
+  "git_used": false,
+  "new_implementation_files": [
+    "ml/demand/v2/generate_calibrated.py",
+    "ml/demand/v2/retail_mechanisms.py",
+    "ml/demand/v2/contracts/generator.retail_extension.v1.json",
+    "ml/demand/tests/test_v2_generate_calibrated.py"
+  ],
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "remaining_gate": "Authorize dataset version and full simulation, independently validate all trajectories, distributions and economic rules before publishing. No accuracy guarantee."
+}

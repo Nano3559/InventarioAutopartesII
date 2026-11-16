@@ -1,0 +1,59 @@
+{
+  "run_id": "profile-20261114-01",
+  "statistics_reconciliation": "PASS",
+  "monash": {
+    "series": 2674,
+    "periods": 51,
+    "coverage": "1998-01 a 2002-03",
+    "missing_values": 6122,
+    "series_with_missing": 165,
+    "zero_percent_of_observed": 74.77658692380923,
+    "negative_values": 0,
+    "duplicate_trajectory_groups": 14,
+    "response": "Conservar ceros válidos. No imputar faltantes como cero. Trayectorias iguales no demuestran productos duplicados. Fuente útil para intermitencia, sin precio, tiendas ni plazos."
+  },
+  "uci": {
+    "rows": 1067371,
+    "coverage": [
+      "2009-12-01T07:45:00",
+      "2011-12-09T12:50:00"
+    ],
+    "negative_quantity": 22950,
+    "c_prefix_rows": 19494,
+    "negative_quantity_without_c_prefix": 3457,
+    "c_prefix_with_positive_quantity": 1,
+    "zero_prices": 6202,
+    "negative_prices": 5,
+    "missing_customer_id": 243007,
+    "missing_description": 4382,
+    "exact_duplicate_occurrences_after_first": 34335,
+    "cross_sheet_duplicate_occurrences": 22523,
+    "overlap": {
+      "start": "2010-12-01T08:26:00",
+      "end": "2010-12-09T20:01:00"
+    },
+    "quantity_range": [
+      -80995,
+      80995
+    ],
+    "unit_price_range_gbp": [
+      -53594.36,
+      38970
+    ],
+    "response": "No sumar hojas sin resolver solapamiento. No equiparar cantidades negativas a ventas brutas ni asumir que toda cancelación es devolución de RepuestoPro. Revisar precios y valores extremos. No eliminar automáticamente filas repetidas. Los conteos se solapan y no deben sumarse para calcular filas defectuosas."
+  },
+  "v2_missing_sources": [
+    "Historial Bs/USD con fecha y momento disponible",
+    "Plazos reales de proveedor y reposición",
+    "Modalidad explícita POR_MENOR/POR_MAYOR",
+    "Disponibilidad histórica y demanda no atendida"
+  ],
+  "interpretation_limits": [
+    "UCI contiene precios transaccionales en GBP, no evidencia causal suficiente de elasticidad para RepuestoPro.",
+    "Cantidad grande no prueba modalidad mayorista.",
+    "Monash y UCI son fuentes de referencia, no ventas propias.",
+    "Meses extremos de UCI son parciales y las hojas se solapan en diciembre 2010.",
+    "No se construyeron parámetros de simulación ni dataset."
+  ],
+  "next_step": "V2-04D: compatibilidad y reglas de tratamiento. Cerrar además los contratos y reglas pendientes antes de calibrar o construir V2."
+}

@@ -1,0 +1,114 @@
+{
+  "stage": "V2-11",
+  "status": "COMPLETE_ACADEMIC_REPLAY_UI",
+  "scope": "Prediction component only; full application acceptance and V2-15 remain separate.",
+  "tests": {
+    "frontend_cases": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "api_contract_checks": 2,
+    "typecheck": "PASSED",
+    "build": "PASSED",
+    "initial_test_note": "One assertion expected only one timezone label although UI correctly shows several. Corrected selector and reran all cases. Initial logs preserved.",
+    "initial_typecheck_note": "Removed unused test import; final typecheck passed."
+  },
+  "integrity": {
+    "data": {
+      "files_checked": 59,
+      "unchanged": true
+    },
+    "models": {
+      "files_checked": 14,
+      "unchanged": true
+    },
+    "reports": {
+      "files_checked": 148,
+      "unchanged": true
+    },
+    "candidates": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "decisions": {
+      "files_checked": 4,
+      "unchanged": true
+    },
+    "lifecycle": {
+      "files_checked": 13,
+      "unchanged": true
+    },
+    "raw": {
+      "files_checked": 136,
+      "unchanged": true
+    },
+    "manifests": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "backend": {
+      "files_checked": 3,
+      "unchanged": true
+    },
+    "frozen": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "protected": {
+      "files_checked": 44,
+      "unchanged": true
+    }
+  },
+  "actual_validation_replay_model_predictions": 1,
+  "model_fit_calls": 0,
+  "test_partition_repeated": false,
+  "final_test_audit_unchanged": {
+    "test_load_calls": 1,
+    "selected_model_predict_calls": 1,
+    "fit_calls": 0,
+    "rows": 504,
+    "window": [
+      "2026-07",
+      "2026-09"
+    ],
+    "status": "COMPLETED"
+  },
+  "new_markdown_created": false,
+  "neon_used": false,
+  "git_used": false,
+  "datasets_regenerated": false,
+  "raw_processed": false,
+  "pending_sources_processed": false,
+  "files_new": [
+    "frontend/src/services/demandView.ts"
+  ],
+  "files_modified": [
+    "frontend/src/pages/PredictionsPage.tsx",
+    "frontend/src/pages/__tests__/PredictionsPage.test.tsx",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/README.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "evidence_hashes": {
+    "api-proof.json": "7d7ac12f7006f4ade78aba00bd6d57cd6dbedfdaf2cfbe5551f60f07cae253d2",
+    "before.json": "d548707cc322d442ea4a6a2b20c860242e7db10a7dcff907c40d143faa74d59c",
+    "contract-smoke-final.txt": "df26bc308537636b926042593b9b925a843b1c252bd04ba016a8863e2a7be4ca",
+    "desktop.jpg": "5efacb92f5e74239c16e8e10685ad9d76ee1f60e01cb756af2f252322de6ef47",
+    "frontend-build-final.txt": "e94d7179a5ab543392fcf6849e23a31a21d102cad118d10bebcce4cc4b14f75b",
+    "frontend-tests-closure.txt": "73f40cc1ae192c1e5f218b52da9fcf44202677913395be55075d761ef6826511",
+    "frontend-tests-final.txt": "52367fd3d7f037ea28a524a1ac154569fafe2aa390845634b3eb3a51f2b2cc35",
+    "frontend-tests.txt": "8099f4c456113c3699f77fd8ba21263629f35081572a0c76b5f885054d49a224",
+    "frontend-typecheck-closure.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend-typecheck-final.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend-typecheck.txt": "c3c8c18f8ab5ef5de15a7346a8843c56a4973725466b8248b12b0472acfeeec3",
+    "mobile.jpg": "121076fa511e488d650297f27dd8fe187ac86ea96a0ee549a32ddd01eba56c45",
+    "review.json": "28eb49ce1afb1209661c847c48b73fb3b162414956a08625edbe44694aea758b"
+  },
+  "limitations": [
+    "Visual data are fixtures, not real-business validation or model outputs.",
+    "One true April replay response checked against frontend guard separately.",
+    "No authenticated full-app or Expo visual validation claimed.",
+    "Existing final TEST is consumed and untouched."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "run_id": "alternatives-20261115-01",
+  "active": false,
+  "test_evaluated": false,
+  "plan_sha256": "3cbca2e79fa0557e17e3a53f6840b5c5eaa5a4d8b58643521e3acd54c88be4a0",
+  "implementation_sha256": "07f8c69c957cb794a534b031e9c718b00a300ea6d4615d3ce92adc24505ffc33",
+  "artifacts": {
+    "lag1": "0e57e605e92b812ab50b0b3fc25236990121974c8586af273eb382de693e587e",
+    "median3": "74d49abdb000458435f0d8370c8c40ceafa7676535a3e986a587957c272f1bad",
+    "weighted_recent": "de039d5bf273959920e50c914e8abbe553913f1b8c1a8ee6ccd2ced30c5dd365",
+    "tsb-a0.1-b0.1": "24fa1bb8a58b0c276003c9f6a10f49dab90acc422b6a4fc4c8d6fc0be57795c1",
+    "absolute_forest-d4": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+    "derived_forest-d4": "cd552138f81b769be943c58e6f2709113b019a94423b7931b62abbc89a53dcd9",
+    "residual_forest-d4": "84215de4eaf55e470a9af1935dbaf42126f065b2ab319f1522760b321cb7a582",
+    "low_median_routing": "c8223d4a663a9fd3a4f119702e6701a22db96e9e234e2b13c8c6039bdbc35cc4"
+  }
+}

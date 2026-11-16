@@ -1,0 +1,52 @@
+{
+  "stable_months_in_worse_pairs": 70,
+  "worse_pair_months": 108,
+  "stable_month_excess_absolute_error": 762.8475000000002,
+  "all_worse_pair_excess_absolute_error": 581.775,
+  "tree_samples": [
+    {
+      "productId": 41,
+      "locationId": 7,
+      "month": "2026-05",
+      "target": 86,
+      "forest_prediction": 42.335,
+      "tree_prediction_min": 40.0,
+      "tree_prediction_median": 41.0,
+      "tree_prediction_max": 82.0
+    },
+    {
+      "productId": 28,
+      "locationId": 5,
+      "month": "2026-04",
+      "target": 80,
+      "forest_prediction": 40.96,
+      "tree_prediction_min": 40.0,
+      "tree_prediction_median": 41.0,
+      "tree_prediction_max": 46.0
+    },
+    {
+      "productId": 13,
+      "locationId": 7,
+      "month": "2026-04",
+      "target": 0,
+      "forest_prediction": 8.7925,
+      "tree_prediction_min": 0.0,
+      "tree_prediction_median": 2.0,
+      "tree_prediction_max": 80.0
+    },
+    {
+      "productId": 51,
+      "locationId": 7,
+      "month": "2026-05",
+      "target": 80,
+      "forest_prediction": 0.01,
+      "tree_prediction_min": 0.0,
+      "tree_prediction_median": 0.0,
+      "tree_prediction_max": 1.0
+    }
+  ],
+  "mechanism": "200 shallow absolute-error trees pool all product-store series through five lag/calendar inputs. Leaf predictions favour central levels; averaging smooths levels. This explains numerical smoothing, not a proven causal effect of price, stock or customer orders.",
+  "no_fit": true,
+  "test_loaded": false,
+  "diagnostic_checks": "PASSED: cohort, keys, monthly counts, parity with frozen MAE, affected groups and tree prediction parity"
+}

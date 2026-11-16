@@ -1,0 +1,76 @@
+{
+  "generator_version": "retail-reference-generator-1.1.0",
+  "status": "AUTHORIZED_BUILD_REQUIRES_VALIDATION",
+  "dataset_version": "2.2.0",
+  "publication_authorized": true,
+  "training_authorized": false,
+  "seed": 42,
+  "baseline_generator_path": "v2/generate_expanded.py",
+  "baseline_generator_sha256": "278d1ae3299b5af95b7973b1a8de45216cec5abf5b0ed44bf60b0a499a66eab1",
+  "calibration_path": "reports/v2/calibration/calibration-retail-20261115-03/calibration.json",
+  "calibration_sha256": "9433d9c51d26a2cc9d561f441279f0e5bfef4eadcdf51ebbd846205dc43a1e1d",
+  "schema_path": "v2/contracts/dataset_columns.v2_1.json",
+  "schema_sha256": "8f0444a9de6bd696d02cdeab95722fa2b4d147f26dbf385b2ccd8867d2a18635",
+  "assumed_mechanisms": {
+    "price": "Independent weekly Bernoulli events. Magnitude and sign mix are representative academic decompositions, not an estimated joint law. Monthly billing uses only events available at month opening.",
+    "store": "Cycle p10,p50,p90 across own store IDs, normalize mean to one. Scenario assignment, not identified local store factors.",
+    "calendar": "beta=log1p(reference amplitude p50), positive exp(beta*sin(month phase)), normalized across twelve months. Assumed link, not a fitted seasonality law.",
+    "burst": "Forced coverage cycle NONE,NONE,P95,NONE,P99,NONE. Multiplier applies to synthetic retail requested counts only. Not a natural frequency or wholesale label.",
+    "price_demand_effect": "No causal price response applied. Elasticity not identified.",
+    "stock_fx_cost_wholesale": "Inherited academic 2.1 physical and commercial assumptions, not estimated from M5/Favorita."
+  },
+  "store_levels": [
+    "p10",
+    "p50",
+    "p90"
+  ],
+  "calendar_level": "p50",
+  "calendar_phase_month": 0,
+  "burst_cycle": [
+    "NONE",
+    "NONE",
+    "P95",
+    "NONE",
+    "P99",
+    "NONE"
+  ],
+  "diagnostic_only": [
+    "retail_monthly_zero_probability",
+    "monthly_variability",
+    "promotion_daily_probability"
+  ],
+  "not_used": [
+    "price_elasticity",
+    "bolivian_exchange_rate_stock_modalities_cost_lead_time"
+  ],
+  "automotive_status": "BLOCKED_LICENSE",
+  "recipe_frozen_before_future_build": true,
+  "dependencies_sha256": {
+    "v2/generate_expanded.py": "278d1ae3299b5af95b7973b1a8de45216cec5abf5b0ed44bf60b0a499a66eab1",
+    "v2/generate.py": "e14b2177be1b987a1b42ddcbdfb98dcdf405b6a643851415ce1398f8a07fa896",
+    "v2/experiment_preparation.py": "a64ddf3bbe42e246ac8e0e6f24791c7a3c6a782d46836be430bb0531b95c25b8",
+    "v2/validate_build.py": "2436ba7db15ee26148dcec8b124e4a3c87089e5e8133edf24280573fb3b0187d",
+    "v2/structure.py": "5e53528d45987a09b43e1ca3703a6146f8ae549faabbfa744b8e7afb47ae06ed",
+    "catalog_reference.json": "2536595f211f05ade3c85238f11326b27af48d2f29b53db6f404429773b9094f",
+    "v2/contracts/expanded.v2_1.json": "bf2ceabf5b2dacaccad4394050636778d60f0c25d435e51b8a8a543aab630a60",
+    "v2/contracts/calibration.v2.json": "0c26ad5e3f2d52287b86d56ac27959d15b5e40210142439d82e40500c20c4c63",
+    "v2/contracts/dataset_columns.v2_1.json": "8f0444a9de6bd696d02cdeab95722fa2b4d147f26dbf385b2ccd8867d2a18635",
+    "v2/contracts/dataset_columns.v2.json": "1e78a8b03120aee4fbd82bbe9eb1f8d5888c7b8ead2b6c7415defcee9d1a4744",
+    "v2/contracts/dataset_schema.v2_1.schema.json": "c82e52867fad1831f1c6d64f7330a8e8e9db7671554ae41ed6e1b942cc174424"
+  },
+  "implementation_sha256": {
+    "v2/generate_calibrated_v1_1.py": "bc61ee561481c07294229744287eb7c32ad7b93fa5b9f47addc397435104bb9b",
+    "v2/retail_mechanisms.py": "42cbc5e01c406c958917e7c1479b67a5a296ec698cdb72987a2c0a484ece52c7"
+  },
+  "scenario_design_canonical_sha256": "a4ecf75da7983abe79cd1a77530822be5b2f5fd0d81409fd139bb068ba2181b2",
+  "economic_violation_policy": "Reject invalid proposal, perform separately identified simulated administrative price review at cutoff with pinned initial markups. Never change cost or present this intervention as an M5 price event.",
+  "fixture_scope": "Full catalogue build authorized by Ross, only publish after independent validation.",
+  "mechanisms_version": "retail-reference-generator-1.0.0",
+  "physical_rng_version": "retail-reference-generator-1.0.0",
+  "economic_review": {
+    "basis": "EXPLICIT_ACADEMIC_ADMINISTRATIVE_POLICY_NOT_ESTIMATED_FROM_M5",
+    "retail_cost_multiplier": 1.5,
+    "wholesale_cost_multiplier": 1.35,
+    "reason": "Preserve initial synthetic markups only when a reference proposal violates the cost constraint. Keep cost unchanged, audit proposal and applied prices, reset next monthly proposal from applied prices."
+  }
+}

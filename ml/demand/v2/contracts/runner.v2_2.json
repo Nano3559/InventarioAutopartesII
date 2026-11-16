@@ -1,0 +1,15 @@
+{
+  "runner_version": "experiments-2.2-1",
+  "dataset_version": "2.2.0",
+  "model_training_authorized": false,
+  "experiment_contract_sha256": "14b52717e8f8cf71a5b7bd3afce3fb1d1fbd950db5de6b4dd082a3ed57672138",
+  "preprocessing_contract_sha256": "d89c87370ac5ed2731148ea4358e25dca5f929e71d990b0c47e202843d23f3c1",
+  "implementations_sha256": {
+    "v2/data_v2_2.py": "fe3db7bfcc9c9d5251019808f84f96e222491cabb9bdec85f6353fb1b0680d3c",
+    "v2/preprocessing_v2_2.py": "1e0d4b65c83b6a857796a4c1111e9eaf415c4bc55370620fe7aeee42a51461bf",
+    "v2/experiments_v2_2.py": "676fda82ceea8fce99bad501de9021c8786b6febfb9bcbe861565e3d5600f22d"
+  },
+  "execution_policy": "PREPARE_ONLY_NO_REAL_PREPROCESSING_FIT_OR_MODEL_FIT",
+  "test_policy": "REJECT_BEFORE_CONTEXT_OPEN_AND_BOUNDED_PREFIX_READER",
+  "fitted_artifact_creation": false
+}

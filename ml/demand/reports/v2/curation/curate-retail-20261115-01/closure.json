@@ -1,0 +1,36 @@
+{
+  "status": "CURATED_VALIDATED_PRIVATE_REFERENCE_ONLY",
+  "tests_passed": 41,
+  "tests_failed": 0,
+  "protected_files_checked": 429,
+  "protected_changes": [],
+  "raw_modified": false,
+  "dataset_final_created": false,
+  "calibrated": false,
+  "trained": false,
+  "neon_used": false,
+  "git_used": false,
+  "new_markdown_files": 0,
+  "automotive_processed": false,
+  "sources": {
+    "m5_walmart": "sources/external_curated/m5_walmart/sha256-aa5d519ab121b284a7b07f4d/processing-1-curate-retail-20261115-01",
+    "corporacion_favorita": "sources/external_curated/corporacion_favorita/sha256-b69a1fa872a46632efa647d8/processing-1-curate-retail-20261115-01"
+  },
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/sources/manifests/m5_walmart/sha256-aa5d519ab121b284a7b07f4d.json",
+    "ml/demand/sources/manifests/corporacion_favorita/sha256-b69a1fa872a46632efa647d8.json"
+  ],
+  "new_code": [
+    "ml/demand/v2/curate_retail.py",
+    "ml/demand/v2/validate_curated_retail.py",
+    "ml/demand/tests/test_v2_curate_retail.py"
+  ],
+  "evidence": [
+    "reports/v2/curation/curate-retail-20261115-01/execution.json",
+    "reports/v2/curation/curate-retail-20261115-01/validation.json"
+  ],
+  "validator_sha256": "8ab64ad2c97a17c21fe39f65ddb3e88c7f5adf46cad994560dc8a1ef3f208bd7"
+}

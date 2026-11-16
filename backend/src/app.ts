@@ -29,6 +29,7 @@ import permissionsRoutes from "./modules/permissions/permissions.routes";
 import notificationsRoutes from "./modules/notifications/notifications.routes";
 import visionRoutes from "./modules/vision/vision.routes";
 import operationsRoutes from "./modules/operations/operations.routes";
+import predictionsRoutes from "./modules/predictions/predictions.routes";
 
 const app = express();
 
@@ -43,7 +44,9 @@ app.use(cors({
   origin: [config.frontendUrl, config.mobileUrl],
   credentials: true,
 }));
-app.use(express.json());
+app.use(express.json({ verify(req, _res, buffer) {
+  if (req.url?.split("?")[0] === "/api/predictions/scenarios/preview") (req as any).scenarioRawJson = buffer.toString("utf8");
+} }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
@@ -99,6 +102,7 @@ app.use("/api/prices", pricesRoutes);
 app.use("/api/reports", reportsRoutes);
 app.use("/api/customers", customersRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/predictions", predictionsRoutes);
 app.use("/api/permissions", permissionsRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/public", publicRoutes);

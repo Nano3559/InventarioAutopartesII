@@ -1,0 +1,78 @@
+{
+  "work_item": "H4-R01",
+  "owner": "Ross",
+  "status": "PASSED_DESIGN_COMPLETE_NOT_DATASET_READY",
+  "dictionary_version": "scenario-dictionary-1.0.0",
+  "dictionary_sha256": "42f426f74c1fbb5ba5b5b4ca65dc0aa7d5746987b58445ca22d90f2fa1fdcb55",
+  "contract_sha256": "557aa5638ff1adce55d625d38efa1a58e86b686a352524264c79eea3822acc46",
+  "legacy_dictionary_sha256": "1e78a8b03120aee4fbd82bbe9eb1f8d5888c7b8ead2b6c7415defcee9d1a4744",
+  "field_counts": {
+    "request_paths": 48,
+    "tables": 14,
+    "table_fields": 195,
+    "reference_supervised_fields": 24,
+    "new_candidate_features": 16,
+    "new_identity_controls": 3
+  },
+  "supervised_roles": {
+    "IDENTIFIER": 4,
+    "FEATURE_CANDIDATE": 33,
+    "CONTROL": 5,
+    "TARGET": 1
+  },
+  "tests": {
+    "new_dictionary": 12,
+    "total_with_contract_and_structure": 33,
+    "failed": 0
+  },
+  "checks": [
+    "all 48 contract primitive paths mapped",
+    "all column definitions typed and sourced with availability and null policy",
+    "all cited physical names exist in local schema",
+    "legacy 24 names and roles retained",
+    "future outcomes, outputs and IDs excluded from X",
+    "current landed-cost formula distinguished from hypothetical import components",
+    "11 frozen CSV headers only, no observations loaded",
+    "bound contract and old dictionary hashes unchanged"
+  ],
+  "protected_existing_files_checked": 609,
+  "allowed_existing_metadata_changes": [
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "datasets_raw_curated_models_historical_reports_unchanged": true,
+  "scenario_contract_unchanged": true,
+  "neon_used": false,
+  "dataset_generated": false,
+  "observations_loaded": false,
+  "fit_calls": 0,
+  "test_evaluation_repeated": false,
+  "prisma_changed": false,
+  "new_markdown_files": 0,
+  "git_used": false,
+  "modified_existing_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md",
+    "ml/demand/README.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "new_files": [
+    "ml/demand/v2/contracts/dataset_dictionary.scenarios.v1.json",
+    "ml/demand/tests/test_scenario_dictionary.py"
+  ],
+  "next_owner_tasks": {
+    "Ross": [
+      "H4-R02",
+      "H4-R03"
+    ],
+    "Erika": [
+      "H4-E01",
+      "H4-E02"
+    ]
+  },
+  "limits": [
+    "No source certification or economic mechanism calibration completed in R01",
+    "No final feature selection or dataset publication",
+    "No API semantic validator implemented by these dictionary tests"
+  ]
+}

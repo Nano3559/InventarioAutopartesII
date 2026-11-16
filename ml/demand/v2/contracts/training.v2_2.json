@@ -1,0 +1,28 @@
+{
+  "authorization_version": "training-2.2-1",
+  "dataset_version": "2.2.0",
+  "build_id": "calibrated-20261115-01",
+  "run_id": "train-2.2-20261115-01",
+  "authorized_on": "2026-11-15",
+  "basis": "Explicit user authorization in current task, TRAIN and VALIDATION only. No TEST, dataset changes, RAW, Neon or new Markdown.",
+  "model_training_authorized": true,
+  "allowed_partitions": [
+    "TRAIN",
+    "VALIDATION"
+  ],
+  "test_allowed": false,
+  "real_preprocessing_fit_authorized": true,
+  "base_plan_path": "v2/contracts/experiments.v2_2.json",
+  "base_plan_sha256": "14b52717e8f8cf71a5b7bd3afce3fb1d1fbd950db5de6b4dd082a3ed57672138",
+  "prepared_runner_sha256": "3dda6b96f4628bba6a81ac824ee091d7e8b8c4df6bf8952f09d00c0088a36acc",
+  "input_manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+  "max_fits": 174,
+  "parallel_candidates": 4,
+  "per_estimator_n_jobs": 1,
+  "automatic_api_promotion": false,
+  "prepared_contracts_remain_unchanged": true,
+  "implementations_sha256": {
+    "v2/train_v2_2.py": "77baf16396d41f2d850489959746f2073a14d8d8c87a7b287757ab3de2b54c82",
+    "v2/preprocessing_train_v2_2.py": "d0004f209515577d16e528f51ac563e361535bc79663a12225c1a9c42cae891f"
+  }
+}

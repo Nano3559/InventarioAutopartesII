@@ -1,0 +1,95 @@
+{
+  "stage": "V2-11",
+  "status": "COMPLETE_ACADEMIC_REPLAY_UI",
+  "controls": [
+    "product",
+    "store",
+    "approved_month",
+    "fixed_one_month_horizon",
+    "query",
+    "retry",
+    "refresh_references"
+  ],
+  "display": [
+    "observed_previous_three_months",
+    "prediction",
+    "baseline",
+    "accessible_data_table",
+    "frozen_TEST_metrics_not_recomputed",
+    "synthetic_origin",
+    "commercial_limits",
+    "model_version",
+    "snapshot",
+    "cutoff_La_Paz",
+    "artifact_hash",
+    "feature_snapshot_hash",
+    "policy"
+  ],
+  "source_hashes": {
+    "frontend/src/pages/PredictionsPage.tsx": "6b97aa9223d9012a5ff10e7efe55a8d835287ed514127dc1b2c226af2ff02745",
+    "frontend/src/services/demandView.ts": "d1d34e49b9df358a0749e881bc2f6b1ac06656c32e18d3e2695c4582e8ec718e",
+    "frontend/src/pages/__tests__/PredictionsPage.test.tsx": "55cc8875d8c8e70babde07e094a61e61b98ad8d123164e2240b577d38109291a"
+  },
+  "visual": {
+    "method": "Real component and Recharts through isolated Vite preview with explicit API fixtures, reviewed in background browser. No real-model prediction in visual fixtures.",
+    "desktop_viewport_width": 1280,
+    "narrow_viewport": {
+      "width": 390,
+      "height": 844,
+      "document_scroll_width": 390,
+      "document_client_width": 390
+    },
+    "checks": [
+      "controls usable",
+      "three graph series present in SVG",
+      "readable long product name after selection",
+      "metrics and policy visible",
+      "long hashes wrap",
+      "no horizontal overflow"
+    ],
+    "screenshots": [
+      "desktop.jpg",
+      "mobile.jpg"
+    ],
+    "native_ui_block": "Native window input was interrupted by user activity; background browser used instead.",
+    "preview_setup": "Temporary preview needed Unicode and module/style configuration fixes and forced fixture API resolution before final review. No production code was changed to accommodate the preview.",
+    "temporary_server_stopped": true,
+    "viewport_restored": true
+  },
+  "contract_smoke": {
+    "checks": 2,
+    "passed": true,
+    "source": "Actual admin_prediction_v2 bridge with April VALIDATION replay",
+    "prediction": 40.225,
+    "targetMonth": "2026-04",
+    "artifactSha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc"
+  },
+  "tests": {
+    "frontend_cases": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "api_contract_checks": 2,
+    "typecheck": "PASSED",
+    "build": "PASSED",
+    "initial_test_note": "One assertion expected only one timezone label although UI correctly shows several. Corrected selector and reran all cases. Initial logs preserved.",
+    "initial_typecheck_note": "Removed unused test import; final typecheck passed."
+  },
+  "dataset_expansion": {
+    "status": "PROPOSED_NOT_AUTHORIZED_NOT_STARTED",
+    "current_dataset": "2.1.0 frozen academic synthetic scope",
+    "current_references": [
+      "monash_car_parts",
+      "uci_online_retail_ii"
+    ],
+    "pending_source_review": [
+      "automotive_spare_parts_demand",
+      "m5_walmart",
+      "corporacion_favorita"
+    ],
+    "all_sources_mandatory": false,
+    "new_dataset_version_assigned": false,
+    "start_order": "After V2-11, authorize source-condition review and compatibility before processing or building. No need to wait for H5.",
+    "no_reuse_of_consumed_test_as_independent": true
+  }
+}

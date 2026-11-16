@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-10",
+  "protected_files": 29,
+  "changed_protected_files": [],
+  "active_links_checked": 33,
+  "broken_links": [],
+  "python": "3.11.9",
+  "versions": {
+    "streamlit": "1.66.1",
+    "pandas": "3.1.0",
+    "numpy": "2.4.6",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.17.1",
+    "joblib": "1.6.0"
+  },
+  "tests_final": {
+    "run": 473,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "official_v1_retrained": false,
+  "official_test_repeated": false,
+  "neon_accessed": false
+}

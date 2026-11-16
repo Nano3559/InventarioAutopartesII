@@ -1,0 +1,258 @@
+{
+  "report_version": "v2-source-compatibility-1",
+  "reviewed_at": "2026-11-14T22:17:39.365747+00:00",
+  "stage": "V2-04D",
+  "status": "COMPLETED_FOR_APPROVED_TWO_SOURCES",
+  "scope": "Comparación documental y de perfiles existentes. Sin limpieza, agregación de RAW, parámetros de calibración o entrenamiento.",
+  "sources": [
+    {
+      "source_id": "monash_car_parts",
+      "snapshot_id": "sha256-d69d3412b9c45248f1c9c441",
+      "raw_sha256": "818470cd0a65679b38b48a20e4d916d11fbd2ccbf7f5f9d8d97093dd6c784600",
+      "manifest_path": "ml/demand/sources/manifests/monash_car_parts/sha256-d69d3412b9c45248f1c9c441.json",
+      "official_url": "https://zenodo.org/records/4656022",
+      "doi": "10.5281/zenodo.4656022",
+      "citation": "Godahewa, R., Bergmeir, C., Webb, G., Hyndman, R., & Montero-Manso, P. (2020). Car Parts Dataset (with Missing Values), versión 2. Zenodo. https://doi.org/10.5281/zenodo.4656022",
+      "license": "CC BY 4.0",
+      "academic_use_status": "VERIFIED",
+      "condition": "Conservar atribución, licencia y registro de cambios. Condiciones comprobadas en la revisión documental anterior.",
+      "acquisition_status": "UNKNOWN",
+      "acquisition_limit": "La descarga manual exacta no está demostrada. El hash acredita integridad local, no equivalencia binaria con una descarga oficial nueva.",
+      "decision": "COMPATIBLE_AS_REFERENCE_ONLY",
+      "domain": "AUTOMOTIVE_PARTS_SALES",
+      "granularity": "Serie de repuesto por mes. No producto de RepuestoPro ni tienda identificada.",
+      "period": {
+        "start": "1998-01",
+        "end": "2002-03",
+        "series": 2674,
+        "months_per_series": 51
+      },
+      "geography": "Empresa automotriz de Estados Unidos según sección 5.2 de Türkmen et al. (2021). No identifica países por registro.",
+      "currency": null,
+      "units": "Ventas de repuestos por serie y mes. Unidad física específica no declarada.",
+      "raw_fields": [
+        "series_name",
+        "start_timestamp",
+        "valores mensuales separados por coma, sin nombre de columna adicional en TSF"
+      ],
+      "roles": [
+        "DIRECT_DOMAIN_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "allowed_future_studies": [
+        "Intermitencia y secuencias de ceros observados",
+        "Magnitudes y dispersión relativas por serie",
+        "Patrones mensuales respetando faltantes y cobertura"
+      ],
+      "prohibited_uses": [
+        "Transformar series_name en Product.id",
+        "Asignar series a Location.id",
+        "Derivar faltantes como cero",
+        "Inferir stockout, descontinuación o plazo de proveedor por ceros o ?",
+        "Asignar precios, categorías o cotizaciones inexistentes",
+        "Trasladar fechas 1998–2002 a 2024–2026 como historia real"
+      ],
+      "quality_findings": {
+        "observed_zeros": 97398,
+        "observed_zero_fraction": 0.7477658692380923,
+        "missing_values": 6122,
+        "series_with_missing": 165,
+        "duplicate_trajectory_groups": 14
+      },
+      "future_processing_policy": [
+        "Conservar ? como desconocido y mantener el calendario original.",
+        "Separar series completas y con cobertura parcial. No mezclar sus denominadores.",
+        "No eliminar trayectorias iguales como productos duplicados sin evidencia.",
+        "Cualquier escala de ventas o estacionalidad trasladada al simulador será un supuesto documentado, no una propiedad comercial de Bolivia."
+      ],
+      "direct_training_rows_allowed": false,
+      "external_id_mapping_allowed": false,
+      "calibrated_now": false,
+      "data_nature": "REAL_DERIVED_REFERENCE"
+    },
+    {
+      "source_id": "uci_online_retail_ii",
+      "snapshot_id": "sha256-4dc26799b20addb7559df7e2",
+      "raw_sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+      "manifest_path": "ml/demand/sources/manifests/uci_online_retail_ii/sha256-4dc26799b20addb7559df7e2.json",
+      "official_url": "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+      "doi": "10.24432/C5CG6D",
+      "citation": "Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D",
+      "license": "CC BY 4.0",
+      "academic_use_status": "VERIFIED",
+      "condition": "Conservar atribución, licencia y registro de cambios. Condiciones comprobadas en la revisión documental anterior.",
+      "acquisition_status": "UNKNOWN",
+      "acquisition_limit": "La descarga manual exacta no está demostrada. El hash acredita integridad local, no equivalencia binaria con una descarga oficial nueva.",
+      "decision": "COMPATIBLE_AS_COMPLEMENTARY_REFERENCE_ONLY",
+      "domain": "ONLINE_GIFTWARE_RETAIL_WITH_WHOLESALERS",
+      "granularity": "Línea de transacción. Invoice puede tener muchas líneas. Country es país del cliente, no sucursal.",
+      "period": {
+        "start": "2009-12-01T07:45:00",
+        "end": "2011-12-09T12:50:00",
+        "transaction_lines": 1067371
+      },
+      "geography": "Empresa del Reino Unido, clientes en varios países",
+      "currency": "GBP",
+      "units": "Quantity por línea y Price GBP/unidad",
+      "raw_fields": [
+        "Invoice",
+        "StockCode",
+        "Description",
+        "Quantity",
+        "InvoiceDate",
+        "Price",
+        "Customer ID",
+        "Country"
+      ],
+      "roles": [
+        "PRICE_PATTERN_REFERENCE",
+        "WHOLESALE_PATTERN_REFERENCE",
+        "CANCELLATION_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "allowed_future_studies": [
+        "Concentración de cantidades por pedido sin clasificar automáticamente la modalidad",
+        "Dispersión de precios transaccionales y variaciones relativas comparables",
+        "Frecuencia y calidad de cancelaciones, separadas de ventas brutas"
+      ],
+      "prohibited_uses": [
+        "Presentarlo como autopartes",
+        "Convertir StockCode a Product.id o Country a Location.id",
+        "Usar Price como precio publicado o costo",
+        "Inferir precio en Bs o cotización Bs/USD a partir de GBP",
+        "Estimar elasticidad causal comercial a partir de estas estadísticas",
+        "Convertir todo Quantity negativo en Return de RepuestoPro",
+        "Concatenar ambas hojas y declarar sus filas como transacciones únicas"
+      ],
+      "quality_findings": {
+        "cross_sheet_duplicate_occurrences": 22523,
+        "exact_duplicate_rows_after_first": 34335,
+        "negative_quantity": 22950,
+        "negative_quantity_without_c_prefix": 3457,
+        "c_prefix_with_positive_quantity": 1,
+        "zero_prices": 6202,
+        "negative_prices": 5,
+        "missing_customer_id": 243007,
+        "sheet_overlap": {
+          "start": "2010-12-01T08:26:00",
+          "end": "2010-12-09T20:01:00"
+        }
+      },
+      "future_processing_policy": [
+        "Como primera referencia, estudiar una hoja identificada por separado. Para agregados mensuales proponer Year 2010-2011, enero a noviembre de 2011. No se extrajo ese subconjunto ahora.",
+        "Esa ventana evita el solapamiento de diciembre 2010 y el cierre parcial de diciembre 2011. Once meses no prueban estacionalidad anual recurrente.",
+        "Las repeticiones dentro de una hoja requieren decisión trazable y análisis de sensibilidad, no borrado automático de líneas legítimas.",
+        "Separar C, cantidades no positivas, precios no positivos y ajustes o códigos especiales antes de estudiar distribución de ventas válidas.",
+        "Una cantidad positiva sin prefijo C y precio positivo es un filtro candidato de referencia, no prueba por sí solo de una venta comercial válida de RepuestoPro.",
+        "No excluir por Customer ID faltante cuando la estadística no necesita clientes. No exportar identificadores personales.",
+        "Las fechas de Excel no traen zona certificada. No declararlas UTC ni America/La_Paz. El calendario boliviano del simulador es distinto."
+      ],
+      "direct_training_rows_allowed": false,
+      "external_id_mapping_allowed": false,
+      "calibrated_now": false,
+      "data_nature": "REAL_TRANSACTION_REFERENCE"
+    }
+  ],
+  "dimensions": [
+    {
+      "dimension": "dominio",
+      "monash": "Repuestos automotrices, compatible como referencia directa de dominio.",
+      "uci": "Retail de regalos. Solo referencia complementaria."
+    },
+    {
+      "dimension": "frecuencia",
+      "monash": "Mensual, coincide con la unidad temporal propuesta.",
+      "uci": "Transaccional. Agregación mensual futura exigiría reglas y meses cubiertos."
+    },
+    {
+      "dimension": "periodo",
+      "monash": "1998–2002, no coincide con 2024–2026.",
+      "uci": "2009–2011, no coincide con 2024–2026."
+    },
+    {
+      "dimension": "geografia",
+      "monash": "Empresa estadounidense documentada. No representa comercio boliviano.",
+      "uci": "Empresa británica y clientes en varios países. No son tiendas bolivianas."
+    },
+    {
+      "dimension": "unidades",
+      "monash": "Ventas por serie. No se certifica unidad física detallada de cada repuesto.",
+      "uci": "Quantity por línea. No homologar unidades de regalos a repuestos específicos."
+    },
+    {
+      "dimension": "moneda_y_precios",
+      "monash": "No hay precios o moneda documentada.",
+      "uci": "Price en GBP vendido por operación. No lista vigente, costo o cotización."
+    },
+    {
+      "dimension": "producto_tienda",
+      "monash": "Series sin tienda explícita.",
+      "uci": "StockCode y Country no representan Product.id ni Location.id."
+    },
+    {
+      "dimension": "modalidad",
+      "monash": "Sin etiqueta por menor o mayor.",
+      "uci": "Hay contexto mayorista, sin etiqueta completa por línea."
+    },
+    {
+      "dimension": "stock_y_demanda_perdida",
+      "monash": "Ceros y faltantes no explican disponibilidad.",
+      "uci": "Quantity y cancelaciones no prueban stock vendible o demanda perdida."
+    },
+    {
+      "dimension": "tiempos_proveedor",
+      "monash": "Sin ciclo de compra, despacho y recepción.",
+      "uci": "InvoiceDate no es fecha de llegada de proveedor."
+    },
+    {
+      "dimension": "causalidad",
+      "monash": "Intermitencia descriptiva, no efecto causal de precios.",
+      "uci": "Relaciones observadas no prueban elasticidad de RepuestoPro."
+    },
+    {
+      "dimension": "licencia_y_trazabilidad",
+      "monash": "CC BY 4.0 verificada en auditoría previa. Adquisición exacta UNKNOWN.",
+      "uci": "CC BY 4.0 verificada en auditoría previa. Adquisición exacta UNKNOWN."
+    }
+  ],
+  "final_decision": "Ambas son referencias autorizadas con funciones distintas. No son compatibles para unir sus filas ni entrenar directamente ventas RepuestoPro.",
+  "global_limitations": [
+    "Ventas observadas no son demanda total.",
+    "Más productos no crean más años independientes de historia. Una cotización compartida por mes tampoco produce observaciones económicas independientes por cada producto.",
+    "La estacionalidad, los rangos de precios y la reacción al dólar de Bolivia no se certifican con estas dos fuentes.",
+    "No se obtuvieron parámetros nuevos ni se realizó causalidad, matching o conversión monetaria."
+  ],
+  "dictionary": {
+    "path": "ml/demand/v2/contracts/dataset_columns.v2.json",
+    "supervised_columns": 24,
+    "feature_count": 17,
+    "identifier_count": 3,
+    "target_count": 1,
+    "control_count": 3,
+    "status": "DESIGN_DEFINED_NOT_BUILT"
+  },
+  "catalog_reference": {
+    "observed_at": "2026-10-28T01:08:41.263Z",
+    "included_product_count": 56,
+    "store_ids": [
+      5,
+      6,
+      7
+    ],
+    "current_neon_consulted": false
+  },
+  "blocked_sources_outside_initial_scope": [
+    "automotive_spare_parts_demand",
+    "m5_walmart",
+    "corporacion_favorita"
+  ],
+  "next_stage": "V2-05: escenarios y supuestos, antes de calibración y construcción. Mantener autorización separada para generar o entrenar.",
+  "performed": {
+    "raw_changed": false,
+    "curated_created": false,
+    "calibration": false,
+    "dataset_v2_created": false,
+    "trained": false,
+    "neon": false
+  }
+}

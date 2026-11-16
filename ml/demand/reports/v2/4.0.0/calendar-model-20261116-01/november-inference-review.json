@@ -1,0 +1,1250 @@
+{
+  "month": "2026-11",
+  "historyEnd": "2026-10",
+  "targetsKnown": false,
+  "rows": 168,
+  "covered": 136,
+  "abstained": 32,
+  "entries": [
+    {
+      "productId": 1,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 22.98
+    },
+    {
+      "productId": 1,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.75
+    },
+    {
+      "productId": 1,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 34.505
+    },
+    {
+      "productId": 2,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.67
+    },
+    {
+      "productId": 2,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 5.175
+    },
+    {
+      "productId": 2,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 2.77
+    },
+    {
+      "productId": 3,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.765
+    },
+    {
+      "productId": 3,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 34.475
+    },
+    {
+      "productId": 3,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.565
+    },
+    {
+      "productId": 4,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 33.14
+    },
+    {
+      "productId": 4,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 37.505
+    },
+    {
+      "productId": 4,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.045
+    },
+    {
+      "productId": 5,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.33
+    },
+    {
+      "productId": 5,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.05
+    },
+    {
+      "productId": 5,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 22.765
+    },
+    {
+      "productId": 6,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 6,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 32.52
+    },
+    {
+      "productId": 6,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.42
+    },
+    {
+      "productId": 7,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 7,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.0
+    },
+    {
+      "productId": 7,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 8,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 18.1
+    },
+    {
+      "productId": 8,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 22.15
+    },
+    {
+      "productId": 8,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 32.76
+    },
+    {
+      "productId": 9,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.41
+    },
+    {
+      "productId": 9,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 8.975
+    },
+    {
+      "productId": 9,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 14.15
+    },
+    {
+      "productId": 10,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 10,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 31.47
+    },
+    {
+      "productId": 10,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.735
+    },
+    {
+      "productId": 11,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 2.195
+    },
+    {
+      "productId": 11,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 6.965
+    },
+    {
+      "productId": 11,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 12,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 73.375
+    },
+    {
+      "productId": 12,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 9.36
+    },
+    {
+      "productId": 12,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 2.24
+    },
+    {
+      "productId": 13,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 13,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 13,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.31
+    },
+    {
+      "productId": 14,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 13.44
+    },
+    {
+      "productId": 14,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 28.49
+    },
+    {
+      "productId": 14,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.0
+    },
+    {
+      "productId": 15,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 15,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.0
+    },
+    {
+      "productId": 15,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 21.005
+    },
+    {
+      "productId": 16,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.77
+    },
+    {
+      "productId": 16,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 18.495
+    },
+    {
+      "productId": 16,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 2.225
+    },
+    {
+      "productId": 17,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 56.57
+    },
+    {
+      "productId": 17,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 17,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 18,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 14.14
+    },
+    {
+      "productId": 18,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 15.885
+    },
+    {
+      "productId": 18,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 10.58
+    },
+    {
+      "productId": 19,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 29.23
+    },
+    {
+      "productId": 19,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 9.55
+    },
+    {
+      "productId": 19,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 4.365
+    },
+    {
+      "productId": 20,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 30.365
+    },
+    {
+      "productId": 20,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 24.25
+    },
+    {
+      "productId": 20,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 21,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 31.185
+    },
+    {
+      "productId": 21,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 9.76
+    },
+    {
+      "productId": 21,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 11.225
+    },
+    {
+      "productId": 22,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 2.695
+    },
+    {
+      "productId": 22,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 22,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 23,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 11.69
+    },
+    {
+      "productId": 23,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.72
+    },
+    {
+      "productId": 23,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 24,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 56.4
+    },
+    {
+      "productId": 24,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.325
+    },
+    {
+      "productId": 24,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 7.5
+    },
+    {
+      "productId": 25,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 38.245
+    },
+    {
+      "productId": 25,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 15.815
+    },
+    {
+      "productId": 25,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.62
+    },
+    {
+      "productId": 26,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.0
+    },
+    {
+      "productId": 26,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 12.36
+    },
+    {
+      "productId": 26,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 30.82
+    },
+    {
+      "productId": 27,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 9.155
+    },
+    {
+      "productId": 27,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 27,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 28,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 28,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 26.57
+    },
+    {
+      "productId": 28,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 4.17
+    },
+    {
+      "productId": 29,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 16.84
+    },
+    {
+      "productId": 29,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 29,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 82.005
+    },
+    {
+      "productId": 30,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 30,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 29.615
+    },
+    {
+      "productId": 30,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.21
+    },
+    {
+      "productId": 31,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 30.155
+    },
+    {
+      "productId": 31,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 31,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 26.595
+    },
+    {
+      "productId": 32,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.225
+    },
+    {
+      "productId": 32,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.265
+    },
+    {
+      "productId": 32,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 20.78
+    },
+    {
+      "productId": 33,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 6.245
+    },
+    {
+      "productId": 33,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 9.04
+    },
+    {
+      "productId": 33,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 12.035
+    },
+    {
+      "productId": 34,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 2.925
+    },
+    {
+      "productId": 34,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 17.81
+    },
+    {
+      "productId": 34,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 17.15
+    },
+    {
+      "productId": 35,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 35,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.0
+    },
+    {
+      "productId": 35,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 25.195
+    },
+    {
+      "productId": 36,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 12.38
+    },
+    {
+      "productId": 36,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.05
+    },
+    {
+      "productId": 36,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 9.205
+    },
+    {
+      "productId": 37,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 37,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 67.235
+    },
+    {
+      "productId": 37,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 45.35
+    },
+    {
+      "productId": 38,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.67
+    },
+    {
+      "productId": 38,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.925
+    },
+    {
+      "productId": 38,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 14.6
+    },
+    {
+      "productId": 39,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 85.99
+    },
+    {
+      "productId": 39,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 11.365
+    },
+    {
+      "productId": 39,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 28.075
+    },
+    {
+      "productId": 40,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 51.105
+    },
+    {
+      "productId": 40,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 40.935
+    },
+    {
+      "productId": 40,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 35.52
+    },
+    {
+      "productId": 41,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.975
+    },
+    {
+      "productId": 41,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 41,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 8.525
+    },
+    {
+      "productId": 42,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 10.935
+    },
+    {
+      "productId": 42,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 28.97
+    },
+    {
+      "productId": 42,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 12.335
+    },
+    {
+      "productId": 43,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 36.67
+    },
+    {
+      "productId": 43,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 43,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.04
+    },
+    {
+      "productId": 44,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 44,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 28.515
+    },
+    {
+      "productId": 44,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 57.195
+    },
+    {
+      "productId": 45,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 4.84
+    },
+    {
+      "productId": 45,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 45,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 27.515
+    },
+    {
+      "productId": 46,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 3.735
+    },
+    {
+      "productId": 46,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.7
+    },
+    {
+      "productId": 46,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.025
+    },
+    {
+      "productId": 47,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 11.945
+    },
+    {
+      "productId": 47,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 32.925
+    },
+    {
+      "productId": 47,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 48,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.0
+    },
+    {
+      "productId": 48,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.33
+    },
+    {
+      "productId": 48,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 49,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.93
+    },
+    {
+      "productId": 49,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 14.225
+    },
+    {
+      "productId": 49,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.825
+    },
+    {
+      "productId": 50,
+      "locationId": 5,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 50,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 19.085
+    },
+    {
+      "productId": 50,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.33
+    },
+    {
+      "productId": 51,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 31.27
+    },
+    {
+      "productId": 51,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.305
+    },
+    {
+      "productId": 51,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 52,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 70.5
+    },
+    {
+      "productId": 52,
+      "locationId": 6,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 52,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.0
+    },
+    {
+      "productId": 53,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 0.43
+    },
+    {
+      "productId": 53,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 87.17
+    },
+    {
+      "productId": 53,
+      "locationId": 7,
+      "status": "OUT_OF_DOMAIN",
+      "outside": [
+        "stock_vendible_al_corte_unidades"
+      ],
+      "prediction": null
+    },
+    {
+      "productId": 54,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 15.355
+    },
+    {
+      "productId": 54,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 54.08
+    },
+    {
+      "productId": 54,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 5.555
+    },
+    {
+      "productId": 55,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 25.745
+    },
+    {
+      "productId": 55,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 4.72
+    },
+    {
+      "productId": 55,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 4.58
+    },
+    {
+      "productId": 56,
+      "locationId": 5,
+      "status": "OK",
+      "outside": [],
+      "prediction": 1.665
+    },
+    {
+      "productId": 56,
+      "locationId": 6,
+      "status": "OK",
+      "outside": [],
+      "prediction": 14.22
+    },
+    {
+      "productId": 56,
+      "locationId": 7,
+      "status": "OK",
+      "outside": [],
+      "prediction": 20.585
+    }
+  ]
+}

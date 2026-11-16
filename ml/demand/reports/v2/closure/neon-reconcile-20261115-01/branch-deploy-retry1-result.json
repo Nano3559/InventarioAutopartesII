@@ -1,0 +1,14 @@
+{
+  "target": "br-cool-cake-ay7cr6sc",
+  "action": "deploy",
+  "recorded_at": "2026-11-16T01:06:31.926Z",
+  "command": [
+    "prisma",
+    "migrate",
+    "deploy",
+    "--schema",
+    "prisma/schema.prisma"
+  ],
+  "exit_code": 0,
+  "output": "Environment variables loaded from .env\nPrisma schema loaded from prisma\\schema.prisma\nDatasource \"db\": PostgreSQL database \"inventario_db\", schema \"public\" at \"ep-proud-hall-ay0tq2yk.c-5.us-east-2.aws.neon.tech\"\n\n10 migrations found in prisma/migrations\n\nApplying migration `20260909b_add_etapa8_indexes`\nApplying migration `20260928_request_abierta_unica`\nApplying migration `20260929_reconcile_production_schema`\nApplying migration `20261103_physical_stock_and_returns`\nApplying migration `20261103b_commercial_controls`\n\nThe following migration(s) have been applied:\n\nmigrations/\n  └─ 20260909b_add_etapa8_indexes/\n    └─ migration.sql\n  └─ 20260928_request_abierta_unica/\n    └─ migration.sql\n  └─ 20260929_reconcile_production_schema/\n    └─ migration.sql\n  └─ 20261103_physical_stock_and_returns/\n    └─ migration.sql\n  └─ 20261103b_commercial_controls/\n    └─ migration.sql\n      \nAll migrations have been successfully applied.\n\n"
+}

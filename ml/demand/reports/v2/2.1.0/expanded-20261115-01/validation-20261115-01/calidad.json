@@ -1,0 +1,73 @@
+{
+  "status": "PASSED_EXPANDED_DATA_GATE",
+  "failures": [],
+  "counts": {
+    "base": 4032,
+    "supervised": 3528,
+    "audit": 8146,
+    "ledger": 4032,
+    "daily": 122640,
+    "quotes": 25,
+    "orders": 2887,
+    "shipments": 1811,
+    "receipts": 1840,
+    "plans": 4032
+  },
+  "train_quote_ages_days": [
+    0,
+    2,
+    7,
+    30
+  ],
+  "wholesale_volume": {
+    "TRAIN": {
+      "orders": 847,
+      "fully_fulfilled": 786,
+      "partially_or_unfulfilled": 61,
+      "fulfilled_at_least": {
+        "20": 808,
+        "40": 544,
+        "80": 263
+      }
+    },
+    "VALIDATION": {
+      "orders": 164,
+      "fully_fulfilled": 153,
+      "partially_or_unfulfilled": 11,
+      "fulfilled_at_least": {
+        "20": 160,
+        "40": 106,
+        "80": 47
+      }
+    }
+  },
+  "warnings": [
+    {
+      "code": "SYNTHETIC_ASSUMED_PROFILE_WEIGHTS",
+      "blocking": false,
+      "reason": "No prevalencia real certificada ni precisión comercial."
+    },
+    {
+      "code": "SHARED_SINGLE_ECONOMIC_TRAJECTORY",
+      "blocking": false,
+      "reason": "Edades variables no crean múltiples economías independientes."
+    },
+    {
+      "code": "KNOWN_ORDERS_NOT_FORECAST_FEATURES",
+      "blocking": false,
+      "reason": "Capacidad para atender no demuestra capacidad para anticipar pedidos."
+    },
+    {
+      "code": "STOCK_CENSORED_OBSERVED_SALES",
+      "blocking": false,
+      "reason": "Target conserva unidades realmente atendidas, no demanda perdida."
+    }
+  ],
+  "policy_scope": "Physical and temporal evidence for ages and wholesale. Not all 57 dynamic scenarios or backend validation.",
+  "test_target_statistics_computed": false,
+  "training_performed": false,
+  "training_authorized": false,
+  "commercial_accuracy_certified": false,
+  "manifest_sha256": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+  "test_hash_verified": "32b6aa7a920dc59606fcb34d6ee85de54c671bfa9de4d6fe55f2433fde70656e"
+}

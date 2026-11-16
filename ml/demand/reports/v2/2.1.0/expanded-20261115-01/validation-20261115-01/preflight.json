@@ -1,0 +1,31 @@
+{
+  "stage": "V2_08_EXPANDED_PREPARATION",
+  "status": "PREPARED_NOT_TRAINED",
+  "build_id": "expanded-20261115-01",
+  "dataset_version": "2.1.0",
+  "manifest_sha256": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+  "experiment_contract_sha256": "f1e9f8597439c997c116bada2eb648229534fbdbf049d22e375426dc0f28f11f",
+  "data_quality_sha256": "d6437a766b63a2a1620fc2a41be7cf3e534c45b15b33a7f070319f70c8407c4c",
+  "full_feature_count": 17,
+  "constant_features_in_train": [],
+  "feature_set_sizes": {
+    "expanded_baseline_v1_features": 5,
+    "expanded_v2_full": 17,
+    "expanded_with_availability": 16,
+    "expanded_with_exchange": 14,
+    "expanded_with_modality": 7,
+    "expanded_with_prices": 11
+  },
+  "train_age_values": [
+    0,
+    2,
+    7,
+    30
+  ],
+  "quote_ages_from_events_verified": true,
+  "wholesale_fulfilled_volume_verified": true,
+  "actual_fit_count": 0,
+  "training_authorized": false,
+  "test_used_for_selection": false,
+  "scope": "Data and parameter readiness. Preprocessing adapter and actual model comparison not implemented or executed."
+}

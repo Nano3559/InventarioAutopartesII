@@ -1,0 +1,12 @@
+test_changed_pinned_input_rejected (test_v2_final_evaluation.FinalEvaluationGuardTests.test_changed_pinned_input_rejected) ... ok
+test_existing_guard_rejects_before_model_or_labels (test_v2_final_evaluation.FinalEvaluationGuardTests.test_existing_guard_rejects_before_model_or_labels) ... ok
+test_failure_remains_consumed_and_cannot_retry (test_v2_final_evaluation.FinalEvaluationGuardTests.test_failure_remains_consumed_and_cannot_retry) ... ok
+test_missing_authorization_rejected (test_v2_final_evaluation.FinalEvaluationGuardTests.test_missing_authorization_rejected) ... ok
+test_policy_change_rejected_before_any_loader (test_v2_final_evaluation.FinalEvaluationGuardTests.test_policy_change_rejected_before_any_loader) ... ok
+test_reservation_is_shared_for_entire_build (test_v2_final_evaluation.FinalEvaluationGuardTests.test_reservation_is_shared_for_entire_build) ... ok
+test_success_cannot_invoke_operation_twice (test_v2_final_evaluation.FinalEvaluationGuardTests.test_success_cannot_invoke_operation_twice) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.435s
+
+OK

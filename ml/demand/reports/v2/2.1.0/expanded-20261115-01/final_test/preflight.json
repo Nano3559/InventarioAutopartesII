@@ -1,0 +1,9 @@
+{
+  "status": "ACCEPTED_ARTIFACT_AND_POLICY_FROZEN_BEFORE_TEST",
+  "selection_sha256": "e4881d38ec32a087904d499fc122e14953cc23946b0c4123e6ce15630ee9f3e0",
+  "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "features": 14,
+  "test_loaded": false,
+  "model_fit_calls": 0,
+  "preprocessing_fit_calls": 0
+}

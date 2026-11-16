@@ -1,0 +1,82 @@
+{
+  "config_version": "expanded-2.1-1",
+  "dataset_version": "2.1.0",
+  "origin": "SYNTHETIC",
+  "seed": 42,
+  "training_authorized": false,
+  "legacy_config_sha256": "0c26ad5e3f2d52287b86d56ac27959d15b5e40210142439d82e40500c20c4c63",
+  "experiment_proposal_sha256": "c0ffed3682b75119461d1cef299aec3c4921552b656d65564c74a6ea580facb8",
+  "quote_ages_days": [
+    0,
+    2,
+    7,
+    30
+  ],
+  "quote_value_factors": [
+    1,
+    1,
+    1.15,
+    1.15,
+    1,
+    1,
+    0.85,
+    0.85
+  ],
+  "quote_source": "SYNTHETIC_REFERENCE",
+  "rate_kind": "SIMULATED_MARKET_REFERENCE",
+  "unit": "Bs/USD",
+  "profiles": [
+    {
+      "name": "LOW",
+      "weight": 0.45
+    },
+    {
+      "name": "MEDIUM",
+      "weight": 0.15
+    },
+    {
+      "name": "RECURRENT_WHOLESALE",
+      "weight": 0.15
+    },
+    {
+      "name": "MIXED",
+      "weight": 0.15
+    },
+    {
+      "name": "EXCEPTIONAL_KNOWN",
+      "weight": 0.05
+    },
+    {
+      "name": "UNEXPECTED",
+      "weight": 0.03
+    },
+    {
+      "name": "PARTIAL_LATE",
+      "weight": 0.02
+    }
+  ],
+  "profile_weights_origin": "ACADEMIC_COVERAGE_ASSUMPTION_NOT_EMPIRICAL_PREVALENCE",
+  "wholesale_sizes": [
+    20,
+    40,
+    80
+  ],
+  "safety_units": 5,
+  "lot_size": 6,
+  "timely_receipt_day": 2,
+  "wholesale_due_day": 10,
+  "partial_fraction": 0.5,
+  "late_receipt_day": 20,
+  "remainder_receipt_next_month_day": 8,
+  "assumptions": [
+    "Solo ventas observadas atendidas son target, no pedidos latentes.",
+    "Pedidos conocidos orientan abastecimiento del simulador, no son una feature aprobada.",
+    "No se promete anticipar pedidos excepcionales con el modelo.",
+    "Precios se revisan mensualmente con información disponible al corte. Plan disponible exactamente al corte es conocido.",
+    "Cotización ficticia Bs/USD con ancla 10. No cotización actual.",
+    "Stock inicial cero, compras bootstrap sin fabricar meses históricos.",
+    "Perfiles, tamaños y pesos son supuestos de cobertura. Ninguna venta es historia real de RepuestoPro.",
+    "Se incluyen pedidos inesperados, recepciones parciales y retrasos; no se fuerza atender todo.",
+    "TEST nuevo por versión, config y partición, sin selección o métricas."
+  ]
+}

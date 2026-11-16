@@ -1,0 +1,6 @@
+{
+  "status": "PRELIMINARY_SUPERSEDED_NOT_ACTIVE",
+  "accepted_run": "calibration-retail-20261115-03",
+  "reason": "Final aggregation excludes single-observation series from CV. Temporary partitions reuse identical positive observations with byte hashes. Preliminary summaries are not the accepted configuration.",
+  "script_trace_note": "The code file was revised during preliminary aggregation. Its recorded on-disk script hash must not be treated as an attestation of the preliminary in-memory code. Final accepted run uses the reviewed script unchanged."
+}

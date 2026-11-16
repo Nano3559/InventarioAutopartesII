@@ -1,0 +1,17 @@
+{
+  "target": "br-curly-butterfly-ayczan0b",
+  "backup": "br-withered-rain-aylwpqtb",
+  "recorded_at": "2026-11-16T01:12:45.944Z",
+  "action": "resolve",
+  "command": [
+    "prisma",
+    "migrate",
+    "resolve",
+    "--applied",
+    "20260909_close_schema_drift",
+    "--schema",
+    "prisma/schema.prisma"
+  ],
+  "exit_code": 0,
+  "output": "Environment variables loaded from .env\nPrisma schema loaded from prisma\\schema.prisma\nDatasource \"db\": PostgreSQL database \"inventario_db\", schema \"public\" at \"ep-ancient-dream-ayb70sqk.c-5.us-east-2.aws.neon.tech\"\n\nMigration 20260909_close_schema_drift marked as applied.\n\n\n"
+}

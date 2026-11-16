@@ -1,0 +1,318 @@
+{
+  "status": "LOCAL_ACADEMIC_SCENARIOS_FUNCTIONAL",
+  "recordedAt": "2026-11-16T04:03:29.154207+00:00",
+  "userAuthorization": "Complete all H4 tasks needed, including Erika backend tasks. No commit, push, application deploy or new Markdown.",
+  "dataset": {
+    "version": "3.0.0",
+    "build": "scenarios-20261115-02",
+    "unchanged": true,
+    "rows": 7056,
+    "families": 3528,
+    "products": 56,
+    "stores": [
+      5,
+      6,
+      7
+    ]
+  },
+  "release": {
+    "path": "reports/v2/3.0.0/scenarios-model-20261115-01/release.json",
+    "sha256": "803cfefe8feabf23383f801235b0c0f63ef7178858ff78f566014839929a1b07",
+    "artifactSha256": "1ae61ad487d22c3fa8c8e8b5acd0c20d03e1f25d1151a5f680bbd8596d07bde3",
+    "model": "RandomForestRegressor absolute_error",
+    "numericFeatures": 18,
+    "categoricalFeatures": 1,
+    "policy": "SCENARIO_NONNEGATIVE_1",
+    "trainedOnlyOn": "TRAIN",
+    "selectionUsing": "VALIDATION",
+    "validation": {
+      "partition": "VALIDATION",
+      "origin": "SYNTHETIC",
+      "mae": 10.430089285714287,
+      "rmse": 20.79027054192295,
+      "r2": 0.45573789989384283
+    },
+    "baselineValidation": {
+      "mae": 17.107142857142858,
+      "rmse": 33.942528457603714,
+      "r2": -0.4506952634932866
+    },
+    "test": {
+      "model": {
+        "mae": 10.164945436507937,
+        "rmse": 19.4837051187337,
+        "r2": 0.4507201003250898
+      },
+      "baseline": {
+        "mae": 15.56547619047619,
+        "rmse": 30.424379322228695,
+        "r2": -0.33934994730848844
+      },
+      "rows": 1008,
+      "families": 504,
+      "servedPolicyCoverage": {
+        "coveredRows": 1002,
+        "abstainedRows": 6,
+        "totalRows": 1008,
+        "coveredMetrics": {
+          "mae": 10.180878243512971,
+          "rmse": 19.52971730553036,
+          "r2": 0.45076886229561386
+        }
+      },
+      "evaluatedOnce": true,
+      "notUsedForRetuning": true
+    },
+    "noOldTestRepeated": true,
+    "noTrainingOnRequest": true
+  },
+  "validationGroupsWorse": [
+    {
+      "group": "productId",
+      "id": "12",
+      "mae": 6.788333333333333,
+      "rmse": 12.094346360547512,
+      "r2": 0.06766365084985859,
+      "baseline_mae": 6.444444444444445
+    },
+    {
+      "group": "productId",
+      "id": "26",
+      "mae": 2.9250000000000003,
+      "rmse": 4.313310149345216,
+      "r2": -0.2727839527027025,
+      "baseline_mae": 2.4444444444444446
+    },
+    {
+      "group": "productId",
+      "id": "29",
+      "mae": 15.694722222222222,
+      "rmse": 22.135755609169724,
+      "r2": -0.6567420104356902,
+      "baseline_mae": 12.166666666666666
+    },
+    {
+      "group": "productId",
+      "id": "33",
+      "mae": 4.8130555555555565,
+      "rmse": 9.71834698164022,
+      "r2": 0.4371580552898763,
+      "baseline_mae": 4.333333333333333
+    },
+    {
+      "group": "productId",
+      "id": "35",
+      "mae": 19.12472222222222,
+      "rmse": 30.044092250668296,
+      "r2": 0.4411289425206525,
+      "baseline_mae": 13.166666666666666
+    }
+  ],
+  "tests": {
+    "backend": {
+      "passed": 184,
+      "failed": 0,
+      "skipped": 0
+    },
+    "frontend": {
+      "passed": 274,
+      "failed": 0,
+      "skipped": 0
+    },
+    "pythonScenarioSuites": {
+      "passed": 68,
+      "failed": 0
+    },
+    "totalPassed": 526,
+    "backendBuild": "PASS",
+    "frontendBuild": "PASS"
+  },
+  "visual": {
+    "session": "FIXTURE_LOCAL_ADMIN_ONLY",
+    "api": "ACTUAL_EXPRESS_ROUTER_AND_PYTHON_RUNTIME",
+    "model": "ACTUAL_FROZEN_3_0_ARTIFACT",
+    "databaseUsedByScenarioRuntime": false,
+    "desktopViewport": 1280,
+    "desktopDocumentWidth": 1272,
+    "mobileViewport": 390,
+    "mobileDocumentWidth": 382,
+    "horizontalOverflow": false,
+    "checks": [
+      "Snapshot values loaded from server",
+      "120 to 150 Bs price change, wholesale 102 to 127.5, effective Apr 1 2028",
+      "Baseline 22.52, scenario 22.405, delta -0.115. Illustrative input-only VALIDATION example, not evaluation evidence.",
+      "Replenishment required 28, position 70, suggestion 0, arrival Apr 10",
+      "Wholesale price 999 above retail 150 rejected, valid comparison recovered"
+    ],
+    "screenshots": [
+      "scenarios-desktop.png",
+      "scenarios-mobile.png",
+      "invalid-price.png",
+      "replenishment-real.png"
+    ],
+    "authenticatedProductionBrowserSession": false,
+    "reviewServersStopped": true
+  },
+  "dashboard": {
+    "readOnlyTransaction": true,
+    "productionUsedForReadsOnly": true,
+    "period": "2026-09",
+    "checks": [
+      {
+        "role": "ADMIN",
+        "status": 200,
+        "period": "2026-09",
+        "salesAvailable": true,
+        "scopedLocation": 5,
+        "monthlyCount": 10,
+        "monthlyAmount": 3371,
+        "soldUnits": 19,
+        "independentAggregateMatches": true
+      },
+      {
+        "role": "TIENDA",
+        "status": 200,
+        "period": "2026-09",
+        "salesAvailable": true,
+        "scopedLocation": 5,
+        "monthlyCount": 10,
+        "monthlyAmount": 3371,
+        "soldUnits": 19,
+        "independentAggregateMatches": true
+      },
+      {
+        "role": "INVENTARIO",
+        "status": 200,
+        "period": "2026-09",
+        "salesAvailable": true,
+        "scopedLocation": null,
+        "monthlyCount": 24,
+        "monthlyAmount": 26606,
+        "soldUnits": 72,
+        "independentAggregateMatches": true
+      }
+    ],
+    "noCommercialWrites": true
+  },
+  "scope": {
+    "ross": [
+      "H4-R01",
+      "H4-R02",
+      "H4-R03",
+      "H4-R04",
+      "H4-R05",
+      "H4-R06",
+      "H4-R07",
+      "H4-R08",
+      "H4-R09",
+      "H4-R10"
+    ],
+    "backendImplementedByAgentUnderUserAuthorization": [
+      "H4-E01",
+      "H4-E02",
+      "H4-E03",
+      "H4-E04",
+      "H4-E05",
+      "H4-E06",
+      "H4-E07",
+      "H4-E08",
+      "H4-E09"
+    ],
+    "personalTeamRehearsalClaimed": false,
+    "productionAppDeploymentClaimed": false
+  },
+  "limits": [
+    "Academic synthetic validation, not a certified commercial demand forecast",
+    "FX and cost are import-cost/price validation inputs, not claimed causal sales drivers",
+    "Supplier/internal lead time are replenishment inputs, existing shipment arrival dates affect sales features",
+    "Forest predictions can remain unchanged or be non-monotonic under a price edit. No forced direction.",
+    "Monthly allocation and planned shipments do not guarantee daily availability",
+    "Unknown channel mix and inputs outside TRAIN ranges abstain",
+    "Automotive excluded pending license",
+    "Commercial integration, real-data monitoring and automatic purchases remain H5"
+  ],
+  "protectedFilesChecked": 199,
+  "protectedChanges": [],
+  "oldSchemaContractByteIdentical": true,
+  "existingMigrationsUnchanged": true,
+  "noPrismaChanges": true,
+  "noNeonWrites": true,
+  "noDatasetOrRawChanges": true,
+  "noNewMarkdown": true,
+  "gitStatus": "NOT_EXECUTED_USER_RESTRICTION",
+  "gitDiffStat": "NOT_EXECUTED_USER_RESTRICTION",
+  "noCommitPushDeploy": true,
+  "sourceFilesModified": [
+    "backend/src/app.ts",
+    "backend/src/modules/predictions/predictions.routes.ts",
+    "backend/src/modules/dashboard/dashboard.routes.ts",
+    "backend/src/modules/dashboard/dashboard.test.ts",
+    "frontend/src/services/scenarioView.ts",
+    "frontend/src/components/DemandScenarioPanel.tsx",
+    "frontend/src/components/DemandScenarioPanel.test.tsx",
+    "frontend/src/pages/DashboardPage.tsx",
+    "frontend/src/pages/PredictionsPage.tsx",
+    "frontend/src/test/fixtures/demandScenario.ts",
+    "frontend/src/test/fixtures/ScenarioVisual.tsx"
+  ],
+  "sourceFilesCreated": [
+    "backend/src/modules/predictions/scenarios.service.ts",
+    "backend/src/modules/predictions/scenarios.test.ts",
+    "frontend/src/test/fixtures/ScenarioIntegrationVisual.tsx",
+    "frontend/src/test/fixtures/scenario-integration.html",
+    "ml/demand/admin_scenarios.py",
+    "ml/demand/v2/scenario_data.py",
+    "ml/demand/v2/scenario_runtime.py",
+    "ml/demand/v2/train_scenarios.py",
+    "ml/demand/v2/evaluate_scenarios_once.py",
+    "ml/demand/v2/contracts/scenario_runtime.v1.json",
+    "ml/demand/tests/test_scenario_runtime.py"
+  ],
+  "newArtifactAndReports": [
+    "models/v2/scenarios-model-20261115-01/model.joblib",
+    "reports/v2/3.0.0/scenarios-model-20261115-01"
+  ],
+  "resolvedImplementationIssues": [
+    "Strict fixture decimals corrected to four input decimals",
+    "Historical schema bytes restored after a proposed trace-limit extension. Extension isolated in runtime specification.",
+    "Initial network-restricted test invocation rerun with local-socket permissions",
+    "Unused review-harness import removed before passing final build"
+  ],
+  "documentationModified": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md",
+    "ml/demand/README.md"
+  ],
+  "mainLocalBackendReady": "200 ready",
+  "protectedRecheckedAfterDocumentation": true,
+  "humanActionsRemaining": [
+    "Sign in to the actual administrator session, refresh and rehearse the demo. The tool visual session used fixture authentication.",
+    "Manual review/commit/push/deploy only by user if desired, not performed."
+  ],
+  "newRuntimeContractSha256": "a6dda8fc84389e7cb35f64631429ae8be0a4d93e287e8b65668ae7c8ab14f682",
+  "currentSourceHashes": {
+    "backend/src/app.ts": "6000171e52b088a5f3265493b794eb18b25a3d62c8503f8654f39163b3ff467d",
+    "backend/src/modules/predictions/predictions.routes.ts": "988436586b9ef9f8833b7f34d7af3734209d1003ab86ee86998d3342925bc027",
+    "backend/src/modules/dashboard/dashboard.routes.ts": "be80cb4862b5bd7aef063a1d7ae447919ae305d923165c7a8aacccd2a576f102",
+    "backend/src/modules/dashboard/dashboard.test.ts": "0ec6bb0927b5a11c995a552c33897ceb34ad6c6f2023677f92bdc19b012651c5",
+    "frontend/src/services/scenarioView.ts": "1adab23f2edf232ccf6112cdc0955f5996a8ebce46e46adf2eb71ce050a46780",
+    "frontend/src/components/DemandScenarioPanel.tsx": "7f62406af5fe26afdf34ddd9d8b655674f3a550bfba565cfb86669273f2cd0a3",
+    "frontend/src/components/DemandScenarioPanel.test.tsx": "ba08b7934b3de92e0e105aaaa73779759fa5dc2526ba71e4590d13e61df6acf1",
+    "frontend/src/pages/DashboardPage.tsx": "cc7ed2020c026dec7b0acd1e68f9e83ac1f45180e5fa6463e7d09e1d541b9b41",
+    "frontend/src/pages/PredictionsPage.tsx": "beaf83606db039854d606474c3949741bae749962a91b8db1c92aa853ce0be2e",
+    "frontend/src/test/fixtures/demandScenario.ts": "9d85fdc34d90cebcc2562dc0c943f11c5573b8884fa43264281c1f684f7161a1",
+    "frontend/src/test/fixtures/ScenarioVisual.tsx": "f1ec553643c86c01f7c6cafcb42c74e6b8b0fbab0f6e3fe6dc1ea13fa7cd22b8",
+    "backend/src/modules/predictions/scenarios.service.ts": "ecc53449f6a05137155413530113259445fe4f20ce30e38869b29a721860b9ee",
+    "backend/src/modules/predictions/scenarios.test.ts": "41b30a8058c7c9d9bdc1635e70d31d57c3d8a2d80914445d37ed488cc04ddda7",
+    "frontend/src/test/fixtures/ScenarioIntegrationVisual.tsx": "b6715de7d2bc8dfa694fc0e105f796e1d6e6ac6ff45af61db552e53ec760caa3",
+    "frontend/src/test/fixtures/scenario-integration.html": "7bef433f12ca8df11d821ff1c075a917cc1294cc939cea3e96f7b34dbe3f9158",
+    "ml/demand/admin_scenarios.py": "a28b00d510ac960becdfaa12476d12fd409aec47cdd392989fd0d74eee497b59",
+    "ml/demand/v2/scenario_data.py": "056ba0ad3475de3a19ac2dc1e6e2ef3382ac1dc10bb717cbfd12d46c5a6f5858",
+    "ml/demand/v2/scenario_runtime.py": "a41f1293860187bb7f534db240dc18b359aae8f6216624bf261c9c3e98a727cc",
+    "ml/demand/v2/train_scenarios.py": "ec42ed159934fdc1942aee96b43139e766c6c2db7db4ca6b978fed3acff09ade",
+    "ml/demand/v2/evaluate_scenarios_once.py": "338b7c090d7d42c32ecf55acc10229205fce1830fab0e55fd3b74ede39bc813a",
+    "ml/demand/v2/contracts/scenario_runtime.v1.json": "a6dda8fc84389e7cb35f64631429ae8be0a4d93e287e8b65668ae7c8ab14f682",
+    "ml/demand/tests/test_scenario_runtime.py": "1d1187aad86888cc95a5b254323b5f7d9a3219854b24a25ae69d2efd989767ac"
+  }
+}

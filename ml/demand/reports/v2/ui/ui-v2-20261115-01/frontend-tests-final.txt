@@ -1,0 +1,12 @@
+
+ RUN  v2.1.9 E:/NOVENO_SEMESTRE/ProgramaciónAvanzada/Inventario/frontend
+
+ ✓ src/pages/__tests__/PredictionsPage.test.tsx (12 tests) 2358ms
+   ✓ pantalla administrativa V2 > ofrece solo meses aprobados y horizonte fijo sin enviar features 487ms
+   ✓ pantalla administrativa V2 > limpia resultados al cambiar producto, tienda o mes 478ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  10:43:27
+   Duration  8.17s (transform 164ms, setup 612ms, collect 496ms, tests 2.36s, environment 3.03s, prepare 193ms)
+

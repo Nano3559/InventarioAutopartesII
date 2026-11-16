@@ -1,0 +1,28 @@
+{
+  "splits": {
+    "TRAIN": [
+      "2025-02",
+      "2026-04"
+    ],
+    "VALIDATION": [
+      "2026-05",
+      "2026-07"
+    ],
+    "TEST": [
+      "2026-08",
+      "2026-10"
+    ],
+    "DEMO": [
+      "2025-02",
+      "2026-10"
+    ]
+  },
+  "warmup": [
+    "2024-11",
+    "2025-01"
+  ],
+  "random_split": false,
+  "test_status": "SEALED",
+  "forecast_month": "2026-11",
+  "world_policy": "Independent fresh calendar RNG worlds. DEMO is never used in model selection or scoring. November has no generated outcome."
+}

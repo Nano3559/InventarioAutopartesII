@@ -1,0 +1,39 @@
+{
+  "status": "VALIDATED_PRIVATE_REFERENCES_ONLY",
+  "sources": {
+    "m5_walmart": {
+      "monthly_rows": 1981850,
+      "complete_month_rows": 1920870,
+      "partial_month_rows": 60980,
+      "units": 66927173.0,
+      "observed_days": 59181090,
+      "zero_days": 40241819,
+      "prices": 6841121,
+      "price_changes_eligible": 6780141,
+      "monthly_key_check": "64-bit hash duplicate check, conservatively rejects any collision",
+      "source_totals_match": true
+    },
+    "corporacion_favorita": {
+      "rows": 125497040,
+      "positive_rows": 125489245,
+      "negative_rows": 7795,
+      "zero_rows": 0,
+      "fractional_rows": 8191095,
+      "promotion_unknown": 21657651,
+      "net_units": 1073610268.7878002,
+      "monthly_rows": 5813304,
+      "source_row_coverage": "Exact bitset, each original row appears once across sign partitions",
+      "source_totals_match": true,
+      "cohort_counts": {
+        "OBSERVED_INTEGER": 3172,
+        "UNKNOWN": 643,
+        "OBSERVED_FRACTIONAL": 285
+      }
+    }
+  },
+  "calibrated": false,
+  "dataset_created": false,
+  "trained": false,
+  "raw_changed": false,
+  "validation_script_sha256": "8ab64ad2c97a17c21fe39f65ddb3e88c7f5adf46cad994560dc8a1ef3f208bd7"
+}

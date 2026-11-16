@@ -1,0 +1,1830 @@
+{
+  "recorded_at": "2026-11-14T20:38:58.596367+00:00",
+  "scope": "Código local y trazabilidad de pantallas a fuentes. No consulta Neon ni certifica calidad de filas productivas.",
+  "ui_runtime_test_scope": [
+    "DashboardPage",
+    "PredictionsPage",
+    "SalesPage",
+    "ReportsPage",
+    "RoleRoute"
+  ],
+  "views": [
+    {
+      "view": "Dashboard",
+      "route": "/panel",
+      "physical_fields": [
+        "Sale.saleDate",
+        "Sale.status",
+        "Sale.total",
+        "Inventory.stock"
+      ],
+      "role_for_v2": "Conciliación, no feature",
+      "gap": "El fallo de base real no puede certificarse sin entorno autorizado. Pruebas aisladas no lo sustituyen.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "sha256": "dcc5e188d9da97fc3df418db01b45e6f01f558db7045e8a20350a98183c0885b",
+          "markers": [
+            {
+              "line": 136,
+              "text": "const res = await api.get(\"/dashboard\");"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/dashboard/dashboard.routes.ts",
+          "sha256": "6e6d5bf2cfb52ca429d966bf04453132cf556c8ebb3214eee53f5237c8de58ae",
+          "markers": [
+            {
+              "line": 235,
+              "text": "router.get(\"/\", authenticate, authorize(\"ADMIN\", \"TIENDA\", \"INVENTARIO\"), requireTiendaLocation, dashboardHandler);"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Predicción",
+      "route": "/panel/prediccion",
+      "physical_fields": [],
+      "role_for_v2": "Consulta V1, referencia para contrato V2",
+      "gap": "V1 usa artefactos locales y catálogo histórico. No contiene variables V2 ni certifica demanda comercial.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/PredictionsPage.tsx",
+          "sha256": "ec8f5f49838c9a91faacc3149f8f472d6c571c7b0f1bfd225c803c4e1f68c5b5",
+          "markers": [
+            {
+              "line": 17,
+              "text": "try { const { data } = await api.get<Catalog>(\"/predictions/catalog\"); setCatalog(data); setProduct(String(data.products[0]?.id || \"\")); setLocation(String(data.locations[0]?.id || \"\")); }"
+            },
+            {
+              "line": 24,
+              "text": "try { const { data } = await api.post<Result>(\"/predictions/demand\", { productId: Number(product), locationId: Number(location) }); if (id === request.current) setResult(data); }"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/predictions/predictions.routes.ts",
+          "sha256": "b4121577a258d207a2e518382d21cd55931e4c1c81280d5621de57b9a9f14ef4",
+          "markers": [
+            {
+              "line": 10,
+              "text": "router.get(\"/catalog\", async (_req, res) => {"
+            },
+            {
+              "line": 15,
+              "text": "router.post(\"/demand\", [body(\"productId\").custom(validId).withMessage(\"Seleccione un producto válido\"), body(\"locationId\").custom(validId).withMessage(\"Seleccione una tienda válida\")], validate, async (req: Request, res:"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Inventario",
+      "route": "/panel/inventario",
+      "physical_fields": [
+        "Inventory.stock",
+        "Inventory.minStock",
+        "Product.id",
+        "Product.itemCode",
+        "Product.categoryId"
+      ],
+      "role_for_v2": "Selección y disponibilidad actual",
+      "gap": "Sin serie histórica completa no usar stock actual para meses anteriores.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/InventoryPage.tsx",
+          "sha256": "ad6e601b699e3391644fe3c4697dd62baa96e52c70d25a79d35b906b56b30051",
+          "markers": [
+            {
+              "line": 159,
+              "text": "const res = await api.get(`/products?${params.toString()}`);"
+            },
+            {
+              "line": 162,
+              "text": "const costs = await api.get(\"/costs?limit=100\");"
+            },
+            {
+              "line": 178,
+              "text": "const res = await api.get(\"/products/filters\");"
+            },
+            {
+              "line": 185,
+              "text": "useEffect(() => { api.get(\"/locations\").then((res) => setLocations(res.data.locations || res.data)).catch(() => {}); }, []);"
+            },
+            {
+              "line": 236,
+              "text": "await api.put(`/products/${editingId}`, payload);"
+            },
+            {
+              "line": 239,
+              "text": "await api.post(\"/products\", payload);"
+            },
+            {
+              "line": 253,
+              "text": "await api.delete(`/products/${id}`);"
+            },
+            {
+              "line": 266,
+              "text": "const res = await api.get(`/inventory/product/${productId}`);"
+            },
+            {
+              "line": 292,
+              "text": "await api.put(`/inventory/${invId}`, {"
+            },
+            {
+              "line": 300,
+              "text": "const res = await api.get(`/inventory/product/${showStockModal}`);"
+            },
+            {
+              "line": 323,
+              "text": "const res = await api.post(\"/products/import\", formData, {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/inventory/inventory.routes.ts",
+          "sha256": "392cc3133f6eae4665e1881018cfeb122aa0ee9d59dc663ef381828333b88814",
+          "markers": [
+            {
+              "line": 122,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 156,
+              "text": "router.get(\"/product/:productId\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 195,
+              "text": "router.put(\"/:id\", authorize(...ROLES_QUE_AJUSTAN_INVENTARIO), async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/products/products.routes.ts",
+          "sha256": "4010898fa1997c33ac72b44d5093e51012fc805f10a21d3d72abb1363e0add19",
+          "markers": [
+            {
+              "line": 36,
+              "text": "router.get(\"/\", authenticate, async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 181,
+              "text": "router.get(\"/filters\", authenticate, async (_req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 204,
+              "text": "router.get(\"/:id\", authenticate, async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 277,
+              "text": "router.post(\"/\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 331,
+              "text": "router.put(\"/:id\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 385,
+              "text": "router.delete(\"/:id\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 434,
+              "text": "router.post("
+            },
+            {
+              "line": 472,
+              "text": "router.post(\"/import\", authenticate, authorize(\"ADMIN\"), upload.single(\"file\"), async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Producto",
+      "route": "/panel/inventario/:id",
+      "physical_fields": [
+        "Product.price1",
+        "Product.wholesalePrice",
+        "Product.price2",
+        "Product.brand",
+        "Product.model",
+        "Product.year",
+        "Product.detail",
+        "Product.detalles"
+      ],
+      "role_for_v2": "Referencia de catálogo versionada",
+      "gap": "Categoría nullable, año textual. Los dos detalles requieren revisión semántica, no son features iniciales.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/ProductDetailPage.tsx",
+          "sha256": "cc81b352f7856bc53381841dff1ef028c67aab4a9e7b6c5975aaa33804f24387",
+          "markers": [
+            {
+              "line": 51,
+              "text": "const res = await api.get(`/products/${id}`);"
+            },
+            {
+              "line": 54,
+              "text": "const costs = await api.get(`/costs?productId=${id}&limit=1`);"
+            },
+            {
+              "line": 78,
+              "text": "const res = await api.get(\"/products/filters\");"
+            },
+            {
+              "line": 93,
+              "text": "await api.put(`/products/${id}`, {"
+            },
+            {
+              "line": 121,
+              "text": "await api.post(\"/requests\", {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/products/products.routes.ts",
+          "sha256": "4010898fa1997c33ac72b44d5093e51012fc805f10a21d3d72abb1363e0add19",
+          "markers": [
+            {
+              "line": 36,
+              "text": "router.get(\"/\", authenticate, async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 181,
+              "text": "router.get(\"/filters\", authenticate, async (_req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 204,
+              "text": "router.get(\"/:id\", authenticate, async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 277,
+              "text": "router.post(\"/\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 331,
+              "text": "router.put(\"/:id\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 385,
+              "text": "router.delete(\"/:id\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 434,
+              "text": "router.post("
+            },
+            {
+              "line": 472,
+              "text": "router.post(\"/import\", authenticate, authorize(\"ADMIN\"), upload.single(\"file\"), async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/costs/costs.routes.ts",
+          "sha256": "bf37a7acb65b22d88be96c9645b339162d81fab33b8602d9cdb3b5259aa2cbc6",
+          "markers": [
+            {
+              "line": 57,
+              "text": "router.get(\"/invoice/:filename\", (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 70,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 114,
+              "text": "exchangeRate: c.exchangeRate ? Number(c.exchangeRate) : null,"
+            },
+            {
+              "line": 128,
+              "text": "router.post(\"/\", authorize(\"ADMIN\"), upload.single(\"invoice\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 136,
+              "text": "const exchangeRate = req.body.exchangeRate ? parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\") : null;"
+            },
+            {
+              "line": 137,
+              "text": "if (exchangeRate !== null && exchangeRate <= 0) {"
+            },
+            {
+              "line": 145,
+              "text": "if (req.body.unitCost !== undefined) costPrice = landedCost(parsePositiveDecimal(req.body.unitCost, \"Costo unitario\"), exchangeRate ?? 1, percentage ?? 0);"
+            },
+            {
+              "line": 157,
+              "text": "data: { purchaseInvoiceId, productId, supplierId, costPrice, exchangeRate, percentage, invoiceUrl: req.file?.filename || null },"
+            },
+            {
+              "line": 185,
+              "text": "return req.body.locationId || req.body.quantity ? registerInvoice(tx, supplierId, req.body.documentIdentity, { kind: \"ONE_LINE_RECEIPT\", productId, costPrice, exchangeRate, percentage, locationId: parsePositiveInt(req.bo"
+            },
+            {
+              "line": 195,
+              "text": "exchangeRate: cost.exchangeRate ? Number(cost.exchangeRate) : null,"
+            },
+            {
+              "line": 215,
+              "text": "router.put(\"/:id\", authorize(\"ADMIN\"), upload.single(\"invoice\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 238,
+              "text": "if (req.body.exchangeRate !== undefined) {"
+            },
+            {
+              "line": 239,
+              "text": "data.exchangeRate = req.body.exchangeRate !== \"\" ? parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\") : null;"
+            },
+            {
+              "line": 240,
+              "text": "if (data.exchangeRate !== null && data.exchangeRate <= 0) {"
+            },
+            {
+              "line": 250,
+              "text": "if (req.body.unitCost !== undefined) data.costPrice = landedCost(parsePositiveDecimal(req.body.unitCost, \"Costo unitario\"), data.exchangeRate ?? Number(existing.exchangeRate ?? 1), data.percentage ?? Number(existing.perc"
+            },
+            {
+              "line": 257,
+              "text": "exchangeRate: existing.exchangeRate ? Number(existing.exchangeRate) : null,"
+            },
+            {
+              "line": 285,
+              "text": "exchangeRate: changed.exchangeRate ? Number(changed.exchangeRate) : null,"
+            },
+            {
+              "line": 303,
+              "text": "exchangeRate: cost.exchangeRate ? Number(cost.exchangeRate) : null,"
+            },
+            {
+              "line": 323,
+              "text": "router.delete(\"/:id\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 354,
+              "text": "router.post(\"/import-invoice\", authorize(\"ADMIN\"), upload.fields([{ name: \"file\", maxCount: 1 }, { name: \"invoice\", maxCount: 1 }]), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 361,
+              "text": "const exchangeRate = parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\");"
+            },
+            {
+              "line": 365,
+              "text": "if (exchangeRate <= 0 || percentage > 100 || defaultMargin > 200) throw errorDominio(\"Tipo de cambio, porcentaje o margen inválidos\");"
+            },
+            {
+              "line": 373,
+              "text": "const configuration = { exchangeRate, percentage, defaultMargin, locationId };"
+            },
+            {
+              "line": 396,
+              "text": "prepared.push({ product, quantity, costPrice: landedCost(unit, exchangeRate, percentage) });"
+            },
+            {
+              "line": 405,
+              "text": "const cost = await tx.cost.create({ data: { purchaseInvoiceId, productId: actual.id, supplierId, costPrice: row.costPrice, exchangeRate, percentage, invoiceUrl: invoiceFile?.filename ?? null } });"
+            },
+            {
+              "line": 411,
+              "text": "const response = { total: rows.length, imported: imported.length, updated: 0, errors: 0, formula: `PrecioUnitario × TipoCambio(${exchangeRate}) × (1 + ${percentage}% / 100)`, details: { imported, updated: [], errors: [] "
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/requests/requests.routes.ts",
+          "sha256": "e78c1f524efaa6855d20ecfbc9802417afd94c0ec60d9f3afffe157f8fdae1fa",
+          "markers": [
+            {
+              "line": 41,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 82,
+              "text": "router.get(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 111,
+              "text": "router.post(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 208,
+              "text": "router.put(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 338,
+              "text": "router.delete(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Venta",
+      "route": "/panel/ventas",
+      "physical_fields": [
+        "Sale.locationId",
+        "Sale.saleDate",
+        "Sale.status",
+        "SaleItem.productId",
+        "SaleItem.quantity",
+        "SaleItem.unitPrice"
+      ],
+      "role_for_v2": "Ventas brutas por producto tienda mes",
+      "gap": "priceMode se elige en UI pero no persiste en SaleItem. No inferir NORMAL como POR_MENOR.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/SalesPage.tsx",
+          "sha256": "fa8104681c8445fe65511a434cec1b7b0dda4f81ca049f12f74ddc50d5dc817a",
+          "markers": [
+            {
+              "line": 40,
+              "text": "unitPrice: number; priceMode: \"POR_MENOR\" | \"POR_MAYOR\"; price1: number; wholesalePrice: number;"
+            },
+            {
+              "line": 62,
+              "text": "items: { productId: number; quantity: number; priceMode: \"POR_MENOR\" | \"POR_MAYOR\" }[];"
+            },
+            {
+              "line": 94,
+              "text": "api.get(\"/locations\").then((r) => {"
+            },
+            {
+              "line": 121,
+              "text": "api.get(\"/products/filters\").then((r) => {"
+            },
+            {
+              "line": 190,
+              "text": "className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceMode === \"POR_MENOR\" ? \"bg-primary-600 text-white\" : \"bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white\"}`}"
+            },
+            {
+              "line": 194,
+              "text": "className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceMode === \"POR_MAYOR\" ? \"bg-primary-600 text-white\" : \"bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white\"}`}"
+            },
+            {
+              "line": 223,
+              "text": "const res = await api.get(`/products?${params.toString()}`);"
+            },
+            {
+              "line": 254,
+              "text": "const addToCart = (p: Product, priceMode: \"POR_MENOR\" | \"POR_MAYOR\" = \"POR_MENOR\") => {"
+            },
+            {
+              "line": 255,
+              "text": "const price = Number((priceMode === \"POR_MAYOR\" ? Number(p.wholesalePrice) : Number(p.price1)).toFixed(2));"
+            },
+            {
+              "line": 256,
+              "text": "if (!Number.isFinite(price) || price <= 0 || (priceMode === \"POR_MAYOR\" && (!canWholesale || price > Number(p.price1)))) { toast.error(\"Precio por mayor no configurado o inválido\"); return; }"
+            },
+            {
+              "line": 264,
+              "text": "if (existing.priceMode !== priceMode) { toast.error(\"El producto ya usa otro modo. Cámbielo en su fila del carrito\"); return prev; }"
+            },
+            {
+              "line": 271,
+              "text": "unitPrice: price, priceMode, price1: Number(p.price1), wholesalePrice: Number(p.wholesalePrice),"
+            },
+            {
+              "line": 293,
+              "text": "const changePriceMode = (productId: number, priceMode: \"POR_MENOR\" | \"POR_MAYOR\", price1: number, wholesalePrice: number) => {"
+            },
+            {
+              "line": 296,
+              "text": "const price = Number((priceMode === \"POR_MAYOR\" ? wholesalePrice : price1).toFixed(2));"
+            },
+            {
+              "line": 297,
+              "text": "return { ...c, priceMode, unitPrice: price };"
+            },
+            {
+              "line": 367,
+              "text": "priceMode: \"POR_MENOR\","
+            },
+            {
+              "line": 429,
+              "text": "priceMode: c.priceMode,"
+            },
+            {
+              "line": 459,
+              "text": "const res = await api.post(\"/sales\", { ...payload, operationId: pendingOperationId(\"SALE_NORMAL\") });"
+            },
+            {
+              "line": 518,
+              "text": "const res = await api.get(`/sales?${params.toString()}`);"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/sales/sales.routes.ts",
+          "sha256": "e7e442bfc68626bb541ee1cdbaa1a398ba9512ab37142bd603698ba20ecce6af",
+          "markers": [
+            {
+              "line": 36,
+              "text": "router.post(\"/:id/void\", authorize(\"ADMIN\"), async (req: AuthRequest, res) => {"
+            },
+            {
+              "line": 47,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 107,
+              "text": "router.get(\"/:id/nota\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 256,
+              "text": "router.get(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 296,
+              "text": "router.post(\"/\", saleValidation, (req: AuthRequest, res: Response, next: NextFunction) => {"
+            },
+            {
+              "line": 297,
+              "text": "if (req.body.items?.some((i: { priceMode?: string }) => i.priceMode === \"POR_MAYOR\")) return authorizeModule(\"ventas-mayor\")(req, res, next);"
+            },
+            {
+              "line": 419,
+              "text": "const unitPrice = salePrice(product, item.priceMode);"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/customers/customers.routes.ts",
+          "sha256": "be60786efbd8ed51dde734724dc046ff761c138b58359ea81bc2fad838a22355",
+          "markers": [
+            {
+              "line": 17,
+              "text": "router.get(\"/\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 48,
+              "text": "router.get(\"/:id\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 65,
+              "text": "router.post(\"/\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 91,
+              "text": "router.put(\"/:id\", async (req: Request, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/payments/payments.routes.ts",
+          "sha256": "9dba1f22ecc5356ae259ca02680aac7c9a833255ff239e9b674744eb31702ce1",
+          "markers": [
+            {
+              "line": 22,
+              "text": "router.get(\"/receiving-accounts\", async (_req, res) => {"
+            },
+            {
+              "line": 26,
+              "text": "router.post(\"/receiving-accounts\", authorize(\"ADMIN\"), async (req: AuthRequest, res) => {"
+            },
+            {
+              "line": 41,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 84,
+              "text": "router.post(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 144,
+              "text": "router.get(\"/summary/:saleId\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Mayorista",
+      "route": "/panel/ventas-mayor",
+      "physical_fields": [
+        "Sale.type",
+        "Sale.locationId",
+        "SaleItem.quantity",
+        "SaleItem.unitPrice"
+      ],
+      "role_for_v2": "Concentración de pedidos, candidata",
+      "gap": "MAYOR identifica flujo, no completa modalidad de todas las líneas NORMAL. El pago o entrega no crea venta adicional.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/WholesalePage.tsx",
+          "sha256": "7cf0d340e366b1182db9490513279e09c3500a3223c00cfe48a354570bbe6ba1",
+          "markers": [
+            {
+              "line": 49,
+              "text": "useEffect(() => { api.get(\"/locations\").then((r) => setLocations(Array.isArray(r.data) ? r.data : r.data.locations || [])).catch(() => toast.error(\"No se pudieron cargar ubicaciones\")); }, []);"
+            },
+            {
+              "line": 91,
+              "text": "const res = await api.get(\"/wholesale?limit=50\");"
+            },
+            {
+              "line": 109,
+              "text": "const res = await api.get(`/products?search=${encodeURIComponent(v)}&limit=10`);"
+            },
+            {
+              "line": 162,
+              "text": "priceMode: \"POR_MAYOR\","
+            },
+            {
+              "line": 166,
+              "text": "const response = await api.post(\"/wholesale\", { ...payload, operationId: pendingOperationId(\"SALE_WHOLESALE\") });"
+            },
+            {
+              "line": 197,
+              "text": "const res = await api.post(\"/wholesale/import\", formData, {"
+            },
+            {
+              "line": 213,
+              "text": "const response = await api.get(`/sales/${sale.id}/nota`);"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/wholesale/wholesale.routes.ts",
+          "sha256": "a58fa4dbbfce811f9f24fbc1483dc2a6136d9e514a46b096f7b7cb78108cf497",
+          "markers": [
+            {
+              "line": 34,
+              "text": "router.post(\"/\", saleValidation, async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 281,
+              "text": "router.post(\"/import\", authorize(\"ADMIN\"), upload.single(\"file\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 364,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/customers/customers.routes.ts",
+          "sha256": "be60786efbd8ed51dde734724dc046ff761c138b58359ea81bc2fad838a22355",
+          "markers": [
+            {
+              "line": 17,
+              "text": "router.get(\"/\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 48,
+              "text": "router.get(\"/:id\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 65,
+              "text": "router.post(\"/\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 91,
+              "text": "router.put(\"/:id\", async (req: Request, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/payments/payments.routes.ts",
+          "sha256": "9dba1f22ecc5356ae259ca02680aac7c9a833255ff239e9b674744eb31702ce1",
+          "markers": [
+            {
+              "line": 22,
+              "text": "router.get(\"/receiving-accounts\", async (_req, res) => {"
+            },
+            {
+              "line": 26,
+              "text": "router.post(\"/receiving-accounts\", authorize(\"ADMIN\"), async (req: AuthRequest, res) => {"
+            },
+            {
+              "line": 41,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 84,
+              "text": "router.post(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 144,
+              "text": "router.get(\"/summary/:saleId\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Devolución",
+      "route": "/panel/devoluciones",
+      "physical_fields": [
+        "Return.date",
+        "Return.quantity",
+        "Return.disposition",
+        "Return.inspectedAt",
+        "Return.restockedQuantity",
+        "Return.debtReduction",
+        "Return.refundAmount"
+      ],
+      "role_for_v2": "Calidad y stock recuperable",
+      "gap": "No restar al target bruto ni utilizar devoluciones futuras como entradas.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/ReturnsPage.tsx",
+          "sha256": "c7a78c450ab8b434811a3675261ec413426ced3b4496265b6ece1b856538e36c",
+          "markers": [
+            {
+              "line": 79,
+              "text": "const res = await api.get(`/returns?${params.toString()}`);"
+            },
+            {
+              "line": 93,
+              "text": "const res = await api.get(\"/returns/recent-sales\");"
+            },
+            {
+              "line": 112,
+              "text": "const res = await api.get(`/returns/sale/${searchIdVal.trim()}`);"
+            },
+            {
+              "line": 163,
+              "text": "await api.post(\"/returns\", {"
+            },
+            {
+              "line": 176,
+              "text": "const res = await api.get(`/returns/sale/${sale.id}`);"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/returns/returns.routes.ts",
+          "sha256": "6d5a3356fc8cb134bb3991f812cfbb552602aae581d62f40b51c14a2cb87d20e",
+          "markers": [
+            {
+              "line": 28,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 85,
+              "text": "router.get(\"/recent-sales\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 113,
+              "text": "router.get(\"/sale/:saleId\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 143,
+              "text": "router.post(\"/\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Solicitud",
+      "route": "/panel/solicitudes",
+      "physical_fields": [
+        "ProductRequest.date",
+        "ProductRequest.expectedDate",
+        "ProductRequest.status",
+        "RequestHistory.createdAt"
+      ],
+      "role_for_v2": "Seguimiento de reposición interna",
+      "gap": "Fecha prevista no es llegada. Estados legacy y movimiento vinculado no deben duplicar compromisos.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/RequestsPage.tsx",
+          "sha256": "4b11bb3d65fe5f2c016a1032f551e815ecb4f1d1928c10ab5f3cc8e25c97e7f1",
+          "markers": [
+            {
+              "line": 99,
+              "text": "const res = await api.get(`/requests?${params.toString()}`);"
+            },
+            {
+              "line": 112,
+              "text": "const res = await api.get(\"/locations\");"
+            },
+            {
+              "line": 138,
+              "text": "const res = await api.get(`/products?search=${encodeURIComponent(q.trim())}&limit=8`);"
+            },
+            {
+              "line": 169,
+              "text": "await api.post(\"/requests\", {"
+            },
+            {
+              "line": 197,
+              "text": "await api.put(`/requests/${id}`, { status: newStatus, ...(newStatus === \"ENTREGADO\" ? { fromLocationId: Number(originWarehouse) } : {}) });"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/requests/requests.routes.ts",
+          "sha256": "e78c1f524efaa6855d20ecfbc9802417afd94c0ec60d9f3afffe157f8fdae1fa",
+          "markers": [
+            {
+              "line": 41,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 82,
+              "text": "router.get(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 111,
+              "text": "router.post(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 208,
+              "text": "router.put(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 338,
+              "text": "router.delete(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Movimiento",
+      "route": "/panel/movimientos",
+      "physical_fields": [
+        "Movement.date",
+        "Movement.receivedAt",
+        "Movement.receivedQuantity",
+        "Movement.status",
+        "Movement.fromLocationId",
+        "Movement.toLocationId"
+      ],
+      "role_for_v2": "Tránsito interno",
+      "gap": "La recepción parcial y el historial de recepciones requieren análisis. No representa plazo de importación.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/MovementsPage.tsx",
+          "sha256": "c09fb3d898cea7653c57f01f6936cba8e0bdbaf1e6cacbfd2d6a822752e041f5",
+          "markers": [
+            {
+              "line": 21,
+              "text": "status?: string; receivedQuantity?: number;"
+            },
+            {
+              "line": 64,
+              "text": "const res = await api.get(\"/locations\");"
+            },
+            {
+              "line": 75,
+              "text": "const res = await api.get(`/products?search=${encodeURIComponent(q)}&limit=8`);"
+            },
+            {
+              "line": 92,
+              "text": "const res = await api.get(`/products/${p.id}`);"
+            },
+            {
+              "line": 116,
+              "text": "const res = await api.get(`/movements?${params.toString()}`);"
+            },
+            {
+              "line": 137,
+              "text": "await api.post(\"/movements\", {"
+            },
+            {
+              "line": 302,
+              "text": "{m.quantity}<small className=\"block text-xs text-gray-400\">{m.status === \"IN_TRANSIT\" ? `En tránsito · Recibido ${m.receivedQuantity || 0}/${m.quantity}` : m.status === \"RECEIVED\" ? \"Recibido\" : \"Histórico pendiente de c"
+            },
+            {
+              "line": 331,
+              "text": "x{m.quantity}<small className=\"block text-xs text-gray-400\">{m.status === \"IN_TRANSIT\" ? `En tránsito · Recibido ${m.receivedQuantity || 0}/${m.quantity}` : m.status === \"RECEIVED\" ? \"Recibido\" : \"Histórico pendiente de "
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/movements/movements.routes.ts",
+          "sha256": "010f6a3b8b44db51ae4b3031fa1ec3f5857a196e5a0336a3dd860b9b1cf2a007",
+          "markers": [
+            {
+              "line": 20,
+              "text": "router.get(\"/incoming\", authorize(\"ADMIN\", \"INVENTARIO\", \"TIENDA\"), authorizeModule([\"movimientos\", \"solicitudes\"]), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 30,
+              "text": "router.post(\"/:id/receive\", authorizeModule([\"movimientos\", \"solicitudes\"]), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 47,
+              "text": "router.get(\"/\", authorizeModule(\"movimientos\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 89,
+              "text": "router.post(\"/\", authorize(\"ADMIN\", \"INVENTARIO\"), authorizeModule(\"movimientos\"), async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Costos",
+      "route": "/panel/costos",
+      "physical_fields": [
+        "Cost.costPrice",
+        "Cost.exchangeRate",
+        "Cost.percentage",
+        "Cost.date",
+        "Cost.createdAt",
+        "Cost.updatedAt",
+        "PurchaseInvoice.identityKey"
+      ],
+      "role_for_v2": "Costo de compra candidato",
+      "gap": "La interfaz propone 6.96 y reconstruye con ese valor cuando falta. Cost es editable. No certifica historia de mercado.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/CostsPage.tsx",
+          "sha256": "f71682d801a29e4c7566e1149d9899424926911e4482ee169fd9e98f37f8f824",
+          "markers": [
+            {
+              "line": 16,
+              "text": "invoiceUrl: string | null; exchangeRate: number | null; percentage: number | null;"
+            },
+            {
+              "line": 27,
+              "text": "useEffect(() => { api.get(\"/locations\").then((r) => setLocations(Array.isArray(r.data) ? r.data : r.data.locations || [])).catch(() => toast.error(\"No se pudieron cargar ubicaciones\")); }, []);"
+            },
+            {
+              "line": 44,
+              "text": "const [exchangeRate, setExchangeRate] = useState(\"6.96\");"
+            },
+            {
+              "line": 77,
+              "text": "const res = await api.get(`/costs?${params.toString()}`);"
+            },
+            {
+              "line": 87,
+              "text": "const res = await api.get(`/suppliers?limit=100`);"
+            },
+            {
+              "line": 100,
+              "text": "const res = await api.get(`/products?search=${encodeURIComponent(q)}&limit=8`);"
+            },
+            {
+              "line": 125,
+              "text": "const tc = c.exchangeRate ? Number(c.exchangeRate) : 6.96;"
+            },
+            {
+              "line": 139,
+              "text": "const tc = Number(exchangeRate) || 0;"
+            },
+            {
+              "line": 151,
+              "text": "if (exchangeRate) formData.append(\"exchangeRate\", exchangeRate);"
+            },
+            {
+              "line": 157,
+              "text": "await api.put(`/costs/${editingCost}`, formData, { headers: { \"Content-Type\": \"multipart/form-data\" } });"
+            },
+            {
+              "line": 160,
+              "text": "await api.post(\"/costs\", formData, { headers: { \"Content-Type\": \"multipart/form-data\" } });"
+            },
+            {
+              "line": 173,
+              "text": "const res = await api.get(`/costs/invoice/${encodeURIComponent(filename)}`, { responseType: \"blob\" });"
+            },
+            {
+              "line": 189,
+              "text": "await api.delete(`/costs/${id}`);"
+            },
+            {
+              "line": 215,
+              "text": "formData.append(\"exchangeRate\", invoiceRate);"
+            },
+            {
+              "line": 219,
+              "text": "const res = await api.post(\"/costs/import-invoice\", formData, {"
+            },
+            {
+              "line": 247,
+              "text": "await api.put(`/suppliers/${editingSupplier}`, supplierForm);"
+            },
+            {
+              "line": 250,
+              "text": "await api.post(\"/suppliers\", supplierForm);"
+            },
+            {
+              "line": 262,
+              "text": "await api.delete(`/suppliers/${id}`);"
+            },
+            {
+              "line": 347,
+              "text": "<td className=\"px-4 py-3 text-gray-300 text-right\">{c.exchangeRate || \"—\"}</td>"
+            },
+            {
+              "line": 503,
+              "text": "<input type=\"number\" step=\"0.01\" min=\"0\" value={exchangeRate} onChange={(e) => setExchangeRate(e.target.value)}"
+            },
+            {
+              "line": 521,
+              "text": "{formatBs(Number(costUsd || 0) * (Number(exchangeRate) || 0) * (1 + (Number(percentage) || 0) / 100))}"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/costs/costs.routes.ts",
+          "sha256": "bf37a7acb65b22d88be96c9645b339162d81fab33b8602d9cdb3b5259aa2cbc6",
+          "markers": [
+            {
+              "line": 57,
+              "text": "router.get(\"/invoice/:filename\", (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 70,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 114,
+              "text": "exchangeRate: c.exchangeRate ? Number(c.exchangeRate) : null,"
+            },
+            {
+              "line": 128,
+              "text": "router.post(\"/\", authorize(\"ADMIN\"), upload.single(\"invoice\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 136,
+              "text": "const exchangeRate = req.body.exchangeRate ? parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\") : null;"
+            },
+            {
+              "line": 137,
+              "text": "if (exchangeRate !== null && exchangeRate <= 0) {"
+            },
+            {
+              "line": 145,
+              "text": "if (req.body.unitCost !== undefined) costPrice = landedCost(parsePositiveDecimal(req.body.unitCost, \"Costo unitario\"), exchangeRate ?? 1, percentage ?? 0);"
+            },
+            {
+              "line": 157,
+              "text": "data: { purchaseInvoiceId, productId, supplierId, costPrice, exchangeRate, percentage, invoiceUrl: req.file?.filename || null },"
+            },
+            {
+              "line": 185,
+              "text": "return req.body.locationId || req.body.quantity ? registerInvoice(tx, supplierId, req.body.documentIdentity, { kind: \"ONE_LINE_RECEIPT\", productId, costPrice, exchangeRate, percentage, locationId: parsePositiveInt(req.bo"
+            },
+            {
+              "line": 195,
+              "text": "exchangeRate: cost.exchangeRate ? Number(cost.exchangeRate) : null,"
+            },
+            {
+              "line": 215,
+              "text": "router.put(\"/:id\", authorize(\"ADMIN\"), upload.single(\"invoice\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 238,
+              "text": "if (req.body.exchangeRate !== undefined) {"
+            },
+            {
+              "line": 239,
+              "text": "data.exchangeRate = req.body.exchangeRate !== \"\" ? parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\") : null;"
+            },
+            {
+              "line": 240,
+              "text": "if (data.exchangeRate !== null && data.exchangeRate <= 0) {"
+            },
+            {
+              "line": 250,
+              "text": "if (req.body.unitCost !== undefined) data.costPrice = landedCost(parsePositiveDecimal(req.body.unitCost, \"Costo unitario\"), data.exchangeRate ?? Number(existing.exchangeRate ?? 1), data.percentage ?? Number(existing.perc"
+            },
+            {
+              "line": 257,
+              "text": "exchangeRate: existing.exchangeRate ? Number(existing.exchangeRate) : null,"
+            },
+            {
+              "line": 285,
+              "text": "exchangeRate: changed.exchangeRate ? Number(changed.exchangeRate) : null,"
+            },
+            {
+              "line": 303,
+              "text": "exchangeRate: cost.exchangeRate ? Number(cost.exchangeRate) : null,"
+            },
+            {
+              "line": 323,
+              "text": "router.delete(\"/:id\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 354,
+              "text": "router.post(\"/import-invoice\", authorize(\"ADMIN\"), upload.fields([{ name: \"file\", maxCount: 1 }, { name: \"invoice\", maxCount: 1 }]), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 361,
+              "text": "const exchangeRate = parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\");"
+            },
+            {
+              "line": 365,
+              "text": "if (exchangeRate <= 0 || percentage > 100 || defaultMargin > 200) throw errorDominio(\"Tipo de cambio, porcentaje o margen inválidos\");"
+            },
+            {
+              "line": 373,
+              "text": "const configuration = { exchangeRate, percentage, defaultMargin, locationId };"
+            },
+            {
+              "line": 396,
+              "text": "prepared.push({ product, quantity, costPrice: landedCost(unit, exchangeRate, percentage) });"
+            },
+            {
+              "line": 405,
+              "text": "const cost = await tx.cost.create({ data: { purchaseInvoiceId, productId: actual.id, supplierId, costPrice: row.costPrice, exchangeRate, percentage, invoiceUrl: invoiceFile?.filename ?? null } });"
+            },
+            {
+              "line": 411,
+              "text": "const response = { total: rows.length, imported: imported.length, updated: 0, errors: 0, formula: `PrecioUnitario × TipoCambio(${exchangeRate}) × (1 + ${percentage}% / 100)`, details: { imported, updated: [], errors: [] "
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/suppliers/suppliers.routes.ts",
+          "sha256": "06d82a9e7bd234b0dd09eec905989f79d0ffabd3485c97eaabfebe7006c88458",
+          "markers": [
+            {
+              "line": 17,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 61,
+              "text": "router.get(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 98,
+              "text": "router.post(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 123,
+              "text": "router.put(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 161,
+              "text": "router.delete(\"/:id\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Precios",
+      "route": "/panel/precios",
+      "physical_fields": [
+        "Product.price1",
+        "Product.wholesalePrice",
+        "Product.cost"
+      ],
+      "role_for_v2": "Precio actual y escenarios futuros conocidos",
+      "gap": "Precio vendido no es precio publicado. No existe aquí una tabla explícita de vigencia de listas.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/PricesPage.tsx",
+          "sha256": "3e0a354f282c766c464f6bcc2b19bfad3c5d595d1ea82d86cfa0bd7b4cd64cce",
+          "markers": [
+            {
+              "line": 66,
+              "text": "const res = await api.get(`/prices?${params.toString()}`);"
+            },
+            {
+              "line": 83,
+              "text": "const res = await api.post(\"/prices/apply\", {"
+            },
+            {
+              "line": 100,
+              "text": "const res = await api.get(`/prices/export?${params.toString()}`);"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/prices/prices.routes.ts",
+          "sha256": "342da95323b9f4ce6f0308203a930664234c3965677f26311aed78bf792f130a",
+          "markers": [
+            {
+              "line": 30,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 137,
+              "text": "router.put(\"/:productId\", authorizeModule(\"precios\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 172,
+              "text": "router.post(\"/apply\", authorizeModule(\"precios\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 218,
+              "text": "router.get(\"/export\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Reportes",
+      "route": "/panel/reportes",
+      "physical_fields": [
+        "Sale.saleDate",
+        "Sale.status",
+        "SaleItem.quantity",
+        "SaleItem.subtotal",
+        "Return.date"
+      ],
+      "role_for_v2": "Conciliación, no fuente adicional",
+      "gap": "Usar la misma venta una sola vez. Reporte de costos actuales no certifica costo histórico para entrenamiento.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/ReportsPage.tsx",
+          "sha256": "34860e2a0a00e232ec9269154af37c6198c698bbadfbf55ce9cb54457826efd5",
+          "markers": [
+            {
+              "line": 135,
+              "text": "api.get(\"/locations\").then((res) => setLocations(res.data.locations || res.data)).catch(() => {});"
+            },
+            {
+              "line": 136,
+              "text": "if (puedeVerCostos) api.get(\"/suppliers?limit=100\").then((res) => setSuppliers(res.data.suppliers || [])).catch(() => {});"
+            },
+            {
+              "line": 151,
+              "text": "const report = await collectReportPages((url) => api.get(url), params);"
+            },
+            {
+              "line": 172,
+              "text": "const response = await api.get(`/reports/daily?${params.toString()}`);"
+            },
+            {
+              "line": 190,
+              "text": "const res = await api.get(`/reports/inventory?${params.toString()}`);"
+            },
+            {
+              "line": 209,
+              "text": "const res = await api.get(`/reports/monthly?${params.toString()}`);"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/reports/reports.routes.ts",
+          "sha256": "f030584cc2534278137e02047439756c546c65bf75f654802ab0a0ffb0e91550",
+          "markers": [
+            {
+              "line": 29,
+              "text": "router.get(\"/daily\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 39,
+              "text": "router.get(\"/sales\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 160,
+              "text": "router.get(\"/inventory\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 222,
+              "text": "router.get(\"/suppliers\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 259,
+              "text": "exchangeRate: c.exchangeRate ? Number(c.exchangeRate) : null,"
+            },
+            {
+              "line": 279,
+              "text": "router.get(\"/monthly\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Configuración",
+      "route": "/panel/configuracion",
+      "physical_fields": [
+        "RoleModel.permissions",
+        "Location.id",
+        "Location.name",
+        "Location.type"
+      ],
+      "role_for_v2": "Seguridad y tiendas",
+      "gap": "Usuarios, nombres, correos y permisos no son features. Solo Location.type TIENDA entra como tienda.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/SettingsPage.tsx",
+          "sha256": "25af5ad45bdabd9fc6559da0bab3ac0b93b5bacb5eb5fb9b5a3ebf094d3106fa",
+          "markers": [
+            {
+              "line": 84,
+              "text": "api.get(\"/users\"),"
+            },
+            {
+              "line": 85,
+              "text": "api.get(\"/permissions/roles\"),"
+            },
+            {
+              "line": 86,
+              "text": "api.get(\"/locations\"),"
+            },
+            {
+              "line": 92,
+              "text": "const catRes = await api.get(\"/products/filters\");"
+            },
+            {
+              "line": 106,
+              "text": "const res = await api.get(\"/permissions/audit\", { params: { page, limit: 20 } });"
+            },
+            {
+              "line": 145,
+              "text": "await api.put(`/users/${editingUser}`, payload);"
+            },
+            {
+              "line": 148,
+              "text": "await api.post(\"/users\", payload);"
+            },
+            {
+              "line": 162,
+              "text": "await api.delete(`/users/${id}`);"
+            },
+            {
+              "line": 180,
+              "text": "await api.put(`/permissions/roles/${roleId}/permissions`, { permissions: newPerms });"
+            },
+            {
+              "line": 202,
+              "text": "await api.put(`/permissions/roles/${role.id}/columns`, { columnConfig });"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/users/users.routes.ts",
+          "sha256": "a795b6d3a5a062b859b05808e3142a21ae31791802c7c6ffa8323bb40b5244a2",
+          "markers": [
+            {
+              "line": 16,
+              "text": "router.get(\"/\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 45,
+              "text": "router.get(\"/roles\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 59,
+              "text": "router.post(\"/\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 123,
+              "text": "router.put(\"/:id\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 185,
+              "text": "router.get(\"/me/preferences\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 201,
+              "text": "router.put(\"/me/preferences\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 221,
+              "text": "router.delete(\"/:id\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/permissions/permissions.routes.ts",
+          "sha256": "716a83d4241f6a43c98aaddc7b868286304a95ee47632feb602689bd58717667",
+          "markers": [
+            {
+              "line": 24,
+              "text": "router.get(\"/roles\", authorize(\"ADMIN\"), async (_req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 47,
+              "text": "router.get(\"/roles/modules\", authorize(\"ADMIN\"), (_req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 52,
+              "text": "router.put(\"/roles/:id/permissions\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 102,
+              "text": "router.put(\"/roles/:id/columns\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 142,
+              "text": "router.get(\"/audit\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 168,
+              "text": "router.get(\"/permissions/me\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/locations/locations.routes.ts",
+          "sha256": "03562f58185b2703ecb055795ad3e44e520323c9383d22ab747a65627d281fa2",
+          "markers": [
+            {
+              "line": 12,
+              "text": "router.get(\"/\", async (_req: Request, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Clientes, pagos y entrega",
+      "route": "/panel/ventas",
+      "physical_fields": [
+        "Customer.name",
+        "Payment.amount",
+        "Payment.date",
+        "Payment.verifiedAt",
+        "Sale.lugarEntrega"
+      ],
+      "role_for_v2": "Control operativo excluido del modelo",
+      "gap": "No utilizar datos personales, referencias bancarias ni pago futuro. Pedido firme no está representado por todo saldo de crédito.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/SalesPage.tsx",
+          "sha256": "fa8104681c8445fe65511a434cec1b7b0dda4f81ca049f12f74ddc50d5dc817a",
+          "markers": [
+            {
+              "line": 40,
+              "text": "unitPrice: number; priceMode: \"POR_MENOR\" | \"POR_MAYOR\"; price1: number; wholesalePrice: number;"
+            },
+            {
+              "line": 62,
+              "text": "items: { productId: number; quantity: number; priceMode: \"POR_MENOR\" | \"POR_MAYOR\" }[];"
+            },
+            {
+              "line": 94,
+              "text": "api.get(\"/locations\").then((r) => {"
+            },
+            {
+              "line": 121,
+              "text": "api.get(\"/products/filters\").then((r) => {"
+            },
+            {
+              "line": 190,
+              "text": "className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceMode === \"POR_MENOR\" ? \"bg-primary-600 text-white\" : \"bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white\"}`}"
+            },
+            {
+              "line": 194,
+              "text": "className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${c.priceMode === \"POR_MAYOR\" ? \"bg-primary-600 text-white\" : \"bg-dark-900/50 border border-dark-600/50 text-gray-400 hover:text-white\"}`}"
+            },
+            {
+              "line": 223,
+              "text": "const res = await api.get(`/products?${params.toString()}`);"
+            },
+            {
+              "line": 254,
+              "text": "const addToCart = (p: Product, priceMode: \"POR_MENOR\" | \"POR_MAYOR\" = \"POR_MENOR\") => {"
+            },
+            {
+              "line": 255,
+              "text": "const price = Number((priceMode === \"POR_MAYOR\" ? Number(p.wholesalePrice) : Number(p.price1)).toFixed(2));"
+            },
+            {
+              "line": 256,
+              "text": "if (!Number.isFinite(price) || price <= 0 || (priceMode === \"POR_MAYOR\" && (!canWholesale || price > Number(p.price1)))) { toast.error(\"Precio por mayor no configurado o inválido\"); return; }"
+            },
+            {
+              "line": 264,
+              "text": "if (existing.priceMode !== priceMode) { toast.error(\"El producto ya usa otro modo. Cámbielo en su fila del carrito\"); return prev; }"
+            },
+            {
+              "line": 271,
+              "text": "unitPrice: price, priceMode, price1: Number(p.price1), wholesalePrice: Number(p.wholesalePrice),"
+            },
+            {
+              "line": 293,
+              "text": "const changePriceMode = (productId: number, priceMode: \"POR_MENOR\" | \"POR_MAYOR\", price1: number, wholesalePrice: number) => {"
+            },
+            {
+              "line": 296,
+              "text": "const price = Number((priceMode === \"POR_MAYOR\" ? wholesalePrice : price1).toFixed(2));"
+            },
+            {
+              "line": 297,
+              "text": "return { ...c, priceMode, unitPrice: price };"
+            },
+            {
+              "line": 367,
+              "text": "priceMode: \"POR_MENOR\","
+            },
+            {
+              "line": 429,
+              "text": "priceMode: c.priceMode,"
+            },
+            {
+              "line": 459,
+              "text": "const res = await api.post(\"/sales\", { ...payload, operationId: pendingOperationId(\"SALE_NORMAL\") });"
+            },
+            {
+              "line": 518,
+              "text": "const res = await api.get(`/sales?${params.toString()}`);"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/customers/customers.routes.ts",
+          "sha256": "be60786efbd8ed51dde734724dc046ff761c138b58359ea81bc2fad838a22355",
+          "markers": [
+            {
+              "line": 17,
+              "text": "router.get(\"/\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 48,
+              "text": "router.get(\"/:id\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 65,
+              "text": "router.post(\"/\", async (req: Request, res: Response) => {"
+            },
+            {
+              "line": 91,
+              "text": "router.put(\"/:id\", async (req: Request, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/payments/payments.routes.ts",
+          "sha256": "9dba1f22ecc5356ae259ca02680aac7c9a833255ff239e9b674744eb31702ce1",
+          "markers": [
+            {
+              "line": 22,
+              "text": "router.get(\"/receiving-accounts\", async (_req, res) => {"
+            },
+            {
+              "line": 26,
+              "text": "router.post(\"/receiving-accounts\", authorize(\"ADMIN\"), async (req: AuthRequest, res) => {"
+            },
+            {
+              "line": 41,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 84,
+              "text": "router.post(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 144,
+              "text": "router.get(\"/summary/:saleId\", async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view": "Importaciones y búsqueda por imagen",
+      "route": "/panel/inventario",
+      "physical_fields": [
+        "Product.itemCode",
+        "PurchaseInvoice.contentHash"
+      ],
+      "role_for_v2": "Selección, procedencia y duplicados",
+      "gap": "No usar imagen ni OCR como features del modelo tabular. No convertir una factura importada en tiempo de entrega.",
+      "code_review": "COMPLETED",
+      "visual_review": "NOT_PERFORMED",
+      "evidence": [
+        {
+          "path": "frontend/src/pages/InventoryPage.tsx",
+          "sha256": "ad6e601b699e3391644fe3c4697dd62baa96e52c70d25a79d35b906b56b30051",
+          "markers": [
+            {
+              "line": 159,
+              "text": "const res = await api.get(`/products?${params.toString()}`);"
+            },
+            {
+              "line": 162,
+              "text": "const costs = await api.get(\"/costs?limit=100\");"
+            },
+            {
+              "line": 178,
+              "text": "const res = await api.get(\"/products/filters\");"
+            },
+            {
+              "line": 185,
+              "text": "useEffect(() => { api.get(\"/locations\").then((res) => setLocations(res.data.locations || res.data)).catch(() => {}); }, []);"
+            },
+            {
+              "line": 236,
+              "text": "await api.put(`/products/${editingId}`, payload);"
+            },
+            {
+              "line": 239,
+              "text": "await api.post(\"/products\", payload);"
+            },
+            {
+              "line": 253,
+              "text": "await api.delete(`/products/${id}`);"
+            },
+            {
+              "line": 266,
+              "text": "const res = await api.get(`/inventory/product/${productId}`);"
+            },
+            {
+              "line": 292,
+              "text": "await api.put(`/inventory/${invId}`, {"
+            },
+            {
+              "line": 300,
+              "text": "const res = await api.get(`/inventory/product/${showStockModal}`);"
+            },
+            {
+              "line": 323,
+              "text": "const res = await api.post(\"/products/import\", formData, {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/products/products.routes.ts",
+          "sha256": "4010898fa1997c33ac72b44d5093e51012fc805f10a21d3d72abb1363e0add19",
+          "markers": [
+            {
+              "line": 36,
+              "text": "router.get(\"/\", authenticate, async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 181,
+              "text": "router.get(\"/filters\", authenticate, async (_req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 204,
+              "text": "router.get(\"/:id\", authenticate, async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 277,
+              "text": "router.post(\"/\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 331,
+              "text": "router.put(\"/:id\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 385,
+              "text": "router.delete(\"/:id\", authenticate, authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 434,
+              "text": "router.post("
+            },
+            {
+              "line": 472,
+              "text": "router.post(\"/import\", authenticate, authorize(\"ADMIN\"), upload.single(\"file\"), async (req: AuthRequest, res: Response) => {"
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/vision/vision.routes.ts",
+          "sha256": "d152c78cdcebfb35daf93de16d93e0671406c1299bd1b646bea423a2e497c4e5",
+          "markers": [
+            {
+              "line": 53,
+              "text": "router.post("
+            },
+            {
+              "line": 65,
+              "text": "router.post("
+            }
+          ]
+        },
+        {
+          "path": "backend/src/modules/costs/costs.routes.ts",
+          "sha256": "bf37a7acb65b22d88be96c9645b339162d81fab33b8602d9cdb3b5259aa2cbc6",
+          "markers": [
+            {
+              "line": 57,
+              "text": "router.get(\"/invoice/:filename\", (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 70,
+              "text": "router.get(\"/\", async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 114,
+              "text": "exchangeRate: c.exchangeRate ? Number(c.exchangeRate) : null,"
+            },
+            {
+              "line": 128,
+              "text": "router.post(\"/\", authorize(\"ADMIN\"), upload.single(\"invoice\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 136,
+              "text": "const exchangeRate = req.body.exchangeRate ? parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\") : null;"
+            },
+            {
+              "line": 137,
+              "text": "if (exchangeRate !== null && exchangeRate <= 0) {"
+            },
+            {
+              "line": 145,
+              "text": "if (req.body.unitCost !== undefined) costPrice = landedCost(parsePositiveDecimal(req.body.unitCost, \"Costo unitario\"), exchangeRate ?? 1, percentage ?? 0);"
+            },
+            {
+              "line": 157,
+              "text": "data: { purchaseInvoiceId, productId, supplierId, costPrice, exchangeRate, percentage, invoiceUrl: req.file?.filename || null },"
+            },
+            {
+              "line": 185,
+              "text": "return req.body.locationId || req.body.quantity ? registerInvoice(tx, supplierId, req.body.documentIdentity, { kind: \"ONE_LINE_RECEIPT\", productId, costPrice, exchangeRate, percentage, locationId: parsePositiveInt(req.bo"
+            },
+            {
+              "line": 195,
+              "text": "exchangeRate: cost.exchangeRate ? Number(cost.exchangeRate) : null,"
+            },
+            {
+              "line": 215,
+              "text": "router.put(\"/:id\", authorize(\"ADMIN\"), upload.single(\"invoice\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 238,
+              "text": "if (req.body.exchangeRate !== undefined) {"
+            },
+            {
+              "line": 239,
+              "text": "data.exchangeRate = req.body.exchangeRate !== \"\" ? parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\") : null;"
+            },
+            {
+              "line": 240,
+              "text": "if (data.exchangeRate !== null && data.exchangeRate <= 0) {"
+            },
+            {
+              "line": 250,
+              "text": "if (req.body.unitCost !== undefined) data.costPrice = landedCost(parsePositiveDecimal(req.body.unitCost, \"Costo unitario\"), data.exchangeRate ?? Number(existing.exchangeRate ?? 1), data.percentage ?? Number(existing.perc"
+            },
+            {
+              "line": 257,
+              "text": "exchangeRate: existing.exchangeRate ? Number(existing.exchangeRate) : null,"
+            },
+            {
+              "line": 285,
+              "text": "exchangeRate: changed.exchangeRate ? Number(changed.exchangeRate) : null,"
+            },
+            {
+              "line": 303,
+              "text": "exchangeRate: cost.exchangeRate ? Number(cost.exchangeRate) : null,"
+            },
+            {
+              "line": 323,
+              "text": "router.delete(\"/:id\", authorize(\"ADMIN\"), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 354,
+              "text": "router.post(\"/import-invoice\", authorize(\"ADMIN\"), upload.fields([{ name: \"file\", maxCount: 1 }, { name: \"invoice\", maxCount: 1 }]), async (req: AuthRequest, res: Response) => {"
+            },
+            {
+              "line": 361,
+              "text": "const exchangeRate = parsePositiveDecimal(req.body.exchangeRate, \"Tipo de cambio\");"
+            },
+            {
+              "line": 365,
+              "text": "if (exchangeRate <= 0 || percentage > 100 || defaultMargin > 200) throw errorDominio(\"Tipo de cambio, porcentaje o margen inválidos\");"
+            },
+            {
+              "line": 373,
+              "text": "const configuration = { exchangeRate, percentage, defaultMargin, locationId };"
+            },
+            {
+              "line": 396,
+              "text": "prepared.push({ product, quantity, costPrice: landedCost(unit, exchangeRate, percentage) });"
+            },
+            {
+              "line": 405,
+              "text": "const cost = await tx.cost.create({ data: { purchaseInvoiceId, productId: actual.id, supplierId, costPrice: row.costPrice, exchangeRate, percentage, invoiceUrl: invoiceFile?.filename ?? null } });"
+            },
+            {
+              "line": 411,
+              "text": "const response = { total: rows.length, imported: imported.length, updated: 0, errors: 0, formula: `PrecioUnitario × TipoCambio(${exchangeRate}) × (1 + ${percentage}% / 100)`, details: { imported, updated: [], errors: [] "
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "proposed_contract": "ml/demand/v2/contracts/preparation.v2.json",
+  "human_acceptance_recorded": false
+}

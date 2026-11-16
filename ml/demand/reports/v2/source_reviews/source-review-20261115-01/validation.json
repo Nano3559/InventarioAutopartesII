@@ -1,0 +1,40 @@
+{
+  "tests": {
+    "command": "python -B -m unittest tests.test_v2_provenance tests.test_v2_structure -v",
+    "passed": 15,
+    "failed": 0
+  },
+  "integrity": {
+    "protected_files": 396,
+    "changed": [],
+    "raw_files": 136,
+    "data_files": 59,
+    "model_files": 14,
+    "previous_report_files": 162,
+    "v1_original_byte_checks": "PASSED"
+  },
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "ml/demand/sources/manifests/automotive_spare_parts_demand/sha256-190bf444c8dca0888e126613.json",
+    "ml/demand/sources/manifests/m5_walmart/sha256-aa5d519ab121b284a7b07f4d.json",
+    "ml/demand/sources/manifests/corporacion_favorita/sha256-b69a1fa872a46632efa647d8.json"
+  ],
+  "new_files": [
+    "ml/demand/reports/v2/source_reviews/source-review-20261115-01/review.json",
+    "ml/demand/reports/v2/source_reviews/source-review-20261115-01/validation.json",
+    "ml/demand/tmp/source-review-20261115-01/before.json"
+  ],
+  "restrictions": {
+    "new_markdown": false,
+    "dataset_downloaded": false,
+    "raw_processed": false,
+    "training": false,
+    "neon_used": false,
+    "git_used": false
+  },
+  "remaining_blocks": {
+    "automotive": "Dataset-specific license for Auto and RAF",
+    "m5": "Readable official competition data rules and authorized access evidence",
+    "favorita": "Authorized access confirmation and clarification of publication outside Kaggle for intended derivatives"
+  }
+}

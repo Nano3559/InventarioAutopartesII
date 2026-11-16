@@ -1,0 +1,41 @@
+{
+  "readOnlyTransaction": true,
+  "productionUsedForReadsOnly": true,
+  "period": "2026-09",
+  "checks": [
+    {
+      "role": "ADMIN",
+      "status": 200,
+      "period": "2026-09",
+      "salesAvailable": true,
+      "scopedLocation": 5,
+      "monthlyCount": 10,
+      "monthlyAmount": 3371,
+      "soldUnits": 19,
+      "independentAggregateMatches": true
+    },
+    {
+      "role": "TIENDA",
+      "status": 200,
+      "period": "2026-09",
+      "salesAvailable": true,
+      "scopedLocation": 5,
+      "monthlyCount": 10,
+      "monthlyAmount": 3371,
+      "soldUnits": 19,
+      "independentAggregateMatches": true
+    },
+    {
+      "role": "INVENTARIO",
+      "status": 200,
+      "period": "2026-09",
+      "salesAvailable": true,
+      "scopedLocation": null,
+      "monthlyCount": 24,
+      "monthlyAmount": 26606,
+      "soldUnits": 72,
+      "independentAggregateMatches": true
+    }
+  ],
+  "noCommercialWrites": true
+}

@@ -1,0 +1,123 @@
+{
+  "version": "alternatives-2.1-1",
+  "run_id": "alternatives-20261115-01",
+  "authorized_scope": "ONE_RUN_TRAIN_VALIDATION_ONLY",
+  "user_authorized": true,
+  "test_authorized": false,
+  "frozen_at": "2026-11-15T06:00:04.481424+00:00",
+  "implementation_sha256": "07f8c69c957cb794a534b031e9c718b00a300ea6d4615d3ce92adc24505ffc33",
+  "input_hashes": {
+    "v2/contracts/experiments.v2_1.json": "651ba7393487ea05d996dc285f36d995f36309073ca28f1cda4dd30e9d153abd",
+    "v2/contracts/preprocessing.v2_1.json": "36eed4f2b505487bf92985f4c06ad6dabaea0aee6735bf463e7c04eb2369b2b9",
+    "v2/preprocessing.py": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+    "data/repuestopro_v2/2.1.0/expanded-20261115-01/manifest.json": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+    "data/repuestopro_v2/2.1.0/expanded-20261115-01/dataset_supervisado.csv": "382c9b0ff45e0d1b3130322a9638e2a046268c04d207806b5ffddf8534846a7d",
+    "models/v2/training-20261115-01/candidate.joblib": "6d53fc03f40621f9847ff2ebdcd53944ec99c4356c0a34333a50a16fcd0bf277"
+  },
+  "previous_model": "models/v2/training-20261115-01/candidate.joblib",
+  "options": [
+    {
+      "id": "lag1",
+      "family": "lag1"
+    },
+    {
+      "id": "median3",
+      "family": "median3"
+    },
+    {
+      "id": "weighted_recent",
+      "family": "weighted_recent"
+    },
+    {
+      "id": "tsb-a0.1-b0.1",
+      "family": "tsb",
+      "alpha": 0.1,
+      "beta": 0.1
+    },
+    {
+      "id": "tsb-a0.1-b0.3",
+      "family": "tsb",
+      "alpha": 0.1,
+      "beta": 0.3
+    },
+    {
+      "id": "tsb-a0.3-b0.1",
+      "family": "tsb",
+      "alpha": 0.3,
+      "beta": 0.1
+    },
+    {
+      "id": "tsb-a0.3-b0.3",
+      "family": "tsb",
+      "alpha": 0.3,
+      "beta": 0.3
+    },
+    {
+      "id": "absolute_forest-d4",
+      "family": "absolute_forest",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    },
+    {
+      "id": "absolute_forest-d8",
+      "family": "absolute_forest",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    },
+    {
+      "id": "derived_forest-d4",
+      "family": "derived_forest",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    },
+    {
+      "id": "derived_forest-d8",
+      "family": "derived_forest",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    },
+    {
+      "id": "residual_forest-d4",
+      "family": "residual_forest",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    },
+    {
+      "id": "residual_forest-d8",
+      "family": "residual_forest",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    },
+    {
+      "id": "low_median_routing",
+      "family": "low_median_routing",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  ],
+  "selection": "Mean MAE of all 3 inner TRAIN folds selects configuration per family. Compare 8 selected alternatives and frozen prior candidate on reused VALIDATION. No automatic promotion.",
+  "routing": "TRAIN positive-month frequency <=1/3 routes to median3, all other pairs to squared forest. Frozen per fold. No VAL target based routing.",
+  "tsb": "Initial probability is first observed occurrence, size first value. Update probability beta each closed month, size alpha only on positive observations, first positive initializes size. History includes initial three lag months, then closed TRAIN labels and later input lags. Never target month.",
+  "derived_features": [
+    "positive_months_last3",
+    "zero_streak_last3",
+    "recent_unit_change",
+    "recent_mean_last3"
+  ],
+  "simple_recent_weights": [
+    0.6,
+    0.3,
+    0.1
+  ],
+  "residual": "Fit y - lag1, predict lag1 + correction, score with predeclared nonnegative policy.",
+  "budget": {
+    "cv_option_fits": 42,
+    "outer_option_fits": 8,
+    "actual_forest_fits": 25
+  },
+  "limitations": [
+    "Exploratory reuse of validation already used to diagnose weaknesses.",
+    "No significance/commercial/casual effect claim.",
+    "No known-order feature or source matching in this comparison."
+  ]
+}

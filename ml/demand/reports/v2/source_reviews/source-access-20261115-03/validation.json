@@ -1,0 +1,33 @@
+{
+  "tests_passed": 17,
+  "tests_failed": 0,
+  "suites": [
+    "tests.test_v2_provenance",
+    "tests.test_v2_structure"
+  ],
+  "protected_files_checked": 400,
+  "protected_changes": [],
+  "raw_files_unchanged": 136,
+  "data_files_unchanged": 59,
+  "models_unchanged": 14,
+  "previous_reports_unchanged": 166,
+  "new_markdown_files": 0,
+  "data_processing": false,
+  "training": false,
+  "neon_used": false,
+  "git_used": false,
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/tests/test_v2_provenance.py",
+    "ml/demand/sources/manifests/corporacion_favorita/sha256-b69a1fa872a46632efa647d8.json",
+    "ml/demand/sources/manifests/automotive_spare_parts_demand/sha256-190bf444c8dca0888e126613.json"
+  ],
+  "new_files": [
+    "ml/demand/reports/v2/source_reviews/source-access-20261115-03/review.json",
+    "ml/demand/reports/v2/source_reviews/source-access-20261115-03/validation.json",
+    "ml/demand/tmp/source-access-20261115-03/before.json"
+  ],
+  "favorita_processing_status": "APPROVED_FOR_PROFILING",
+  "automotive_status": "BLOCKED_LICENSE"
+}

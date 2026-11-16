@@ -1,0 +1,1 @@
+scenario_id,productId,locationId,target_month,statistical_sales_units,delta_sales_units,required_units,available_position_units,raw_need_units,suggested_units,expected_new_order_arrival_at,protection_end_at,decision_status,model_version,artifact_sha256

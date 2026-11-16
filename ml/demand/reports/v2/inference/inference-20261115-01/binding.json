@@ -1,0 +1,52 @@
+{
+  "stage": "V2-09B",
+  "status": "LOCAL_ARTIFACT_INFERENCE_CONTRACT_VERIFIED",
+  "selection_id": "accepted-absolute-2.1-20261115-01",
+  "selection_sha256": "e4881d38ec32a087904d499fc122e14953cc23946b0c4123e6ce15630ee9f3e0",
+  "artifact": "models/v2/alternatives-20261115-01/absolute_forest-d4.joblib",
+  "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "preprocessing_state_sha256": "0a443d3286e877d4a955435dfe740ecbddd2afaf515e9690042e801b21e837cb",
+  "contract_version": "v2-inference-2.1-1",
+  "contract_sha256": "002a9ce65e8e40e3a1358b954ee2906455659a7ba5a0e9a19a19ca9743ff9207",
+  "implementation_sha256": "2b12970a283981f0288c302c865272ed7b584f722bc83ee6b7b8f6abe3d5c9ff",
+  "model_features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos",
+    "proporcion_por_mayor_mes_anterior",
+    "cobertura_modalidad_mes_anterior",
+    "precio_menor_cierre_anterior_bs",
+    "precio_mayor_cierre_anterior_bs",
+    "variacion_precio_menor_conocida",
+    "variacion_precio_mayor_conocida",
+    "tipo_cambio_bs_usd_conocido",
+    "variacion_tipo_cambio_ultimo_mes",
+    "antiguedad_tipo_cambio_dias"
+  ],
+  "support_columns_not_model_features": [
+    "dias_sin_stock_mes_anterior",
+    "cobertura_stock_mes_anterior",
+    "categoryId"
+  ],
+  "input_transport_feature_count": 17,
+  "parity": {
+    "validation_rows": 504,
+    "exact_match": true,
+    "proof": "Per-row exact equality against frozen original validation_predictions.json, see test log.",
+    "selected_artifact": "absolute_forest-d4"
+  },
+  "policy": {
+    "version": "NONNEGATIVE_V1",
+    "nonfinite": "REJECT_ALL_NO_SUBSET",
+    "negative": "CLIP_ZERO",
+    "rounding": "NONE"
+  },
+  "provider": "PINNED_APPROVED_VALIDATION_REPLAY_ONLY",
+  "live_source_approved": false,
+  "api_v2_integrated": false,
+  "api_v1_unchanged": true,
+  "human_erika_review_recorded": false,
+  "human_review_note": "Technical verification performed in this task. No personal or joint review is claimed."
+}

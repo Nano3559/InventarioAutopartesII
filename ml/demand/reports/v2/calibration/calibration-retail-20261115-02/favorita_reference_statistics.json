@@ -1,0 +1,369 @@
+{
+  "positive_rows_inspected": 125489245,
+  "partition_counts": {
+    "reference": 66454992,
+    "comparison": 53787100,
+    "outside": 1570850,
+    "unknown_cohort": 3676303,
+    "comparison_fractional_in_integer_cohort": 0
+  },
+  "exact_quantile_method": "All eligible positive values sorted within each source product-store series and window. numpy linear quantile. Temporary binary partitions under tmp only. No approximation.",
+  "groups": {
+    "REFERENCE": {
+      "OBSERVED_INTEGER": {
+        "series_with_positive_reference": 131551,
+        "positive_metrics": {
+          "n": {
+            "n": 131551,
+            "mean": 473.4381190564876,
+            "minimum": 1.0,
+            "maximum": 1091.0,
+            "p10": 48.0,
+            "p50": 405.0,
+            "p90": 1012.0,
+            "p95": 1061.0,
+            "p99": 1087.0
+          },
+          "p50": {
+            "n": 131551,
+            "mean": 5.506377754635085,
+            "minimum": 1.0,
+            "maximum": 624.0,
+            "p10": 1.0,
+            "p50": 3.0,
+            "p90": 11.0,
+            "p95": 18.0,
+            "p99": 43.0
+          },
+          "p95_over_p50": {
+            "n": 131551,
+            "mean": 3.037847922551371,
+            "minimum": 1.0,
+            "maximum": 271.06666666666655,
+            "p10": 2.0,
+            "p50": 2.8,
+            "p90": 4.0,
+            "p95": 5.0,
+            "p99": 7.625
+          },
+          "p99_over_p50": {
+            "n": 131551,
+            "mean": 4.715544237604069,
+            "minimum": 1.0,
+            "maximum": 701.2199999999989,
+            "p10": 2.6383333333333305,
+            "p50": 4.0,
+            "p90": 6.8249999999999815,
+            "p95": 8.632666666666651,
+            "p99": 17.32916666666663
+          },
+          "cv": {
+            "n": 131551,
+            "mean": 0.7521403224419049,
+            "minimum": 0.0,
+            "maximum": 19.326061375540352,
+            "p10": 0.4944132324730442,
+            "p50": 0.6757167583140281,
+            "p90": 0.9930595653336126,
+            "p95": 1.221632619711198,
+            "p99": 2.382186088197518
+          }
+        },
+        "promotion": {
+          "series_observed": 131555,
+          "series_without_known_promotion": 1016,
+          "true_frequency_given_known_observed_rows": {
+            "n": 130539,
+            "mean": 0.027899273598596994,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "p10": 0.0,
+            "p50": 0.0016891891891891893,
+            "p90": 0.12129539546085262,
+            "p95": 0.1509433962264151,
+            "p99": 0.21739130434782608
+          },
+          "known_coverage_in_observed_rows": {
+            "n": 131555,
+            "mean": 0.7762716559497772,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "p10": 0.5565268467088043,
+            "p50": 0.8186813186813187,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        },
+        "weighting": "Equal series within frozen item-unit cohort. No row-weighted mixing between sources or units.",
+        "limitation": "Conditional on recorded positive observations, not a complete daily process. Integer cohort is observed unit evidence, not proof of real spare parts. No wholesale or causal promotion label."
+      },
+      "OBSERVED_FRACTIONAL": {
+        "series_with_positive_reference": 9907,
+        "positive_metrics": {
+          "n": {
+            "n": 9907,
+            "mean": 421.29141011406074,
+            "minimum": 1.0,
+            "maximum": 1090.0,
+            "p10": 12.0,
+            "p50": 399.0,
+            "p90": 1015.0,
+            "p95": 1067.0,
+            "p99": 1088.0
+          },
+          "p50": {
+            "n": 9907,
+            "mean": 13.358858645402238,
+            "minimum": 0.009,
+            "maximum": 879.7495,
+            "p10": 1.4183,
+            "p50": 5.985,
+            "p90": 28.093499999999995,
+            "p95": 47.55783999999989,
+            "p99": 119.7816400000001
+          },
+          "p95_over_p50": {
+            "n": 9907,
+            "mean": 3.224300327548151,
+            "minimum": 1.0,
+            "maximum": 153.04605538693195,
+            "p10": 1.744315486897005,
+            "p50": 2.417220764071158,
+            "p90": 3.7294597819430657,
+            "p95": 5.739776444284928,
+            "p99": 26.37476682342407
+          },
+          "p99_over_p50": {
+            "n": 9907,
+            "mean": 5.011686658767178,
+            "minimum": 1.0,
+            "maximum": 313.863270981859,
+            "p10": 2.0447544708229253,
+            "p50": 3.1893678160919534,
+            "p90": 5.9145558007660535,
+            "p95": 9.653341835772533,
+            "p99": 55.880044779109106
+          },
+          "cv": {
+            "n": 9907,
+            "mean": 0.676803419911791,
+            "minimum": 0.0,
+            "maximum": 12.55146251979868,
+            "p10": 0.39485775363693726,
+            "p50": 0.6203335974603458,
+            "p90": 0.9349218141956029,
+            "p95": 1.25909975759773,
+            "p99": 2.4120196003834096
+          }
+        },
+        "promotion": {
+          "series_observed": 9907,
+          "series_without_known_promotion": 178,
+          "true_frequency_given_known_observed_rows": {
+            "n": 9729,
+            "mean": 0.1581929841711984,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "p10": 0.11829313795325803,
+            "p50": 0.14922480620155038,
+            "p90": 0.2,
+            "p95": 0.2727272727272727,
+            "p99": 0.5
+          },
+          "known_coverage_in_observed_rows": {
+            "n": 9907,
+            "mean": 0.7894997175437366,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "p10": 0.5667322971171408,
+            "p50": 0.8548009367681498,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        },
+        "weighting": "Equal series within frozen item-unit cohort. No row-weighted mixing between sources or units.",
+        "limitation": "Conditional on recorded positive observations, not a complete daily process. Integer cohort is observed unit evidence, not proof of real spare parts. No wholesale or causal promotion label."
+      }
+    },
+    "COMPARISON": {
+      "OBSERVED_INTEGER": {
+        "series_with_positive_reference": 138919,
+        "positive_metrics": {
+          "n": {
+            "n": 138919,
+            "mean": 359.01390018643957,
+            "minimum": 1.0,
+            "maximum": 575.0,
+            "p10": 84.0,
+            "p50": 399.0,
+            "p90": 560.0,
+            "p95": 570.0,
+            "p99": 575.0
+          },
+          "p50": {
+            "n": 138919,
+            "mean": 4.928469107897408,
+            "minimum": 1.0,
+            "maximum": 1000.0,
+            "p10": 1.0,
+            "p50": 3.0,
+            "p90": 10.0,
+            "p95": 16.0,
+            "p99": 37.0
+          },
+          "p95_over_p50": {
+            "n": 138919,
+            "mean": 3.155084053053126,
+            "minimum": 1.0,
+            "maximum": 255.5,
+            "p10": 2.0,
+            "p50": 3.0,
+            "p90": 4.283333333333322,
+            "p95": 5.0,
+            "p99": 8.0
+          },
+          "p99_over_p50": {
+            "n": 138919,
+            "mean": 5.168630928961377,
+            "minimum": 1.0,
+            "maximum": 1825.4999999999939,
+            "p10": 2.759999999999998,
+            "p50": 4.090000000000003,
+            "p90": 7.760000000000005,
+            "p95": 10.139999999999986,
+            "p99": 20.758200000000112
+          },
+          "cv": {
+            "n": 138919,
+            "mean": 0.8124370136103278,
+            "minimum": 0.0,
+            "maximum": 17.120183267175015,
+            "p10": 0.5066224582933673,
+            "p50": 0.6962758903127022,
+            "p90": 1.1434876891828554,
+            "p95": 1.514594103719841,
+            "p99": 2.9865150298880256
+          }
+        },
+        "promotion": {
+          "series_observed": 138919,
+          "series_without_known_promotion": 0,
+          "true_frequency_given_known_observed_rows": {
+            "n": 138919,
+            "mean": 0.10271399656300353,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "p10": 0.0,
+            "p50": 0.06626506024096386,
+            "p90": 0.24895741859944553,
+            "p95": 0.31683168316831684,
+            "p99": 0.5312230861244029
+          },
+          "known_coverage_in_observed_rows": {
+            "n": 138919,
+            "mean": 1.0,
+            "minimum": 1.0,
+            "maximum": 1.0,
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        },
+        "weighting": "Equal series within frozen item-unit cohort. No row-weighted mixing between sources or units.",
+        "limitation": "Conditional on recorded positive observations, not a complete daily process. Integer cohort is observed unit evidence, not proof of real spare parts. No wholesale or causal promotion label."
+      },
+      "OBSERVED_FRACTIONAL": {
+        "series_with_positive_reference": 10351,
+        "positive_metrics": {
+          "n": {
+            "n": 10351,
+            "mean": 378.0550671432712,
+            "minimum": 1.0,
+            "maximum": 575.0,
+            "p10": 25.0,
+            "p50": 482.0,
+            "p90": 573.0,
+            "p95": 575.0,
+            "p99": 575.0
+          },
+          "p50": {
+            "n": 10351,
+            "mean": 12.534316104724182,
+            "minimum": 0.063,
+            "maximum": 2530.0,
+            "p10": 1.413,
+            "p50": 5.667,
+            "p90": 25.851,
+            "p95": 44.204,
+            "p99": 108.23474999999999
+          },
+          "p95_over_p50": {
+            "n": 10351,
+            "mean": 3.129522563982219,
+            "minimum": 1.0,
+            "maximum": 226.51185219978078,
+            "p10": 1.8070122954190309,
+            "p50": 2.497861842105263,
+            "p90": 3.7381713271193955,
+            "p95": 5.237429179283884,
+            "p99": 20.15515999412779
+          },
+          "p99_over_p50": {
+            "n": 10351,
+            "mean": 4.865516775343857,
+            "minimum": 1.0,
+            "maximum": 471.245532959327,
+            "p10": 2.1770454545454543,
+            "p50": 3.3562911611784996,
+            "p90": 5.680826006951544,
+            "p95": 8.371306918725184,
+            "p99": 43.778093284024195
+          },
+          "cv": {
+            "n": 10351,
+            "mean": 0.6864985026750696,
+            "minimum": 0.0,
+            "maximum": 7.885096691440332,
+            "p10": 0.4236345926252948,
+            "p50": 0.6375329687824431,
+            "p90": 0.9122899894686973,
+            "p95": 1.1569177892066496,
+            "p99": 2.323789552309386
+          }
+        },
+        "promotion": {
+          "series_observed": 10351,
+          "series_without_known_promotion": 0,
+          "true_frequency_given_known_observed_rows": {
+            "n": 10351,
+            "mean": 0.1705267872823182,
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "p10": 0.1343612334801762,
+            "p50": 0.14893617021276595,
+            "p90": 0.22740524781341107,
+            "p95": 0.30392156862745096,
+            "p99": 0.6
+          },
+          "known_coverage_in_observed_rows": {
+            "n": 10351,
+            "mean": 1.0,
+            "minimum": 1.0,
+            "maximum": 1.0,
+            "p10": 1.0,
+            "p50": 1.0,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        },
+        "weighting": "Equal series within frozen item-unit cohort. No row-weighted mixing between sources or units.",
+        "limitation": "Conditional on recorded positive observations, not a complete daily process. Integer cohort is observed unit evidence, not proof of real spare parts. No wholesale or causal promotion label."
+      }
+    }
+  }
+}

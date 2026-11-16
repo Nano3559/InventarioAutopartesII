@@ -1,0 +1,12 @@
+{
+  "selection": "scenarios-model-20261115-01",
+  "releaseSha256": "803cfefe8feabf23383f801235b0c0f63ef7178858ff78f566014839929a1b07",
+  "artifactSha256": "1ae61ad487d22c3fa8c8e8b5acd0c20d03e1f25d1151a5f680bbd8596d07bde3",
+  "policyVersion": "SCENARIO_NONNEGATIVE_1",
+  "criterion": "VALIDATION MAE, RMSE as secondary. Simpler model on exact tie.",
+  "authorization": "User delegated completion of backend and frontend H4 tasks in current request.",
+  "no_claim_of_personal_team_acceptance": true,
+  "fixedBeforeOpeningTest": true,
+  "selectedUsingTest": false,
+  "recordedAt": "2026-11-16T03:41:47.491843+00:00"
+}

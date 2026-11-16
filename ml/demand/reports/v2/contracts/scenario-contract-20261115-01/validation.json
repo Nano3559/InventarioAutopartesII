@@ -1,0 +1,53 @@
+{
+  "status": "PASSED_DESIGN_CONTRACT_ONLY",
+  "contract_version": "demand-scenarios-1.0.0",
+  "contract_path": "v2/contracts/scenarios.v1.json",
+  "contract_sha256": "557aa5638ff1adce55d625d38efa1a58e86b686a352524264c79eea3822acc46",
+  "new_contract_tests_passed": 11,
+  "total_tests_passed": 21,
+  "tests_failed": 0,
+  "schema_checks": "request/response/error JSON Schema 2020-12, valid fixtures, invalid types, decimal values, timezone requirement, undeclared fields, history shape, logistics",
+  "semantic_business_validator_implemented": false,
+  "new_endpoints_implemented": false,
+  "teacher_requirements_mapped": [
+    "H4-I01",
+    "H4-I02",
+    "H4-I03",
+    "H4-I04",
+    "H4-I05",
+    "H4-I06",
+    "H4-I07",
+    "H4-I08"
+  ],
+  "rules": 21,
+  "backend_owner": "Erika",
+  "backend_tasks": 9,
+  "frontend_dataset_owner": "Ross",
+  "frontend_dataset_tasks": 10,
+  "protected_existing_files_checked": 607,
+  "allowed_existing_metadata_changes": [
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "existing_datasets_raw_curated_models_reports_unchanged": true,
+  "selection_2_2_unchanged": true,
+  "test_report_2_2_unchanged": true,
+  "fit_calls": 0,
+  "test_repeated": false,
+  "neon_used": false,
+  "prisma_modified": false,
+  "migrations_executed": false,
+  "new_markdown_files": 0,
+  "git_used": false,
+  "modified_existing_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md",
+    "ml/demand/README.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "new_files": [
+    "ml/demand/v2/contracts/scenarios.v1.json",
+    "ml/demand/tests/test_scenario_contract.py"
+  ],
+  "git_status_diff_stat": "NOT_EXECUTED_RESPECTING_NO_GIT"
+}

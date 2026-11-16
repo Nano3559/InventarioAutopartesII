@@ -1,0 +1,510 @@
+{
+  "source_id": "corporacion_favorita",
+  "files": {
+    "items.csv.7z": {
+      "rows": 4100,
+      "columns": [
+        "item_nbr",
+        "family",
+        "class",
+        "perishable"
+      ],
+      "missing_by_column": {
+        "item_nbr": 0,
+        "family": 0,
+        "class": 0,
+        "perishable": 0
+      },
+      "exact_duplicate_rows": 0,
+      "unique_items": 4100,
+      "families": 33,
+      "duplicate_item_keys": 0
+    },
+    "stores.csv.7z": {
+      "rows": 54,
+      "columns": [
+        "store_nbr",
+        "city",
+        "state",
+        "type",
+        "cluster"
+      ],
+      "missing_by_column": {
+        "store_nbr": 0,
+        "city": 0,
+        "state": 0,
+        "type": 0,
+        "cluster": 0
+      },
+      "exact_duplicate_rows": 0,
+      "unique_stores": 54,
+      "duplicate_store_keys": 0
+    },
+    "oil.csv.7z": {
+      "rows": 1218,
+      "columns": [
+        "date",
+        "dcoilwtico"
+      ],
+      "missing_by_column": {
+        "date": 0,
+        "dcoilwtico": 43
+      },
+      "exact_duplicate_rows": 0,
+      "first_date": "2013-01-01",
+      "last_date": "2017-08-31",
+      "oil_reference": {
+        "total": 1218,
+        "valid": 1175,
+        "missing_or_nonfinite": 43,
+        "negative": 0,
+        "zero": 0,
+        "fractional": 1165,
+        "minimum": 26.19,
+        "maximum": 110.62,
+        "mean": 67.71436595744682,
+        "sum": 79564.38,
+        "quantiles_approximate": {
+          "p50": 49.71,
+          "p95": 49.71,
+          "p99": 49.71
+        },
+        "quantile_method": "Systematic positional sample every 997 values. Not an exact quantile or random sample.",
+        "quantile_sample_size": 1
+      }
+    },
+    "holidays_events.csv.7z": {
+      "rows": 350,
+      "columns": [
+        "date",
+        "type",
+        "locale",
+        "locale_name",
+        "description",
+        "transferred"
+      ],
+      "missing_by_column": {
+        "date": 0,
+        "type": 0,
+        "locale": 0,
+        "locale_name": 0,
+        "description": 0,
+        "transferred": 0
+      },
+      "exact_duplicate_rows": 0,
+      "first_date": "2012-03-02",
+      "last_date": "2017-12-26"
+    },
+    "transactions.csv.7z": {
+      "rows": 83488,
+      "columns": [
+        "date",
+        "store_nbr",
+        "transactions"
+      ],
+      "missing_by_column": {
+        "date": 0,
+        "store_nbr": 0,
+        "transactions": 0
+      },
+      "exact_duplicate_rows": 0,
+      "first_date": "2013-01-01",
+      "last_date": "2017-08-15",
+      "transactions": {
+        "total": 83488,
+        "valid": 83488,
+        "missing_or_nonfinite": 0,
+        "negative": 0,
+        "zero": 0,
+        "fractional": 0,
+        "minimum": 5.0,
+        "maximum": 8359.0,
+        "mean": 1694.6021583940208,
+        "sum": 141478945.0,
+        "quantiles_approximate": {
+          "p50": 1555.5,
+          "p95": 4086.699999999998,
+          "p99": 5200.110000000001
+        },
+        "quantile_method": "Systematic positional sample every 997 values. Not an exact quantile or random sample.",
+        "quantile_sample_size": 84
+      },
+      "duplicate_date_store": 0
+    },
+    "train.csv.7z": {
+      "rows": 125497040,
+      "columns": [
+        "id",
+        "date",
+        "store_nbr",
+        "item_nbr",
+        "unit_sales",
+        "onpromotion"
+      ],
+      "missing_by_column": {
+        "id": 0,
+        "date": 0,
+        "store_nbr": 0,
+        "item_nbr": 0,
+        "unit_sales": 0,
+        "onpromotion": 21657651
+      },
+      "first_date": "2013-01-01",
+      "last_date": "2017-08-15",
+      "unique_stores": 54,
+      "unique_items": 4036,
+      "ids_monotonic": true,
+      "id_duplicates_within_chunks_and_boundary": 0,
+      "id_duplicate_check_complete": true,
+      "business_keys_monotonic": true,
+      "business_duplicates_within_chunks_and_boundary": 0,
+      "business_duplicate_check_complete": true,
+      "unknown_item_rows": 0,
+      "unknown_store_rows": 0,
+      "promotion": {
+        "true": 7810622,
+        "false": 96028767,
+        "missing": 21657651
+      },
+      "monthly": {
+        "2013-01": {
+          "rows": 1211964,
+          "net_units": 10327411.736000001
+        },
+        "2013-02": {
+          "rows": 1160386,
+          "net_units": 9658959.776999999
+        },
+        "2013-03": {
+          "rows": 1321927,
+          "net_units": 11428497.037
+        },
+        "2013-04": {
+          "rows": 1284375,
+          "net_units": 10993462.739
+        },
+        "2013-05": {
+          "rows": 1360917,
+          "net_units": 11597702.007000001
+        },
+        "2013-06": {
+          "rows": 1353864,
+          "net_units": 11689336.061999999
+        },
+        "2013-07": {
+          "rows": 1385579,
+          "net_units": 11257398.606999999
+        },
+        "2013-08": {
+          "rows": 1421744,
+          "net_units": 11737787.92
+        },
+        "2013-09": {
+          "rows": 1378438,
+          "net_units": 11792932.233
+        },
+        "2013-10": {
+          "rows": 1428676,
+          "net_units": 11775619.36
+        },
+        "2013-11": {
+          "rows": 1466397,
+          "net_units": 12356530.302
+        },
+        "2013-12": {
+          "rows": 1548395,
+          "net_units": 15802362.149
+        },
+        "2014-01": {
+          "rows": 1933844,
+          "net_units": 18911638.701099996
+        },
+        "2014-02": {
+          "rows": 1399420,
+          "net_units": 12038340.6351
+        },
+        "2014-03": {
+          "rows": 2001725,
+          "net_units": 20365583.019800004
+        },
+        "2014-04": {
+          "rows": 1484822,
+          "net_units": 12861250.0566
+        },
+        "2014-05": {
+          "rows": 1538245,
+          "net_units": 13379783.2617
+        },
+        "2014-06": {
+          "rows": 1546471,
+          "net_units": 13319952.1723
+        },
+        "2014-07": {
+          "rows": 2093620,
+          "net_units": 19421890.044099998
+        },
+        "2014-08": {
+          "rows": 1666677,
+          "net_units": 13885149.418399999
+        },
+        "2014-09": {
+          "rows": 2085925,
+          "net_units": 20022414.114299998
+        },
+        "2014-10": {
+          "rows": 2168603,
+          "net_units": 20396037.5871
+        },
+        "2014-11": {
+          "rows": 2126122,
+          "net_units": 20531634.205599997
+        },
+        "2014-12": {
+          "rows": 2226128,
+          "net_units": 24340448.3657
+        },
+        "2015-01": {
+          "rows": 1757478,
+          "net_units": 14896921.056999998
+        },
+        "2015-02": {
+          "rows": 1685052,
+          "net_units": 13742394.849
+        },
+        "2015-03": {
+          "rows": 1915403,
+          "net_units": 15598607.517999997
+        },
+        "2015-04": {
+          "rows": 1859015,
+          "net_units": 14955060.171
+        },
+        "2015-05": {
+          "rows": 2086825,
+          "net_units": 17730364.244000003
+        },
+        "2015-06": {
+          "rows": 2377888,
+          "net_units": 21603118.349
+        },
+        "2015-07": {
+          "rows": 2514944,
+          "net_units": 22209618.037
+        },
+        "2015-08": {
+          "rows": 2598914,
+          "net_units": 22963674.240999997
+        },
+        "2015-09": {
+          "rows": 2587405,
+          "net_units": 23240882.476999998
+        },
+        "2015-10": {
+          "rows": 2843704,
+          "net_units": 23878261.664
+        },
+        "2015-11": {
+          "rows": 2770090,
+          "net_units": 22804952.367
+        },
+        "2015-12": {
+          "rows": 2867926,
+          "net_units": 27243975.676000003
+        },
+        "2016-01": {
+          "rows": 2823685,
+          "net_units": 23977785.883
+        },
+        "2016-02": {
+          "rows": 2733154,
+          "net_units": 21947407.801999997
+        },
+        "2016-03": {
+          "rows": 2946851,
+          "net_units": 23131777.884
+        },
+        "2016-04": {
+          "rows": 2889405,
+          "net_units": 25960078.106000002
+        },
+        "2016-05": {
+          "rows": 2983464,
+          "net_units": 24763405.258
+        },
+        "2016-06": {
+          "rows": 2821864,
+          "net_units": 22209218.58
+        },
+        "2016-07": {
+          "rows": 3014885,
+          "net_units": 23462671.428
+        },
+        "2016-08": {
+          "rows": 2984561,
+          "net_units": 22452414.318
+        },
+        "2016-09": {
+          "rows": 2868496,
+          "net_units": 22417447.097000007
+        },
+        "2016-10": {
+          "rows": 3019900,
+          "net_units": 24030387.817999993
+        },
+        "2016-11": {
+          "rows": 2965107,
+          "net_units": 24642577.195999995
+        },
+        "2016-12": {
+          "rows": 3178499,
+          "net_units": 29638203.882
+        },
+        "2017-01": {
+          "rows": 3134770,
+          "net_units": 26328118.936
+        },
+        "2017-02": {
+          "rows": 2934507,
+          "net_units": 23250111.376000002
+        },
+        "2017-03": {
+          "rows": 3249470,
+          "net_units": 26704000.691
+        },
+        "2017-04": {
+          "rows": 3168724,
+          "net_units": 25895305.491
+        },
+        "2017-05": {
+          "rows": 3301627,
+          "net_units": 26911839.25
+        },
+        "2017-06": {
+          "rows": 3165034,
+          "net_units": 25682768.126000006
+        },
+        "2017-07": {
+          "rows": 3283161,
+          "net_units": 27011474.566
+        },
+        "2017-08": {
+          "rows": 1570968,
+          "net_units": 12433322.939
+        }
+      },
+      "unit_sales": {
+        "total": 125497040,
+        "valid": 125497040,
+        "missing_or_nonfinite": 0,
+        "negative": 7795,
+        "zero": 0,
+        "fractional": 8191095,
+        "minimum": -15372.0,
+        "maximum": 89440.0,
+        "mean": 8.5548652684382,
+        "sum": 1073610268.7877995,
+        "quantiles_approximate": {
+          "p50": 4.0,
+          "p95": 29.0,
+          "p99": 72.0
+        },
+        "quantile_method": "Systematic positional sample every 997 values. Not an exact quantile or random sample.",
+        "quantile_sample_size": 125875
+      },
+      "role": "OBSERVED_SALES_WITH_RETURNS"
+    },
+    "test.csv.7z": {
+      "rows": 3370464,
+      "columns": [
+        "id",
+        "date",
+        "store_nbr",
+        "item_nbr",
+        "onpromotion"
+      ],
+      "missing_by_column": {
+        "id": 0,
+        "date": 0,
+        "store_nbr": 0,
+        "item_nbr": 0,
+        "onpromotion": 0
+      },
+      "first_date": "2017-08-16",
+      "last_date": "2017-08-31",
+      "unique_stores": 54,
+      "unique_items": 3901,
+      "ids_monotonic": true,
+      "id_duplicates_within_chunks_and_boundary": 0,
+      "id_duplicate_check_complete": true,
+      "business_keys_monotonic": true,
+      "business_duplicates_within_chunks_and_boundary": 0,
+      "business_duplicate_check_complete": true,
+      "unknown_item_rows": 0,
+      "unknown_store_rows": 0,
+      "promotion": {
+        "true": 198597,
+        "false": 3171867,
+        "missing": 0
+      },
+      "monthly": {
+        "2017-08": {
+          "rows": 3370464,
+          "net_units": 0.0
+        }
+      },
+      "role": "EXTERNAL_COMPETITION_FORECAST_INPUT_NO_TARGET"
+    },
+    "sample_submission.csv.7z": {
+      "rows": 3370464,
+      "columns": [
+        "id",
+        "unit_sales"
+      ],
+      "missing_by_column": {
+        "id": 0,
+        "unit_sales": 0
+      },
+      "first_date": null,
+      "last_date": null,
+      "unique_stores": 0,
+      "unique_items": 0,
+      "ids_monotonic": true,
+      "id_duplicates_within_chunks_and_boundary": 0,
+      "id_duplicate_check_complete": true,
+      "business_keys_monotonic": true,
+      "business_duplicates_within_chunks_and_boundary": 0,
+      "business_duplicate_check_complete": null,
+      "unknown_item_rows": 0,
+      "unknown_store_rows": 0,
+      "promotion": {
+        "true": 0,
+        "false": 0,
+        "missing": 0
+      },
+      "monthly": {},
+      "role": "TEMPLATE_NOT_OBSERVED_SALES"
+    }
+  },
+  "limitations": [
+    "Los negativos no son demanda negativa. unit_sales mezcla ventas y devoluciones, sin emparejamiento transaccional certificado.",
+    "Cantidades fraccionarias no equivalen a unidades enteras de repuestos.",
+    "Una combinación ausente producto-tienda-fecha no se rellena automáticamente con cero.",
+    "onpromotion contiene faltantes y no demuestra tamaño del descuento o efecto causal.",
+    "oil es referencia de petróleo, no precio del producto, costo de compra o cotización Bs/USD.",
+    "No existe precio unitario de producto en train. No derivarlo de unit_sales o de oil.",
+    "Sin mezclar filas ni productos con RepuestoPro. No se exportan identificadores o filas individuales.",
+    "Si claves no son monótonas, duplicados entre bloques no adyacentes quedan sin certificar. Se reporta el límite explícitamente.",
+    "Los archivos test externos no son el TEST cerrado de RepuestoPro. No se utiliza ese TEST ni se entrenan modelos."
+  ],
+  "run_id": "profile-retail-20261115-01",
+  "recorded_at": "2026-11-15T16:26:29.841156+00:00",
+  "source_snapshot_id": "sha256-b69a1fa872a46632efa647d8",
+  "source_inventory_sha256": "b69a1fa872a46632efa647d8c5592a5963c64cc2c2a26df7d01ef3c36c1bb938",
+  "purpose": "DESCRIPTIVE_PROFILING_ONLY",
+  "raw_changed": false,
+  "curated_created": false,
+  "dataset_created": false,
+  "trained": false,
+  "authorized_user": "ROSS",
+  "private_report": true
+}

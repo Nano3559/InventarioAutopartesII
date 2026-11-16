@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-11-14T19:50:38.667709+00:00",
+  "all_previous_v2_tasks_100_percent": false,
+  "ready_for_authorized_monash_uci_profiling": true,
+  "ready_to_build_final_v2": false,
+  "evidence": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "ml/demand/v2/contracts/dataset_columns.reference.json",
+    "ml/demand/reports/v2/source_provenance_matrix.json"
+  ],
+  "checks": [
+    {
+      "task": "V2-04A",
+      "status": "TECHNICALLY_VERIFIED_TEAM_REVIEW_PENDING",
+      "finding": "Cinco manifests compatibles. Inventario RAW y hashes comprobados. El plan mantiene pendiente la revisión del equipo."
+    },
+    {
+      "task": "V2-04B",
+      "status": "REVIEW_COMPLETED_PARTIAL_SOURCE_APPROVAL",
+      "approved": [
+        "monash_car_parts",
+        "uci_online_retail_ii"
+      ],
+      "blocked": [
+        "automotive_spare_parts_demand",
+        "corporacion_favorita",
+        "m5_walmart"
+      ],
+      "finding": "La revisión terminada no aprueba las cinco fuentes. Fecha y URL real de adquisición siguen UNKNOWN."
+    },
+    {
+      "task": "V2-02",
+      "status": "FORMAL_CLOSURE_NOT_EVIDENCED",
+      "finding": "El plan no acredita cierre de auditoría completa de pantallas. No se ejecutó una auditoría visual en esta tarea."
+    },
+    {
+      "task": "V2-03",
+      "status": "JOINT_BUSINESS_RULES_PENDING",
+      "finding": "Falta cerrar reglas del negocio entre Erika y Ross."
+    },
+    {
+      "task": "V2-04",
+      "status": "DRAFT",
+      "finding": "El contrato local conserva nueve columnas V1_REFERENCE. No equivale a aprobación del contrato final V2."
+    },
+    {
+      "task": "V2-09",
+      "status": "INITIAL_CONTRACT_PENDING",
+      "finding": "Falta acordar contrato de datos e inferencia con backend antes de generar V2."
+    },
+    {
+      "task": "V2-04C",
+      "status": "COMPLETED_AUTHORIZED_TWO_SOURCES_ONLY",
+      "finding": "Monash y UCI perfilados sin transformar datos. Las otras tres fuentes no se perfilaron."
+    }
+  ],
+  "scope": "Revisión local de contratos, inventario, permisos registrados, tests y plan. No certifica ejecución de tareas sin evidencia ni funcionamiento completo de la plataforma."
+}

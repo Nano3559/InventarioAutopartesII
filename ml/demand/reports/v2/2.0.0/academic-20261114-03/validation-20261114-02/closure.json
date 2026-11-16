@@ -1,0 +1,56 @@
+{
+  "stage": "V2-07",
+  "run_id": "validation-20261114-02",
+  "build_id": "academic-20261114-03",
+  "recorded_at": "2026-11-15T02:57:42.079871+00:00",
+  "status": "PASSED_FOR_DATA_INTEGRITY_AND_OFFLINE_POLICY",
+  "scope": "Dataset y política offline de la variante académica inicial. No aprobación comercial o de entrenamiento.",
+  "manifest_sha256": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+  "input_files_sha256": {
+    "base_mensual.csv": "da1d02405e5d080dbb305ecc5d22bc7f4e8ea2abcf6f1863d5f8e1eb9c298879",
+    "catalog_reference.json": "5f0633e93b38793caf8ec97f315947864f400210c612654780a464b778980218",
+    "checksums.sha256": "6ddc11ddbc914bfdeedabbd39ece027a0dfc5a33080c0046e8a20872bdcee579",
+    "dataset_supervisado.csv": "985c2168965bc9bf20951c13115b502f798607bbca5d60ca61997456d1eafefe",
+    "escenarios_metadatos.csv": "75a0845aa27150b45ea10f59965c8accd5b83b84c2a730002cae46f8b6685492",
+    "generator_config.json": "590400bfbb4baff263432902e06245a4642084ffad33d8f7fd081700cfd3c980",
+    "manifest.json": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+    "schema.json": "2eb59d1b4a8d814140c808e5815fc629fdf6e948cce6a3ab49b354d9b31d75b6",
+    "simulation_ledger.csv": "d1e59f5468b236ac358638598faf7107d0b6653f67b6213c11baf1a9578cf556",
+    "split_manifest.json": "2312549f1acfd1121e2c5cf3ee26a1c566f8ab57f053de3fbdaaf6703ca26b4d",
+    "validation.json": "32644b674d9081677af8f86a00c895f09f40f650223b1879e9ac08701e89ca25"
+  },
+  "validator_sha256": {
+    "validate.py": "951ae99873b7a7dc8a7ebe581230d33010d9e42e7226252486ae535c9c0d6df5",
+    "validate_build.py": "2436ba7db15ee26148dcec8b124e4a3c87089e5e8133edf24280573fb3b0187d",
+    "scenario_checks.py": "fc0177800d1ca2338d25701555db1e697be042f159f71bcf1dc16bc69b816ae6"
+  },
+  "report_files_sha256": {
+    "calidad.json": "77e1c8bea52c3bf09e9c3cbcc36121c7d4fcaeb64d87f25c8e6cc806096e6ca4",
+    "distribuciones.csv": "d6c7e34ea4e12566955674b8ca148d04ddec96625fee495d3bc2f868e965e7d2",
+    "estadisticas.json": "38a5bfec15fc7e5b4598afc24d57567e3e1f5eb3ccec86e88513ffa6bea4c9fa",
+    "scenario_policy_fixtures.json": "b422c8a9530c6e3d9434f6bae4e75fabd547d530cf30378c185e36f3618a1455"
+  },
+  "rows": {
+    "base": 4032,
+    "supervised": 3528,
+    "audit": 4413
+  },
+  "policy_cases_passed": 65,
+  "policy_cases_failed": [],
+  "dynamic_generator_coverage_complete": false,
+  "model_accuracy_evaluated": false,
+  "dataset_unchanged": true,
+  "training_performed": false,
+  "training_authorized": false,
+  "raw_used": false,
+  "neon_used": false,
+  "new_markdown_files": 0,
+  "pending": [
+    "Cobertura dinámica de variantes y respuestas predictivas en experimentos futuros, sin afirmar 57 casos simulados por este build",
+    "Tratamiento o exclusión de antiguedad_tipo_cambio_dias constante en TRAIN, mediante una variante identificada",
+    "Scalers y codificadores solo se ajustarán en TRAIN al autorizar experimentos",
+    "V2-09B revisión de contrato con Erika y verificación de backend",
+    "Validación comercial con historia propia certificada"
+  ],
+  "next_step": "Planificar V2-08 con las limitaciones de esta variante. No iniciar entrenamiento automáticamente."
+}

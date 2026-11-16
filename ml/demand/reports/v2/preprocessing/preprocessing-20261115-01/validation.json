@@ -1,0 +1,142 @@
+{
+  "stage": "V2-08_PREPROCESSING_ADAPTER",
+  "recorded_on": "2026-11-15",
+  "status": "IMPLEMENTED_TESTED_FIXTURE_FITS_ONLY_NO_MODEL_TRAINING",
+  "implementation": {
+    "path": "ml/demand/v2/preprocessing.py",
+    "sha256": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+    "contract": "ml/demand/v2/contracts/preprocessing.v2_1.json",
+    "contract_sha256": "36eed4f2b505487bf92985f4c06ad6dabaea0aee6735bf463e7c04eb2369b2b9",
+    "adapter_version": "preprocessing-2.1-1"
+  },
+  "contract": {
+    "raw_feature_count": 17,
+    "metadata_context_column": "mes_objetivo",
+    "input_columns_count": 18,
+    "feature_set_raw_sizes": [
+      5,
+      7,
+      11,
+      14,
+      16,
+      17
+    ],
+    "row_identity": "MultiIndex productId/locationId/mes_objetivo, not numeric features",
+    "numeric_features_full": 16,
+    "fixed_nullable_numeric_indicators_full": 10,
+    "category_dimension": "TRAIN known categories plus reserved UNKNOWN",
+    "output_names_stable_per_fitted_state": true
+  },
+  "rules": {
+    "fit_only_approved_train_prefixes": true,
+    "reject_partial_product_store_month_cohorts": true,
+    "y_used": false,
+    "median_train_only": true,
+    "all_missing_or_constant_selected_column": "REJECT_REVIEW_NO_SILENT_DROP",
+    "linear_scaling": "STANDARD_NUMERIC_ONLY",
+    "forest_scaling": "NONE",
+    "categories": "TRAIN_VOCAB_PLUS_UNKNOWN_ONE_HOT_NOT_ORDINAL",
+    "refit_same_instance": "REJECT",
+    "transforms_do_not_update_state": true,
+    "json_roundtrip_without_repo_reads": true
+  },
+  "execution_scope": {
+    "successful_preprocessor_fits_on_published_dataset": 0,
+    "preprocessing_fit_exercised_on_controlled_fixtures": true,
+    "model_fit_count": 0,
+    "real_feature_partitions_read": [
+      "TRAIN",
+      "VALIDATION",
+      "F1_TRAIN"
+    ],
+    "real_labels_processed": false,
+    "actual_test_parameters_fit": false,
+    "production_preprocessor_saved": false,
+    "transformed_dataset_written": false
+  },
+  "fixture_example": {
+    "train_rows_outer": 15,
+    "fold_row_counts": [
+      6,
+      9,
+      12
+    ],
+    "known_categories": 3,
+    "full_transformed_columns": 30,
+    "means_scales_and_vocab_are_not_claimed_to_describe_real_build_train": true
+  },
+  "tests": {
+    "executed": 201,
+    "passed": 201,
+    "failed": 0,
+    "skipped": 0,
+    "new_test_methods": 30,
+    "log": "ml/demand/reports/v2/preprocessing/preprocessing-20261115-01/tests.txt",
+    "log_sha256": "2c20037a368160aae18043f86320168b9be9022c55b6f4969cf5be7a326631c8",
+    "model_fit_methods_blocked_in_preprocessing_test": true,
+    "standard_scaler_fit_blocked_before_incomplete_real_cohort_check": true
+  },
+  "versions": {
+    "python": "3.11.9",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "scikit_learn": "1.9.1"
+  },
+  "integrity": {
+    "data": {
+      "files": 59,
+      "unchanged": true
+    },
+    "raw": {
+      "files": 136,
+      "unchanged": true
+    },
+    "reports": {
+      "files": 65,
+      "unchanged": true
+    },
+    "models": {
+      "files": 2,
+      "unchanged": true
+    },
+    "manifests": {
+      "files": 5,
+      "unchanged": true
+    },
+    "protected": {
+      "files": 44,
+      "unchanged": true
+    }
+  },
+  "modified_files": [
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/README.md",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "new_source_files": [
+    "ml/demand/v2/preprocessing.py",
+    "ml/demand/v2/contracts/preprocessing.v2_1.json",
+    "ml/demand/tests/test_v2_preprocessing.py"
+  ],
+  "assertions": {
+    "datasets_unchanged": true,
+    "raw_unchanged": true,
+    "previous_reports_unchanged": true,
+    "previous_models_unchanged": true,
+    "no_neon_or_prisma": true,
+    "no_git": true,
+    "no_new_markdown": true,
+    "no_supervised_model_training": true,
+    "no_test_used_for_selection": true,
+    "no_predictive_metrics": true,
+    "no_experiments_csv_created": true
+  },
+  "remaining": [
+    "Integrate authorized V2.1 experiment runner with adapter and aligned targets",
+    "Fit actual TRAIN preprocessors and regressors only after training authorization",
+    "Compare models on VALIDATION, then final reserved TEST evaluation",
+    "Erika artifact/backend contract validation after selection",
+    "No commercial accuracy certification"
+  ]
+}

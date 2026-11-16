@@ -171,3 +171,9 @@ eng.traineddata
 # H4: eventos locales por sesión (no son modelos, datasets ni experimentos).
 # Originales preservados; respaldo verificable en docs/H4/tareas_erika/organizacion/evidence/.
 /ml/demand/lifecycle/
+
+# H4: fuentes externas y temporales se conservan localmente.
+# La entrega incluye sus manifests, hashes y reportes, no los originales de terceros.
+/ml/demand/sources/external_raw/
+/ml/demand/sources/external_curated/
+/ml/demand/tmp/

@@ -1,0 +1,676 @@
+{
+  "releaseId": "scenarios-model-20261115-01",
+  "datasetVersion": "3.0.0",
+  "modelVersion": "scenarios-model-20261115-01",
+  "policyVersion": "SCENARIO_NONNEGATIVE_1",
+  "modelKind": "forest_absolute",
+  "artifact": "models/v2/scenarios-model-20261115-01/model.joblib",
+  "artifactSha256": "1ae61ad487d22c3fa8c8e8b5acd0c20d03e1f25d1151a5f680bbd8596d07bde3",
+  "snapshots": "reports/v2/3.0.0/scenarios-model-20261115-01/snapshots.json",
+  "snapshotsSha256": "ca6dffc99f3618d5bc6a7e9e40470529f2d9466e05b532db59186968b76f3b7e",
+  "datasetManifestSha256": "4f653afe8a35d38b78cd5cea682aad6e76da0144a61c6cfdeeaabd85a3d4ed49",
+  "features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos",
+    "proporcion_por_mayor_mes_anterior",
+    "precio_menor_base_corte_bs",
+    "precio_mayor_base_corte_bs",
+    "variacion_precio_menor_plan_ponderada",
+    "variacion_precio_mayor_plan_ponderada",
+    "dias_vigencia_nuevo_precio_plan",
+    "dias_sin_stock_mes_anterior",
+    "stock_vendible_al_corte_unidades",
+    "reservas_posteriores_unidades",
+    "compromisos_por_menor_horizonte_unidades",
+    "compromisos_por_mayor_horizonte_unidades",
+    "entradas_plan_horizonte_unidades",
+    "dias_hasta_primera_entrada_plan",
+    "categoryId"
+  ],
+  "bounds": {
+    "ventas_mes_anterior": [
+      0.0,
+      152.0
+    ],
+    "ventas_hace_2_meses": [
+      0.0,
+      152.0
+    ],
+    "ventas_hace_3_meses": [
+      0.0,
+      149.0
+    ],
+    "mes_sin": [
+      -1.0,
+      1.0
+    ],
+    "mes_cos": [
+      -1.0,
+      1.0
+    ],
+    "proporcion_por_mayor_mes_anterior": [
+      0.0,
+      1.0
+    ],
+    "precio_menor_base_corte_bs": [
+      72.2,
+      661.5
+    ],
+    "precio_mayor_base_corte_bs": [
+      61.37,
+      562.275
+    ],
+    "variacion_precio_menor_plan_ponderada": [
+      -0.15000000000000013,
+      0.25
+    ],
+    "variacion_precio_mayor_plan_ponderada": [
+      -0.15000000000000002,
+      0.2500000000000002
+    ],
+    "dias_vigencia_nuevo_precio_plan": [
+      0.0,
+      31.0
+    ],
+    "dias_sin_stock_mes_anterior": [
+      0.0,
+      31.0
+    ],
+    "stock_vendible_al_corte_unidades": [
+      0.0,
+      150.0
+    ],
+    "reservas_posteriores_unidades": [
+      0.0,
+      5.0
+    ],
+    "compromisos_por_menor_horizonte_unidades": [
+      0.0,
+      10.0
+    ],
+    "compromisos_por_mayor_horizonte_unidades": [
+      0.0,
+      500.0
+    ],
+    "entradas_plan_horizonte_unidades": [
+      0.0,
+      150.0
+    ],
+    "dias_hasta_primera_entrada_plan": [
+      0.0,
+      30.0
+    ]
+  },
+  "metrics": {
+    "partition": "VALIDATION",
+    "origin": "SYNTHETIC",
+    "mae": 10.430089285714287,
+    "rmse": 20.79027054192295,
+    "r2": 0.45573789989384283
+  },
+  "baseline": {
+    "mae": 17.107142857142858,
+    "rmse": 33.942528457603714,
+    "r2": -0.4506952634932866
+  },
+  "trainRows": 5040,
+  "validationRows": 1008,
+  "trainCV": [
+    {
+      "train_end": "2027-06",
+      "validation_months": [
+        "2027-07",
+        "2027-08",
+        "2027-09"
+      ],
+      "mae": 11.067187500000003,
+      "rmse": 20.74001418317867,
+      "r2": 0.47932263844505674
+    },
+    {
+      "train_end": "2027-09",
+      "validation_months": [
+        "2027-10",
+        "2027-11",
+        "2027-12"
+      ],
+      "mae": 11.842361111111112,
+      "rmse": 23.52768204942951,
+      "r2": 0.4023988542665333
+    },
+    {
+      "train_end": "2027-12",
+      "validation_months": [
+        "2028-01",
+        "2028-02",
+        "2028-03"
+      ],
+      "mae": 12.810858134920634,
+      "rmse": 25.233640099746445,
+      "r2": 0.32301917019071347
+    }
+  ],
+  "groupMetrics": [
+    {
+      "group": "productId",
+      "id": "1",
+      "mae": 3.706388888888889,
+      "rmse": 4.238766035062563,
+      "r2": 0.8615710520058022,
+      "baseline_mae": 7.388888888888889
+    },
+    {
+      "group": "productId",
+      "id": "2",
+      "mae": 9.092500000000001,
+      "rmse": 12.357737286143177,
+      "r2": -0.6608226822636947,
+      "baseline_mae": 10.0
+    },
+    {
+      "group": "productId",
+      "id": "3",
+      "mae": 15.498888888888887,
+      "rmse": 20.310008753212184,
+      "r2": 0.5909526719145968,
+      "baseline_mae": 29.77777777777778
+    },
+    {
+      "group": "productId",
+      "id": "4",
+      "mae": 11.580277777777779,
+      "rmse": 25.498224257343445,
+      "r2": 0.5287561437947976,
+      "baseline_mae": 19.11111111111111
+    },
+    {
+      "group": "productId",
+      "id": "5",
+      "mae": 16.64833333333333,
+      "rmse": 28.953611269676802,
+      "r2": 0.1271768597219054,
+      "baseline_mae": 25.72222222222222
+    },
+    {
+      "group": "productId",
+      "id": "6",
+      "mae": 3.4469444444444446,
+      "rmse": 5.566736651256681,
+      "r2": 0.11242110590523313,
+      "baseline_mae": 6.222222222222222
+    },
+    {
+      "group": "productId",
+      "id": "7",
+      "mae": 17.876666666666672,
+      "rmse": 28.750753709927135,
+      "r2": -0.025141594322722893,
+      "baseline_mae": 35.22222222222222
+    },
+    {
+      "group": "productId",
+      "id": "8",
+      "mae": 3.552222222222222,
+      "rmse": 5.299230814205231,
+      "r2": 0.915994030911844,
+      "baseline_mae": 17.77777777777778
+    },
+    {
+      "group": "productId",
+      "id": "9",
+      "mae": 16.787222222222223,
+      "rmse": 28.913957173732623,
+      "r2": 0.6487979707337566,
+      "baseline_mae": 35.44444444444444
+    },
+    {
+      "group": "productId",
+      "id": "10",
+      "mae": 1.8436111111111113,
+      "rmse": 3.2337441749292553,
+      "r2": -0.06644660056657203,
+      "baseline_mae": 2.7222222222222223
+    },
+    {
+      "group": "productId",
+      "id": "11",
+      "mae": 17.578333333333333,
+      "rmse": 32.998617058564406,
+      "r2": 0.2167532977681873,
+      "baseline_mae": 30.5
+    },
+    {
+      "group": "productId",
+      "id": "12",
+      "mae": 6.788333333333333,
+      "rmse": 12.094346360547512,
+      "r2": 0.06766365084985859,
+      "baseline_mae": 6.444444444444445
+    },
+    {
+      "group": "productId",
+      "id": "13",
+      "mae": 1.7416666666666665,
+      "rmse": 2.5135952560249457,
+      "r2": 0.4191020998864925,
+      "baseline_mae": 2.4444444444444446
+    },
+    {
+      "group": "productId",
+      "id": "14",
+      "mae": 5.552222222222223,
+      "rmse": 9.2378511811159,
+      "r2": 0.9288728309662416,
+      "baseline_mae": 20.72222222222222
+    },
+    {
+      "group": "productId",
+      "id": "15",
+      "mae": 8.208888888888888,
+      "rmse": 13.01243934770794,
+      "r2": -0.682847828220859,
+      "baseline_mae": 18.77777777777778
+    },
+    {
+      "group": "productId",
+      "id": "16",
+      "mae": 14.38472222222222,
+      "rmse": 29.08709094636695,
+      "r2": 0.3693448950223621,
+      "baseline_mae": 28.555555555555557
+    },
+    {
+      "group": "productId",
+      "id": "17",
+      "mae": 30.248055555555556,
+      "rmse": 43.206098511797045,
+      "r2": -0.8248847178640819,
+      "baseline_mae": 55.22222222222222
+    },
+    {
+      "group": "productId",
+      "id": "18",
+      "mae": 15.556944444444447,
+      "rmse": 27.556483180510856,
+      "r2": 0.4662106974791558,
+      "baseline_mae": 24.61111111111111
+    },
+    {
+      "group": "productId",
+      "id": "19",
+      "mae": 7.7924999999999995,
+      "rmse": 12.689248894241139,
+      "r2": -0.3340882278481012,
+      "baseline_mae": 11.38888888888889
+    },
+    {
+      "group": "productId",
+      "id": "20",
+      "mae": 26.043611111111108,
+      "rmse": 42.87940296472318,
+      "r2": 0.3608067954201126,
+      "baseline_mae": 36.666666666666664
+    },
+    {
+      "group": "productId",
+      "id": "21",
+      "mae": 5.360833333333334,
+      "rmse": 12.96017966482118,
+      "r2": 0.8860408727690771,
+      "baseline_mae": 12.833333333333334
+    },
+    {
+      "group": "productId",
+      "id": "22",
+      "mae": 15.72388888888889,
+      "rmse": 21.13856776657828,
+      "r2": 0.6347189634683265,
+      "baseline_mae": 33.94444444444444
+    },
+    {
+      "group": "productId",
+      "id": "23",
+      "mae": 3.7891666666666666,
+      "rmse": 6.172048214868924,
+      "r2": 0.8461742830614305,
+      "baseline_mae": 7.611111111111111
+    },
+    {
+      "group": "productId",
+      "id": "24",
+      "mae": 12.191944444444443,
+      "rmse": 25.36321518897441,
+      "r2": 0.7438126805617695,
+      "baseline_mae": 16.333333333333332
+    },
+    {
+      "group": "productId",
+      "id": "25",
+      "mae": 12.151388888888887,
+      "rmse": 17.21316723874165,
+      "r2": -0.37296338653623384,
+      "baseline_mae": 14.61111111111111
+    },
+    {
+      "group": "productId",
+      "id": "26",
+      "mae": 2.9250000000000003,
+      "rmse": 4.313310149345216,
+      "r2": -0.2727839527027025,
+      "baseline_mae": 2.4444444444444446
+    },
+    {
+      "group": "productId",
+      "id": "27",
+      "mae": 1.7749999999999995,
+      "rmse": 2.9816503632868976,
+      "r2": 0.9828354334884664,
+      "baseline_mae": 9.5
+    },
+    {
+      "group": "productId",
+      "id": "28",
+      "mae": 24.785555555555554,
+      "rmse": 44.0448302868793,
+      "r2": -0.33194924379684543,
+      "baseline_mae": 38.611111111111114
+    },
+    {
+      "group": "productId",
+      "id": "29",
+      "mae": 15.694722222222222,
+      "rmse": 22.135755609169724,
+      "r2": -0.6567420104356902,
+      "baseline_mae": 12.166666666666666
+    },
+    {
+      "group": "productId",
+      "id": "30",
+      "mae": 3.0675000000000003,
+      "rmse": 3.4984558101476075,
+      "r2": 0.3899233000000001,
+      "baseline_mae": 3.7777777777777777
+    },
+    {
+      "group": "productId",
+      "id": "31",
+      "mae": 11.034166666666666,
+      "rmse": 17.996739017882593,
+      "r2": 0.5903676872540755,
+      "baseline_mae": 21.88888888888889
+    },
+    {
+      "group": "productId",
+      "id": "32",
+      "mae": 7.874444444444445,
+      "rmse": 15.707656218828092,
+      "r2": -0.05949040847161058,
+      "baseline_mae": 12.11111111111111
+    },
+    {
+      "group": "productId",
+      "id": "33",
+      "mae": 4.8130555555555565,
+      "rmse": 9.71834698164022,
+      "r2": 0.4371580552898763,
+      "baseline_mae": 4.333333333333333
+    },
+    {
+      "group": "productId",
+      "id": "34",
+      "mae": 13.794166666666667,
+      "rmse": 27.507565095805916,
+      "r2": 0.01857554623698965,
+      "baseline_mae": 14.222222222222221
+    },
+    {
+      "group": "productId",
+      "id": "35",
+      "mae": 19.12472222222222,
+      "rmse": 30.044092250668296,
+      "r2": 0.4411289425206525,
+      "baseline_mae": 13.166666666666666
+    },
+    {
+      "group": "productId",
+      "id": "36",
+      "mae": 2.851944444444445,
+      "rmse": 4.158653127315782,
+      "r2": 0.38994183451279263,
+      "baseline_mae": 4.5
+    },
+    {
+      "group": "productId",
+      "id": "37",
+      "mae": 2.0705555555555555,
+      "rmse": 2.716622699030708,
+      "r2": 0.3121022439585731,
+      "baseline_mae": 2.5555555555555554
+    },
+    {
+      "group": "productId",
+      "id": "38",
+      "mae": 3.795,
+      "rmse": 9.35605285363438,
+      "r2": -0.17560932227979276,
+      "baseline_mae": 4.055555555555555
+    },
+    {
+      "group": "productId",
+      "id": "39",
+      "mae": 13.739166666666668,
+      "rmse": 20.71047202235837,
+      "r2": -0.6703076050768613,
+      "baseline_mae": 17.055555555555557
+    },
+    {
+      "group": "productId",
+      "id": "40",
+      "mae": 17.32416666666667,
+      "rmse": 25.263652717117356,
+      "r2": 0.749801945324977,
+      "baseline_mae": 45.44444444444444
+    },
+    {
+      "group": "productId",
+      "id": "41",
+      "mae": 1.966666666666667,
+      "rmse": 2.7054415330753105,
+      "r2": 0.37543057677113534,
+      "baseline_mae": 3.388888888888889
+    },
+    {
+      "group": "productId",
+      "id": "42",
+      "mae": 5.3997222222222225,
+      "rmse": 6.845183525662406,
+      "r2": -1.0358747686737293,
+      "baseline_mae": 13.61111111111111
+    },
+    {
+      "group": "productId",
+      "id": "43",
+      "mae": 13.930277777777778,
+      "rmse": 27.319549141187853,
+      "r2": -0.008288785274692456,
+      "baseline_mae": 21.88888888888889
+    },
+    {
+      "group": "productId",
+      "id": "44",
+      "mae": 9.631666666666668,
+      "rmse": 21.017421411243053,
+      "r2": -14.576966575968656,
+      "baseline_mae": 12.11111111111111
+    },
+    {
+      "group": "productId",
+      "id": "45",
+      "mae": 13.46972222222222,
+      "rmse": 20.326919719371595,
+      "r2": -0.16734833929194282,
+      "baseline_mae": 21.77777777777778
+    },
+    {
+      "group": "productId",
+      "id": "46",
+      "mae": 18.013055555555557,
+      "rmse": 25.386028829303378,
+      "r2": 0.5252170407518236,
+      "baseline_mae": 23.666666666666668
+    },
+    {
+      "group": "productId",
+      "id": "47",
+      "mae": 6.234999999999999,
+      "rmse": 10.33212546704049,
+      "r2": 0.8158571883385153,
+      "baseline_mae": 16.77777777777778
+    },
+    {
+      "group": "productId",
+      "id": "48",
+      "mae": 8.023888888888889,
+      "rmse": 10.912625078830075,
+      "r2": -1.0856035189189188,
+      "baseline_mae": 13.11111111111111
+    },
+    {
+      "group": "productId",
+      "id": "49",
+      "mae": 11.843888888888888,
+      "rmse": 24.323350292351677,
+      "r2": -0.20845675982373035,
+      "baseline_mae": 26.61111111111111
+    },
+    {
+      "group": "productId",
+      "id": "50",
+      "mae": 7.126666666666667,
+      "rmse": 9.257592079537265,
+      "r2": 0.3585933752194401,
+      "baseline_mae": 10.555555555555555
+    },
+    {
+      "group": "productId",
+      "id": "51",
+      "mae": 17.20361111111111,
+      "rmse": 27.022487420459445,
+      "r2": 0.5389411086361722,
+      "baseline_mae": 19.0
+    },
+    {
+      "group": "productId",
+      "id": "52",
+      "mae": 14.892222222222223,
+      "rmse": 30.753824694390996,
+      "r2": 0.3046883048459228,
+      "baseline_mae": 15.833333333333334
+    },
+    {
+      "group": "productId",
+      "id": "53",
+      "mae": 3.1305555555555555,
+      "rmse": 5.0131917644018635,
+      "r2": 0.8386957924763773,
+      "baseline_mae": 6.722222222222222
+    },
+    {
+      "group": "productId",
+      "id": "54",
+      "mae": 17.761388888888888,
+      "rmse": 30.0239775244535,
+      "r2": 0.34329342419459286,
+      "baseline_mae": 28.22222222222222
+    },
+    {
+      "group": "productId",
+      "id": "55",
+      "mae": 2.812222222222222,
+      "rmse": 3.883383046892089,
+      "r2": 0.6279498134470418,
+      "baseline_mae": 3.0555555555555554
+    },
+    {
+      "group": "productId",
+      "id": "56",
+      "mae": 4.829722222222222,
+      "rmse": 6.835611307296842,
+      "r2": 0.1621049064644673,
+      "baseline_mae": 5.777777777777778
+    },
+    {
+      "group": "locationId",
+      "id": "5",
+      "mae": 12.79328869047619,
+      "rmse": 23.79974785874592,
+      "r2": 0.42330413779198517,
+      "baseline_mae": 20.24702380952381
+    },
+    {
+      "group": "locationId",
+      "id": "6",
+      "mae": 10.048125,
+      "rmse": 20.566045171303482,
+      "r2": 0.5335368587643067,
+      "baseline_mae": 16.357142857142858
+    },
+    {
+      "group": "locationId",
+      "id": "7",
+      "mae": 8.448854166666665,
+      "rmse": 17.530425992858,
+      "r2": 0.33597343651717637,
+      "baseline_mae": 14.717261904761905
+    }
+  ],
+  "experiments": [
+    {
+      "name": "baseline",
+      "mae": 17.107142857142858,
+      "rmse": 33.942528457603714,
+      "r2": -0.4506952634932866,
+      "seconds": 0
+    },
+    {
+      "name": "linear",
+      "mae": 14.905452427523782,
+      "rmse": 23.345841725908347,
+      "r2": 0.3137112413143879,
+      "seconds": 0.11573860002681613
+    },
+    {
+      "name": "forest_squared",
+      "mae": 10.890534443061144,
+      "rmse": 18.781617066518248,
+      "r2": 0.5558253439937395,
+      "seconds": 0.9769751999992877
+    },
+    {
+      "name": "forest_absolute",
+      "mae": 10.430089285714287,
+      "rmse": 20.79027054192295,
+      "r2": 0.45573789989384283,
+      "seconds": 8.35893380001653
+    }
+  ],
+  "selectedUsing": "VALIDATION_MAE_RMSE_SIMPLICITY",
+  "testScored": false,
+  "origin": "ACADEMIC_SYNTHETIC_NOT_REAL_SALES",
+  "seed": 42,
+  "versions": {
+    "python": "3.11.9",
+    "sklearn": "1.9.1",
+    "numpy": "2.4.6"
+  },
+  "recordedAt": "2026-11-16T03:27:12.375026+00:00",
+  "excluded": [
+    "four constant candidates",
+    "identifiers and scenario metadata",
+    "target outcomes",
+    "FX/cost and supplier lead as unproven sales drivers"
+  ]
+}

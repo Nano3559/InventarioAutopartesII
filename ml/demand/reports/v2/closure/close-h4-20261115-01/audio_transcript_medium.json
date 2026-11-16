@@ -1,0 +1,359 @@
+{
+  "source_sha256": "84008e5659520674321a042c0a420d9324cb37a52fac194a5c6e227160c9142d",
+  "engine": "faster-whisper medium CPU int8",
+  "language": "es",
+  "duration": 221.6335,
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 7.8,
+      "text": " tipo un switch que diga cambia de precio, presionarla y que tal vez poner el precio",
+      "avg_logprob": -0.3622081823647022,
+      "no_speech_prob": 0.32243359088897705
+    },
+    {
+      "start": 7.8,
+      "end": 12.52,
+      "text": " que no salga el precio actual y para el nuevo price y ver cómo cambia la predicción.",
+      "avg_logprob": -0.3622081823647022,
+      "no_speech_prob": 0.32243359088897705
+    },
+    {
+      "start": 12.52,
+      "end": 16.8,
+      "text": " Si, debería ser algo que consideren.",
+      "avg_logprob": -0.3622081823647022,
+      "no_speech_prob": 0.32243359088897705
+    },
+    {
+      "start": 18.64,
+      "end": 24.6,
+      "text": " Porque estamos teniendo temas de otros escenarios como el crecimiento, caída,",
+      "avg_logprob": -0.3622081823647022,
+      "no_speech_prob": 0.32243359088897705
+    },
+    {
+      "start": 24.6,
+      "end": 32.68,
+      "text": " pico mayorista, el tema de stock out, producto nuevo, cambio persistente y el tema de recopilación.",
+      "avg_logprob": -0.3697050776408643,
+      "no_speech_prob": 0.10153673589229584
+    },
+    {
+      "start": 34.04,
+      "end": 39.68,
+      "text": " Si, la tienen, está bien, solamente creo que el precio es algo que no les han considerado.",
+      "avg_logprob": -0.3697050776408643,
+      "no_speech_prob": 0.10153673589229584
+    },
+    {
+      "start": 39.68,
+      "end": 45.2,
+      "text": " Para si tienen alguna posificación por qué no lo deberían considerar, la escucho.",
+      "avg_logprob": -0.3697050776408643,
+      "no_speech_prob": 0.10153673589229584
+    },
+    {
+      "start": 46.6,
+      "end": 51.96,
+      "text": " Le quisiera echar mi charla, pero en el tema de productos siempre cambia el precio,",
+      "avg_logprob": -0.3697050776408643,
+      "no_speech_prob": 0.10153673589229584
+    },
+    {
+      "start": 51.96,
+      "end": 56.04,
+      "text": " entonces no hay como encharlarlo, porque miren hasta la grafitica se mueve.",
+      "avg_logprob": -0.3468165407832871,
+      "no_speech_prob": 0.1458253562450409
+    },
+    {
+      "start": 56.04,
+      "end": 59.96,
+      "text": " O sea, acá abajo se mantiene lo que está actualmente.",
+      "avg_logprob": -0.3468165407832871,
+      "no_speech_prob": 0.1458253562450409
+    },
+    {
+      "start": 59.96,
+      "end": 62.88,
+      "text": " Pero por ejemplo si lo cambias a 40.",
+      "avg_logprob": -0.3468165407832871,
+      "no_speech_prob": 0.1458253562450409
+    },
+    {
+      "start": 62.88,
+      "end": 67.88,
+      "text": " Y ese es el cambio mamá, la edición mamá.",
+      "avg_logprob": -0.3468165407832871,
+      "no_speech_prob": 0.1458253562450409
+    },
+    {
+      "start": 67.88,
+      "end": 70.96,
+      "text": " Y la grafica va cambiando y se puede copiar y se puede escargar.",
+      "avg_logprob": -0.3468165407832871,
+      "no_speech_prob": 0.1458253562450409
+    },
+    {
+      "start": 70.96,
+      "end": 77.4,
+      "text": " O sea, eso es super normal, pero en realidad creo que tener tan pocos datos para hacer una predicción",
+      "avg_logprob": -0.3468165407832871,
+      "no_speech_prob": 0.1458253562450409
+    },
+    {
+      "start": 78.32,
+      "end": 83.36,
+      "text": " no les da una vista real de cómo sería en una situación real.",
+      "avg_logprob": -0.27789757471709026,
+      "no_speech_prob": 0.21678125858306885
+    },
+    {
+      "start": 84.36,
+      "end": 87.92,
+      "text": " Porque por ejemplo en una situación real no solamente determina el precio,",
+      "avg_logprob": -0.27789757471709026,
+      "no_speech_prob": 0.21678125858306885
+    },
+    {
+      "start": 87.92,
+      "end": 92.96,
+      "text": " también determina el tipo de cambio con el que se ha comprado el producto,",
+      "avg_logprob": -0.27789757471709026,
+      "no_speech_prob": 0.21678125858306885
+    },
+    {
+      "start": 92.96,
+      "end": 97.92,
+      "text": " por qué eso va a afectar en el precio, determina el tiempo de llegada,",
+      "avg_logprob": -0.27789757471709026,
+      "no_speech_prob": 0.21678125858306885
+    },
+    {
+      "start": 97.92,
+      "end": 100.52,
+      "text": " tiempo de reposición del producto.",
+      "avg_logprob": -0.27789757471709026,
+      "no_speech_prob": 0.21678125858306885
+    },
+    {
+      "start": 101.52,
+      "end": 107.52,
+      "text": " Son más cosas que como que no las han considerado y solamente han tomado tres datos.",
+      "avg_logprob": -0.3234997227078392,
+      "no_speech_prob": 0.1635749340057373
+    },
+    {
+      "start": 107.52,
+      "end": 113.52,
+      "text": " En base a eso es fácil determinar si hay demanda o no, y cuantos vence por el próximo mes.",
+      "avg_logprob": -0.3234997227078392,
+      "no_speech_prob": 0.1635749340057373
+    },
+    {
+      "start": 114.52,
+      "end": 119.52,
+      "text": " Si le agregaríamos el tema del tiempo, el tema del costo, aumento de precio",
+      "avg_logprob": -0.3234997227078392,
+      "no_speech_prob": 0.1635749340057373
+    },
+    {
+      "start": 119.52,
+      "end": 123.52,
+      "text": " y el tema del cambio de dólar por ejemplo.",
+      "avg_logprob": -0.3234997227078392,
+      "no_speech_prob": 0.1635749340057373
+    },
+    {
+      "start": 123.52,
+      "end": 125.52,
+      "text": " ¿Sería completa ya?",
+      "avg_logprob": -0.3234997227078392,
+      "no_speech_prob": 0.1635749340057373
+    },
+    {
+      "start": 126.52,
+      "end": 129.52,
+      "text": " O algún tipo de reporte más quizá.",
+      "avg_logprob": -0.3234997227078392,
+      "no_speech_prob": 0.1635749340057373
+    },
+    {
+      "start": 129.52,
+      "end": 132.52,
+      "text": " Es que en realidad no es tanto lo que yo quiera, no es tanto como serlo.",
+      "avg_logprob": -0.32662215339603706,
+      "no_speech_prob": 0.14130471646785736
+    },
+    {
+      "start": 132.52,
+      "end": 135.52,
+      "text": " Por eso les pregunto si tienen una justificación.",
+      "avg_logprob": -0.32662215339603706,
+      "no_speech_prob": 0.14130471646785736
+    },
+    {
+      "start": 135.52,
+      "end": 138.52,
+      "text": " Sí, no. Tiene razón la verdad.",
+      "avg_logprob": -0.32662215339603706,
+      "no_speech_prob": 0.14130471646785736
+    },
+    {
+      "start": 138.52,
+      "end": 142.52,
+      "text": " Por ejemplo, no sé bien si utilizan en ese caso lo que es precio unitario,",
+      "avg_logprob": -0.32662215339603706,
+      "no_speech_prob": 0.14130471646785736
+    },
+    {
+      "start": 142.52,
+      "end": 148.52,
+      "text": " precio de venta de tienda y precio de un lugar mayor.",
+      "avg_logprob": -0.32662215339603706,
+      "no_speech_prob": 0.14130471646785736
+    },
+    {
+      "start": 151.52,
+      "end": 153.52,
+      "text": " Sí, no, no más que más los dos precios.",
+      "avg_logprob": -0.32662215339603706,
+      "no_speech_prob": 0.14130471646785736
+    },
+    {
+      "start": 153.52,
+      "end": 156.52,
+      "text": " No, tres valores, que les ha valido pepino a los demás.",
+      "avg_logprob": -0.32662215339603706,
+      "no_speech_prob": 0.14130471646785736
+    },
+    {
+      "start": 156.52,
+      "end": 158.52,
+      "text": " Y no sé cómo sueltas el dios.",
+      "avg_logprob": -0.32662215339603706,
+      "no_speech_prob": 0.14130471646785736
+    },
+    {
+      "start": 159.52,
+      "end": 169.52,
+      "text": " Entonces, no creo que sea muy confiable la predicción que se va haciendo.",
+      "avg_logprob": -0.28012896528338443,
+      "no_speech_prob": 0.07571429759263992
+    },
+    {
+      "start": 169.52,
+      "end": 178.52,
+      "text": " Porque es una predicción sesgada en base a datos que no analizan mucho la situación real.",
+      "avg_logprob": -0.28012896528338443,
+      "no_speech_prob": 0.07571429759263992
+    },
+    {
+      "start": 178.52,
+      "end": 182.52,
+      "text": " Ahora, ¿qué datos deberían tener? Esperan que yo se los diga.",
+      "avg_logprob": -0.28012896528338443,
+      "no_speech_prob": 0.07571429759263992
+    },
+    {
+      "start": 182.52,
+      "end": 184.52,
+      "text": " Ustedes tienen que encontrarlo con la IE.",
+      "avg_logprob": -0.28012896528338443,
+      "no_speech_prob": 0.07571429759263992
+    },
+    {
+      "start": 184.52,
+      "end": 188.52,
+      "text": " Y yo voy a encontrar cosas así y les voy a preguntar por qué no han hecho esto.",
+      "avg_logprob": -0.28012896528338443,
+      "no_speech_prob": 0.07571429759263992
+    },
+    {
+      "start": 188.52,
+      "end": 192.31,
+      "text": " Porque ahorita no están codificadas con la IE.",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 192.31,
+      "end": 195.31,
+      "text": " Lo único que tienen que hacer es pensar y decidir.",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 195.31,
+      "end": 198.31,
+      "text": " A ver, en un escenario así, ¿pasaría esto?",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 198.31,
+      "end": 200.31,
+      "text": " A ver, debería tener en cuenta esto.",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 200.31,
+      "end": 202.31,
+      "text": " A ver, debería tener en cuenta esto.",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 202.31,
+      "end": 204.31,
+      "text": " ¿Esa es su chamba de ustedes?",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 204.31,
+      "end": 205.31,
+      "text": " Sí.",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 206.31,
+      "end": 208.31,
+      "text": " Porque al opuesto a la chilaya, ¿no es?",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 208.31,
+      "end": 213.22,
+      "text": " ¿Qué más me quieren mostrar?",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 213.22,
+      "end": 215.6,
+      "text": " Nada.",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 216.6,
+      "end": 220.6,
+      "text": " ¿Cómo digo, de nada en coreano?",
+      "avg_logprob": -0.29966379376128316,
+      "no_speech_prob": 0.035278432071208954
+    },
+    {
+      "start": 220.6,
+      "end": 221.6,
+      "text": " De nada.",
+      "avg_logprob": -0.6794434289137522,
+      "no_speech_prob": 0.9259299039840698
+    }
+  ],
+  "notice": "Automatic local transcription. Review uncertain names and numbers against original audio."
+}

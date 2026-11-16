@@ -1,0 +1,876 @@
+{
+  "migration": "20260909_close_schema_drift",
+  "target_branch": "br-curly-butterfly-ayczan0b",
+  "checks": [
+    {
+      "effect": "Product.detalles",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Product",
+          "column_name": "detalles",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "ProductRequest.note",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "ProductRequest",
+          "column_name": "note",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "ProductRequest.expectedDate",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "ProductRequest",
+          "column_name": "expectedDate",
+          "data_type": "timestamp without time zone",
+          "udt_name": "timestamp",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "RoleModel.columnConfig",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "RoleModel",
+          "column_name": "columnConfig",
+          "data_type": "jsonb",
+          "udt_name": "jsonb",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "User.columnPrefs",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "User",
+          "column_name": "columnPrefs",
+          "data_type": "jsonb",
+          "udt_name": "jsonb",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Sale.seller",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Sale",
+          "column_name": "seller",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Sale.paraQuien",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Sale",
+          "column_name": "paraQuien",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Sale.lugarEntrega",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Sale",
+          "column_name": "lugarEntrega",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Sale.datosFactura",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Sale",
+          "column_name": "datosFactura",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Sale.formaPago",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Sale",
+          "column_name": "formaPago",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "RequestHistory.id",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "RequestHistory",
+          "column_name": "id",
+          "data_type": "integer",
+          "udt_name": "int4",
+          "is_nullable": "NO",
+          "column_default": "nextval('\"RequestHistory_id_seq\"'::regclass)"
+        }
+      }
+    },
+    {
+      "effect": "RequestHistory.requestId",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "RequestHistory",
+          "column_name": "requestId",
+          "data_type": "integer",
+          "udt_name": "int4",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "RequestHistory.previousStatus",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "RequestHistory",
+          "column_name": "previousStatus",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "RequestHistory.newStatus",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "RequestHistory",
+          "column_name": "newStatus",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "RequestHistory.userId",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "RequestHistory",
+          "column_name": "userId",
+          "data_type": "integer",
+          "udt_name": "int4",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "RequestHistory.userRole",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "RequestHistory",
+          "column_name": "userRole",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "RequestHistory.createdAt",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "RequestHistory",
+          "column_name": "createdAt",
+          "data_type": "timestamp without time zone",
+          "udt_name": "timestamp",
+          "is_nullable": "NO",
+          "column_default": "CURRENT_TIMESTAMP"
+        }
+      }
+    },
+    {
+      "effect": "AuditLog.id",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "AuditLog",
+          "column_name": "id",
+          "data_type": "integer",
+          "udt_name": "int4",
+          "is_nullable": "NO",
+          "column_default": "nextval('\"AuditLog_id_seq\"'::regclass)"
+        }
+      }
+    },
+    {
+      "effect": "AuditLog.userId",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "AuditLog",
+          "column_name": "userId",
+          "data_type": "integer",
+          "udt_name": "int4",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "AuditLog.action",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "AuditLog",
+          "column_name": "action",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "AuditLog.targetType",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "AuditLog",
+          "column_name": "targetType",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "AuditLog.targetId",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "AuditLog",
+          "column_name": "targetId",
+          "data_type": "integer",
+          "udt_name": "int4",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "AuditLog.oldValue",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "AuditLog",
+          "column_name": "oldValue",
+          "data_type": "jsonb",
+          "udt_name": "jsonb",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "AuditLog.newValue",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "AuditLog",
+          "column_name": "newValue",
+          "data_type": "jsonb",
+          "udt_name": "jsonb",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "AuditLog.createdAt",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "AuditLog",
+          "column_name": "createdAt",
+          "data_type": "timestamp without time zone",
+          "udt_name": "timestamp",
+          "is_nullable": "NO",
+          "column_default": "CURRENT_TIMESTAMP"
+        }
+      }
+    },
+    {
+      "effect": "Notification.id",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Notification",
+          "column_name": "id",
+          "data_type": "integer",
+          "udt_name": "int4",
+          "is_nullable": "NO",
+          "column_default": "nextval('\"Notification_id_seq\"'::regclass)"
+        }
+      }
+    },
+    {
+      "effect": "Notification.userId",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Notification",
+          "column_name": "userId",
+          "data_type": "integer",
+          "udt_name": "int4",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Notification.title",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Notification",
+          "column_name": "title",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Notification.message",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Notification",
+          "column_name": "message",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Notification.type",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Notification",
+          "column_name": "type",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "NO",
+          "column_default": "'INFO'::text"
+        }
+      }
+    },
+    {
+      "effect": "Notification.read",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Notification",
+          "column_name": "read",
+          "data_type": "boolean",
+          "udt_name": "bool",
+          "is_nullable": "NO",
+          "column_default": "false"
+        }
+      }
+    },
+    {
+      "effect": "Notification.linkUrl",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Notification",
+          "column_name": "linkUrl",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      }
+    },
+    {
+      "effect": "Notification.createdAt",
+      "passed": true,
+      "evidence": {
+        "column": {
+          "table_name": "Notification",
+          "column_name": "createdAt",
+          "data_type": "timestamp without time zone",
+          "udt_name": "timestamp",
+          "is_nullable": "NO",
+          "column_default": "CURRENT_TIMESTAMP"
+        }
+      }
+    },
+    {
+      "effect": "Product.detalles.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "ProductRequest.note.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "ProductRequest.expectedDate.type",
+      "passed": true,
+      "evidence": {
+        "expected": "timestamp without time zone",
+        "actual": "timestamp without time zone"
+      }
+    },
+    {
+      "effect": "RoleModel.columnConfig.type",
+      "passed": true,
+      "evidence": {
+        "expected": "jsonb",
+        "actual": "jsonb"
+      }
+    },
+    {
+      "effect": "User.columnPrefs.type",
+      "passed": true,
+      "evidence": {
+        "expected": "jsonb",
+        "actual": "jsonb"
+      }
+    },
+    {
+      "effect": "Sale.seller.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "Sale.paraQuien.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "Sale.lugarEntrega.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "Sale.datosFactura.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "Sale.formaPago.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "RequestHistory.id.type",
+      "passed": true,
+      "evidence": {
+        "expected": "integer",
+        "actual": "integer"
+      }
+    },
+    {
+      "effect": "RequestHistory.requestId.type",
+      "passed": true,
+      "evidence": {
+        "expected": "integer",
+        "actual": "integer"
+      }
+    },
+    {
+      "effect": "RequestHistory.previousStatus.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "RequestHistory.newStatus.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "RequestHistory.userId.type",
+      "passed": true,
+      "evidence": {
+        "expected": "integer",
+        "actual": "integer"
+      }
+    },
+    {
+      "effect": "RequestHistory.userRole.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "RequestHistory.createdAt.type",
+      "passed": true,
+      "evidence": {
+        "expected": "timestamp without time zone",
+        "actual": "timestamp without time zone"
+      }
+    },
+    {
+      "effect": "AuditLog.id.type",
+      "passed": true,
+      "evidence": {
+        "expected": "integer",
+        "actual": "integer"
+      }
+    },
+    {
+      "effect": "AuditLog.userId.type",
+      "passed": true,
+      "evidence": {
+        "expected": "integer",
+        "actual": "integer"
+      }
+    },
+    {
+      "effect": "AuditLog.action.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "AuditLog.targetType.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "AuditLog.targetId.type",
+      "passed": true,
+      "evidence": {
+        "expected": "integer",
+        "actual": "integer"
+      }
+    },
+    {
+      "effect": "AuditLog.oldValue.type",
+      "passed": true,
+      "evidence": {
+        "expected": "jsonb",
+        "actual": "jsonb"
+      }
+    },
+    {
+      "effect": "AuditLog.newValue.type",
+      "passed": true,
+      "evidence": {
+        "expected": "jsonb",
+        "actual": "jsonb"
+      }
+    },
+    {
+      "effect": "AuditLog.createdAt.type",
+      "passed": true,
+      "evidence": {
+        "expected": "timestamp without time zone",
+        "actual": "timestamp without time zone"
+      }
+    },
+    {
+      "effect": "Notification.id.type",
+      "passed": true,
+      "evidence": {
+        "expected": "integer",
+        "actual": "integer"
+      }
+    },
+    {
+      "effect": "Notification.userId.type",
+      "passed": true,
+      "evidence": {
+        "expected": "integer",
+        "actual": "integer"
+      }
+    },
+    {
+      "effect": "Notification.title.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "Notification.message.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "Notification.type.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "Notification.read.type",
+      "passed": true,
+      "evidence": {
+        "expected": "boolean",
+        "actual": "boolean"
+      }
+    },
+    {
+      "effect": "Notification.linkUrl.type",
+      "passed": true,
+      "evidence": {
+        "expected": "text",
+        "actual": "text"
+      }
+    },
+    {
+      "effect": "Notification.createdAt.type",
+      "passed": true,
+      "evidence": {
+        "expected": "timestamp without time zone",
+        "actual": "timestamp without time zone"
+      }
+    },
+    {
+      "effect": "Notification.read_default",
+      "passed": true,
+      "evidence": "false"
+    },
+    {
+      "effect": "RequestStatus.RECIBIDO_POR_INVENTARIO",
+      "passed": true,
+      "evidence": "RECIBIDO_POR_INVENTARIO"
+    },
+    {
+      "effect": "RequestStatus.PREPARANDO",
+      "passed": true,
+      "evidence": "PREPARANDO"
+    },
+    {
+      "effect": "RequestStatus.ENTREGADO",
+      "passed": true,
+      "evidence": "ENTREGADO"
+    },
+    {
+      "effect": "RequestStatus.RECIBIDO_POR_TIENDA",
+      "passed": true,
+      "evidence": "RECIBIDO_POR_TIENDA"
+    },
+    {
+      "effect": "RequestHistory.id_sequence",
+      "passed": true,
+      "evidence": "nextval('\"RequestHistory_id_seq\"'::regclass)"
+    },
+    {
+      "effect": "RequestHistory.createdAt_default",
+      "passed": true,
+      "evidence": "CURRENT_TIMESTAMP"
+    },
+    {
+      "effect": "RequestHistory.primary_key",
+      "passed": true,
+      "evidence": "RequestHistory_pkey"
+    },
+    {
+      "effect": "AuditLog.id_sequence",
+      "passed": true,
+      "evidence": "nextval('\"AuditLog_id_seq\"'::regclass)"
+    },
+    {
+      "effect": "AuditLog.createdAt_default",
+      "passed": true,
+      "evidence": "CURRENT_TIMESTAMP"
+    },
+    {
+      "effect": "AuditLog.primary_key",
+      "passed": true,
+      "evidence": "AuditLog_pkey"
+    },
+    {
+      "effect": "Notification.id_sequence",
+      "passed": true,
+      "evidence": "nextval('\"Notification_id_seq\"'::regclass)"
+    },
+    {
+      "effect": "Notification.createdAt_default",
+      "passed": true,
+      "evidence": "CURRENT_TIMESTAMP"
+    },
+    {
+      "effect": "Notification.primary_key",
+      "passed": true,
+      "evidence": "Notification_pkey"
+    },
+    {
+      "effect": "RequestHistory_requestId_fkey",
+      "passed": true,
+      "evidence": {
+        "table_name": "\"RequestHistory\"",
+        "conname": "RequestHistory_requestId_fkey",
+        "contype": "f",
+        "confdeltype": "r",
+        "definition": "FOREIGN KEY (\"requestId\") REFERENCES \"ProductRequest\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+      }
+    },
+    {
+      "effect": "AuditLog_userId_fkey",
+      "passed": true,
+      "evidence": {
+        "table_name": "\"AuditLog\"",
+        "conname": "AuditLog_userId_fkey",
+        "contype": "f",
+        "confdeltype": "r",
+        "definition": "FOREIGN KEY (\"userId\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+      }
+    },
+    {
+      "effect": "Notification_userId_fkey",
+      "passed": true,
+      "evidence": {
+        "table_name": "\"Notification\"",
+        "conname": "Notification_userId_fkey",
+        "contype": "f",
+        "confdeltype": "r",
+        "definition": "FOREIGN KEY (\"userId\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+      }
+    },
+    {
+      "effect": "Customer.nit_unique_full",
+      "passed": true,
+      "evidence": {
+        "tablename": "Customer",
+        "indexname": "Customer_nit_key",
+        "indexdef": "CREATE UNIQUE INDEX \"Customer_nit_key\" ON public.\"Customer\" USING btree (nit)"
+      }
+    },
+    {
+      "effect": "Supplier.nit_unique_full",
+      "passed": true,
+      "evidence": {
+        "tablename": "Supplier",
+        "indexname": "Supplier_nit_key",
+        "indexdef": "CREATE UNIQUE INDEX \"Supplier_nit_key\" ON public.\"Supplier\" USING btree (nit)"
+      }
+    },
+    {
+      "effect": "Notification.type_default",
+      "passed": true,
+      "evidence": "'INFO'::text"
+    },
+    {
+      "effect": "Original_rows_and_values_intact",
+      "passed": true,
+      "evidence": {
+        "tables_checked": 20
+      }
+    }
+  ],
+  "required_target_effects_present": true,
+  "physical_rename_exact": false,
+  "explicit_decision_required": true,
+  "exception": {
+    "source": "Product.quality",
+    "state": "Retained original nullable TEXT column with zero non-null values",
+    "target": "Product.detalles already exists and is preserved",
+    "effect_not_exact": "Historical SQL renames quality to detalles. Both already existed. Re-executing the rename would fail. No original column was dropped.",
+    "proposal": "Conserve quality as documented LEGACY and accept the verified logical baseline for migrate resolve. Do not claim an exact physical rename."
+  },
+  "no_resolve_executed": true
+}

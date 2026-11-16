@@ -1,0 +1,161 @@
+{
+  "releaseId": "calendar-model-20261116-01",
+  "datasetVersion": "4.0.0",
+  "modelVersion": "calendar-model-20261116-01",
+  "policyVersion": "SCENARIO_NONNEGATIVE_1",
+  "modelKind": "forest_absolute",
+  "artifact": "models/v2/calendar-model-20261116-01/model.joblib",
+  "artifactSha256": "8d73bbfb769e432461f2a202e37842b47820a76627e46be3e4ba412e64562e1e",
+  "snapshots": "reports/v2/4.0.0/calendar-model-20261116-01/snapshots.json",
+  "snapshotsSha256": "d432c1da37f4a3a52fbf3f877713b42171aa9e112b6a9a9ad9bc6e438bda83db",
+  "datasetManifestSha256": "df966549012400cdc4dbc5757a02f2a51ed0f7c4d63cb41d348cc968bcd0b756",
+  "features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos",
+    "proporcion_por_mayor_mes_anterior",
+    "precio_menor_base_corte_bs",
+    "precio_mayor_base_corte_bs",
+    "variacion_precio_menor_plan_ponderada",
+    "variacion_precio_mayor_plan_ponderada",
+    "dias_vigencia_nuevo_precio_plan",
+    "dias_sin_stock_mes_anterior",
+    "stock_vendible_al_corte_unidades",
+    "reservas_posteriores_unidades",
+    "compromisos_por_menor_horizonte_unidades",
+    "compromisos_por_mayor_horizonte_unidades",
+    "entradas_plan_horizonte_unidades",
+    "dias_hasta_primera_entrada_plan",
+    "categoryId"
+  ],
+  "bounds": {
+    "ventas_mes_anterior": [
+      0.0,
+      141.0
+    ],
+    "ventas_hace_2_meses": [
+      0.0,
+      141.0
+    ],
+    "ventas_hace_3_meses": [
+      0.0,
+      139.0
+    ],
+    "mes_sin": [
+      -1.0,
+      1.0
+    ],
+    "mes_cos": [
+      -1.0,
+      1.0
+    ],
+    "proporcion_por_mayor_mes_anterior": [
+      0.0,
+      1.0
+    ],
+    "precio_menor_base_corte_bs": [
+      68.59,
+      661.5
+    ],
+    "precio_mayor_base_corte_bs": [
+      58.3015,
+      562.275
+    ],
+    "variacion_precio_menor_plan_ponderada": [
+      -0.15000000000000013,
+      0.25
+    ],
+    "variacion_precio_mayor_plan_ponderada": [
+      -0.15000000000000013,
+      0.25
+    ],
+    "dias_vigencia_nuevo_precio_plan": [
+      0.0,
+      31.0
+    ],
+    "dias_sin_stock_mes_anterior": [
+      0.0,
+      31.0
+    ],
+    "stock_vendible_al_corte_unidades": [
+      0.0,
+      150.0
+    ],
+    "reservas_posteriores_unidades": [
+      0.0,
+      5.0
+    ],
+    "compromisos_por_menor_horizonte_unidades": [
+      0.0,
+      10.0
+    ],
+    "compromisos_por_mayor_horizonte_unidades": [
+      0.0,
+      500.0
+    ],
+    "entradas_plan_horizonte_unidades": [
+      0.0,
+      150.0
+    ],
+    "dias_hasta_primera_entrada_plan": [
+      0.0,
+      30.0
+    ]
+  },
+  "metrics": {
+    "partition": "VALIDATION",
+    "origin": "SYNTHETIC",
+    "mae": 11.516785714285716,
+    "rmse": 20.348310377479844,
+    "r2": 0.5883012005210824
+  },
+  "experiments": [
+    {
+      "name": "baseline",
+      "mae": 19.40674603174603,
+      "rmse": 36.05168798196842,
+      "r2": -0.29233200885291044
+    },
+    {
+      "name": "linear",
+      "mae": 15.725373840530121,
+      "rmse": 25.051112438255362,
+      "r2": 0.3760110108245318,
+      "seconds": 0.09042959997896105
+    },
+    {
+      "name": "forest_squared",
+      "mae": 12.43985030147303,
+      "rmse": 19.986951157431367,
+      "r2": 0.6027938207272306,
+      "seconds": 0.9324858000036329
+    },
+    {
+      "name": "forest_absolute",
+      "mae": 11.516785714285716,
+      "rmse": 20.348310377479844,
+      "r2": 0.5883012005210824,
+      "seconds": 8.244931400055066
+    }
+  ],
+  "baseline": {
+    "mae": 19.40674603174603,
+    "rmse": 36.05168798196842,
+    "r2": -0.29233200885291044
+  },
+  "trainRows": 5040,
+  "validationRows": 1008,
+  "selectedUsing": "VALIDATION_MAE_RMSE_SIMPLICITY",
+  "testScored": false,
+  "forecastMonth": "2026-11",
+  "historyEnd": "2026-10",
+  "seed": 42,
+  "origin": "ACADEMIC_SYNTHETIC_NOT_REAL_SALES",
+  "versions": {
+    "python": "3.11.9",
+    "sklearn": "1.9.1"
+  },
+  "recordedAt": "2026-11-16T13:52:39.340230+00:00"
+}

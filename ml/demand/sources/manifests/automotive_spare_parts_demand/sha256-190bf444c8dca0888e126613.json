@@ -1,0 +1,1009 @@
+{
+  "schema_version": "source-manifest-1",
+  "source_id": "automotive_spare_parts_demand",
+  "name": "automotive_spare_parts_demand",
+  "domain": "MIXED_INTERMITTENT_SERIES_PACKAGE",
+  "source_url": "https://github.com/StefanoDamato/fable.intermittent",
+  "provider": "Proyecto fable.intermittent, empaquetador. El propietario original de Auto no está identificado con suficiente detalle.",
+  "obtained_at": null,
+  "registered_at": "2026-11-11T13:55:32.575235+00:00",
+  "snapshot_id": "sha256-190bf444c8dca0888e126613",
+  "license": null,
+  "license_url": null,
+  "commercial_use_allowed": null,
+  "original_filename": null,
+  "original_format": "DIRECTORY",
+  "sha256": "190bf444c8dca0888e126613fcb00f1348669ab19a4940b7518524072789c9ae",
+  "hash_scope": "FILE_INVENTORY_SHA256",
+  "inventory_sha256": "190bf444c8dca0888e126613fcb00f1348669ab19a4940b7518524072789c9ae",
+  "file_size_bytes": 5139339,
+  "file_count": 121,
+  "files": [
+    {
+      "relative_path": "fable.intermittent-main/.github/.gitignore",
+      "original_format": "NO_EXTENSION",
+      "file_size_bytes": 7,
+      "sha256": "d602bbe856ef80e101210868601c19d9f27ab76e0994b2437e711542d8cbe835"
+    },
+    {
+      "relative_path": "fable.intermittent-main/.github/workflows/R-CMD-check.yaml",
+      "original_format": "YAML",
+      "file_size_bytes": 1364,
+      "sha256": "ed10d8ce5ad7b8f8d987a2e11c17d7898f53531a2169b38859bdad2b9b4a8784"
+    },
+    {
+      "relative_path": "fable.intermittent-main/.github/workflows/test-coverage.yaml",
+      "original_format": "YAML",
+      "file_size_bytes": 1036,
+      "sha256": "69fea1d6d02a9971ef23a4f9a513cc6b916dbbfbb84be1032384538c88d108f5"
+    },
+    {
+      "relative_path": "fable.intermittent-main/.gitignore",
+      "original_format": "NO_EXTENSION",
+      "file_size_bytes": 308,
+      "sha256": "23c669bb67de51739e9f837e23dd6450c6fdabfa4cc04c9415fadc1ec97fa0f1"
+    },
+    {
+      "relative_path": "fable.intermittent-main/.Rbuildignore",
+      "original_format": "NO_EXTENSION",
+      "file_size_bytes": 413,
+      "sha256": "e3ee595f78e1d0bafc133b74d2ab720090338bdfa742cfb3910f60e6c7ac7d40"
+    },
+    {
+      "relative_path": "fable.intermittent-main/CONTRIBUTING.md",
+      "original_format": "MD",
+      "file_size_bytes": 6971,
+      "sha256": "5f61d3c0ef9e0b224f9abd61f8b2b78ab81a8929ec922aa3651692695926c02a"
+    },
+    {
+      "relative_path": "fable.intermittent-main/data/auto.rda",
+      "original_format": "RDA",
+      "file_size_bytes": 101408,
+      "sha256": "e3c1042f4f62d54cfd8f7edc5860c40cee39aa908216632c08aa4ff7c739724e"
+    },
+    {
+      "relative_path": "fable.intermittent-main/data/pasta.rda",
+      "original_format": "RDA",
+      "file_size_bytes": 159252,
+      "sha256": "a00e9328890d4f83a9eca924841254d74cd54c20155cc07b778de1933eb660b4"
+    },
+    {
+      "relative_path": "fable.intermittent-main/data/raf.rda",
+      "original_format": "RDA",
+      "file_size_bytes": 220928,
+      "sha256": "8eb703b2a04ee33c214ec5d8ba397b863b5cb6d8853f49febda1eb2947694229"
+    },
+    {
+      "relative_path": "fable.intermittent-main/data/tinyM5.rda",
+      "original_format": "RDA",
+      "file_size_bytes": 298256,
+      "sha256": "39cafd545991abf483ba63b1750ec69134b5787733dc23245a6804813303da78"
+    },
+    {
+      "relative_path": "fable.intermittent-main/data-raw/Auto.csv",
+      "original_format": "CSV",
+      "file_size_bytes": 295260,
+      "sha256": "f96aa553dd253321ab46e6f23dae99bf1f5f3b5dc81f874e054b13312aebc62a"
+    },
+    {
+      "relative_path": "fable.intermittent-main/data-raw/build_datasets.R",
+      "original_format": "R",
+      "file_size_bytes": 4396,
+      "sha256": "29842e847388e771aa271242e6177904702ff72d7dd86a390cc53c56757da90f"
+    },
+    {
+      "relative_path": "fable.intermittent-main/data-raw/pasta.csv",
+      "original_format": "CSV",
+      "file_size_bytes": 888985,
+      "sha256": "0dfd4a5bf801bf79ddb5fb1f6bc8d023487c36dd6a2a70b312cdfa9fa6568d83"
+    },
+    {
+      "relative_path": "fable.intermittent-main/data-raw/RAF.csv",
+      "original_format": "CSV",
+      "file_size_bytes": 1693712,
+      "sha256": "b1da43495db088504a88d00c9f6a10a5180a9ab4afb84ec5a95b681b0be5cadc"
+    },
+    {
+      "relative_path": "fable.intermittent-main/DESCRIPTION",
+      "original_format": "NO_EXTENSION",
+      "file_size_bytes": 2403,
+      "sha256": "4f0a4dcda75e385f62b1200deddadb1cbe2ab366b6a9f9430af0a1c36d0dd17f"
+    },
+    {
+      "relative_path": "fable.intermittent-main/LICENSE.md",
+      "original_format": "MD",
+      "file_size_bytes": 7560,
+      "sha256": "446e755fae55ff034bbb21be44670b5f116c2b2667947e7036f2bfe6632539a8"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/auto.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1010,
+      "sha256": "7845a21c6c44ef3653d74de9f9e6aefe4e8e60248d627c1a47a684dabc22aef7"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/BETANBB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1402,
+      "sha256": "7ab09809bf2bfc9b16f0907adc61d49f1594309e795cd3b00d65e9bdd5f04513"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/EMPSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1403,
+      "sha256": "782a386ad1ba2fa6c9244ee634a123dce6fd21d8279e646bfb477f799485b18e"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fable.intermittent-package.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 2091,
+      "sha256": "0fb06ddce6597d85c90b79a5763049251e9a2f07522d90e0cbca895223e84ac7"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/figures/logo.png",
+      "original_format": "PNG",
+      "file_size_bytes": 1195555,
+      "sha256": "a67821d084e593a86b49fa5ad03c06ae16e837e9fa403a7b6605275c31b44e25"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.BETANBB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 624,
+      "sha256": "46978c98760f345dd077df4328e4e3f9746a7e835f9a5e9bbc78b62867a5dec6"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.EMPSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 612,
+      "sha256": "a98dcb22b7c6716ae03ba2ae87e34066ede5923af720c98201e916e22945bfbb"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.GAMPOISB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 631,
+      "sha256": "ac7d65358a418c0bdb1a2f83d462cfc52419f27c610e3a29797080b784aaaee0"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.HSPES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 610,
+      "sha256": "35fa776774171f1f439d8029b0b456d1e51bd6fc1a8022b900e7762781ae752c"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.MARWAL.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 618,
+      "sha256": "fb7c44fcf4478d978466dc0d957548e35e678984ddd533c0175392efdcaf3c68"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.NEGBINES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 631,
+      "sha256": "42191f3ad8693c9caaef2bfe2e204c2e74c2ae1717de64a6575196c5ef2c52fb"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.NNARMA.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 618,
+      "sha256": "87ff3f557482233d52e2ca67e23c3dbc477ebe43baa303f33ddefffb6fa2a64a"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.PARAMSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 624,
+      "sha256": "58efac85e35b3d7aa18fc760edbe00c755d7225f96fe7a2db7946261778a66dd"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.TWEES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 610,
+      "sha256": "652fef1b8ae63807055d261639b7145cd9abf20978507d9e57c9b08c1a0f595b"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.VZ.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 589,
+      "sha256": "52f31d95f720a2b40732769a2e8765a2fdfec2c89dd0f17b52d787e4188d6227"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/fitted.WSS.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 596,
+      "sha256": "c8e5f76c68568a856978a037355ee422c607968e6f44e4a56c3dfff13d6b3df1"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.BETANBB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1005,
+      "sha256": "f1013155133eb5028fb42976c1b1911535510c88ec1194675fc899569fe4174a"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.EMPSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 941,
+      "sha256": "2194c9a61467b491e3ed64fd75fc341dd674c26408476b51323e5d9ae4bf6ea4"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.GAMPOISB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1104,
+      "sha256": "0d7226c34a697ac9b34b6cd52951ecba7cec293b086db59078728871709663a4"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.HSPES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1099,
+      "sha256": "557e038487c0cb6696385d150e8045a28902df1ba4eda6c216cb1d4738901f29"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.MARWAL.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 883,
+      "sha256": "f10f27aff4b811e3b58f4ac51f2adb6723af4d8d9443c1fa1f5747dcaeb59ca9"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.NEGBINES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1104,
+      "sha256": "97daee31b7defd3255fbecda940288036f4c44ba4e3abf94d2cb1400d9dc4f0c"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.NNARMA.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 883,
+      "sha256": "ec79e9f1a7a5959595699d68c810ce97c424b66596dd60700764b4cc2ff226cd"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.PARAMSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 937,
+      "sha256": "096afb8e14a6d76725f2d98027394c59079197d65f33e09f2e9844f2a4279501"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.TWEES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1073,
+      "sha256": "3aa9ae8022acdd2a12dd85621eea03e07caf97a1be18374f0d80b9083eb05d47"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.VZ.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 983,
+      "sha256": "bedcdfabae3be55d62fd9a4c59464f9ffe8bce3bef449afee6cfb1679c4e79d6"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/forecast.WSS.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 990,
+      "sha256": "ffe785f38c3409070491f6b81445ef9159c95b6ac5227969ffb7a2a04483525c"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/GAMPOISB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1422,
+      "sha256": "707144fd32b856314a64ee480819af68a86195a2e68866cbc127a1ba744ebabd"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.BETANBB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 902,
+      "sha256": "9eb91bff14c8b6675d2c6ad2a39488c7a29ba1235dcbf23a663032b0150042d3"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.EMPSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 868,
+      "sha256": "f9dc119d3951350bdc6eefbdbc0d6bb41ba4019f95256efc5ae6593f25f3b3d9"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.GAMPOISB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 910,
+      "sha256": "83b5bc1fb4daaad0e8bbc4335c619bffc6cdcf869facf179ec487c01ae4568b4"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.HSPES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 886,
+      "sha256": "e39b4ccf8ef46984db69dfbff82a2e8eccd25224f813747e0a1fb94e5894b119"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.MARWAL.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 894,
+      "sha256": "6b1d7bcc2bc42b89e8e5d8bbe1479a6ea714b55f6d2726d0198201a331fda085"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.NEGBINES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 910,
+      "sha256": "60f1b5b186d7dab04460f557ee53d8835617bbb8e574c2793b75fd3d27a490d1"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.NNARMA.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 894,
+      "sha256": "76987406914ebbaa784bdb85418259b037ee1987a089060410f7307a1eb89039"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.PARAMSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 902,
+      "sha256": "29e032e5b88dfcc0736e661e93accc7931067d849714790c8f53b6b9d6a6fe64"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.TWEES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 886,
+      "sha256": "e1d80bd268632425efd701a84e48931fb9808f90c5d3ce8462370ed4c54a14bb"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.VZ.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 862,
+      "sha256": "89ae91f757dbb2b7e015cbe129e4c3eafc1a7a9e1dcfb3cd6c16b1633a414c6b"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/generate.WSS.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 870,
+      "sha256": "6ac4a229ed37aa49c18fed04de546d75d6ec3efb67a1659fd426b14ae90370e0"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/HSPES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1725,
+      "sha256": "f9c0553090a04f4f51fd6a78987bedfaa59b80591a53a060fa2165b4bf5ebd0e"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/MARWAL.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1220,
+      "sha256": "7f93ab3bb439056007220afa0d0c469d4b85983ee331e2a0b77115492d024bae"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/NEGBINES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1632,
+      "sha256": "95191ed7a6db2f565042aba4a2619323b02683d41fdfe42f392d3fb6cf9cb70e"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/NNARMA.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1270,
+      "sha256": "862d58b7edfdf1d48528dc5bcecb9c84e8ef7ade5f811b723eda858c5bcd1a9f"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/PARAMSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 2700,
+      "sha256": "300f25dd3c3ab964ce2465d240c361a734e1a3d9ce006ded8b21df46e28dc559"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/pasta.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1519,
+      "sha256": "54aa5f65eb469aa5e008b90a80c3936ac3c55b152c01bd34a3be751d6ba9a84c"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/raf.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1033,
+      "sha256": "dc6726894791065fe2df078854aeaef1543c5b9d17d772bd71fe084ffb425eae"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.BETANBB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 620,
+      "sha256": "bace9dfdb540e99c730c276f935f186ca34d22845f869d22e873521d15432bfc"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.EMPSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 608,
+      "sha256": "c559313559c803641fdb72ccf10b77cb527367ae2874b2f07bc9f9924ea77354"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.GAMPOISB.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 627,
+      "sha256": "2aae33076d2619629dbfad20d45dc52fbc85cd4d944514f558d7b456e920f3d9"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.HSPES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 606,
+      "sha256": "aa020c672a258ec6997f1af8978aeccd2d56524f01a704dd4096c52343533850"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.MARWAL.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 613,
+      "sha256": "c077e0999b3cb567953a7b243dea401d1fb4e3c09c495fecc92843a70fbfe0d7"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.NEGBINES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 627,
+      "sha256": "1dad80e1a049ffed68e7f1c098e42f147eaa2c0a857449d2e53fdcf3fcf33b4d"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.NNARMA.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 613,
+      "sha256": "15aef147cae82e8392e86fd385a0ebaf8dd857d59d7e5b427cd10095a5ba55cf"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.PARAMSD.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 620,
+      "sha256": "178d26cfdd0617fb2418604106db136d72a8f0f23f52eaab048d68f4d10bb6dd"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.TWEES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 606,
+      "sha256": "4db3d446e1be454990598829d0410a57a91aab66ee3acf0c2554b102112cbda5"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.VZ.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 585,
+      "sha256": "e6306f0886adf51d4df9f61405daa5ce257e5bb7e9202a5b253d887831c75e74"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/residuals.WSS.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 592,
+      "sha256": "44eae87f209494c9ceb464ddad0fb5015c125978e30565398f0dfdf4e4289cf8"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/tinyM5.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 2590,
+      "sha256": "a0155057b7e7669a8ed69b9de8d963b5dec8a076c94e238887de19e05d0052b0"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/TWEES.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1956,
+      "sha256": "891ef44ad5ce2185d8857048f027778361efd4a22eb3830445c912eea357a8b7"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/VZ.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1377,
+      "sha256": "2442ab4489f4fe0622be8493f91009010c6388fa0e89c094964f51aa6be98ac4"
+    },
+    {
+      "relative_path": "fable.intermittent-main/man/WSS.Rd",
+      "original_format": "RD",
+      "file_size_bytes": 1374,
+      "sha256": "99894713a5ddf38e9a0245889676f4acdc18fafd4d5e1c9c4a8edd7f8c5d8c93"
+    },
+    {
+      "relative_path": "fable.intermittent-main/NAMESPACE",
+      "original_format": "NO_EXTENSION",
+      "file_size_bytes": 3668,
+      "sha256": "eaf1f839f90e5f35d5c8efb8a90d3f15f7b794e10a615c6326de820091e645f9"
+    },
+    {
+      "relative_path": "fable.intermittent-main/NEWS.md",
+      "original_format": "MD",
+      "file_size_bytes": 1456,
+      "sha256": "24deb72ccf0ccea57554118f88d8eb8f849a57d38b1bc54a4a8ab23d3a28ccfd"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/betanbb.R",
+      "original_format": "R",
+      "file_size_bytes": 7501,
+      "sha256": "5e6f869515a6a7eaf7a601150489143b50752ca825f4a796e0187770f6269b6e"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/data.R",
+      "original_format": "R",
+      "file_size_bytes": 5964,
+      "sha256": "b0efc55894e4ba796260700675e2c57ca2e6dfdce86246883f5a45c0ec326400"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/empsd.R",
+      "original_format": "R",
+      "file_size_bytes": 5613,
+      "sha256": "bfee9968cbd54300083f286f09e36c2c113e1a144a6703df04fd4a950ebfe2d3"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/fable.intermittent-package.R",
+      "original_format": "R",
+      "file_size_bytes": 72,
+      "sha256": "7322234e84edf88c2212b9d755f66f362b8e6e8b8cef75c7b1f8e477d1226bdb"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/gampoisb.R",
+      "original_format": "R",
+      "file_size_bytes": 7722,
+      "sha256": "7ecdf5dc0b5693800451fc04a45d832bdb15ed237402e871e1272d8d4f6c9bc8"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/hspes.R",
+      "original_format": "R",
+      "file_size_bytes": 13265,
+      "sha256": "72b1a204717b1c5808e86908e559485124010cf986bf69b8d9fbb9b73ef2d1a4"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/marwal.R",
+      "original_format": "R",
+      "file_size_bytes": 8281,
+      "sha256": "f9bc0db48da74ea3f9aad0041ffa24ffb78c03f343f9092cc23dadce5f606cc6"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/negbines.R",
+      "original_format": "R",
+      "file_size_bytes": 9028,
+      "sha256": "d665193cf0bb740ef9c11d5f98ca494f22ed632dd8e5de9252623365239aa92c"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/nnarma.R",
+      "original_format": "R",
+      "file_size_bytes": 7312,
+      "sha256": "e1123431b20786431fc17f662ccec9ee842d315612d1428f38f4a34abcba9a4a"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/paramsd.R",
+      "original_format": "R",
+      "file_size_bytes": 12384,
+      "sha256": "28333a0a8ad14a79e2274d2fb3d4f6463b56face3120c821e41ffaf4deea7fc4"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/RcppExports.R",
+      "original_format": "R",
+      "file_size_bytes": 689,
+      "sha256": "f98ecb486c126be2efb85264e471334013002e9210786d9d90033c106270547f"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/twees.R",
+      "original_format": "R",
+      "file_size_bytes": 12323,
+      "sha256": "01034065def922cb5ecaebfe6a2a3227fa6fb9af0c7f04eef344f560c2dba7c5"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/utils.R",
+      "original_format": "R",
+      "file_size_bytes": 11268,
+      "sha256": "38c74cee1b064b1a64eb481a4cbd294246df2efb50a2d2914023e80fe13844e7"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/vz.R",
+      "original_format": "R",
+      "file_size_bytes": 6558,
+      "sha256": "1a644c9a5ee841722ff467faf71795a34bf13ec29aa27cf2b5d6c71f8b6b0897"
+    },
+    {
+      "relative_path": "fable.intermittent-main/R/wss.R",
+      "original_format": "R",
+      "file_size_bytes": 7432,
+      "sha256": "66b2242ae7717485db33299a927d4652a5c1f87bd2849a7abf06b7138fb30e24"
+    },
+    {
+      "relative_path": "fable.intermittent-main/README.md",
+      "original_format": "MD",
+      "file_size_bytes": 5738,
+      "sha256": "e2cf298e56f547f5e5554acd59df483717f59aba1991b88554bf2aa8dc793bca"
+    },
+    {
+      "relative_path": "fable.intermittent-main/README.Rmd",
+      "original_format": "RMD",
+      "file_size_bytes": 6073,
+      "sha256": "aa90d2c20c016ade67cb26e374c2168238b848a2146cd4e0c62dcca76ba16d6a"
+    },
+    {
+      "relative_path": "fable.intermittent-main/src/arma.cpp",
+      "original_format": "CPP",
+      "file_size_bytes": 527,
+      "sha256": "b3623000dd5b9069a2dc1bedd996981a8ab0329d05856601a5c14f67715144bb"
+    },
+    {
+      "relative_path": "fable.intermittent-main/src/bayesian.cpp",
+      "original_format": "CPP",
+      "file_size_bytes": 948,
+      "sha256": "acf8ef6cb9fffe1b36a0a105f99e35d967f3ea59b8d735f27431c0f9b425e4e2"
+    },
+    {
+      "relative_path": "fable.intermittent-main/src/Makevars",
+      "original_format": "NO_EXTENSION",
+      "file_size_bytes": 48,
+      "sha256": "9e8913b75a4e4b5ae441c1bb2679f9c5326da77b37fe76d47dbdac9633922e94"
+    },
+    {
+      "relative_path": "fable.intermittent-main/src/Makevars.win",
+      "original_format": "WIN",
+      "file_size_bytes": 48,
+      "sha256": "9e8913b75a4e4b5ae441c1bb2679f9c5326da77b37fe76d47dbdac9633922e94"
+    },
+    {
+      "relative_path": "fable.intermittent-main/src/RcppExports.cpp",
+      "original_format": "CPP",
+      "file_size_bytes": 3550,
+      "sha256": "7df343da176a545de6eb540337b7ec266cf6a0c7e4e6f65c226d4717a898bded"
+    },
+    {
+      "relative_path": "fable.intermittent-main/src/ses.cpp",
+      "original_format": "CPP",
+      "file_size_bytes": 754,
+      "sha256": "6d47d3bfc8402aa1e3383ea4ffb09785d3a19f83b370dfa6342f25623c18768a"
+    },
+    {
+      "relative_path": "fable.intermittent-main/staticdistr_tweedie_notes.md",
+      "original_format": "MD",
+      "file_size_bytes": 4193,
+      "sha256": "204cf6b55cfe0a70236c3fb972ca30a209b8b8db2be6f8d06780740296eb38f8"
+    },
+    {
+      "relative_path": "fable.intermittent-main/test_script.R",
+      "original_format": "R",
+      "file_size_bytes": 4802,
+      "sha256": "adaf19f1a0802c7d44a649389c62b8626b9bf68cf0c05024cbf16f4918b54cd6"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/helper.R",
+      "original_format": "R",
+      "file_size_bytes": 2218,
+      "sha256": "ebdb14e4576e779fc9a7d43455db88955a0d33708d614bd3a37d7537f3e77cc6"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-betanbb.R",
+      "original_format": "R",
+      "file_size_bytes": 2486,
+      "sha256": "d09a08b91e90ed18ace337dc428d635370c247cd330b455cc7957f49128533b1"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-data.R",
+      "original_format": "R",
+      "file_size_bytes": 3247,
+      "sha256": "bcb0155164f1b89befa2bae344c795fa86face2cc0908a388cf57b5fa90d81bb"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-empsd.R",
+      "original_format": "R",
+      "file_size_bytes": 2339,
+      "sha256": "08574f10ae17c2f576e22af0d97aedd8c02ab86734d9db69e3e18cede9e05fa2"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-gampoisb.R",
+      "original_format": "R",
+      "file_size_bytes": 2788,
+      "sha256": "484f753675bea37b90fedc968239c342e68bedc504609007f6c69c0154b9583c"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-hspes.R",
+      "original_format": "R",
+      "file_size_bytes": 3379,
+      "sha256": "4650707578f13e9d2382b457625ddc877563ce674bced09ddaa6162bbe71bacc"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-marwal.R",
+      "original_format": "R",
+      "file_size_bytes": 3298,
+      "sha256": "a778a3f876f68ab3c4b50aafe2e3fd3e49d0a3a2d013b6cf2c18469e8143ceb4"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-negbines.R",
+      "original_format": "R",
+      "file_size_bytes": 3281,
+      "sha256": "7accfd3524036dafe00873f11c255497c41c41ae4b5c575fc9b3a647e1e5d71b"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-nnarma.R",
+      "original_format": "R",
+      "file_size_bytes": 2999,
+      "sha256": "c089507baaa4e7b6a2f7348b403c8b862956e3d8dd05c8ead81255b9b6c7dc2c"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-paramsd.R",
+      "original_format": "R",
+      "file_size_bytes": 2595,
+      "sha256": "13968b1643e31a8805c75824c562dcc2e85a28ef518108d7ab77001f15983d29"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-twees.R",
+      "original_format": "R",
+      "file_size_bytes": 3353,
+      "sha256": "249a3210762c6d168ec166cd88e4c9c317d1c96e7c02f86174875abd6dbca342"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-utils.R",
+      "original_format": "R",
+      "file_size_bytes": 2252,
+      "sha256": "232b4f8758ddd5f4aebc2c6249162428882eaf9cdc10066e97f1a6c5a17033a8"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-vz.R",
+      "original_format": "R",
+      "file_size_bytes": 2537,
+      "sha256": "867dc352161c4c295b43a30dc1e3b0e16b9c33994e08473901812d2b6af5887b"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat/test-wss.R",
+      "original_format": "R",
+      "file_size_bytes": 2885,
+      "sha256": "1b520cfba0fe0c5d86f310f7110ca09259ce8daa3eecb5edb480957fcd74bf30"
+    },
+    {
+      "relative_path": "fable.intermittent-main/tests/testthat.R",
+      "original_format": "R",
+      "file_size_bytes": 80,
+      "sha256": "471ff8b293175c966c34c5a73490fd3bb96aeb68b3c565ec151379e550fa0fc5"
+    },
+    {
+      "relative_path": "fable.intermittent-main/vignettes/fable.intermittent.Rmd",
+      "original_format": "RMD",
+      "file_size_bytes": 6321,
+      "sha256": "d42f5e1c5b9d5d266a9189b55762f7834235ae20410141e4e646a006eac64d01"
+    },
+    {
+      "relative_path": "fable.intermittent-main/vignettes/references.bib",
+      "original_format": "BIB",
+      "file_size_bytes": 8260,
+      "sha256": "7c59af599b766a4616c70efafe0da47903de4562f467fe0d25b613b0edd0b885"
+    }
+  ],
+  "raw_root": "sources/external_raw/automotive_spare_parts_demand",
+  "temporal_coverage": null,
+  "geographic_scope": null,
+  "currency": null,
+  "units": "Cantidad por serie y periodo. Pasta incluye indicador de promoción. Las unidades físicas no están certificadas para todo el paquete.",
+  "description": "fable.intermittent 0.3.0, paquete con auto, raf, pasta y tinyM5. auto y raf mensuales, pasta diaria según proveedor, tinyM5 diaria",
+  "intended_use": "Roles conceptuales: DIRECT_DOMAIN_REFERENCE, DEMAND_PATTERN_REFERENCE. Decisión de acceso: BLOCKED_LICENSE. Sin transformación o mezcla autorizada en esta revisión.",
+  "limitations": [
+    "Los 121 archivos no son un único dataset. No se ejecutó código R ni se decodificaron RDA.",
+    "LGPL >= 3 corresponde al software. No acredita licencia de Auto o RAF.",
+    "El calendario de auto y raf se construye con fechas iniciales fijadas en data-raw/build_datasets.R. No se certifican como fechas originales de observación.",
+    "Conflicto pasta: R/data.R declara CC BY 4.0, mientras Mendeley versión 1 declara CC BY-NC 3.0. Prevalece como evidencia la publicación primaria, sin relicenciar RAW.",
+    "DIRECT_DOMAIN_REFERENCE es potencial únicamente para auto, no para RAF, pasta o tinyM5. Uso bloqueado hasta aclarar derechos del subdataset.",
+    "El paquete local es fable.intermittent 0.3.0. Sus 121 archivos incluyen auto, raf, pasta y tinyM5, no un solo dataset.",
+    "El paper de Türkmen et al. identifica Auto como 3000 series mensuales de 24 periodos y enlaza el repositorio canerturkmen/gluon-ts.",
+    "Auto es distinto de Monash Car Parts. La licencia de Monash no se transfiere a Auto.",
+    "El constructor local asigna a Auto un inicio en 2010. No acredita el calendario original.",
+    "El proveedor primario de pasta publica CC BY-NC 3.0, frente a CC BY 4.0 declarado en R/data.R.",
+    "Licencia específica de los datos Auto y RAF.",
+    "Identidad binaria entre los archivos locales y la publicación original, sin descargar ni comparar datos remotos.",
+    "Permiso para redistribuir un dataset o modelo derivado de Auto."
+  ],
+  "processing_status": "PENDING_SOURCE_REVIEW",
+  "completeness": "UNKNOWN",
+  "contains_archives": true,
+  "documentation_files": [
+    "fable.intermittent-main/DESCRIPTION",
+    "fable.intermittent-main/LICENSE.md",
+    "fable.intermittent-main/README.md",
+    "fable.intermittent-main/README.Rmd"
+  ],
+  "evidence": [
+    {
+      "path": "fable.intermittent-main/DESCRIPTION",
+      "scope": "PACKAGE_NOT_ALL_DATASETS",
+      "finding": "DESCRIPTION declara fable.intermittent, License: LGPL (>= 3) y URL: https://github.com/StefanoDamato/fable.intermittent. No certifica descarga ni derechos de cada dataset."
+    },
+    {
+      "path": "fable.intermittent-main/man/auto.Rd",
+      "scope": "DOCUMENTED_SUBDATASET_NOT_DECODED",
+      "finding": "Documenta auto: 3000 series mensuales, enero 2010 a diciembre 2011. No se leyó auto.rda ni se aplicó esta cobertura al paquete completo."
+    }
+  ],
+  "visible_structure": [
+    "fable.intermittent-main/",
+    "fable.intermittent-main/.github/",
+    "fable.intermittent-main/.github/workflows/",
+    "fable.intermittent-main/data/",
+    "fable.intermittent-main/data-raw/",
+    "fable.intermittent-main/man/",
+    "fable.intermittent-main/man/figures/",
+    "fable.intermittent-main/R/",
+    "fable.intermittent-main/src/",
+    "fable.intermittent-main/tests/",
+    "fable.intermittent-main/tests/testthat/",
+    "fable.intermittent-main/vignettes/"
+  ],
+  "archive_inspection": [
+    {
+      "path": "fable.intermittent-main/data/auto.rda",
+      "status": "XZ_COMPRESSED_R_SERIALIZATION_NOT_DECODED",
+      "entries": null
+    },
+    {
+      "path": "fable.intermittent-main/data/pasta.rda",
+      "status": "XZ_COMPRESSED_R_SERIALIZATION_NOT_DECODED",
+      "entries": null
+    },
+    {
+      "path": "fable.intermittent-main/data/raf.rda",
+      "status": "XZ_COMPRESSED_R_SERIALIZATION_NOT_DECODED",
+      "entries": null
+    },
+    {
+      "path": "fable.intermittent-main/data/tinyM5.rda",
+      "status": "XZ_COMPRESSED_R_SERIALIZATION_NOT_DECODED",
+      "entries": null
+    }
+  ],
+  "notes": [
+    "null significa desconocido, no permiso denegado ni valor cero.",
+    "registered_at es el registro actual, no la fecha de adquisición.",
+    "sha256 en directorios es hash del inventario canónico. Cada files[].sha256 corresponde a bytes originales.",
+    "Las licencias de software incluidas no se atribuyen automáticamente a los datos.",
+    "En este registro inicial se identificaron cuatro contenedores RDA con firma XZ. No se descomprimieron ni interpretaron."
+  ],
+  "official_name": "fable.intermittent 0.3.0, paquete con auto, raf, pasta y tinyM5",
+  "authors": [
+    "Stefano Damato",
+    "Lorenzo Zambon",
+    "Dario Azzimonti"
+  ],
+  "data_type": "R_PACKAGE_WITH_MULTIPLE_DATASETS",
+  "real_or_synthetic": "REAL_DERIVED",
+  "granularity": "auto y raf mensuales, pasta diaria según proveedor, tinyM5 diaria",
+  "variables": [
+    "series_id",
+    "index",
+    "value",
+    "promotion (pasta)",
+    "item_id/store_id/date/sell_price (tinyM5)"
+  ],
+  "license_status": "UNKNOWN",
+  "academic_use_status": "UNKNOWN",
+  "commercial_use_status": "UNKNOWN",
+  "redistribution_status": "UNKNOWN",
+  "intended_role_v2": [
+    "DIRECT_DOMAIN_REFERENCE",
+    "DEMAND_PATTERN_REFERENCE"
+  ],
+  "profiling_decision": "BLOCKED_LICENSE",
+  "citation": "Citar el paquete y la fuente original de cada subdataset. Para auto: Türkmen et al. (2021), DOI 10.1371/journal.pone.0259764.",
+  "citation_required": null,
+  "doi": null,
+  "evidence_urls": [
+    "https://github.com/StefanoDamato/fable.intermittent",
+    "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/R/data.R",
+    "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764",
+    "https://data.mendeley.com/datasets/njdkntcpc9/1",
+    "https://github.com/canerturkmen/gluon-ts/tree/intermittent-datasets/datasets",
+    "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/man/auto.Rd"
+  ],
+  "verification_status": "PARTIALLY_VERIFIED",
+  "verified_at": "2026-11-15T16:14:44.839252+00:00",
+  "obtained_from_url": null,
+  "acquisition_verification_status": "UNKNOWN",
+  "subdatasets": [
+    {
+      "name": "auto",
+      "files": [
+        "fable.intermittent-main/data-raw/Auto.csv",
+        "fable.intermittent-main/data/auto.rda"
+      ],
+      "provider": "Fuente citada por Türkmen et al. (2021), antecedentes Syntetos y Boylan (2005)",
+      "real_or_synthetic": "REAL_DERIVED",
+      "series_documented": 3000,
+      "periods_documented": 24,
+      "frequency": "MONTHLY",
+      "variables": [
+        "series_id",
+        "index",
+        "value"
+      ],
+      "calendar": "2010-01 a 2011-12 asignado por el constructor del paquete, no certificado como calendario original",
+      "license": null,
+      "license_status": "UNKNOWN",
+      "academic_use_status": "UNKNOWN",
+      "commercial_use_status": "UNKNOWN",
+      "redistribution_status": "UNKNOWN",
+      "doi": "10.1371/journal.pone.0259764",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/R/data.R",
+        "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764"
+      ],
+      "intended_role_v2": [
+        "DIRECT_DOMAIN_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ]
+    },
+    {
+      "name": "raf",
+      "files": [
+        "fable.intermittent-main/data-raw/RAF.csv",
+        "fable.intermittent-main/data/raf.rda"
+      ],
+      "provider": "Royal Air Force, según documentación y paper",
+      "real_or_synthetic": "REAL_DERIVED",
+      "series_documented": 5000,
+      "periods_documented": 84,
+      "frequency": "MONTHLY",
+      "calendar": "1996-01 a 2002-12 asignado por el constructor, no certificado como calendario original",
+      "license": null,
+      "license_status": "UNKNOWN",
+      "academic_use_status": "UNKNOWN",
+      "commercial_use_status": "UNKNOWN",
+      "redistribution_status": "UNKNOWN",
+      "intended_role_v2": [
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "limitation": "Repuestos aeronáuticos, no automotrices"
+    },
+    {
+      "name": "pasta",
+      "files": [
+        "fable.intermittent-main/data-raw/pasta.csv",
+        "fable.intermittent-main/data/pasta.rda"
+      ],
+      "provider": "Paolo Mancuso, Veronica Piccialli, Antonio M. Sudoso",
+      "real_or_synthetic": "REAL_DERIVED",
+      "series_documented": 118,
+      "frequency": "DAILY, según Mendeley. El constructor usa una columna llamada week, sin demostrar agregación semanal.",
+      "temporal_coverage": "2014-01-01 a 2018-12-31 según proveedor. El test local comienza 2014-01-02, no se verificaron filas.",
+      "license": "CC BY-NC 3.0",
+      "license_status": "VERIFIED",
+      "academic_use_status": "VERIFIED",
+      "commercial_use_status": "RESTRICTED",
+      "redistribution_status": "RESTRICTED",
+      "citation_required": true,
+      "doi": "10.17632/njdkntcpc9.1",
+      "evidence_urls": [
+        "https://data.mendeley.com/datasets/njdkntcpc9/1"
+      ],
+      "intended_role_v2": [
+        "DEMAND_PATTERN_REFERENCE",
+        "PROMOTION_REFERENCE"
+      ],
+      "limitation": "No automotriz. No habilita el paquete completo. Contradicción de licencia registrada."
+    },
+    {
+      "name": "tinyM5",
+      "files": [
+        "fable.intermittent-main/data/tinyM5.rda"
+      ],
+      "provider": "Derivado de m5/Walmart, según documentación",
+      "real_or_synthetic": "REAL_DERIVED",
+      "series_documented": 280,
+      "products_documented": 28,
+      "stores_documented": 10,
+      "frequency": "DAILY",
+      "temporal_coverage": "2011-01-29 a 2016-04-24 según tests del paquete",
+      "license": "Subject to M5 Competition Rules",
+      "license_status": "PARTIALLY_VERIFIED",
+      "academic_use_status": "UNKNOWN",
+      "commercial_use_status": "UNKNOWN",
+      "redistribution_status": "UNKNOWN",
+      "intended_role_v2": [
+        "STORE_PATTERN_REFERENCE",
+        "PRICE_PATTERN_REFERENCE",
+        "CALENDAR_REFERENCE"
+      ],
+      "limitation": "No automotriz. No hereda LGPL del paquete."
+    }
+  ],
+  "review_notes": [
+    "Revisión académica de fuentes públicas. No garantiza identidad binaria con una descarga del proveedor.",
+    "source_url identifica publicación oficial, no la URL utilizada realmente por la descarga manual.",
+    "obtained_from_url y obtained_at siguen desconocidos. No se cambió snapshot_id para aparentar otra adquisición.",
+    "Revisión de continuidad 2026-11-15. No aprobada para perfilado, incorporación al build o entrenamiento.",
+    "Obtener del responsable de Auto una declaración aplicable al dataset que permita el uso académico previsto y aclare publicación de derivados. No contactar autores ni aceptar términos en esta tarea.",
+    "Evidencia ampliada: reports/v2/source_reviews/source-review-20261115-01/review.json. La revisión anterior se conserva en source_provenance_matrix.json.",
+    "Continuidad 15 de noviembre de 2026: Auto y RAF siguen BLOCKED_LICENSE. No se halló un permiso específico de datos.",
+    "Consulta preparada para el mantenedor, sin enviarla: reports/v2/source_reviews/source-access-20261115-03/review.json. La aprobación de otras fuentes no habilita Auto."
+  ],
+  "hash_semantics": {
+    "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+    "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+    "sha256_scope": "FILE_INVENTORY_SHA256",
+    "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+    "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+  },
+  "related_publications": [
+    {
+      "title": "Forecasting intermittent and sparse time series: A unified probabilistic framework via deep renewal processes",
+      "year": 2021,
+      "doi": "10.1371/journal.pone.0259764",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764",
+      "scope": "Auto y RAF, antecedentes. No licencia de datos."
+    }
+  ],
+  "paper_review_note": "Se registran publicaciones comprobadas, sin atribuir al dataset la licencia del artículo."
+}

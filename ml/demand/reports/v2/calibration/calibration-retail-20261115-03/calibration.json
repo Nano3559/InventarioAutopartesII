@@ -1,0 +1,207 @@
+{
+  "status": "CALIBRATED_REFERENCE_CONFIGURATION_NOT_APPLIED_TO_GENERATOR",
+  "seed_for_future_simulation": 42,
+  "parameters": {
+    "weekly_price_change_probability": {
+      "value": 0.012048473339260742,
+      "unit": "probability_per_eligible_week",
+      "basis": "M5_EQUAL_SERIES_REFERENCE",
+      "application": "Representative scenario only. A fixed Bernoulli mechanism is an academic assumption, not measured independence."
+    },
+    "conditional_absolute_price_change": {
+      "value": 0.08593044263775979,
+      "unit": "relative_change",
+      "basis": "M5_MEDIAN_OF_CHANGING_SERIES_MEDIANS",
+      "application": "Typical nonzero-change size. Sign is separate, an assumed mechanism rather than an estimated joint law. Stress levels use reference quantiles, without extrapolating causal sales response. A downward magnitude must remain strictly below one. Do not mirror extreme upward changes as negative prices or clip them silently."
+    },
+    "conditional_up_share": {
+      "value": 0.586962588556756,
+      "unit": "probability_given_price_change",
+      "basis": "M5_EQUAL_CHANGING_SERIES_REFERENCE",
+      "application": "Representative direction mix, not weighted by frequency or a fitted joint distribution."
+    },
+    "store_volume_factor": {
+      "reference_quantiles": {
+        "n": 30240,
+        "mean": 1.0,
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "p10": 0.3834348614853932,
+        "p50": 0.9002515583813976,
+        "p90": 1.7505223911475765,
+        "p95": 2.0777266766924734,
+        "p99": 2.7991582353945783
+      },
+      "basis": "M5_WITHIN_PRODUCT_RELATIVE_VOLUME",
+      "application": "Sensitivity scenarios. No mapping of foreign stores to own stores and no claim of local factors."
+    },
+    "retail_monthly_zero_probability": {
+      "reference_quantiles": {
+        "n": 30490,
+        "mean": 0.36245647334668496,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "p10": 0.0,
+        "p50": 0.2978723404255319,
+        "p90": 0.8297872340425532,
+        "p95": 0.9361702127659575,
+        "p99": 1.0
+      },
+      "basis": "M5_OBSERVED_SALES_REFERENCE",
+      "application": "External contrast and stress only. Preserve Monash automotive baseline. Not stockout probability."
+    },
+    "monthly_variability": {
+      "reference_quantiles": {
+        "n": 29541,
+        "mean": 1.194055340430382,
+        "minimum": 0.10365695645488326,
+        "maximum": 6.782329983125271,
+        "p10": 0.41985850208561215,
+        "p50": 0.8827552082794773,
+        "p90": 2.2946513371065604,
+        "p95": 3.0322895517268362,
+        "p99": 6.180892357713423
+      },
+      "basis": "M5_CV_EQUAL_SERIES",
+      "application": "Sensitivity range, not a new noise distribution or replacement of existing academic assumptions."
+    },
+    "calendar_amplitude": {
+      "reference_quantiles": {
+        "n": 29541,
+        "mean": 0.769489095759587,
+        "minimum": 0.05866591219252405,
+        "maximum": 7.833333333333334,
+        "p10": 0.26822533136966126,
+        "p50": 0.5565123789020452,
+        "p90": 1.3662790697674418,
+        "p95": 1.9583333333333333,
+        "p99": 5.385416666666667
+      },
+      "basis": "M5_WITHIN_SERIES_MONTH_OF_YEAR",
+      "application": "External sensitivity reference. Bolivian peak months, phase and event effects remain assumptions, not copied from M5. This peak-to-trough statistic is not a sinusoidal coefficient and can exceed one. A future positive-valued seasonal mechanism must be justified separately."
+    },
+    "positive_burst_p95_over_median": {
+      "reference_quantiles": {
+        "n": 131551,
+        "mean": 3.037847922551371,
+        "minimum": 1.0,
+        "maximum": 271.06666666666655,
+        "p10": 2.0,
+        "p50": 2.8,
+        "p90": 4.0,
+        "p95": 5.0,
+        "p99": 7.625
+      },
+      "basis": "FAVORITA_OBSERVED_INTEGER_COHORT_EQUAL_SERIES",
+      "application": "Conditional tail stress reference. Not wholesale probability, order size or local base demand."
+    },
+    "positive_burst_p99_over_median": {
+      "reference_quantiles": {
+        "n": 131551,
+        "mean": 4.715544237604069,
+        "minimum": 1.0,
+        "maximum": 701.2199999999989,
+        "p10": 2.6383333333333305,
+        "p50": 4.0,
+        "p90": 6.8249999999999815,
+        "p95": 8.632666666666651,
+        "p99": 17.32916666666663
+      },
+      "basis": "FAVORITA_OBSERVED_INTEGER_COHORT_EQUAL_SERIES",
+      "application": "Extreme observed-tail sensitivity only. Fractional and unknown cohorts cannot set integer units."
+    },
+    "promotion_daily_probability": {
+      "value": null,
+      "status": "NOT_IDENTIFIABLE_FROM_RECORDED_ROWS",
+      "application": "Favorita conditional frequency and coverage are diagnostics. A simulated promotion schedule requires an explicit independent academic assumption before feature cutoff."
+    },
+    "price_elasticity": {
+      "value": null,
+      "status": "NOT_CAUSALLY_IDENTIFIED"
+    },
+    "bolivian_exchange_rate_stock_modalities_cost_lead_time": {
+      "value": null,
+      "status": "NOT_SUPPORTED_BY_M5_OR_FAVORITA",
+      "application": "Retain versioned academic assumptions or obtain authorized own evidence. Lead times remain separate replenishment scope."
+    }
+  },
+  "integration": "No generator or frozen contract changed. A future version must explicitly consume this configuration before creating any new build. Monthly CV and burst statistics remain reference ranges, not a fitted joint probability law. Store factor zero is not suitable for an active-store default without an explicit scenario.",
+  "unsupported": [
+    "Automotive pending license",
+    "Local commercial accuracy",
+    "Lost demand",
+    "Commercial use or redistribution automatically authorized"
+  ],
+  "causal_effects_estimated": false,
+  "uncertainty": "Empirical quantile ranges describe series heterogeneity, not confidence intervals or guaranteed local bounds.",
+  "commercial_validation": false,
+  "run_id": "calibration-retail-20261115-03",
+  "recorded_at": "2026-11-15T17:31:54.372155+00:00",
+  "trace": {
+    "sources": {
+      "m5_walmart": {
+        "curated_manifest": "sources\\external_curated\\m5_walmart\\sha256-aa5d519ab121b284a7b07f4d\\processing-1-curate-retail-20261115-01\\manifest.json",
+        "curated_manifest_sha256": "a8c99b778372e0bd1a80d1eb8a74f135d98d6b4600c65ee3e386fb4faca9b544",
+        "snapshot_id": "sha256-aa5d519ab121b284a7b07f4d",
+        "processing_version": "processing-1-curate-retail-20261115-01"
+      },
+      "corporacion_favorita": {
+        "curated_manifest": "sources\\external_curated\\corporacion_favorita\\sha256-b69a1fa872a46632efa647d8\\processing-1-curate-retail-20261115-01\\manifest.json",
+        "curated_manifest_sha256": "f60a9aa6ebcba607526b551e6ee7e36618c9e75ee2bc13572e915f9dd9f6a644",
+        "snapshot_id": "sha256-b69a1fa872a46632efa647d8",
+        "processing_version": "processing-1-curate-retail-20261115-01"
+      }
+    },
+    "rules_sha256": "46abcf7e17e1f13ca14e16531d74a669aa9d87505c9b7086842d804bc40a719c",
+    "curation_validation_sha256": "c83c921832773809c75332e1b2f0897fab588c4baa10b7a7963fd33bd909e6e7"
+  },
+  "calibration_script_sha256": "c32846e4d27b982e4cb86b70edf1f89e449e2586f3dcf9c941694d999fcae7c7",
+  "base_calibration_path": "v2/contracts/calibration.v2.json",
+  "base_calibration_sha256": "0c26ad5e3f2d52287b86d56ac27959d15b5e40210142439d82e40500c20c4c63",
+  "quantiles": "Exact per series, then exact equal-series summaries. No systematic sample.",
+  "windows": "REFERENCE sets policy. COMPARISON descriptive only, previously observed globally. Not untouched TEST.",
+  "partition_reuse": {
+    "previous_run": "calibration-retail-20261115-02",
+    "partition_byte_hashes": {
+      "00.bin": "55c503203f4b412d0c741e9edfa85153bdba33896cd780b548e1f69c0f4a5077",
+      "01.bin": "4caecaac459006cb1a4d6e8d8fcd12e4c9f0b09f21d932ce185bb0f14463ff14",
+      "02.bin": "f7e1b63ab6c3c842d624c0c1993cf3001d1a130e373c58ea29adb5c6f3a73b6a",
+      "03.bin": "be7db9136a5884166b9ff0a604c20bf378db851d24f36e3c5513d27f33c37bb5",
+      "04.bin": "ff489259a4ced1c06ccfe557c768a7319b92c26b47caf70d10bc0c9036d47e74",
+      "05.bin": "5ccf1305ebbc90791ca3e2b21295be5733e34e2857b80d4dc058f35349278361",
+      "06.bin": "094394d2a1d89d26edf75cadb0e5dd766bf3c953594b4d553a884f533cb3bf08",
+      "07.bin": "d3b9881620060de839d622411e3bb4f1f0051704f4964b21b6928b7a2f672138",
+      "08.bin": "85a19c1eece5acf4660a447f64c9c2952e5f8b26f496cb70b00a497c65b37bcd",
+      "09.bin": "7e660a80fc95d593ad2d01bb1b315dac4be9a11741e8087ba067a658bbdc93b2",
+      "10.bin": "e3ea98252b92dae76976c8a224439051a7b597446497ef4408b936fca06fef55",
+      "11.bin": "53ba0bf5e07d7c6c64d2a2e51d603629a4b3c3e6dae0ae3244d9183d4f4bab0b",
+      "12.bin": "9940fa12a70b10b772d91860cdbf1d002f2ac8007108d0fe163daa532a8fe4d0",
+      "13.bin": "d7c5738ee2a28d0c4b21236292d583cc4d322da8111564dab8743e72afc34463",
+      "14.bin": "fd74cbb6a6d3e94a8674cd4a33eee714c649081a3e5062c7874ebe1f2fd6c714",
+      "15.bin": "ec0d88beff89ad2c93d72cc22f1673e15c766a41ff6452078aad80dd70b05999",
+      "16.bin": "badb9584280dc12d8b43451b3f7e2c1fd22e52747c7ce9add13848dde4fde5fc",
+      "17.bin": "504a5d55b7e5900836331d821fa488b3e89faa76979310c91045f806a89ea30a",
+      "18.bin": "4209ab41ac8a68b4807bed161e32d7571ec67da2a3cff37419d8735e7de34e28",
+      "19.bin": "a84283721ffa5c7be0dd8e9ff752f8310f2309e26efb9d44b96360fd4140eac4",
+      "20.bin": "8028dbd4c41c83b098447398de8caa6bdd7a18c7756b99c52cec7d4484448808",
+      "21.bin": "ab4e37f22cb2fb90289fb363ae21a06e63e5686e3bfd4cd41d36a15b94a143a0",
+      "22.bin": "d76bac2dbc09cd7e4a80cccfcf90fc338f7c5239805a07d6778547a42b804582",
+      "23.bin": "f0a7bc2ee312caf880220aa483b6821779a3d88cec3b2777471f3ab5602c9876",
+      "24.bin": "4fbadbb9b96b737bfbc5d5bda66256982e5fad57d3663714a747e1b3193ac7e9",
+      "25.bin": "5643c1a3a3782b944acefaa81b32c032f8765848810dcc437ca0e3d9df2234e6",
+      "26.bin": "795d86c35ae9cce2724bd8600231208c118753a4c4b4e510b0a00ed69a0a2d29",
+      "27.bin": "077f4c81870768d91921d4c487fac7a11659d773cb5f78f23f7cbb34fd042125",
+      "28.bin": "fda60907ab76197f1af65d76077bb08e38c8cde25e05c35e1119e327d1ffb4fe",
+      "29.bin": "b007f2324fe85845a7e7bc0b014e004087532c2c65531794339ec8eed8e6f30e",
+      "30.bin": "c486e730f6ad71e096320fb4d9e132e1096f07c29e2dec5ebf0a57701dcc9579",
+      "31.bin": "b177f001a156309d5df85a1b4464d210ec8a6085e7600e7e8a99d6b29d9beaf0"
+    },
+    "reason": "Recompute summaries with single-observation CV excluded. Same observations, cohorts and windows, no dataset generation."
+  },
+  "raw_read_for_statistics": false,
+  "curated_modified": false,
+  "dataset_created": false,
+  "trained": false,
+  "test_evaluated": false,
+  "neon_used": false
+}

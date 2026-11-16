@@ -1,0 +1,3013 @@
+{
+  "contract_version": "demand-scenarios-1.0.0",
+  "status": "DESIGN_READY_IMPLEMENTATION_PENDING",
+  "created_on": "2026-11-15",
+  "scope": "Academic hypothetical scenarios. Not an implemented endpoint, dataset publication or approved economic elasticity.",
+  "physical_schema_changes": false,
+  "owners": {
+    "backend_and_ml_service": "Erika",
+    "frontend_and_dataset": "Ross",
+    "review": "Both, with one primary owner per task"
+  },
+  "proposed_endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/predictions/scenarios/capabilities",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/predictions/scenarios/preview",
+      "implemented": false
+    }
+  ],
+  "existing_replay": "GET /api/predictions/catalog and POST /api/predictions/demand preserved",
+  "request_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/request",
+    "$defs": {
+      "token": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
+      },
+      "month": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+      },
+      "instant": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]{1,6})?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$",
+        "description": "RFC3339 con zona obligatoria. Además se requiere validar el calendario real en backend."
+      },
+      "units": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 1000000000
+      },
+      "positiveUnits": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000000000
+      },
+      "days": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 3650
+      },
+      "money": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,4})?$",
+        "description": "Decimal no negativo por unidad, con hasta cuatro decimales. Backend usa Decimal. No es float implícito o un precio físico nuevo en Product."
+      },
+      "positiveMoney": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/money"
+          },
+          {
+            "not": {
+              "enum": [
+                "0",
+                "0.0",
+                "0.00",
+                "0.000",
+                "0.0000"
+              ]
+            }
+          }
+        ]
+      },
+      "rate": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,5})(\\.[0-9]{1,6})?$",
+        "not": {
+          "enum": [
+            "0",
+            "0.0",
+            "0.00",
+            "0.000",
+            "0.0000",
+            "0.00000",
+            "0.000000"
+          ]
+        }
+      },
+      "historyMonth": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "month": {
+            "$ref": "#/$defs/month"
+          },
+          "retailUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "wholesaleUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "unknownModeUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "complete": {
+            "const": true
+          }
+        },
+        "required": [
+          "month",
+          "retailUnits",
+          "wholesaleUnits",
+          "unknownModeUnits",
+          "complete"
+        ]
+      },
+      "historyChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "REPLACE_SYNTHETIC_HISTORY"
+              },
+              "months": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/historyMonth"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              }
+            },
+            "required": [
+              "mode",
+              "months"
+            ]
+          }
+        ]
+      },
+      "priceChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_PRICES"
+              },
+              "retailPriceBs": {
+                "$ref": "#/$defs/positiveMoney"
+              },
+              "wholesalePriceBs": {
+                "$ref": "#/$defs/positiveMoney"
+              },
+              "effectiveAt": {
+                "$ref": "#/$defs/instant"
+              }
+            },
+            "required": [
+              "mode",
+              "retailPriceBs",
+              "wholesalePriceBs",
+              "effectiveAt"
+            ]
+          }
+        ]
+      },
+      "quoteChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_HYPOTHETICAL_QUOTE"
+              },
+              "bsPerUsd": {
+                "$ref": "#/$defs/rate"
+              },
+              "observedAt": {
+                "$ref": "#/$defs/instant"
+              }
+            },
+            "required": [
+              "mode",
+              "bsPerUsd",
+              "observedAt"
+            ]
+          }
+        ]
+      },
+      "costChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_LANDED_COST_BS"
+              },
+              "unitCostBs": {
+                "$ref": "#/$defs/money"
+              },
+              "effectiveAt": {
+                "$ref": "#/$defs/instant"
+              }
+            },
+            "required": [
+              "mode",
+              "unitCostBs",
+              "effectiveAt"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SIMULATE_IMPORT_USD"
+              },
+              "unitCostUsd": {
+                "$ref": "#/$defs/money"
+              },
+              "freightPerUnitBs": {
+                "$ref": "#/$defs/money"
+              },
+              "otherPerUnitBs": {
+                "$ref": "#/$defs/money"
+              },
+              "effectiveAt": {
+                "$ref": "#/$defs/instant"
+              }
+            },
+            "required": [
+              "mode",
+              "unitCostUsd",
+              "freightPerUnitBs",
+              "otherPerUnitBs",
+              "effectiveAt"
+            ]
+          }
+        ]
+      },
+      "stockChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_SELLABLE_STOCK"
+              },
+              "sellablePhysicalUnits": {
+                "$ref": "#/$defs/units"
+              }
+            },
+            "required": [
+              "mode",
+              "sellablePhysicalUnits"
+            ]
+          }
+        ]
+      },
+      "order": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderId": {
+            "$ref": "#/$defs/token"
+          },
+          "mode": {
+            "enum": [
+              "POR_MENOR",
+              "POR_MAYOR"
+            ]
+          },
+          "outstandingUnits": {
+            "$ref": "#/$defs/positiveUnits"
+          },
+          "reservedUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "dueAt": {
+            "$ref": "#/$defs/instant"
+          }
+        },
+        "required": [
+          "orderId",
+          "mode",
+          "outstandingUnits",
+          "reservedUnits",
+          "dueAt"
+        ]
+      },
+      "orderChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "REPLACE_OPEN_ORDER_PLAN"
+              },
+              "orders": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/order"
+                },
+                "minItems": 0,
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "mode",
+              "orders"
+            ]
+          }
+        ]
+      },
+      "shipment": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "shipmentId": {
+            "$ref": "#/$defs/token"
+          },
+          "pendingUnits": {
+            "$ref": "#/$defs/positiveUnits"
+          },
+          "reservedAfterHorizonUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "expectedArrivalAt": {
+            "$ref": "#/$defs/instant"
+          }
+        },
+        "required": [
+          "shipmentId",
+          "pendingUnits",
+          "reservedAfterHorizonUnits",
+          "expectedArrivalAt"
+        ]
+      },
+      "logisticsChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_LOGISTICS_PLAN"
+              },
+              "supplierLeadTimeDays": {
+                "$ref": "#/$defs/days"
+              },
+              "internalRestockDays": {
+                "$ref": "#/$defs/days"
+              },
+              "plannedOrderAt": {
+                "$ref": "#/$defs/instant"
+              },
+              "pendingShipments": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/shipment"
+                },
+                "minItems": 0,
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "mode",
+              "supplierLeadTimeDays",
+              "internalRestockDays",
+              "plannedOrderAt",
+              "pendingShipments"
+            ]
+          }
+        ]
+      },
+      "replenishment": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requested": {
+            "type": "boolean"
+          },
+          "safetyStockUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "policy": {
+            "const": "MONTH_END_COMMITMENT_FLOOR_V1"
+          },
+          "minimumOrderUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "orderMultipleUnits": {
+            "$ref": "#/$defs/positiveUnits"
+          },
+          "reviewPeriodDays": {
+            "$ref": "#/$defs/days"
+          }
+        },
+        "required": [
+          "requested",
+          "safetyStockUnits",
+          "policy",
+          "minimumOrderUnits",
+          "orderMultipleUnits",
+          "reviewPeriodDays"
+        ]
+      },
+      "changes": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "history": {
+            "$ref": "#/$defs/historyChange"
+          },
+          "prices": {
+            "$ref": "#/$defs/priceChange"
+          },
+          "quote": {
+            "$ref": "#/$defs/quoteChange"
+          },
+          "cost": {
+            "$ref": "#/$defs/costChange"
+          },
+          "stock": {
+            "$ref": "#/$defs/stockChange"
+          },
+          "orders": {
+            "$ref": "#/$defs/orderChange"
+          },
+          "logistics": {
+            "$ref": "#/$defs/logisticsChange"
+          }
+        },
+        "required": [
+          "history",
+          "prices",
+          "quote",
+          "cost",
+          "stock",
+          "orders",
+          "logistics"
+        ]
+      },
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "const": "demand-scenarios-1.0.0"
+          },
+          "mode": {
+            "const": "HYPOTHETICAL_SCENARIO"
+          },
+          "clientRequestId": {
+            "$ref": "#/$defs/token"
+          },
+          "productId": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "locationId": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "targetMonth": {
+            "$ref": "#/$defs/month"
+          },
+          "baseSnapshotId": {
+            "$ref": "#/$defs/token"
+          },
+          "changes": {
+            "$ref": "#/$defs/changes"
+          },
+          "replenishment": {
+            "$ref": "#/$defs/replenishment"
+          }
+        },
+        "required": [
+          "contractVersion",
+          "mode",
+          "clientRequestId",
+          "productId",
+          "locationId",
+          "targetMonth",
+          "baseSnapshotId",
+          "changes",
+          "replenishment"
+        ]
+      },
+      "metrics": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "partition": {
+            "enum": [
+              "TRAIN_CV",
+              "VALIDATION",
+              "FINAL_TEST_SAVED"
+            ]
+          },
+          "origin": {
+            "enum": [
+              "SYNTHETIC",
+              "REAL_AUDITED"
+            ]
+          },
+          "mae": {
+            "type": "number",
+            "minimum": 0
+          },
+          "rmse": {
+            "type": "number",
+            "minimum": 0
+          },
+          "r2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "partition",
+          "origin",
+          "mae",
+          "rmse",
+          "r2"
+        ]
+      },
+      "estimate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "OK",
+              "UNSUPPORTED",
+              "ABSTAINED",
+              "OUT_OF_DOMAIN"
+            ]
+          },
+          "salesUnits": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/token"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "salesUnits",
+          "reason"
+        ]
+      },
+      "impact": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "role": {
+            "enum": [
+              "DIRECT_MODEL_FEATURE",
+              "DERIVED_MODEL_FEATURE",
+              "REPLENISHMENT_ONLY",
+              "VALIDATION_ONLY",
+              "UNSUPPORTED"
+            ]
+          },
+          "effectStatus": {
+            "enum": [
+              "USED",
+              "NOT_USED_BY_SELECTED_MODEL",
+              "ASSUMPTION_ONLY",
+              "UNKNOWN"
+            ]
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "before": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "after": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "baseSourceKind": {
+            "enum": [
+              "FROZEN_SYNTHETIC_BASE",
+              "AUDITED_SNAPSHOT",
+              "UNKNOWN"
+            ]
+          },
+          "scenarioSourceKind": {
+            "enum": [
+              "HYPOTHETICAL_ASSUMPTION",
+              "UNCHANGED_BASE",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "field",
+          "role",
+          "effectStatus",
+          "explanation",
+          "before",
+          "after",
+          "unit",
+          "baseSourceKind",
+          "scenarioSourceKind"
+        ]
+      },
+      "replenishmentResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "NOT_REQUESTED",
+              "OK_MONTH_END_ESTIMATE",
+              "INCOMPLETE",
+              "OUTSIDE_FORECAST_HORIZON"
+            ]
+          },
+          "policy": {
+            "const": "MONTH_END_COMMITMENT_FLOOR_V1"
+          },
+          "suggestedUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "requiredUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "availablePositionUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "committedUnitsWithinHorizon": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reservedUnitsWithinHorizon": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reservedUnitsAfterHorizon": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "eligibleIncomingUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expectedNewOrderArrivalAt": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "temporalFeasibility": {
+            "const": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/token"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "rawNeedUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "minimumOrderUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "orderMultipleUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/positiveUnits"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "protectionEndAt": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "policy",
+          "suggestedUnits",
+          "requiredUnits",
+          "availablePositionUnits",
+          "committedUnitsWithinHorizon",
+          "reservedUnitsWithinHorizon",
+          "reservedUnitsAfterHorizon",
+          "eligibleIncomingUnits",
+          "expectedNewOrderArrivalAt",
+          "temporalFeasibility",
+          "warnings",
+          "rawNeedUnits",
+          "minimumOrderUnits",
+          "orderMultipleUnits",
+          "protectionEndAt"
+        ]
+      },
+      "response": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "const": "demand-scenarios-1.0.0"
+          },
+          "status": {
+            "enum": [
+              "OK",
+              "PARTIAL",
+              "UNSUPPORTED",
+              "ABSTAINED"
+            ]
+          },
+          "mode": {
+            "const": "HYPOTHETICAL_SCENARIO"
+          },
+          "origin": {
+            "const": "SYNTHETIC_SCENARIO_NOT_REAL_SALES"
+          },
+          "scenarioId": {
+            "$ref": "#/$defs/token"
+          },
+          "productId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "locationId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "targetMonth": {
+            "$ref": "#/$defs/month"
+          },
+          "horizonMonths": {
+            "const": 1
+          },
+          "timeZone": {
+            "const": "America/La_Paz"
+          },
+          "baseSnapshotId": {
+            "$ref": "#/$defs/token"
+          },
+          "featureCutoffAt": {
+            "$ref": "#/$defs/instant"
+          },
+          "recordedAt": {
+            "$ref": "#/$defs/instant"
+          },
+          "assumedAsOf": {
+            "$ref": "#/$defs/instant"
+          },
+          "scenarioInputSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "modelVersion": {
+            "$ref": "#/$defs/token"
+          },
+          "artifactSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "datasetVersion": {
+            "$ref": "#/$defs/token"
+          },
+          "policyVersion": {
+            "$ref": "#/$defs/token"
+          },
+          "baseline": {
+            "$ref": "#/$defs/estimate"
+          },
+          "scenario": {
+            "$ref": "#/$defs/estimate"
+          },
+          "deltaSalesUnits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "impacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/impact"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/metrics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "replenishment": {
+            "$ref": "#/$defs/replenishmentResult"
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/token"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contractVersion",
+          "status",
+          "mode",
+          "origin",
+          "scenarioId",
+          "productId",
+          "locationId",
+          "targetMonth",
+          "horizonMonths",
+          "timeZone",
+          "baseSnapshotId",
+          "featureCutoffAt",
+          "recordedAt",
+          "assumedAsOf",
+          "scenarioInputSha256",
+          "modelVersion",
+          "artifactSha256",
+          "datasetVersion",
+          "policyVersion",
+          "baseline",
+          "scenario",
+          "deltaSalesUnits",
+          "impacts",
+          "metrics",
+          "replenishment",
+          "assumptions",
+          "warnings"
+        ]
+      }
+    }
+  },
+  "response_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/response",
+    "$defs": {
+      "token": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
+      },
+      "month": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+      },
+      "instant": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]{1,6})?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$",
+        "description": "RFC3339 con zona obligatoria. Además se requiere validar el calendario real en backend."
+      },
+      "units": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 1000000000
+      },
+      "positiveUnits": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000000000
+      },
+      "days": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 3650
+      },
+      "money": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,4})?$",
+        "description": "Decimal no negativo por unidad, con hasta cuatro decimales. Backend usa Decimal. No es float implícito o un precio físico nuevo en Product."
+      },
+      "positiveMoney": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/money"
+          },
+          {
+            "not": {
+              "enum": [
+                "0",
+                "0.0",
+                "0.00",
+                "0.000",
+                "0.0000"
+              ]
+            }
+          }
+        ]
+      },
+      "rate": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]{0,5})(\\.[0-9]{1,6})?$",
+        "not": {
+          "enum": [
+            "0",
+            "0.0",
+            "0.00",
+            "0.000",
+            "0.0000",
+            "0.00000",
+            "0.000000"
+          ]
+        }
+      },
+      "historyMonth": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "month": {
+            "$ref": "#/$defs/month"
+          },
+          "retailUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "wholesaleUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "unknownModeUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "complete": {
+            "const": true
+          }
+        },
+        "required": [
+          "month",
+          "retailUnits",
+          "wholesaleUnits",
+          "unknownModeUnits",
+          "complete"
+        ]
+      },
+      "historyChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "REPLACE_SYNTHETIC_HISTORY"
+              },
+              "months": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/historyMonth"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              }
+            },
+            "required": [
+              "mode",
+              "months"
+            ]
+          }
+        ]
+      },
+      "priceChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_PRICES"
+              },
+              "retailPriceBs": {
+                "$ref": "#/$defs/positiveMoney"
+              },
+              "wholesalePriceBs": {
+                "$ref": "#/$defs/positiveMoney"
+              },
+              "effectiveAt": {
+                "$ref": "#/$defs/instant"
+              }
+            },
+            "required": [
+              "mode",
+              "retailPriceBs",
+              "wholesalePriceBs",
+              "effectiveAt"
+            ]
+          }
+        ]
+      },
+      "quoteChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_HYPOTHETICAL_QUOTE"
+              },
+              "bsPerUsd": {
+                "$ref": "#/$defs/rate"
+              },
+              "observedAt": {
+                "$ref": "#/$defs/instant"
+              }
+            },
+            "required": [
+              "mode",
+              "bsPerUsd",
+              "observedAt"
+            ]
+          }
+        ]
+      },
+      "costChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_LANDED_COST_BS"
+              },
+              "unitCostBs": {
+                "$ref": "#/$defs/money"
+              },
+              "effectiveAt": {
+                "$ref": "#/$defs/instant"
+              }
+            },
+            "required": [
+              "mode",
+              "unitCostBs",
+              "effectiveAt"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SIMULATE_IMPORT_USD"
+              },
+              "unitCostUsd": {
+                "$ref": "#/$defs/money"
+              },
+              "freightPerUnitBs": {
+                "$ref": "#/$defs/money"
+              },
+              "otherPerUnitBs": {
+                "$ref": "#/$defs/money"
+              },
+              "effectiveAt": {
+                "$ref": "#/$defs/instant"
+              }
+            },
+            "required": [
+              "mode",
+              "unitCostUsd",
+              "freightPerUnitBs",
+              "otherPerUnitBs",
+              "effectiveAt"
+            ]
+          }
+        ]
+      },
+      "stockChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_SELLABLE_STOCK"
+              },
+              "sellablePhysicalUnits": {
+                "$ref": "#/$defs/units"
+              }
+            },
+            "required": [
+              "mode",
+              "sellablePhysicalUnits"
+            ]
+          }
+        ]
+      },
+      "order": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderId": {
+            "$ref": "#/$defs/token"
+          },
+          "mode": {
+            "enum": [
+              "POR_MENOR",
+              "POR_MAYOR"
+            ]
+          },
+          "outstandingUnits": {
+            "$ref": "#/$defs/positiveUnits"
+          },
+          "reservedUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "dueAt": {
+            "$ref": "#/$defs/instant"
+          }
+        },
+        "required": [
+          "orderId",
+          "mode",
+          "outstandingUnits",
+          "reservedUnits",
+          "dueAt"
+        ]
+      },
+      "orderChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "REPLACE_OPEN_ORDER_PLAN"
+              },
+              "orders": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/order"
+                },
+                "minItems": 0,
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "mode",
+              "orders"
+            ]
+          }
+        ]
+      },
+      "shipment": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "shipmentId": {
+            "$ref": "#/$defs/token"
+          },
+          "pendingUnits": {
+            "$ref": "#/$defs/positiveUnits"
+          },
+          "reservedAfterHorizonUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "expectedArrivalAt": {
+            "$ref": "#/$defs/instant"
+          }
+        },
+        "required": [
+          "shipmentId",
+          "pendingUnits",
+          "reservedAfterHorizonUnits",
+          "expectedArrivalAt"
+        ]
+      },
+      "logisticsChange": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "KEEP"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "const": "SET_LOGISTICS_PLAN"
+              },
+              "supplierLeadTimeDays": {
+                "$ref": "#/$defs/days"
+              },
+              "internalRestockDays": {
+                "$ref": "#/$defs/days"
+              },
+              "plannedOrderAt": {
+                "$ref": "#/$defs/instant"
+              },
+              "pendingShipments": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/shipment"
+                },
+                "minItems": 0,
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "mode",
+              "supplierLeadTimeDays",
+              "internalRestockDays",
+              "plannedOrderAt",
+              "pendingShipments"
+            ]
+          }
+        ]
+      },
+      "replenishment": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requested": {
+            "type": "boolean"
+          },
+          "safetyStockUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "policy": {
+            "const": "MONTH_END_COMMITMENT_FLOOR_V1"
+          },
+          "minimumOrderUnits": {
+            "$ref": "#/$defs/units"
+          },
+          "orderMultipleUnits": {
+            "$ref": "#/$defs/positiveUnits"
+          },
+          "reviewPeriodDays": {
+            "$ref": "#/$defs/days"
+          }
+        },
+        "required": [
+          "requested",
+          "safetyStockUnits",
+          "policy",
+          "minimumOrderUnits",
+          "orderMultipleUnits",
+          "reviewPeriodDays"
+        ]
+      },
+      "changes": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "history": {
+            "$ref": "#/$defs/historyChange"
+          },
+          "prices": {
+            "$ref": "#/$defs/priceChange"
+          },
+          "quote": {
+            "$ref": "#/$defs/quoteChange"
+          },
+          "cost": {
+            "$ref": "#/$defs/costChange"
+          },
+          "stock": {
+            "$ref": "#/$defs/stockChange"
+          },
+          "orders": {
+            "$ref": "#/$defs/orderChange"
+          },
+          "logistics": {
+            "$ref": "#/$defs/logisticsChange"
+          }
+        },
+        "required": [
+          "history",
+          "prices",
+          "quote",
+          "cost",
+          "stock",
+          "orders",
+          "logistics"
+        ]
+      },
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "const": "demand-scenarios-1.0.0"
+          },
+          "mode": {
+            "const": "HYPOTHETICAL_SCENARIO"
+          },
+          "clientRequestId": {
+            "$ref": "#/$defs/token"
+          },
+          "productId": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "locationId": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "targetMonth": {
+            "$ref": "#/$defs/month"
+          },
+          "baseSnapshotId": {
+            "$ref": "#/$defs/token"
+          },
+          "changes": {
+            "$ref": "#/$defs/changes"
+          },
+          "replenishment": {
+            "$ref": "#/$defs/replenishment"
+          }
+        },
+        "required": [
+          "contractVersion",
+          "mode",
+          "clientRequestId",
+          "productId",
+          "locationId",
+          "targetMonth",
+          "baseSnapshotId",
+          "changes",
+          "replenishment"
+        ]
+      },
+      "metrics": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "partition": {
+            "enum": [
+              "TRAIN_CV",
+              "VALIDATION",
+              "FINAL_TEST_SAVED"
+            ]
+          },
+          "origin": {
+            "enum": [
+              "SYNTHETIC",
+              "REAL_AUDITED"
+            ]
+          },
+          "mae": {
+            "type": "number",
+            "minimum": 0
+          },
+          "rmse": {
+            "type": "number",
+            "minimum": 0
+          },
+          "r2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "partition",
+          "origin",
+          "mae",
+          "rmse",
+          "r2"
+        ]
+      },
+      "estimate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "OK",
+              "UNSUPPORTED",
+              "ABSTAINED",
+              "OUT_OF_DOMAIN"
+            ]
+          },
+          "salesUnits": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/token"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "salesUnits",
+          "reason"
+        ]
+      },
+      "impact": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "role": {
+            "enum": [
+              "DIRECT_MODEL_FEATURE",
+              "DERIVED_MODEL_FEATURE",
+              "REPLENISHMENT_ONLY",
+              "VALIDATION_ONLY",
+              "UNSUPPORTED"
+            ]
+          },
+          "effectStatus": {
+            "enum": [
+              "USED",
+              "NOT_USED_BY_SELECTED_MODEL",
+              "ASSUMPTION_ONLY",
+              "UNKNOWN"
+            ]
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "before": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "after": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "baseSourceKind": {
+            "enum": [
+              "FROZEN_SYNTHETIC_BASE",
+              "AUDITED_SNAPSHOT",
+              "UNKNOWN"
+            ]
+          },
+          "scenarioSourceKind": {
+            "enum": [
+              "HYPOTHETICAL_ASSUMPTION",
+              "UNCHANGED_BASE",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "field",
+          "role",
+          "effectStatus",
+          "explanation",
+          "before",
+          "after",
+          "unit",
+          "baseSourceKind",
+          "scenarioSourceKind"
+        ]
+      },
+      "replenishmentResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "NOT_REQUESTED",
+              "OK_MONTH_END_ESTIMATE",
+              "INCOMPLETE",
+              "OUTSIDE_FORECAST_HORIZON"
+            ]
+          },
+          "policy": {
+            "const": "MONTH_END_COMMITMENT_FLOOR_V1"
+          },
+          "suggestedUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "requiredUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "availablePositionUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "committedUnitsWithinHorizon": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reservedUnitsWithinHorizon": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reservedUnitsAfterHorizon": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "eligibleIncomingUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expectedNewOrderArrivalAt": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "temporalFeasibility": {
+            "const": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/token"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "rawNeedUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "minimumOrderUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/units"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "orderMultipleUnits": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/positiveUnits"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "protectionEndAt": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "policy",
+          "suggestedUnits",
+          "requiredUnits",
+          "availablePositionUnits",
+          "committedUnitsWithinHorizon",
+          "reservedUnitsWithinHorizon",
+          "reservedUnitsAfterHorizon",
+          "eligibleIncomingUnits",
+          "expectedNewOrderArrivalAt",
+          "temporalFeasibility",
+          "warnings",
+          "rawNeedUnits",
+          "minimumOrderUnits",
+          "orderMultipleUnits",
+          "protectionEndAt"
+        ]
+      },
+      "response": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "const": "demand-scenarios-1.0.0"
+          },
+          "status": {
+            "enum": [
+              "OK",
+              "PARTIAL",
+              "UNSUPPORTED",
+              "ABSTAINED"
+            ]
+          },
+          "mode": {
+            "const": "HYPOTHETICAL_SCENARIO"
+          },
+          "origin": {
+            "const": "SYNTHETIC_SCENARIO_NOT_REAL_SALES"
+          },
+          "scenarioId": {
+            "$ref": "#/$defs/token"
+          },
+          "productId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "locationId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "targetMonth": {
+            "$ref": "#/$defs/month"
+          },
+          "horizonMonths": {
+            "const": 1
+          },
+          "timeZone": {
+            "const": "America/La_Paz"
+          },
+          "baseSnapshotId": {
+            "$ref": "#/$defs/token"
+          },
+          "featureCutoffAt": {
+            "$ref": "#/$defs/instant"
+          },
+          "recordedAt": {
+            "$ref": "#/$defs/instant"
+          },
+          "assumedAsOf": {
+            "$ref": "#/$defs/instant"
+          },
+          "scenarioInputSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "modelVersion": {
+            "$ref": "#/$defs/token"
+          },
+          "artifactSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "datasetVersion": {
+            "$ref": "#/$defs/token"
+          },
+          "policyVersion": {
+            "$ref": "#/$defs/token"
+          },
+          "baseline": {
+            "$ref": "#/$defs/estimate"
+          },
+          "scenario": {
+            "$ref": "#/$defs/estimate"
+          },
+          "deltaSalesUnits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "impacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/impact"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/metrics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "replenishment": {
+            "$ref": "#/$defs/replenishmentResult"
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/token"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "contractVersion",
+          "status",
+          "mode",
+          "origin",
+          "scenarioId",
+          "productId",
+          "locationId",
+          "targetMonth",
+          "horizonMonths",
+          "timeZone",
+          "baseSnapshotId",
+          "featureCutoffAt",
+          "recordedAt",
+          "assumedAsOf",
+          "scenarioInputSha256",
+          "modelVersion",
+          "artifactSha256",
+          "datasetVersion",
+          "policyVersion",
+          "baseline",
+          "scenario",
+          "deltaSalesUnits",
+          "impacts",
+          "metrics",
+          "replenishment",
+          "assumptions",
+          "warnings"
+        ]
+      }
+    }
+  },
+  "domain_rules": [
+    {
+      "id": "SC01",
+      "area": "identity",
+      "statement": "Baseline product, location, target month and snapshot must match the trusted server provider. Client cannot send model paths, raw features, target or source-certification claims.",
+      "error": "SNAPSHOT_MISMATCH",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC02",
+      "area": "time",
+      "statement": "Cutoff is target-month start at UTC-4. Historical overrides must be exactly its previous three consecutive complete months in ascending order. A new product without history abstains, never fills missing months with zeros.",
+      "error": "INVALID_HISTORY_WINDOW",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC03",
+      "area": "time",
+      "statement": "Baseline observed facts retain original availableAt <= cutoff. All client edits are hypothetical assumptions with assumedAsOf=cutoff, recordedAt=server now, never verified past facts. Future effective prices are plans, not future observations. Parse and validate actual calendar dates with a strict date parser, not regex alone. JSON Schema format enforcement must be explicitly enabled.",
+      "error": "FUTURE_INFORMATION_LEAKAGE",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC04",
+      "area": "money",
+      "statement": "Resolve KEEP only from baseline. Use Decimal, no silent zero/default 6.96. Known cost <= wholesale <= retail. Reject incoherent below-cost prices in initial demo, no automatic price correction or invented exception. Missing cost means UNKNOWN_COST, not zero.",
+      "error": "INCOHERENT_PRICES",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC05",
+      "area": "quote",
+      "statement": "Quotation units are Bs per USD. Assumed quote observedAt <= cutoff. Compute age and expose it. Its source is HYPOTHETICAL, not verified market data. Changing quote never revalues historical purchases.",
+      "error": "INVALID_QUOTE_TIME",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC06",
+      "area": "cost",
+      "statement": "SIMULATE_IMPORT_USD applies to a hypothetical new purchase: landed Bs/unit = USD/unit * selected quote Bs/USD + freight Bs/unit + other costs Bs/unit. Missing quote blocks this calculation. SET_LANDED_COST_BS leaves already-owned stock costs independent of a new quote.",
+      "error": "MISSING_COST_INPUT",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC07",
+      "area": "price_time",
+      "statement": "Price/cost effectiveAt must be within the objective month as a plan assumed known at cutoff. Preserve exact intervals: before the event use base values, after it use the new values. If the approved monthly mechanism needs an exposure feature, weight by calendar days known at cutoff, never by actual future sales. Without such a mechanism return UNSUPPORTED, never treat a mid-month change as a full-month price.",
+      "error": "UNSUPPORTED_TEMPORAL_MECHANISM",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC08",
+      "area": "quantities",
+      "statement": "Quantities are integer nonnegative units. Separate historical sold quantities, sellable physical stock, pending orders and incoming units. Targets, returns and received future quantities cannot be submitted as historical sales.",
+      "error": "INVALID_QUANTITY",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC09",
+      "area": "stock",
+      "statement": "Sellable physical stock excludes quarantine, discarded returns and goods in transit. Within/after-horizon reserved units are disjoint subsets of this stock. Sum reservations <= physical sellable stock.",
+      "error": "INVALID_RESERVATION",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC10",
+      "area": "orders",
+      "statement": "Order IDs are unique. reservedUnits <= outstandingUnits. Due before cutoff means outstanding backlog, due through month end means within-horizon commitments, later means after-horizon commitments. No already fulfilled sales count again. All replaced orders are hypothetical.",
+      "error": "INVALID_ORDER_PLAN",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC11",
+      "area": "logistics",
+      "statement": "Shipment IDs are unique and refer only to units still pending at cutoff. Reserved-after-horizon units <= pending units. Eligible supply includes only pending units expected after cutoff and by horizon end, excluding later reservations. Past-due pending deliveries need an explicit revised expected date.",
+      "error": "INVALID_SHIPMENT_PLAN",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC12",
+      "area": "replenishment",
+      "statement": "Total-sales forecast already covers channel mix. Commitments are a floor, not blindly added: required = ceil(max(salesForecast, committedUnitsWithinHorizon)) + safetyStockUnits. Do not add reservations to commitments or subtract within-horizon reservations twice. This academic floor does not prove that commitments are fully incremental or that all overlap is known. Expose COMMITMENT_OVERLAP_UNCERTAIN when unresolved. A later component model is required to combine known incremental wholesale orders with a separate retail forecast without guessing.",
+      "error": "DOUBLE_COUNTED_COMMITMENTS",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC13",
+      "area": "replenishment",
+      "statement": "availablePosition = sellablePhysicalUnits - reservedUnitsAfterHorizon + eligibleIncomingUnits. rawNeedUnits = max(0, required - availablePosition). SuggestedUnits follows SC21. Unknown stock, unsupported sales forecast or missing order/allocation information gives INCOMPLETE/null, never an invented zero suggestion.",
+      "error": "INCOMPLETE_REPLENISHMENT",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC14",
+      "area": "replenishment_time",
+      "statement": "Expected new-order arrival = plannedOrderAt + supplierLeadTimeDays + internalRestockDays (calendar days for this version). plannedOrderAt >= cutoff. If it exceeds forecast month end, mark OUTSIDE_FORECAST_HORIZON. Do not extend a one-month forecast with an implicit monthly/30 approximation. Outside the month, suggestedUnits is null, preserving the monthly gap/required/position for explanation. No false claim that an order can repair an already expired horizon.",
+      "error": "OUTSIDE_FORECAST_HORIZON",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC15",
+      "area": "availability",
+      "statement": "Month-end balance is advisory. A late incoming delivery may leave an earlier stockout. No daily lost-demand estimate or service guarantee exists without a separately validated temporal allocation mechanism. Expose this limitation.",
+      "error": "MISSING_DAILY_ALLOCATION",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC16",
+      "area": "model_coverage",
+      "statement": "Report use of every changed field. If selected model ignores an asserted sales driver (e.g. price in frozen 2.2), scenario sales is UNSUPPORTED/null, not the unchanged baseline passed off as a price-sensitive result. Context-only edits can produce replenishment differences with an explicit VALIDATION_ONLY/REPLENISHMENT_ONLY role.",
+      "error": "UNSUPPORTED_MODEL_FEATURE",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC17",
+      "area": "comparison",
+      "statement": "Base and modified estimates share product, store, target, cutoff, approved artifact, policy and random streams except explicitly edited assumptions. Delta exists only when both estimates are OK. Returning null must have an explicit reason. Report each changed scalar as before/after with unit, source kind and role, resolved by the server. Current prices must never be invented by frontend.",
+      "error": "INCOMPARABLE_SCENARIOS",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC18",
+      "area": "safety",
+      "statement": "Only ADMIN may access scenarios. Existing replay endpoints remain unchanged. Idempotency is scoped to actor + clientRequestId + canonical request hash: same key/hash returns original, different hash gives 409. No writes to operational DB, frozen datasets, RAW, artifacts or historical reports.",
+      "error": "IDEMPOTENCY_CONFLICT",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC19",
+      "area": "models",
+      "statement": "No fit, scaler fit or TEST evaluation on scenario request. Any future training must be separately authorized. Frozen 2.2 TEST remains consumed. No new candidate selection against it.",
+      "error": "TRAINING_NOT_AUTHORIZED",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC20",
+      "area": "response",
+      "statement": "OK estimate requires non-null finite sales, null reason. Non-OK requires null sales and non-null reason. Overall PARTIAL must enumerate missing support. Replenishment OK requires complete nonnegative fields, never NOT_REQUESTED with a quantity.",
+      "error": "INCOHERENT_RESPONSE",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    },
+    {
+      "id": "SC21",
+      "area": "replenishment_pack_and_review",
+      "statement": "If raw need is zero, do not order only to satisfy a minimum. Otherwise commercial suggestion = ceil(max(rawNeed, minimumOrderUnits) / orderMultipleUnits) * orderMultipleUnits. These supplied values are explicit scenario assumptions, not discovered supplier rules. Protection end = expected new-order arrival + reviewPeriodDays. Outside the forecast horizon, no complete suggestion. Missing provider rules cannot be silently certified as minimum 0 or pack 1.",
+      "error": "INCOMPLETE_REPLENISHMENT",
+      "enforcement": "BACKEND_REQUIRED_NOT_IMPLEMENTED_BY_JSON_SCHEMA"
+    }
+  ],
+  "examples": {
+    "notice": "Hand-authored contract fixtures only. No actual observations, API results or generated dataset. Prices and exchange quotes are assumptions. Baseline values must come from server, never inferred from these examples.",
+    "requests": [
+      {
+        "contractVersion": "demand-scenarios-1.0.0",
+        "mode": "HYPOTHETICAL_SCENARIO",
+        "clientRequestId": "fixture-contract-example-01",
+        "productId": 28,
+        "locationId": 5,
+        "targetMonth": "2026-04",
+        "baseSnapshotId": "fixture-trusted-snapshot",
+        "changes": {
+          "history": {
+            "mode": "KEEP"
+          },
+          "prices": {
+            "mode": "KEEP"
+          },
+          "quote": {
+            "mode": "KEEP"
+          },
+          "cost": {
+            "mode": "KEEP"
+          },
+          "stock": {
+            "mode": "KEEP"
+          },
+          "orders": {
+            "mode": "KEEP"
+          },
+          "logistics": {
+            "mode": "KEEP"
+          }
+        },
+        "replenishment": {
+          "requested": false,
+          "safetyStockUnits": 0,
+          "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+          "minimumOrderUnits": 0,
+          "orderMultipleUnits": 1,
+          "reviewPeriodDays": 0
+        }
+      },
+      {
+        "contractVersion": "demand-scenarios-1.0.0",
+        "mode": "HYPOTHETICAL_SCENARIO",
+        "clientRequestId": "fixture-price-example-01",
+        "productId": 28,
+        "locationId": 5,
+        "targetMonth": "2026-04",
+        "baseSnapshotId": "fixture-trusted-snapshot",
+        "changes": {
+          "history": {
+            "mode": "KEEP"
+          },
+          "prices": {
+            "mode": "SET_PRICES",
+            "retailPriceBs": "150.00",
+            "wholesalePriceBs": "100.00",
+            "effectiveAt": "2026-04-01T00:00:00-04:00"
+          },
+          "quote": {
+            "mode": "KEEP"
+          },
+          "cost": {
+            "mode": "KEEP"
+          },
+          "stock": {
+            "mode": "KEEP"
+          },
+          "orders": {
+            "mode": "KEEP"
+          },
+          "logistics": {
+            "mode": "KEEP"
+          }
+        },
+        "replenishment": {
+          "requested": false,
+          "safetyStockUnits": 0,
+          "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+          "minimumOrderUnits": 0,
+          "orderMultipleUnits": 1,
+          "reviewPeriodDays": 0
+        }
+      },
+      {
+        "contractVersion": "demand-scenarios-1.0.0",
+        "mode": "HYPOTHETICAL_SCENARIO",
+        "clientRequestId": "fixture-import-example-01",
+        "productId": 28,
+        "locationId": 5,
+        "targetMonth": "2026-04",
+        "baseSnapshotId": "fixture-trusted-snapshot",
+        "changes": {
+          "history": {
+            "mode": "KEEP"
+          },
+          "prices": {
+            "mode": "SET_PRICES",
+            "retailPriceBs": "150.00",
+            "wholesalePriceBs": "120.00",
+            "effectiveAt": "2026-04-01T00:00:00-04:00"
+          },
+          "quote": {
+            "mode": "SET_HYPOTHETICAL_QUOTE",
+            "bsPerUsd": "10.000000",
+            "observedAt": "2026-03-31T12:00:00-04:00"
+          },
+          "cost": {
+            "mode": "SIMULATE_IMPORT_USD",
+            "unitCostUsd": "10.00",
+            "freightPerUnitBs": "3.00",
+            "otherPerUnitBs": "0",
+            "effectiveAt": "2026-04-01T00:00:00-04:00"
+          },
+          "stock": {
+            "mode": "KEEP"
+          },
+          "orders": {
+            "mode": "KEEP"
+          },
+          "logistics": {
+            "mode": "KEEP"
+          }
+        },
+        "replenishment": {
+          "requested": false,
+          "safetyStockUnits": 0,
+          "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+          "minimumOrderUnits": 0,
+          "orderMultipleUnits": 1,
+          "reviewPeriodDays": 0
+        }
+      }
+    ],
+    "economic_example": {
+      "baseline_assumed_retail_bs": "120.00",
+      "new_retail_bs": "150.00",
+      "relative_change": "0.25",
+      "new_import_cost_bs": "103.00",
+      "no_claim_of_sales_effect": true
+    },
+    "replenishment_example": {
+      "forecast": 18,
+      "sellable_physical_stock": 9,
+      "reserved_within_horizon": 3,
+      "committed_within_horizon": 7,
+      "reserved_after_horizon": 0,
+      "eligible_incoming": 0,
+      "safety": 5,
+      "required": 23,
+      "suggested": 14,
+      "note": "Within-horizon reservations are part of the seven commitments and nine physical units. No double subtraction.",
+      "minimum_order": 0,
+      "order_multiple": 1,
+      "review_days": 0
+    },
+    "replenishment_pack_example": {
+      "raw_need": 14,
+      "minimum_order": 20,
+      "order_multiple": 6,
+      "commercial_suggestion": 24,
+      "zero_need_does_not_force_minimum": true,
+      "values_are_hypothetical": true
+    }
+  },
+  "units": {
+    "amounts": "Decimal strings, Bs/unit or USD/unit explicitly identified",
+    "exchange": "Bs/USD, never USD/Bs",
+    "quantities": "integer units",
+    "dates": "RFC3339 instants with offset, business calendar America/La_Paz",
+    "lead_times": "calendar days, not undocumented business days"
+  },
+  "error_policy": {
+    "400": [
+      "INVALID_INPUT",
+      "INVALID_HISTORY_WINDOW",
+      "INCOHERENT_PRICES",
+      "INVALID_QUOTE_TIME",
+      "INVALID_QUANTITY",
+      "INVALID_RESERVATION",
+      "INVALID_ORDER_PLAN",
+      "INVALID_SHIPMENT_PLAN"
+    ],
+    "401": [
+      "SESSION_INVALID"
+    ],
+    "403": [
+      "ADMIN_REQUIRED"
+    ],
+    "409": [
+      "SNAPSHOT_MISMATCH",
+      "IDEMPOTENCY_CONFLICT"
+    ],
+    "422": [
+      "UNSUPPORTED_MODEL_FEATURE",
+      "UNSUPPORTED_TEMPORAL_MECHANISM",
+      "MISSING_COST_INPUT",
+      "COLD_START",
+      "INCOMPLETE_REPLENISHMENT",
+      "OUTSIDE_FORECAST_HORIZON"
+    ],
+    "503": [
+      "MODEL_UNAVAILABLE",
+      "INCOMPATIBLE_ARTIFACT"
+    ]
+  },
+  "candidate_data_mapping": [
+    {
+      "scenario": "productId/locationId",
+      "physical": "SaleItem.productId / Sale.locationId / Location.id",
+      "use": "IDENTIFIER, not numeric features"
+    },
+    {
+      "scenario": "prices.retailPriceBs",
+      "physical": "Product.price1 is current POR MENOR only",
+      "frozen_2_2": "precio_menor_cierre_anterior_bs / variacion_precio_menor_conocida",
+      "status": "Scenario plan, not reconstructed historical Product prices"
+    },
+    {
+      "scenario": "prices.wholesalePriceBs",
+      "physical": "Product.wholesalePrice is current POR MAYOR, price2 stays LEGACY",
+      "frozen_2_2": "precio_mayor_cierre_anterior_bs / variacion_precio_mayor_conocida",
+      "status": "Scenario plan"
+    },
+    {
+      "scenario": "quote.bsPerUsd",
+      "physical": "Cost.exchangeRate optional, not a certified full time series",
+      "frozen_2_2": "tipo_cambio_bs_usd_conocido / antiguedad_tipo_cambio_dias",
+      "status": "HYPOTHETICAL unless audited source exists"
+    },
+    {
+      "scenario": "cost",
+      "physical": "Product.cost / Cost.costPrice are current or dated records, not automatic historic landed costs",
+      "frozen_2_2": "costo_unitario_bs in base table, not a selected model feature",
+      "status": "Cost/price mechanism to validate before new dataset"
+    },
+    {
+      "scenario": "history.months",
+      "physical": "SaleItem.quantity / Sale.saleDate / Sale.status",
+      "frozen_2_2": "Three lags of gross observed valid units",
+      "status": "Hypothetical override explicitly separated from actual history"
+    },
+    {
+      "scenario": "stock",
+      "physical": "Inventory.stock is current, not historical stock reconstruction",
+      "frozen_2_2": "Historical stock ledger and coverage",
+      "status": "Scenario stock, quarantine/transit excluded"
+    },
+    {
+      "scenario": "logistics/orders",
+      "physical": "ProductRequest.expectedDate and Movement are partial operational evidence, not certified international supplier lead times",
+      "frozen_2_2": "orders/shipments/receipts tables",
+      "status": "Candidate scenario/support tables, no Prisma fields invented"
+    }
+  ],
+  "future_dataset": {
+    "owner": "Ross",
+    "version": "NOT_ASSIGNED_NO_BUILD_AUTHORIZED",
+    "preserve": "All V1/V1.1 and V2.0/2.1/2.2 builds, sources, reports and artifacts",
+    "target": "Gross observed sold units by product/store/objective month, never latent demand silently substituted",
+    "new_columns": "CANDIDATES until mechanisms, sources and availability are reviewed. This contract is not a final CSV schema.",
+    "tables_to_review": [
+      "monthly base and supervised table",
+      "price/cost/quote events with availableAt",
+      "open orders and allocation at cutoff",
+      "sellable stock / transit / planned versus actual receipts",
+      "scenario assumptions and provenance"
+    ],
+    "external_sources": "Monash/UCI/M5/Favorita reference patterns only under recorded conditions, Automotive blocked. No transplantation of external IDs.",
+    "economic_sensitivity": "UNIDENTIFIED. Must justify hypothetical mechanisms before any generator or training. No universal price elasticity claimed.",
+    "split": "Chronological complete months. Fit preprocessing only on TRAIN. Existing consumed TEST cannot be reused for candidate selection.",
+    "planned_price_exposure": "Candidate only: price/cost event intervals and calendar-day exposure known at cutoff. Requires explicit generator and feature implementation. Do not overwrite the full-month meanings of frozen 2.2 columns."
+  },
+  "acceptance": {
+    "contract_only": "Schema and examples can be structurally checked now. Arithmetic, dates, stock, model support, permissions and idempotency are future backend semantic tests, not implemented by this JSON.",
+    "functional": "Every accepted change has a documented role and supported effect or explicit unsupported response. UI widgets alone do not demonstrate model support.",
+    "teacher_scope": "H4 includes interactive comparisons and explanatory replenishment. Automatic purchasing and operational writes remain H5."
+  },
+  "response_policy": {
+    "200": "OK for supported comparison, PARTIAL when base is valid but scenario sales or replenishment is unsupported/incomplete. Nulls and reasons are mandatory. Never fabricate an economic effect.",
+    "422": "No usable comparison: missing base history, unsupported requested temporal mechanism or required source inputs unavailable. Structured error, not fabricated quantities.",
+    "error_schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractVersion",
+        "code",
+        "message",
+        "issues"
+      ],
+      "properties": {
+        "contractVersion": {
+          "const": "demand-scenarios-1.0.0"
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{0,127}$"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "issues": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "field",
+              "ruleId"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "ruleId": {
+                "type": "string",
+                "pattern": "^SC[0-9]{2}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "capabilities": "Server lists authorized products, stores, available closed-history snapshots, supported months, model input coverage, supported interventions and valid policy versions. No editable option may be presented as supported if its model/mechanism is absent."
+  },
+  "decimal_policy": "Parse strict decimal strings. Derive monetary values with Decimal and compare before display rounding. Preserve exact calculation in trace. Format displayed Bs prices separately. All numeric inputs must be finite RFC8259 JSON, reject duplicate keys, NaN and Infinity.",
+  "ownership_boundaries": {
+    "Ross": [
+      "Source manifests, dataset dictionaries, generation/calibration scripts, features and monthly split before model fitting, dataset validation and publication",
+      "All frontend controls, graph/table, before-after comparison, messages, accessible exports and responsive tests"
+    ],
+    "Erika": [
+      "Backend routes, auth/permissions, trusted snapshot provider, semantic validation and idempotency",
+      "Serving/scenario engines, API-side preprocessing and inference, model experiments/training only after separate authorization",
+      "Replenishment calculations, time-of-arrival checks, snapshots/versioning and recovery"
+    ],
+    "shared_review_only": [
+      "Agree scenario meaning, review assumptions and acceptance evidence, integration and presentation"
+    ],
+    "not_authorized_now": [
+      "Demand training",
+      "New dataset construction",
+      "Neon access",
+      "Prisma/migration changes",
+      "New Markdown files"
+    ]
+  },
+  "work_plan": {
+    "C00": {
+      "owner": "Contrato documental revisado por ambos",
+      "status": "DESIGN_DOCUMENTED_STRUCTURAL_TESTS_ONLY"
+    },
+    "backend": [
+      {
+        "id": "H4-E01",
+        "owner": "Erika",
+        "task": "Contrato API y capacidades",
+        "deliverable": "Tipos, permisos ADMIN, errores, campos admitidos y cobertura real del modelo. Sin endpoints productivos nuevos en esta tarea.",
+        "depends_on": [
+          "C00"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-E02",
+        "owner": "Erika",
+        "task": "Reglas de negocio y validación semántica",
+        "deliverable": "Implementar SC01-SC20 con Decimal, fechas reales, precios, faltantes y casos inválidos.",
+        "depends_on": [
+          "C00"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-E03",
+        "owner": "Erika",
+        "task": "Proveedor de snapshots",
+        "deliverable": "Resolver catálogo e historia cerrada con disponibilidad al corte. Separar datos base e hipótesis, sin depender de Neon en la demo académica.",
+        "depends_on": [
+          "E01",
+          "R01"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-E04",
+        "owner": "Erika",
+        "task": "Preprocesamiento y experimentos del modelo",
+        "deliverable": "Usar dataset validado de Ross, fit de imputación/escalado solo TRAIN, comparar modelos y revisar cobertura funcional. Entrenar únicamente con autorización posterior.",
+        "depends_on": [
+          "R06",
+          "E02",
+          "SEPARATE_TRAINING_AUTHORIZATION"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-E05",
+        "owner": "Erika",
+        "task": "Motor de comparación base y escenario",
+        "deliverable": "Aplicar solo intervenciones soportadas, resolver costos/precios y fechas, devolver efectos usados o UNSUPPORTED. Sin fit durante consulta.",
+        "depends_on": [
+          "E02",
+          "E03",
+          "R03"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-E06",
+        "owner": "Erika",
+        "task": "Disponibilidad y reposición explicativa",
+        "deliverable": "Implementar compromiso mínimo, reservas sin doble conteo, tránsito elegible, plazos y límites del horizonte. Sin órdenes o cambios de stock operativos. Considerar mínimo de pedido, múltiplos y periodo de revisión explícitos, sin inventar reglas de proveedor.",
+        "depends_on": [
+          "E02",
+          "E03"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-E07",
+        "owner": "Erika",
+        "task": "Endpoints, snapshots e idempotencia",
+        "deliverable": "Exponer capabilities/preview, identidad, hash, alcance por usuario y respuestas concurrentes. No aceptar rutas, targets o features libres.",
+        "depends_on": [
+          "E01",
+          "E05",
+          "E06"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-E08",
+        "owner": "Erika",
+        "task": "Versiones, recuperación y evaluación final",
+        "deliverable": "Fijar futuro artefacto y política antes de un TEST independiente autorizado. Preservar 2.2.0 y no reutilizar su TEST consumido.",
+        "depends_on": [
+          "E04",
+          "SEPARATE_FINAL_EVALUATION_AUTHORIZATION"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-E09",
+        "owner": "Erika",
+        "task": "Pruebas backend e integración técnica",
+        "deliverable": "Validar permisos, reglas, fechas, cotización antigua, campos faltantes, doble petición, modelo incompatible y contrato real. No atribuir pruebas con fixtures a Neon.",
+        "depends_on": [
+          "E07",
+          "E08"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      }
+    ],
+    "frontend_and_dataset": [
+      {
+        "id": "H4-R01",
+        "owner": "Ross",
+        "task": "Diccionario y estructura ampliados",
+        "deliverable": "Definir columnas y tablas de eventos, unidades, origen, rol, fecha conocida y transformaciones. Distinguir contrato JSON de nombres físicos Prisma.",
+        "depends_on": [
+          "C00"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R02",
+        "owner": "Ross",
+        "task": "Fuentes y supuestos",
+        "deliverable": "Reutilizar referencias autorizadas. Documentar datos reales/simulados y supuestos de cotización, costos, sensibilidad y plazos. Automotive sigue bloqueado.",
+        "depends_on": [
+          "R01"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R03",
+        "owner": "Ross",
+        "task": "Diseño y calibración del generador",
+        "deliverable": "Justificar cómo precio/costo/cotización y logística afectan una simulación coherente, con perfiles sensibles e inelásticos si se justifican. No inventar estimaciones empíricas.",
+        "depends_on": [
+          "R02",
+          "E02"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R04",
+        "owner": "Ross",
+        "task": "Generador y escenarios versionados",
+        "deliverable": "Implementar eventos de precio y moneda, ventas por modalidad, stock vendible, reservas, llegadas y cambios de fecha con streams reproducibles y casos normales/adversos/ambiguos.",
+        "depends_on": [
+          "R03"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R05",
+        "owner": "Ross",
+        "task": "Construcción del dataset nuevo",
+        "deliverable": "Solo tras autorización, asignar versión/build y generar tablas, features, target, split cronológico, manifiestos y hashes sin sobrescribir 2.2.0.",
+        "depends_on": [
+          "R04",
+          "SEPARATE_BUILD_AUTHORIZATION"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R06",
+        "owner": "Ross",
+        "task": "Validación y entrega del dataset",
+        "deliverable": "Comprobar reglas económicas, cantidades, lags, fechas, disponibilidad, conservación de stock, cobertura de casos, variación y leakage. Entregar contrato reproducible a Erika.",
+        "depends_on": [
+          "R05"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R07",
+        "owner": "Ross",
+        "task": "Controles frontend",
+        "deliverable": "Crear comparación base/hipótesis con cambio de precio actual/nuevo, cotización, costo, cantidades y fechas. Mostrar qué campos están realmente soportados.",
+        "depends_on": [
+          "C00",
+          "E01"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R08",
+        "owner": "Ross",
+        "task": "Gráficos, tabla y exportación",
+        "deliverable": "Mostrar entradas antes/después con unidades, escenarios comparables, diferencias, histórico, métricas guardadas y origen. Exportar solo evidencia autorizada, no RAW o datos personales.",
+        "depends_on": [
+          "R07",
+          "E07"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R09",
+        "owner": "Ross",
+        "task": "Vista de reposición",
+        "deliverable": "Presentar stock, reservas, tránsito, compromisos, seguridad, llegada y sugerencia explicada. Diferenciar cálculo mensual de garantía diaria.",
+        "depends_on": [
+          "R07",
+          "E06",
+          "E07"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      },
+      {
+        "id": "H4-R10",
+        "owner": "Ross",
+        "task": "Pruebas frontend y evidencia",
+        "deliverable": "Verificar validaciones, nulos/UNSUPPORTED, cambios de selección, versiones, respuestas tardías, roles, escritorio/celular, documentación existente y guion de demo.",
+        "depends_on": [
+          "R08",
+          "R09",
+          "E09"
+        ],
+        "status": "PENDING_IMPLEMENTATION_EXPANDED_SCOPE"
+      }
+    ],
+    "shared_review": [
+      {
+        "id": "H4-J01",
+        "task": "Revisar mecanismos, fuentes y criterios antes de construir o entrenar",
+        "not_evidence_of_personal_review": true
+      },
+      {
+        "id": "H4-J02",
+        "task": "Recorrido real y ensayo conjunto de presentación con límites claros",
+        "not_evidence_of_personal_review": true
+      }
+    ]
+  },
+  "teacher_traceability": {
+    "H4-I01": {
+      "rules": [
+        "SC04",
+        "SC07",
+        "SC16",
+        "SC17"
+      ],
+      "backend": [
+        "H4-E02",
+        "H4-E05"
+      ],
+      "ross": [
+        "H4-R01",
+        "H4-R03",
+        "H4-R04",
+        "H4-R07",
+        "H4-R08"
+      ]
+    },
+    "H4-I02": {
+      "rules": [
+        "SC03",
+        "SC04",
+        "SC05",
+        "SC06"
+      ],
+      "backend": [
+        "H4-E02",
+        "H4-E05"
+      ],
+      "ross": [
+        "H4-R01",
+        "H4-R02",
+        "H4-R03",
+        "H4-R04",
+        "H4-R07"
+      ]
+    },
+    "H4-I03": {
+      "rules": [
+        "SC09",
+        "SC10",
+        "SC11",
+        "SC12",
+        "SC13",
+        "SC14",
+        "SC15",
+        "SC21"
+      ],
+      "backend": [
+        "H4-E06"
+      ],
+      "ross": [
+        "H4-R01",
+        "H4-R04",
+        "H4-R09"
+      ]
+    },
+    "H4-I04": {
+      "rules": [
+        "SC04",
+        "SC08",
+        "SC10",
+        "SC12"
+      ],
+      "backend": [
+        "H4-E02",
+        "H4-E05",
+        "H4-E06"
+      ],
+      "ross": [
+        "H4-R01",
+        "H4-R04",
+        "H4-R07"
+      ]
+    },
+    "H4-I05": {
+      "rules": [
+        "SC02",
+        "SC03",
+        "SC07",
+        "SC08",
+        "SC14"
+      ],
+      "backend": [
+        "H4-E02",
+        "H4-E03"
+      ],
+      "ross": [
+        "H4-R01",
+        "H4-R04",
+        "H4-R06",
+        "H4-R07"
+      ]
+    },
+    "H4-I06": {
+      "rules": [
+        "SC02",
+        "SC09",
+        "SC11",
+        "SC15",
+        "SC16",
+        "SC19"
+      ],
+      "backend": [
+        "H4-E04",
+        "H4-E05",
+        "H4-E09"
+      ],
+      "ross": [
+        "H4-R03",
+        "H4-R04",
+        "H4-R06",
+        "H4-R10"
+      ]
+    },
+    "H4-I07": {
+      "rules": [
+        "SC16",
+        "SC17",
+        "SC20"
+      ],
+      "backend": [
+        "H4-E05",
+        "H4-E07"
+      ],
+      "ross": [
+        "H4-R07",
+        "H4-R08",
+        "H4-R09"
+      ]
+    },
+    "H4-I08": {
+      "rules": [
+        "SC03",
+        "SC16",
+        "SC19"
+      ],
+      "backend": [
+        "H4-E04",
+        "H4-E08",
+        "H4-E09"
+      ],
+      "ross": [
+        "H4-R01",
+        "H4-R02",
+        "H4-R03",
+        "H4-R06",
+        "H4-R10"
+      ]
+    }
+  }
+}

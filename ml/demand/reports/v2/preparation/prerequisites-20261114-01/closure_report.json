@@ -1,0 +1,130 @@
+{
+  "recorded_at": "2026-11-14T20:41:58.260977+00:00",
+  "all_prerequisites_complete": false,
+  "can_start_final_dataset": false,
+  "advanced_to_v2_04d": false,
+  "technical_work_completed": [
+    "Matriz local de 15 áreas administrativas y fuentes",
+    "Especificación de reglas con tratamiento de faltantes y datos no certificables",
+    "Diccionario de nueve columnas iniciales y siete grupos candidatos",
+    "Diseño inicial de inferencia sin modificar API existente",
+    "Separación V2-09A y V2-09B para resolver dependencia circular",
+    "Pruebas locales y comprobaciones de integridad"
+  ],
+  "remaining": [
+    {
+      "task": "V2-01",
+      "status": "LOCAL_AUDIT_DONE_REVIEW_PENDING",
+      "closure_condition": "Revisión backend por Erika. No se certificó calidad de producción."
+    },
+    {
+      "task": "V2-02",
+      "status": "CODE_AUDIT_DONE_VISUAL_PENDING",
+      "closure_condition": "Recorrido visual completo con fixtures o entorno permitido, sin usar Neon."
+    },
+    {
+      "task": "V2-03",
+      "status": "RULES_SPECIFIED_JOINT_ACCEPTANCE_PENDING",
+      "closure_condition": "Aceptar reglas y tolerancias de error por grupo antes de seleccionar modelos."
+    },
+    {
+      "task": "V2-04",
+      "status": "FINAL_COLUMNS_PENDING",
+      "closure_condition": "Decidir fuente o supuestos sintéticos explícitos para cada variable nueva. Contrato final no aprobado."
+    },
+    {
+      "task": "V2-04B",
+      "status": "REVIEW_COMPLETE_THREE_SOURCES_BLOCKED",
+      "closure_condition": "No perfilar automotive, Favorita o M5 hasta resolver sus condiciones registradas."
+    },
+    {
+      "task": "V2-04C",
+      "status": "TWO_AUTHORIZED_PROFILES_COMPLETE",
+      "closure_condition": "Alcance autorizado Monash/UCI completado. Las otras fuentes no se analizaron."
+    },
+    {
+      "task": "V2-09A",
+      "status": "SPECIFICATION_TESTED_JOINT_ACCEPTANCE_PENDING",
+      "closure_condition": "Aceptar contrato inicial con backend. No se desplegó ni implementó API V2."
+    },
+    {
+      "task": "V2-09B",
+      "status": "DEFERRED_UNTIL_V2_08",
+      "closure_condition": "Pruebas del artefacto posterior a selección. No es prerrequisito de generación."
+    }
+  ],
+  "tests": {
+    "python": {
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0,
+      "log": "ml/demand/tmp/prerequisites-20261114-01/python-tests.txt"
+    },
+    "frontend": {
+      "passed": 28,
+      "failed": 0,
+      "log": "ml/demand/tmp/prerequisites-20261114-01/frontend-tests.txt"
+    },
+    "backend": {
+      "passed": 8,
+      "failed": 0,
+      "log": "ml/demand/tmp/prerequisites-20261114-01/backend-tests-retry.txt"
+    },
+    "total_final_passed": 69,
+    "backend_typecheck": "PASS",
+    "frontend_typecheck": "PASS",
+    "initial_backend_attempt": "EACCES localhost, repeated successfully",
+    "scope": "Selección local, no toda la plataforma ni integración contra BD"
+  },
+  "integrity": {
+    "protected": {
+      "count": 44,
+      "changed": [],
+      "unchanged": true
+    },
+    "raw": {
+      "count": 136,
+      "changed": [],
+      "unchanged": true
+    },
+    "previous_reports": {
+      "count": 6,
+      "changed": [],
+      "unchanged": true
+    }
+  },
+  "raw_inventory_unchanged": true,
+  "reserved_directories_empty": {
+    "sources/external_curated": true,
+    "data/repuestopro_v2": true,
+    "models/v2": true
+  },
+  "files_created": [
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/tests/test_v2_preparation.py",
+    "ml/demand/reports/v2/preparation/prerequisites-20261114-01/admin_source_audit.json",
+    "ml/demand/reports/v2/preparation/prerequisites-20261114-01/closure_report.json"
+  ],
+  "files_modified": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md"
+  ],
+  "constraints": {
+    "new_markdown": false,
+    "production_code_changed": false,
+    "neon_used": false,
+    "prisma_changed": false,
+    "migrations": false,
+    "trained": false,
+    "dataset_created": false,
+    "raw_transformed": false,
+    "git_commands": false
+  },
+  "next_action": "Cerrar aceptación de reglas, contrato y variables, más el recorrido visual aislado, antes de declarar todos los prerrequisitos completos.",
+  "completed_tasks": [
+    {
+      "task": "V2-04A",
+      "status": "TECHNICAL_REGISTRATION_COMPLETE",
+      "closure_condition": "Registro local cerrado. La adquisición desconocida se conserva como UNKNOWN y esto no aprueba fuentes bloqueadas."
+    }
+  ]
+}

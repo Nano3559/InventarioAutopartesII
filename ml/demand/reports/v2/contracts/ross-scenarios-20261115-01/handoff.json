@@ -1,0 +1,187 @@
+{
+  "handoff_version": "ross-scenarios-1.0.0",
+  "owner": "Ross",
+  "recorded_at": "2026-11-15T22:51:36+00:00",
+  "scope": "Dataset and frontend only. No Erika backend implementation claimed.",
+  "tasks": {
+    "H4-R01": {
+      "state": "COMPLETE_DESIGN",
+      "evidence": "v2/contracts/dataset_dictionary.scenarios.v1.json"
+    },
+    "H4-R02": {
+      "state": "COMPLETE_ACADEMIC_SYNTHETIC_SCOPE",
+      "evidence": "v2/contracts/scenario_sources.v1.json"
+    },
+    "H4-R03": {
+      "state": "IMPLEMENTED_ACADEMIC_MECHANISM_PENDING_JOINT_SEMANTIC_ACCEPTANCE",
+      "evidence": "v2/contracts/generator.scenarios.v1.json"
+    },
+    "H4-R04": {
+      "state": "IMPLEMENTED_GENERATOR_AND_CASE_SPECIFICATIONS",
+      "evidence": "v2/generate_scenarios_v1.py",
+      "pending": "Actual backend responses for ambiguous/invalid cases belong to E02/E05/E09. Specifications are not executions."
+    },
+    "H4-R05": {
+      "state": "COMPLETE_NEW_BUILD_NOT_ACTIVE",
+      "evidence": "data/repuestopro_v2/3.0.0/scenarios-20261115-02"
+    },
+    "H4-R06": {
+      "state": "COMPLETE_STRUCTURAL_HANDOFF_PENDING_BACKEND_ACCEPTANCE",
+      "evidence": "data/repuestopro_v2/3.0.0/scenarios-20261115-02/validation.json"
+    },
+    "H4-R07": {
+      "state": "IMPLEMENTED_CONTRACT_TESTED_PENDING_ERIKA_API",
+      "evidence": "frontend/src/components/DemandScenarioPanel.tsx"
+    },
+    "H4-R08": {
+      "state": "IMPLEMENTED_COMPARISON_EXPORT_PENDING_REAL_API",
+      "evidence": "frontend/src/components/DemandScenarioPanel.tsx"
+    },
+    "H4-R09": {
+      "state": "IMPLEMENTED_REPLENISHMENT_VIEW_PENDING_REAL_ENGINE",
+      "evidence": "frontend/src/components/DemandScenarioPanel.tsx"
+    },
+    "H4-R10": {
+      "state": "PARTIAL_LOCAL_TESTS_VISUAL_FIXTURES_PASSED_REAL_INTEGRATION_PENDING",
+      "evidence": "frontend/src/components/DemandScenarioPanel.test.tsx"
+    }
+  },
+  "dataset": {
+    "version": "3.0.0",
+    "build_id": "scenarios-20261115-02",
+    "path": "data/repuestopro_v2/3.0.0/scenarios-20261115-02",
+    "manifest_sha256": "4f653afe8a35d38b78cd5cea682aad6e76da0144a61c6cfdeeaabd85a3d4ed49",
+    "checksums_sha256": "292e24dfe0af400c03632a496880e852a0e8073df52ad70762b55507ba89822b",
+    "rows": 7056,
+    "paired_families": 3528,
+    "products": 56,
+    "stores": [
+      5,
+      6,
+      7
+    ],
+    "calendar": [
+      "2026-10",
+      "2028-09"
+    ],
+    "splits": {
+      "TRAIN": 5040,
+      "VALIDATION": 1008,
+      "TEST": 1008
+    },
+    "independent_worlds": true,
+    "features": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId",
+      "precio_menor_base_corte_bs",
+      "precio_mayor_base_corte_bs",
+      "precio_menor_plan_ponderado_bs",
+      "precio_mayor_plan_ponderado_bs",
+      "variacion_precio_menor_plan_ponderada",
+      "variacion_precio_mayor_plan_ponderada",
+      "dias_vigencia_nuevo_precio_plan",
+      "stock_vendible_al_corte_unidades",
+      "compromisos_por_menor_horizonte_unidades",
+      "compromisos_por_mayor_horizonte_unidades",
+      "reservas_horizonte_unidades",
+      "reservas_posteriores_unidades",
+      "entradas_plan_horizonte_unidades",
+      "dias_hasta_primera_entrada_plan",
+      "plazo_proveedor_plan_dias",
+      "plazo_interno_plan_dias"
+    ],
+    "target": "target_ventas_mes",
+    "test_status": "NEW_SEALED_NOT_SCORED",
+    "ready_for_model_activation": false,
+    "ready_for_preprocessing_review": true,
+    "schema_note": "schema.json is the materialized column dictionary, not a JSON Schema validator for CSV bytes. It binds and retains the original R01 design separately.",
+    "effective_sample_note": "7056 paired rows are 3528 families, not 7056 independent observations. Keep variants together. Per-family weighting and grouped diagnostics belong to E04."
+  },
+  "first_build_retained": {
+    "build_id": "scenarios-20261115-01",
+    "status": "NOT_APPROVED_SUPERSEDED_AUDIT_METADATA",
+    "reason": "R01 design flags and canonical registration marker were not suitable as actual build metadata. Rows retained unchanged.",
+    "archived_generator": "versions/generate_scenarios_v1_0_0.py",
+    "archived_recipe": "versions/generator.scenarios.v1_0_0.json"
+  },
+  "pattern_usage": {
+    "monash": "Aggregate occurrence probability, plus explicitly assumed turnover offsets",
+    "m5": "Probability of an observed weekly price change, used as synthetic reference frequency",
+    "uci": "Reviewed reference for order and cancellation semantics, no fitted coefficient in this generator",
+    "favorita": "Reviewed scope and missingness/calendar restrictions, no fitted coefficient in this generator"
+  },
+  "backend_handoff": {
+    "contract": "v2/contracts/scenarios.v1.json",
+    "capabilities_proposal": "v2/contracts/scenario_capabilities.schema.json",
+    "endpoints_implemented": false,
+    "needed": [
+      "E01 capabilities, ADMIN permissions and release/snapshot binding",
+      "E02 SC01-SC21 semantic validation including missing/ambiguous inputs",
+      "E03 trusted scenario snapshots for this new calendar/build",
+      "E04 43-column adapter, feature selection and train/validation comparisons",
+      "E05 and E06 scenario inference and replenishment engine",
+      "E07 preview idempotency and API",
+      "E08 accepted new artifact and a single independent TEST evaluation only after selection",
+      "E09 actual end-to-end tests and joint demo"
+    ]
+  },
+  "frontend_entry": "Administrador > Predicción de ventas > Preparar escenario ampliado",
+  "visual_review": {
+    "type": "LOCAL_FIXTURES_NOT_REAL_API",
+    "desktop": [
+      1280,
+      720
+    ],
+    "mobile": [
+      390,
+      844
+    ],
+    "mobile_measured_client_width": 382,
+    "mobile_measured_document_width": 382,
+    "states": [
+      "price controls and effective date",
+      "PARTIAL with UNSUPPORTED prediction and null replenishment",
+      "unavailable API disables submit"
+    ],
+    "screenshots": [
+      "desktop-fixture.jpg",
+      "mobile-fixture.jpg"
+    ],
+    "initial_block": "Sandbox sockets restricted, solved for local fixture testing. Tailwind and React preamble issues in the temporary harness corrected without changing application configuration."
+  },
+  "no_neon": true,
+  "no_training": true,
+  "no_old_test_repeated": true,
+  "no_new_markdown": true,
+  "no_git": true,
+  "no_100_percent_completion_claim": true,
+  "train_feature_review": "train_feature_review.json",
+  "constant_candidates_exclude_before_fit": [
+    "cobertura_modalidad_mes_anterior",
+    "cobertura_stock_mes_anterior",
+    "reservas_horizonte_unidades",
+    "plazo_interno_plan_dias"
+  ],
+  "remaining_generator_limits": [
+    "Late receipt scenario changes a plan known at cutoff, not an estimated unforeseen-delay distribution.",
+    "Ambiguous and invalid source cases are specifications, not labeled training rows or backend executions.",
+    "The selected release does not estimate real promotion effects or real lost demand.",
+    "Four constant candidates must not be passed blindly into the expanded model.",
+    "Controls and replenishment inputs do not all need to be statistical predictors."
+  ]
+}

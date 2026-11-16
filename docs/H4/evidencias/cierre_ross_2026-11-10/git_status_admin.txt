@@ -1,0 +1,30 @@
+ M backend/src/app.ts
+ M backend/src/modules/dashboard/dashboard.routes.ts
+ M docs/H4/H4_CHECKLIST_VALIDACION_ROSS.md
+ M docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md
+ M docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.csv
+ M docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.md
+ M docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md
+ M frontend/src/App.tsx
+ M frontend/src/components/layout/Sidebar.tsx
+ M frontend/src/pages/DashboardPage.tsx
+ M ml/demand/README.md
+ M ml/demand/model_comparison.py
+ M ml/demand/pair_contexts.py
+ M ml/demand/streamlit_app.py
+ M ml/demand/tests/test_pair_contexts.py
+ M ml/demand/ui_analysis.py
+ M ml/demand/ui_panels.py
+?? backend/src/modules/dashboard/dashboard.test.ts
+?? backend/src/modules/dashboard/dashboardFailure.ts
+?? backend/src/modules/predictions/
+?? docs/H4/evidencias/
+?? frontend/src/pages/PredictionsPage.tsx
+?? frontend/src/pages/__tests__/DashboardPage.test.tsx
+?? frontend/src/pages/__tests__/PredictionsPage.test.tsx
+?? frontend/src/utils/dashboardError.test.ts
+?? frontend/src/utils/dashboardError.ts
+?? ml/demand/admin_prediction.py
+?? ml/demand/decisions/31f4b162994f4df7bcf15cbe9e011414/
+?? ml/demand/tests/test_admin_prediction.py
+?? ml/demand/tests/test_ross_closure.py

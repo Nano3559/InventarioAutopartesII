@@ -1,0 +1,188 @@
+{
+  "state": "PRODUCTION_RECONCILED_WITH_DOCUMENTED_LEGACY_EXCEPTIONS",
+  "recorded_at": "2026-11-16T01:16:53.495748+00:00",
+  "local_date": "2026-11-15 America/La_Paz",
+  "prisma_cli": "5.22.0",
+  "prisma_client": "5.22.0",
+  "local_migration_count": 10,
+  "previous_applied_distinct": 4,
+  "pending_before": 6,
+  "baseline_resolved": "20260909_close_schema_drift",
+  "baseline_approval": "legacy-baseline-approval.json",
+  "baseline_effect_checks": 87,
+  "backfills": [],
+  "test_branch": {
+    "project_id": "royal-math-51991735",
+    "production_branch_id": "br-curly-butterfly-ayczan0b",
+    "test_branch_id": "br-cool-cake-ay7cr6sc",
+    "test_branch_name": "pre-h4-migration-reconcile-20261115",
+    "test_host": "ep-proud-hall-ay0tq2yk.c-5.us-east-2.aws.neon.tech",
+    "auto_delete": "NEVER",
+    "clone": "DATA_AND_SCHEMA"
+  },
+  "recovery": {
+    "project_id": "royal-math-51991735",
+    "production_branch_id": "br-curly-butterfly-ayczan0b",
+    "backup_branch_id": "br-withered-rain-aylwpqtb",
+    "backup_branch_name": "pre-h4-production-backup-20261115",
+    "created_at": "2026-11-15T21:09:52-04:00",
+    "clone": "DATA_AND_SCHEMA",
+    "auto_delete": "NEVER",
+    "ui_verified": true
+  },
+  "deployed_migrations": [
+    "20260909b_add_etapa8_indexes",
+    "20260928_request_abierta_unica",
+    "20260929_reconcile_production_schema",
+    "20261103_physical_stock_and_returns",
+    "20261103b_commercial_controls"
+  ],
+  "final_pending": 0,
+  "expected_legacy_drift": [
+    "Product.quality retained by explicit approval, nullable, zero non-null values",
+    "RequestHistory_userId_fkey pre-existing extra protective FK retained"
+  ],
+  "unexplained_drift": [],
+  "branch_tests": {
+    "passed": 58,
+    "failed": 0,
+    "fixtures": "Rolled back, explicit IDs, no sequence allocations"
+  },
+  "production_smoke": {
+    "passed": 46,
+    "failed": 0,
+    "writes": false,
+    "real_active_backend_readiness_http": 200
+  },
+  "original_tables_checked": 20,
+  "original_row_or_value_differences": [],
+  "counts": {
+    "AuditLog": 7,
+    "Category": 7,
+    "Cost": 113,
+    "Customer": 10,
+    "Importer": 10,
+    "Inventory": 414,
+    "Location": 7,
+    "Movement": 41,
+    "Notification": 59,
+    "Payment": 247,
+    "Product": 62,
+    "ProductImporter": 83,
+    "ProductRequest": 43,
+    "PurchaseInvoice": 0,
+    "ReceivingAccount": 0,
+    "RequestHistory": 59,
+    "Return": 12,
+    "RoleModel": 3,
+    "Sale": 247,
+    "SaleItem": 520,
+    "Supplier": 8,
+    "User": 6
+  },
+  "protected_integrity": {
+    "reference": "tmp/ross-scenarios-20261115-01/before.json",
+    "compared": 611,
+    "unchanged": 610,
+    "changes": [
+      "v2/contracts/preparation.v2.json"
+    ],
+    "pre_existing_active_metadata_change": "v2/contracts/preparation.v2.json",
+    "dataset_build_checksums": [
+      {
+        "build": "scenarios-20261115-01",
+        "files": 22,
+        "errors": []
+      },
+      {
+        "build": "scenarios-20261115-02",
+        "files": 22,
+        "errors": []
+      }
+    ],
+    "no_datasets_raw_models_modified_this_task": true
+  },
+  "warnings": [
+    "First isolated resolve failed with generic Schema engine error and no ledger write. Controlled retry with connect_timeout=30 succeeded. Original failure retained.",
+    "Earlier SQL hash guard stopped before DB work for LF/CRLF metadata mismatch. Hash computed on actual bytes, SQL unchanged.",
+    "Production dashboard latency 17–18 seconds observed. Performance optimization remains separate.",
+    "Prisma upgrade notice ignored. No upgrade."
+  ],
+  "not_complete_h4": [
+    "Expanded scenario API and compatible model remain backend tasks. Frozen 2.2.0 does not learn prices or FX from editable controls.",
+    "Visual review with fixtures. Production handlers tested with real data, not an authenticated end-user browser session.",
+    "Legacy business records remain uncertified and were not repaired automatically."
+  ],
+  "no_training": true,
+  "no_ml_test_repeated": true,
+  "no_dataset_changes": true,
+  "no_raw_changes": true,
+  "no_existing_migration_changes": true,
+  "no_new_markdown": true,
+  "no_migrate_dev_db_push_reset": true,
+  "no_git_commit_push_app_deploy": true,
+  "git_status": "NOT_EXECUTED: user restriction",
+  "git_diff_stat": "NOT_EXECUTED: user restriction",
+  "evidence_files": [
+    "baseline-procedure.json",
+    "branch-after.json",
+    "branch-aftertests.json",
+    "branch-baseline_completed.json",
+    "branch-before.json",
+    "branch-completion-result.json",
+    "branch-deploy-retry1-result.json",
+    "branch-diff-after.sql",
+    "branch-diff-before.sql",
+    "branch-resolve-result.json",
+    "branch-resolve-retry1-result.json",
+    "branch-resolve_check.json",
+    "branch-status-after.txt",
+    "branch-status-before.txt",
+    "branch-tests.json",
+    "complete-legacy-baseline.sql",
+    "environment.json",
+    "legacy-baseline-approval.json",
+    "legacy-effects-audit-types.json",
+    "legacy-effects-audit.json",
+    "migration-inventory.json",
+    "production-baseline_completed.json",
+    "production-before.json",
+    "production-complete-result.json",
+    "production-deploy-result.json",
+    "production-diff-final.sql",
+    "production-final.json",
+    "production-legacy-effects-audit-types.json",
+    "production-read-smoke.json",
+    "production-recovery-created.jpg",
+    "production-recovery.json",
+    "production-relations.json",
+    "production-resolve-result.json",
+    "production-revalidated.json",
+    "production-status-final.txt",
+    "protected-integrity-final.json",
+    "review-waiting-decision.json",
+    "review.json",
+    "test-branch-created.jpg",
+    "test-branch-prepared.jpg"
+  ],
+  "production_relationship_integrity": {
+    "transaction_read_only": true,
+    "foreign_keys": 33,
+    "orphans": [],
+    "unvalidated": [],
+    "constraints_checked": 37
+  },
+  "files_modified_this_turn": [
+    "docs/H3/cierre_saneamiento/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/README.md",
+    "ml/demand/reports/v2/closure/neon-reconcile-20261115-01/review.json"
+  ],
+  "new_files_scope": [
+    "ml/demand/tmp/neon-reconcile-20261115-01/ controlled helpers and sanitized results",
+    "ml/demand/reports/v2/closure/neon-reconcile-20261115-01/ evidence and recovery screenshot"
+  ],
+  "application_code_modified_this_turn": false
+}

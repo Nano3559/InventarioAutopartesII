@@ -1,0 +1,22 @@
+{
+  "reference": "tmp/ross-scenarios-20261115-01/before.json",
+  "compared": 611,
+  "unchanged": 610,
+  "changes": [
+    "v2/contracts/preparation.v2.json"
+  ],
+  "pre_existing_active_metadata_change": "v2/contracts/preparation.v2.json",
+  "dataset_build_checksums": [
+    {
+      "build": "scenarios-20261115-01",
+      "files": 22,
+      "errors": []
+    },
+    {
+      "build": "scenarios-20261115-02",
+      "files": 22,
+      "errors": []
+    }
+  ],
+  "no_datasets_raw_models_modified_this_task": true
+}

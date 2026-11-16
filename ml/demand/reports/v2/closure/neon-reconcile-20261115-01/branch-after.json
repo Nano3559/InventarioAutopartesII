@@ -1,0 +1,3626 @@
+{
+  "target": "branch",
+  "branch_id": "br-cool-cake-ay7cr6sc",
+  "recorded_at": "2026-11-16T01:07:06.457Z",
+  "transaction_read_only": [
+    {
+      "transaction_read_only": "on"
+    }
+  ],
+  "columns": [
+    {
+      "table_name": "AuditLog",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"AuditLog_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "action",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "targetType",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "targetId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "oldValue",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "newValue",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Category",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Category_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Category",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Category",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Category",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Cost_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "supplierId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "invoiceUrl",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "exchangeRate",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "costPrice",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "percentage",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "purchaseInvoiceId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Customer_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "nit",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "phone",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Importer_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "phone",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "email",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "address",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "city",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "logo",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "description",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Inventory_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "locationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "stock",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "minStock",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "1"
+    },
+    {
+      "table_name": "Location",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Location_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Location",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Location",
+      "column_name": "type",
+      "data_type": "USER-DEFINED",
+      "udt_name": "LocationType",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Location",
+      "column_name": "address",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Location",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Location",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Movement_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "fromLocationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "toLocationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "quantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "observation",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "requestId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "status",
+      "data_type": "USER-DEFINED",
+      "udt_name": "MovementStatus",
+      "is_nullable": "NO",
+      "column_default": "'LEGACY'::\"MovementStatus\""
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "receivedQuantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "receivedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Notification_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "title",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "message",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "type",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": "'INFO'::text"
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "read",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "linkUrl",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Payment_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "saleId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "method",
+      "data_type": "USER-DEFINED",
+      "udt_name": "PaymentMethod",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "amount",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "receivingAccountId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "bankReference",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "bankOperationDate",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "verifiedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "verifiedById",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Product_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Product",
+      "column_name": "itemCode",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "manufacturer",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "brand",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "model",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "year",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "detail",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "oemCode",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "factoryCode",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "image",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "price1",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "price2",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "wholesalePrice",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "cost",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "categoryId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Product",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "quality",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "detalles",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductImporter",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"ProductImporter_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "ProductImporter",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductImporter",
+      "column_name": "importerId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"ProductRequest_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "quantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "requestedById",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "locationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "status",
+      "data_type": "USER-DEFINED",
+      "udt_name": "RequestStatus",
+      "is_nullable": "NO",
+      "column_default": "'PENDIENTE'::\"RequestStatus\""
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "note",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "expectedDate",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "PurchaseInvoice",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"PurchaseInvoice_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "PurchaseInvoice",
+      "column_name": "supplierId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "PurchaseInvoice",
+      "column_name": "documentIdentity",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "PurchaseInvoice",
+      "column_name": "identityKey",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "PurchaseInvoice",
+      "column_name": "contentHash",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "PurchaseInvoice",
+      "column_name": "result",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "PurchaseInvoice",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "ReceivingAccount",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"ReceivingAccount_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "ReceivingAccount",
+      "column_name": "code",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ReceivingAccount",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ReceivingAccount",
+      "column_name": "active",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "is_nullable": "NO",
+      "column_default": "true"
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"RequestHistory_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "requestId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "previousStatus",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "newStatus",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "userRole",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Return_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "saleId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "reason",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "quantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "amount",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "method",
+      "data_type": "USER-DEFINED",
+      "udt_name": "PaymentMethod",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "disposition",
+      "data_type": "USER-DEFINED",
+      "udt_name": "ReturnDisposition",
+      "is_nullable": "NO",
+      "column_default": "'LEGACY'::\"ReturnDisposition\""
+    },
+    {
+      "table_name": "Return",
+      "column_name": "restockedQuantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "discardedQuantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "debtReduction",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "refundAmount",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "inspectedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"RoleModel_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "permissions",
+      "data_type": "ARRAY",
+      "udt_name": "_text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "columnConfig",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Sale_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "saleDate",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "total",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "type",
+      "data_type": "USER-DEFINED",
+      "udt_name": "SaleType",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "locationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "customerId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "seller",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "paraQuien",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "lugarEntrega",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "datosFactura",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "formaPago",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "status",
+      "data_type": "USER-DEFINED",
+      "udt_name": "SaleStatus",
+      "is_nullable": "NO",
+      "column_default": "'CONFIRMED'::\"SaleStatus\""
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "voidReason",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "voidedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "voidedById",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"SaleItem_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "saleId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "quantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "unitPrice",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "subtotal",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Supplier_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "nit",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "phone",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"User_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "User",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "email",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "password",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "roleId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "locationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "User",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "columnPrefs",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "id",
+      "data_type": "character varying",
+      "udt_name": "varchar",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "checksum",
+      "data_type": "character varying",
+      "udt_name": "varchar",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "finished_at",
+      "data_type": "timestamp with time zone",
+      "udt_name": "timestamptz",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "migration_name",
+      "data_type": "character varying",
+      "udt_name": "varchar",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "logs",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "rolled_back_at",
+      "data_type": "timestamp with time zone",
+      "udt_name": "timestamptz",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "started_at",
+      "data_type": "timestamp with time zone",
+      "udt_name": "timestamptz",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "applied_steps_count",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "0"
+    }
+  ],
+  "indexes": [
+    {
+      "tablename": "AuditLog",
+      "indexname": "AuditLog_createdAt_idx",
+      "indexdef": "CREATE INDEX \"AuditLog_createdAt_idx\" ON public.\"AuditLog\" USING btree (\"createdAt\" DESC)"
+    },
+    {
+      "tablename": "AuditLog",
+      "indexname": "AuditLog_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"AuditLog_pkey\" ON public.\"AuditLog\" USING btree (id)"
+    },
+    {
+      "tablename": "AuditLog",
+      "indexname": "AuditLog_userId_idx",
+      "indexdef": "CREATE INDEX \"AuditLog_userId_idx\" ON public.\"AuditLog\" USING btree (\"userId\")"
+    },
+    {
+      "tablename": "Category",
+      "indexname": "Category_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Category_pkey\" ON public.\"Category\" USING btree (id)"
+    },
+    {
+      "tablename": "Cost",
+      "indexname": "Cost_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Cost_pkey\" ON public.\"Cost\" USING btree (id)"
+    },
+    {
+      "tablename": "Cost",
+      "indexname": "Cost_productId_idx",
+      "indexdef": "CREATE INDEX \"Cost_productId_idx\" ON public.\"Cost\" USING btree (\"productId\")"
+    },
+    {
+      "tablename": "Cost",
+      "indexname": "Cost_supplierId_idx",
+      "indexdef": "CREATE INDEX \"Cost_supplierId_idx\" ON public.\"Cost\" USING btree (\"supplierId\")"
+    },
+    {
+      "tablename": "Customer",
+      "indexname": "Customer_nit_key",
+      "indexdef": "CREATE UNIQUE INDEX \"Customer_nit_key\" ON public.\"Customer\" USING btree (nit)"
+    },
+    {
+      "tablename": "Customer",
+      "indexname": "Customer_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Customer_pkey\" ON public.\"Customer\" USING btree (id)"
+    },
+    {
+      "tablename": "Importer",
+      "indexname": "Importer_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Importer_pkey\" ON public.\"Importer\" USING btree (id)"
+    },
+    {
+      "tablename": "Inventory",
+      "indexname": "Inventory_locationId_idx",
+      "indexdef": "CREATE INDEX \"Inventory_locationId_idx\" ON public.\"Inventory\" USING btree (\"locationId\")"
+    },
+    {
+      "tablename": "Inventory",
+      "indexname": "Inventory_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Inventory_pkey\" ON public.\"Inventory\" USING btree (id)"
+    },
+    {
+      "tablename": "Inventory",
+      "indexname": "Inventory_productId_locationId_key",
+      "indexdef": "CREATE UNIQUE INDEX \"Inventory_productId_locationId_key\" ON public.\"Inventory\" USING btree (\"productId\", \"locationId\")"
+    },
+    {
+      "tablename": "Location",
+      "indexname": "Location_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Location_pkey\" ON public.\"Location\" USING btree (id)"
+    },
+    {
+      "tablename": "Movement",
+      "indexname": "Movement_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Movement_pkey\" ON public.\"Movement\" USING btree (id)"
+    },
+    {
+      "tablename": "Movement",
+      "indexname": "Movement_productId_idx",
+      "indexdef": "CREATE INDEX \"Movement_productId_idx\" ON public.\"Movement\" USING btree (\"productId\")"
+    },
+    {
+      "tablename": "Movement",
+      "indexname": "Movement_status_date_idx",
+      "indexdef": "CREATE INDEX \"Movement_status_date_idx\" ON public.\"Movement\" USING btree (status, date)"
+    },
+    {
+      "tablename": "Movement",
+      "indexname": "Movement_toLocationId_idx",
+      "indexdef": "CREATE INDEX \"Movement_toLocationId_idx\" ON public.\"Movement\" USING btree (\"toLocationId\")"
+    },
+    {
+      "tablename": "Notification",
+      "indexname": "Notification_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Notification_pkey\" ON public.\"Notification\" USING btree (id)"
+    },
+    {
+      "tablename": "Notification",
+      "indexname": "Notification_userId_read_idx",
+      "indexdef": "CREATE INDEX \"Notification_userId_read_idx\" ON public.\"Notification\" USING btree (\"userId\", read)"
+    },
+    {
+      "tablename": "Payment",
+      "indexname": "Payment_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Payment_pkey\" ON public.\"Payment\" USING btree (id)"
+    },
+    {
+      "tablename": "Payment",
+      "indexname": "Payment_receivingAccountId_bankReference_bankOperationDate_key",
+      "indexdef": "CREATE UNIQUE INDEX \"Payment_receivingAccountId_bankReference_bankOperationDate_key\" ON public.\"Payment\" USING btree (\"receivingAccountId\", \"bankReference\", \"bankOperationDate\")"
+    },
+    {
+      "tablename": "Payment",
+      "indexname": "Payment_saleId_idx",
+      "indexdef": "CREATE INDEX \"Payment_saleId_idx\" ON public.\"Payment\" USING btree (\"saleId\")"
+    },
+    {
+      "tablename": "Product",
+      "indexname": "Product_itemCode_key",
+      "indexdef": "CREATE UNIQUE INDEX \"Product_itemCode_key\" ON public.\"Product\" USING btree (\"itemCode\")"
+    },
+    {
+      "tablename": "Product",
+      "indexname": "Product_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Product_pkey\" ON public.\"Product\" USING btree (id)"
+    },
+    {
+      "tablename": "ProductImporter",
+      "indexname": "ProductImporter_importerId_idx",
+      "indexdef": "CREATE INDEX \"ProductImporter_importerId_idx\" ON public.\"ProductImporter\" USING btree (\"importerId\")"
+    },
+    {
+      "tablename": "ProductImporter",
+      "indexname": "ProductImporter_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"ProductImporter_pkey\" ON public.\"ProductImporter\" USING btree (id)"
+    },
+    {
+      "tablename": "ProductImporter",
+      "indexname": "ProductImporter_productId_importerId_key",
+      "indexdef": "CREATE UNIQUE INDEX \"ProductImporter_productId_importerId_key\" ON public.\"ProductImporter\" USING btree (\"productId\", \"importerId\")"
+    },
+    {
+      "tablename": "ProductRequest",
+      "indexname": "ProductRequest_locationId_idx",
+      "indexdef": "CREATE INDEX \"ProductRequest_locationId_idx\" ON public.\"ProductRequest\" USING btree (\"locationId\")"
+    },
+    {
+      "tablename": "ProductRequest",
+      "indexname": "ProductRequest_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"ProductRequest_pkey\" ON public.\"ProductRequest\" USING btree (id)"
+    },
+    {
+      "tablename": "ProductRequest",
+      "indexname": "ProductRequest_requestedById_idx",
+      "indexdef": "CREATE INDEX \"ProductRequest_requestedById_idx\" ON public.\"ProductRequest\" USING btree (\"requestedById\")"
+    },
+    {
+      "tablename": "ProductRequest",
+      "indexname": "ProductRequest_solicitud_abierta_unica",
+      "indexdef": "CREATE UNIQUE INDEX \"ProductRequest_solicitud_abierta_unica\" ON public.\"ProductRequest\" USING btree (\"productId\", \"locationId\") WHERE (status = ANY (ARRAY['PENDIENTE'::\"RequestStatus\", 'RECIBIDO_POR_INVENTARIO'::\"RequestStatus\", 'PREPARANDO'::\"RequestStatus\", 'ENTREGADO'::\"RequestStatus\"]))"
+    },
+    {
+      "tablename": "ProductRequest",
+      "indexname": "ProductRequest_status_expectedDate_idx",
+      "indexdef": "CREATE INDEX \"ProductRequest_status_expectedDate_idx\" ON public.\"ProductRequest\" USING btree (status, \"expectedDate\")"
+    },
+    {
+      "tablename": "PurchaseInvoice",
+      "indexname": "PurchaseInvoice_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"PurchaseInvoice_pkey\" ON public.\"PurchaseInvoice\" USING btree (id)"
+    },
+    {
+      "tablename": "PurchaseInvoice",
+      "indexname": "PurchaseInvoice_supplierId_identityKey_key",
+      "indexdef": "CREATE UNIQUE INDEX \"PurchaseInvoice_supplierId_identityKey_key\" ON public.\"PurchaseInvoice\" USING btree (\"supplierId\", \"identityKey\")"
+    },
+    {
+      "tablename": "ReceivingAccount",
+      "indexname": "ReceivingAccount_code_key",
+      "indexdef": "CREATE UNIQUE INDEX \"ReceivingAccount_code_key\" ON public.\"ReceivingAccount\" USING btree (code)"
+    },
+    {
+      "tablename": "ReceivingAccount",
+      "indexname": "ReceivingAccount_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"ReceivingAccount_pkey\" ON public.\"ReceivingAccount\" USING btree (id)"
+    },
+    {
+      "tablename": "RequestHistory",
+      "indexname": "RequestHistory_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"RequestHistory_pkey\" ON public.\"RequestHistory\" USING btree (id)"
+    },
+    {
+      "tablename": "RequestHistory",
+      "indexname": "RequestHistory_requestId_idx",
+      "indexdef": "CREATE INDEX \"RequestHistory_requestId_idx\" ON public.\"RequestHistory\" USING btree (\"requestId\")"
+    },
+    {
+      "tablename": "Return",
+      "indexname": "Return_disposition_date_idx",
+      "indexdef": "CREATE INDEX \"Return_disposition_date_idx\" ON public.\"Return\" USING btree (disposition, date)"
+    },
+    {
+      "tablename": "Return",
+      "indexname": "Return_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Return_pkey\" ON public.\"Return\" USING btree (id)"
+    },
+    {
+      "tablename": "Return",
+      "indexname": "Return_productId_idx",
+      "indexdef": "CREATE INDEX \"Return_productId_idx\" ON public.\"Return\" USING btree (\"productId\")"
+    },
+    {
+      "tablename": "Return",
+      "indexname": "Return_saleId_idx",
+      "indexdef": "CREATE INDEX \"Return_saleId_idx\" ON public.\"Return\" USING btree (\"saleId\")"
+    },
+    {
+      "tablename": "RoleModel",
+      "indexname": "RoleModel_name_key",
+      "indexdef": "CREATE UNIQUE INDEX \"RoleModel_name_key\" ON public.\"RoleModel\" USING btree (name)"
+    },
+    {
+      "tablename": "RoleModel",
+      "indexname": "RoleModel_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"RoleModel_pkey\" ON public.\"RoleModel\" USING btree (id)"
+    },
+    {
+      "tablename": "Sale",
+      "indexname": "Sale_locationId_saleDate_idx",
+      "indexdef": "CREATE INDEX \"Sale_locationId_saleDate_idx\" ON public.\"Sale\" USING btree (\"locationId\", \"saleDate\" DESC)"
+    },
+    {
+      "tablename": "Sale",
+      "indexname": "Sale_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Sale_pkey\" ON public.\"Sale\" USING btree (id)"
+    },
+    {
+      "tablename": "Sale",
+      "indexname": "Sale_userId_idx",
+      "indexdef": "CREATE INDEX \"Sale_userId_idx\" ON public.\"Sale\" USING btree (\"userId\")"
+    },
+    {
+      "tablename": "SaleItem",
+      "indexname": "SaleItem_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"SaleItem_pkey\" ON public.\"SaleItem\" USING btree (id)"
+    },
+    {
+      "tablename": "SaleItem",
+      "indexname": "SaleItem_productId_idx",
+      "indexdef": "CREATE INDEX \"SaleItem_productId_idx\" ON public.\"SaleItem\" USING btree (\"productId\")"
+    },
+    {
+      "tablename": "Supplier",
+      "indexname": "Supplier_nit_key",
+      "indexdef": "CREATE UNIQUE INDEX \"Supplier_nit_key\" ON public.\"Supplier\" USING btree (nit)"
+    },
+    {
+      "tablename": "Supplier",
+      "indexname": "Supplier_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"Supplier_pkey\" ON public.\"Supplier\" USING btree (id)"
+    },
+    {
+      "tablename": "User",
+      "indexname": "User_email_key",
+      "indexdef": "CREATE UNIQUE INDEX \"User_email_key\" ON public.\"User\" USING btree (email)"
+    },
+    {
+      "tablename": "User",
+      "indexname": "User_pkey",
+      "indexdef": "CREATE UNIQUE INDEX \"User_pkey\" ON public.\"User\" USING btree (id)"
+    },
+    {
+      "tablename": "_prisma_migrations",
+      "indexname": "_prisma_migrations_pkey",
+      "indexdef": "CREATE UNIQUE INDEX _prisma_migrations_pkey ON public._prisma_migrations USING btree (id)"
+    }
+  ],
+  "constraints": [
+    {
+      "table_name": "\"AuditLog\"",
+      "conname": "AuditLog_action_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL action"
+    },
+    {
+      "table_name": "\"AuditLog\"",
+      "conname": "AuditLog_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"AuditLog\"",
+      "conname": "AuditLog_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"AuditLog\"",
+      "conname": "AuditLog_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"AuditLog\"",
+      "conname": "AuditLog_targetType_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"targetType\""
+    },
+    {
+      "table_name": "\"AuditLog\"",
+      "conname": "AuditLog_userId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"userId\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"AuditLog\"",
+      "conname": "AuditLog_userId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"userId\""
+    },
+    {
+      "table_name": "\"Category\"",
+      "conname": "Category_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Category\"",
+      "conname": "Category_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Category\"",
+      "conname": "Category_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"Category\"",
+      "conname": "Category_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Category\"",
+      "conname": "Category_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_costPrice_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"costPrice\""
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_date_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL date"
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_productId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"productId\") REFERENCES \"Product\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_productId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"productId\""
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_purchaseInvoiceId_fkey",
+      "contype": "f",
+      "confdeltype": "n",
+      "definition": "FOREIGN KEY (\"purchaseInvoiceId\") REFERENCES \"PurchaseInvoice\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_supplierId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"supplierId\") REFERENCES \"Supplier\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_supplierId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"supplierId\""
+    },
+    {
+      "table_name": "\"Cost\"",
+      "conname": "Cost_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"Customer\"",
+      "conname": "Customer_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Customer\"",
+      "conname": "Customer_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Customer\"",
+      "conname": "Customer_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"Customer\"",
+      "conname": "Customer_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Customer\"",
+      "conname": "Customer_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"Importer\"",
+      "conname": "Importer_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Importer\"",
+      "conname": "Importer_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Importer\"",
+      "conname": "Importer_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"Importer\"",
+      "conname": "Importer_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Importer\"",
+      "conname": "Importer_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"Inventory\"",
+      "conname": "Inventory_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Inventory\"",
+      "conname": "Inventory_locationId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"locationId\") REFERENCES \"Location\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Inventory\"",
+      "conname": "Inventory_locationId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"locationId\""
+    },
+    {
+      "table_name": "\"Inventory\"",
+      "conname": "Inventory_minStock_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"minStock\""
+    },
+    {
+      "table_name": "\"Inventory\"",
+      "conname": "Inventory_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Inventory\"",
+      "conname": "Inventory_productId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"productId\") REFERENCES \"Product\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Inventory\"",
+      "conname": "Inventory_productId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"productId\""
+    },
+    {
+      "table_name": "\"Inventory\"",
+      "conname": "Inventory_stock_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL stock"
+    },
+    {
+      "table_name": "\"Location\"",
+      "conname": "Location_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Location\"",
+      "conname": "Location_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Location\"",
+      "conname": "Location_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"Location\"",
+      "conname": "Location_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Location\"",
+      "conname": "Location_type_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL type"
+    },
+    {
+      "table_name": "\"Location\"",
+      "conname": "Location_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_date_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL date"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_fromLocationId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"fromLocationId\") REFERENCES \"Location\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_fromLocationId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"fromLocationId\""
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_productId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"productId\") REFERENCES \"Product\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_productId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"productId\""
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_quantity_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL quantity"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_receivedQuantity_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"receivedQuantity\""
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_received_quantity_valid",
+      "contype": "c",
+      "confdeltype": " ",
+      "definition": "CHECK (((status = 'LEGACY'::\"MovementStatus\") OR ((quantity > 0) AND (\"receivedQuantity\" >= 0) AND (\"receivedQuantity\" <= quantity))))"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_requestId_fkey",
+      "contype": "f",
+      "confdeltype": "n",
+      "definition": "FOREIGN KEY (\"requestId\") REFERENCES \"ProductRequest\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_status_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL status"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_toLocationId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"toLocationId\") REFERENCES \"Location\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_toLocationId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"toLocationId\""
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_userId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"userId\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Movement\"",
+      "conname": "Movement_userId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"userId\""
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_message_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL message"
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_read_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL read"
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_title_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL title"
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_type_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL type"
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_userId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"userId\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Notification\"",
+      "conname": "Notification_userId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"userId\""
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_amount_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL amount"
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_date_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL date"
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_method_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL method"
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_receivingAccountId_fkey",
+      "contype": "f",
+      "confdeltype": "n",
+      "definition": "FOREIGN KEY (\"receivingAccountId\") REFERENCES \"ReceivingAccount\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_saleId_fkey",
+      "contype": "f",
+      "confdeltype": "c",
+      "definition": "FOREIGN KEY (\"saleId\") REFERENCES \"Sale\"(id) ON UPDATE CASCADE ON DELETE CASCADE"
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_saleId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"saleId\""
+    },
+    {
+      "table_name": "\"Payment\"",
+      "conname": "Payment_verifiedById_fkey",
+      "contype": "f",
+      "confdeltype": "n",
+      "definition": "FOREIGN KEY (\"verifiedById\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_brand_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL brand"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_categoryId_fkey",
+      "contype": "f",
+      "confdeltype": "n",
+      "definition": "FOREIGN KEY (\"categoryId\") REFERENCES \"Category\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_itemCode_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"itemCode\""
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_manufacturer_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL manufacturer"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_model_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL model"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_price1_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL price1"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_price2_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL price2"
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"Product\"",
+      "conname": "Product_year_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL year"
+    },
+    {
+      "table_name": "\"ProductImporter\"",
+      "conname": "ProductImporter_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"ProductImporter\"",
+      "conname": "ProductImporter_importerId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"importerId\") REFERENCES \"Importer\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"ProductImporter\"",
+      "conname": "ProductImporter_importerId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"importerId\""
+    },
+    {
+      "table_name": "\"ProductImporter\"",
+      "conname": "ProductImporter_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"ProductImporter\"",
+      "conname": "ProductImporter_productId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"productId\") REFERENCES \"Product\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"ProductImporter\"",
+      "conname": "ProductImporter_productId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"productId\""
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_date_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL date"
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_locationId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"locationId\") REFERENCES \"Location\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_locationId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"locationId\""
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_productId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"productId\") REFERENCES \"Product\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_productId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"productId\""
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_quantity_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL quantity"
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_requestedById_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"requestedById\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_requestedById_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"requestedById\""
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_status_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL status"
+    },
+    {
+      "table_name": "\"ProductRequest\"",
+      "conname": "ProductRequest_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_contentHash_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"contentHash\""
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_documentIdentity_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"documentIdentity\""
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_identityKey_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"identityKey\""
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_result_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL result"
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_supplierId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"supplierId\") REFERENCES \"Supplier\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"PurchaseInvoice\"",
+      "conname": "PurchaseInvoice_supplierId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"supplierId\""
+    },
+    {
+      "table_name": "\"ReceivingAccount\"",
+      "conname": "ReceivingAccount_active_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL active"
+    },
+    {
+      "table_name": "\"ReceivingAccount\"",
+      "conname": "ReceivingAccount_code_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL code"
+    },
+    {
+      "table_name": "\"ReceivingAccount\"",
+      "conname": "ReceivingAccount_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"ReceivingAccount\"",
+      "conname": "ReceivingAccount_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"ReceivingAccount\"",
+      "conname": "ReceivingAccount_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_newStatus_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"newStatus\""
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_requestId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"requestId\") REFERENCES \"ProductRequest\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_requestId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"requestId\""
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_userId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"userId\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_userId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"userId\""
+    },
+    {
+      "table_name": "\"RequestHistory\"",
+      "conname": "RequestHistory_userRole_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"userRole\""
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_amount_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL amount"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_date_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL date"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_debtReduction_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"debtReduction\""
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_discardedQuantity_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"discardedQuantity\""
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_disposition_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL disposition"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_financial_allocation_valid",
+      "contype": "c",
+      "confdeltype": " ",
+      "definition": "CHECK (((disposition = 'LEGACY'::\"ReturnDisposition\") OR ((\"debtReduction\" >= (0)::numeric) AND (\"refundAmount\" >= (0)::numeric) AND ((\"debtReduction\" + \"refundAmount\") = amount))))"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_inspection_quantities_valid",
+      "contype": "c",
+      "confdeltype": " ",
+      "definition": "CHECK (((disposition = 'LEGACY'::\"ReturnDisposition\") OR ((quantity > 0) AND (\"restockedQuantity\" >= 0) AND (\"discardedQuantity\" >= 0) AND ((\"restockedQuantity\" + \"discardedQuantity\") <= quantity))))"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_method_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL method"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_productId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"productId\") REFERENCES \"Product\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_productId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"productId\""
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_quantity_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL quantity"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_reason_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL reason"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_refundAmount_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"refundAmount\""
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_restockedQuantity_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"restockedQuantity\""
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_saleId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"saleId\") REFERENCES \"Sale\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Return\"",
+      "conname": "Return_saleId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"saleId\""
+    },
+    {
+      "table_name": "\"RoleModel\"",
+      "conname": "RoleModel_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"RoleModel\"",
+      "conname": "RoleModel_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"RoleModel\"",
+      "conname": "RoleModel_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"RoleModel\"",
+      "conname": "RoleModel_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"RoleModel\"",
+      "conname": "RoleModel_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_customerId_fkey",
+      "contype": "f",
+      "confdeltype": "n",
+      "definition": "FOREIGN KEY (\"customerId\") REFERENCES \"Customer\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_locationId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"locationId\") REFERENCES \"Location\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_locationId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"locationId\""
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_saleDate_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"saleDate\""
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_status_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL status"
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_total_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL total"
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_type_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL type"
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_userId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"userId\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_userId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"userId\""
+    },
+    {
+      "table_name": "\"Sale\"",
+      "conname": "Sale_void_metadata_valid",
+      "contype": "c",
+      "confdeltype": " ",
+      "definition": "CHECK (((status <> 'VOIDED'::\"SaleStatus\") OR ((\"voidedAt\" IS NOT NULL) AND (\"voidedById\" IS NOT NULL) AND (length(TRIM(BOTH FROM \"voidReason\")) >= 10))))"
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_productId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"productId\") REFERENCES \"Product\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_productId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"productId\""
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_quantity_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL quantity"
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_saleId_fkey",
+      "contype": "f",
+      "confdeltype": "c",
+      "definition": "FOREIGN KEY (\"saleId\") REFERENCES \"Sale\"(id) ON UPDATE CASCADE ON DELETE CASCADE"
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_saleId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"saleId\""
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_subtotal_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL subtotal"
+    },
+    {
+      "table_name": "\"SaleItem\"",
+      "conname": "SaleItem_unitPrice_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"unitPrice\""
+    },
+    {
+      "table_name": "\"Supplier\"",
+      "conname": "Supplier_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"Supplier\"",
+      "conname": "Supplier_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"Supplier\"",
+      "conname": "Supplier_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"Supplier\"",
+      "conname": "Supplier_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"Supplier\"",
+      "conname": "Supplier_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_createdAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_email_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL email"
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_locationId_fkey",
+      "contype": "f",
+      "confdeltype": "n",
+      "definition": "FOREIGN KEY (\"locationId\") REFERENCES \"Location\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL name"
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_password_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL password"
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_roleId_fkey",
+      "contype": "f",
+      "confdeltype": "r",
+      "definition": "FOREIGN KEY (\"roleId\") REFERENCES \"RoleModel\"(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_roleId_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"roleId\""
+    },
+    {
+      "table_name": "\"User\"",
+      "conname": "User_updatedAt_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "conname": "_prisma_migrations_applied_steps_count_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL applied_steps_count"
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "conname": "_prisma_migrations_checksum_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL checksum"
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "conname": "_prisma_migrations_id_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "conname": "_prisma_migrations_migration_name_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL migration_name"
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "conname": "_prisma_migrations_pkey",
+      "contype": "p",
+      "confdeltype": " ",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "conname": "_prisma_migrations_started_at_not_null",
+      "contype": "n",
+      "confdeltype": " ",
+      "definition": "NOT NULL started_at"
+    }
+  ],
+  "enums": [
+    {
+      "typname": "LocationType",
+      "enumlabel": "ALMACEN"
+    },
+    {
+      "typname": "LocationType",
+      "enumlabel": "TIENDA"
+    },
+    {
+      "typname": "MovementStatus",
+      "enumlabel": "LEGACY"
+    },
+    {
+      "typname": "MovementStatus",
+      "enumlabel": "IN_TRANSIT"
+    },
+    {
+      "typname": "MovementStatus",
+      "enumlabel": "RECEIVED"
+    },
+    {
+      "typname": "PaymentMethod",
+      "enumlabel": "EFECTIVO"
+    },
+    {
+      "typname": "PaymentMethod",
+      "enumlabel": "QR"
+    },
+    {
+      "typname": "PaymentMethod",
+      "enumlabel": "TRANSFERENCIA"
+    },
+    {
+      "typname": "PaymentMethod",
+      "enumlabel": "CREDITO"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "PENDIENTE"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "EN_PREPARACION"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "ENVIADO"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "RECIBIDO"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "CANCELADO"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "RECIBIDO_POR_INVENTARIO"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "PREPARANDO"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "ENTREGADO"
+    },
+    {
+      "typname": "RequestStatus",
+      "enumlabel": "RECIBIDO_POR_TIENDA"
+    },
+    {
+      "typname": "ReturnDisposition",
+      "enumlabel": "LEGACY"
+    },
+    {
+      "typname": "ReturnDisposition",
+      "enumlabel": "PENDING_INSPECTION"
+    },
+    {
+      "typname": "ReturnDisposition",
+      "enumlabel": "SELLABLE"
+    },
+    {
+      "typname": "ReturnDisposition",
+      "enumlabel": "NOT_SELLABLE"
+    },
+    {
+      "typname": "ReturnDisposition",
+      "enumlabel": "MIXED"
+    },
+    {
+      "typname": "Role",
+      "enumlabel": "ADMIN"
+    },
+    {
+      "typname": "Role",
+      "enumlabel": "TIENDA"
+    },
+    {
+      "typname": "Role",
+      "enumlabel": "INVENTARIO"
+    },
+    {
+      "typname": "SaleStatus",
+      "enumlabel": "CONFIRMED"
+    },
+    {
+      "typname": "SaleStatus",
+      "enumlabel": "VOIDED"
+    },
+    {
+      "typname": "SaleType",
+      "enumlabel": "NORMAL"
+    },
+    {
+      "typname": "SaleType",
+      "enumlabel": "MAYOR"
+    }
+  ],
+  "migrations": [
+    {
+      "migration_name": "20260819182416_init",
+      "checksum": "a00e6d061f27b5ca8c509a47749c03ab9dac79458b726ebf24a0ab9dfbd3e1c4",
+      "finished_at": "2026-08-19T22:48:26.272Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20260820163545_add_quality_importers",
+      "checksum": "4c87eae91d4039e3bb8e563b14bde3c09c74f7cc5b1fa93a1d68d68d67cd206d",
+      "finished_at": "2026-08-20T18:12:18.641Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20260902130000_add_unique_nit",
+      "checksum": "39cb8c359736681b4371af49bb4b7f2a595feb11932032ab45fadc1b0150b2a9",
+      "finished_at": "2026-09-02T06:47:45.014Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20260902_add_movement_request_id",
+      "checksum": "2590fac4a3539b59abdfe9a054a26de448111333f60b0eefc824dde876fc1e13",
+      "finished_at": null,
+      "rolled_back_at": "2026-09-02T15:03:03.620Z",
+      "applied_steps_count": 0
+    },
+    {
+      "migration_name": "20260902_add_movement_request_id",
+      "checksum": "2590fac4a3539b59abdfe9a054a26de448111333f60b0eefc824dde876fc1e13",
+      "finished_at": "2026-09-02T15:03:03.877Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 0
+    },
+    {
+      "migration_name": "20260909_close_schema_drift",
+      "checksum": "505851f1d41961c62e16bb5806ee8c1c20ee6832d3b173f53a54fe7a8b119c8e",
+      "finished_at": "2026-11-16T01:06:08.923Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 0
+    },
+    {
+      "migration_name": "20260909b_add_etapa8_indexes",
+      "checksum": "7263887b31f66b7f0a6744bcca8d6557d1cfad79658b8615656a3499d678a58c",
+      "finished_at": "2026-11-16T01:06:27.198Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20260928_request_abierta_unica",
+      "checksum": "6ebe4333d7f26de3b98dfc5570f4e4baf53e47fd98b31634e1ea538614040cc0",
+      "finished_at": "2026-11-16T01:06:28.240Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20260929_reconcile_production_schema",
+      "checksum": "c996cad0ea8c59259696c52f9c40261348188c3bd4ed6e4d7258fec8c33d5721",
+      "finished_at": "2026-11-16T01:06:29.327Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20261103_physical_stock_and_returns",
+      "checksum": "c44d80c91cc3e07c42c134dc1c613462fac2a68512b96a4686f2b1068e551e2e",
+      "finished_at": "2026-11-16T01:06:30.408Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20261103b_commercial_controls",
+      "checksum": "5d23d7dfbaad4b1485cfcc08d360c9451534a1f2515d36769f53ef6e291acde6",
+      "finished_at": "2026-11-16T01:06:31.492Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    }
+  ],
+  "checks": [
+    {
+      "audit_user_null": 0,
+      "audit_target_null": 0,
+      "audit_orphans": 0,
+      "quality_non_null": 0,
+      "open_duplicates": 0
+    }
+  ],
+  "fingerprints": [
+    {
+      "table": "AuditLog",
+      "count": 7,
+      "original_columns_md5": "7cb8a40a89fffc76c0c5c940d4457f37"
+    },
+    {
+      "table": "Category",
+      "count": 7,
+      "original_columns_md5": "7c25924ae44d04b0764937711bf788e8"
+    },
+    {
+      "table": "Cost",
+      "count": 113,
+      "original_columns_md5": "8e3eec0d11fd6163efd546de00c5d17a"
+    },
+    {
+      "table": "Customer",
+      "count": 10,
+      "original_columns_md5": "67082ada78a7472b110cfe1f03361dba"
+    },
+    {
+      "table": "Importer",
+      "count": 10,
+      "original_columns_md5": "54a1773079bdda051d42a9e5808cab29"
+    },
+    {
+      "table": "Inventory",
+      "count": 414,
+      "original_columns_md5": "a1c88777fcb2ca0269b508957d9489ff"
+    },
+    {
+      "table": "Location",
+      "count": 7,
+      "original_columns_md5": "7b697db94977d07d4d4b0f8a93046c56"
+    },
+    {
+      "table": "Movement",
+      "count": 41,
+      "original_columns_md5": "e71066357e2a5d81c3259b829be8d071"
+    },
+    {
+      "table": "Notification",
+      "count": 59,
+      "original_columns_md5": "c5078d9b2426ff1bcadbf9424ce5aae5"
+    },
+    {
+      "table": "Payment",
+      "count": 247,
+      "original_columns_md5": "f328aa2cbc0b7bd5d7559d7d1f5ec905"
+    },
+    {
+      "table": "Product",
+      "count": 62,
+      "original_columns_md5": "461dae3bd49de87a82e7dd38d007f664"
+    },
+    {
+      "table": "ProductImporter",
+      "count": 83,
+      "original_columns_md5": "95ed8a7ec8a639bf7009d900c076a295"
+    },
+    {
+      "table": "ProductRequest",
+      "count": 43,
+      "original_columns_md5": "588f3d8a285fe8985a0cd4fdd72c99bb"
+    },
+    {
+      "table": "PurchaseInvoice",
+      "count": 0,
+      "new_table": true
+    },
+    {
+      "table": "ReceivingAccount",
+      "count": 0,
+      "new_table": true
+    },
+    {
+      "table": "RequestHistory",
+      "count": 59,
+      "original_columns_md5": "2933691c9290d38ddacdb8b59d279966"
+    },
+    {
+      "table": "Return",
+      "count": 12,
+      "original_columns_md5": "e7bd743a0b670ad86e31ada6c3222228"
+    },
+    {
+      "table": "RoleModel",
+      "count": 3,
+      "original_columns_md5": "8c0e7dad590755e115d796634042ccd0"
+    },
+    {
+      "table": "Sale",
+      "count": 247,
+      "original_columns_md5": "0a526ba36b781def85ebb0f56f6afea4"
+    },
+    {
+      "table": "SaleItem",
+      "count": 520,
+      "original_columns_md5": "3b1245418786762469fffbc4e52fd9a7"
+    },
+    {
+      "table": "Supplier",
+      "count": 8,
+      "original_columns_md5": "861c2d3a4504a3e12b4ce11d98525e5d"
+    },
+    {
+      "table": "User",
+      "count": 6,
+      "original_columns_md5": "2783af45f8234ce588eaaafe7c37ce39"
+    }
+  ]
+}

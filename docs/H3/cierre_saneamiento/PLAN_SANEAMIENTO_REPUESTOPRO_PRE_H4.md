@@ -668,3 +668,56 @@ El equipo delegó la decisión sobre identidad de facturas, anulaciones y compro
 QR y transferencia nuevos requieren una cuenta receptora registrada, referencia, fecha válida y declaración del operador de haber comprobado el abono. No existe conexión automática con el banco. La combinación de cuenta, referencia y fecha no puede repetirse entre ventas, mayoristas o abonos. Los registros históricos no se certifican por inferencia.
 
 La migración aditiva 20261103b_commercial_controls se probó únicamente en PostgreSQL local, junto a las diez migraciones de la cadena. Producción no se consultó ni modificó. La especificación, pruebas y pendientes están en [reglas comerciales](REGLAS_COMERCIALES_FACTURAS_ANULACIONES_Y_PAGOS.md) y el estado general en [correcciones integrales](CORRECCIONES_INTEGRALES_TIENDA_REAL.md). H4 no se entrenó ni se generó otro dataset. No hubo commit, push o deploy.
+
+## Seguimiento del dashboard, 15 de noviembre de 2026
+
+La [revisión actual](../../../ml/demand/reports/v2/ui/dashboard-design-20261115-01/review.json) confirma en READ ONLY que Neon no tiene Sale.status ni Movement.status. Se corrigió el bloqueo completo del dashboard. La sección de ventas puede declararse no disponible, con valores nulos, sin impedir las lecturas válidas de inventario, movimientos y solicitudes. No se relaja el filtro de ventas confirmadas. El handler respondió 200 con Neon real para ADMIN, TIENDA e INVENTARIO. No se modificaron datos.
+
+Prisma CLI y cliente instalados son 5.22.0. Existen diez migraciones locales, cuatro distintas aplicadas en Neon. Las precondiciones de auditoría consultadas no presentan NULL u orfandad. No se alteraron migraciones aplicadas ni sus finales de línea. La consola se dejó abierta para inicio de sesión del usuario. La rama de ensayo, el respaldo y la reconciliación todavía no se ejecutaron. La reparación parcial del dashboard no acredita producción completamente reconciliada.
+
+## Reconciliación Prisma / Neon: ensayo aislado
+
+El 15 de noviembre de 2026 se retomó la reconciliación tras el inicio de sesión del usuario. Se creó `pre-h4-migration-reconcile-20261115`, ID `br-cool-cake-ay7cr6sc`, desde `production`, ID `br-curly-butterfly-ayczan0b`. Incluye datos y esquema. No tiene eliminación automática. Se utilizó el endpoint directo de esa rama con la base configurada `inventario_db`. No se usó neontest ni se guardaron cadenas de conexión.
+
+Prisma CLI y cliente son 5.22.0. `migrate status` encontró diez migraciones locales, cuatro aplicadas y seis pendientes. `migrate diff` produjo diferencias reales, no un resultado vacío. Su SQL se conservó como evidencia, sin ejecutarlo automáticamente. La migración `20260909_close_schema_drift` no puede aplicarse directamente porque varias columnas y tablas ya existen.
+
+Solo en la rama de prueba se completaron las restricciones que faltaban en AuditLog, su FK RESTRICT, el default INFO de Notification y los índices únicos completos de NIT. La sustitución de índices se hizo dentro de una transacción. No hubo backfill, UPDATE o cambios de filas comerciales. Se compararon conteos y huellas MD5 de los valores de todas las columnas originales en 20 tablas, antes y después. Coinciden. La copia original también coincide con la lectura actual de producción.
+
+Se aprobaron 87 comprobaciones de columnas, tipos, nullabilidad, defaults, enums, claves e integridad. Sigue una excepción explícita: existen Product.quality y Product.detalles, mientras que la migración histórica prescribe renombrar el primero. quality tiene cero valores no nulos. Se propone conservarlo como LEGACY y aceptar la equivalencia comprobada del destino, sin afirmar que ocurrió un renombrado físico exacto. La decisión se solicitó al usuario porque su instrucción exige comprobar los efectos antes de migrate resolve.
+
+Hasta esa decisión no se ejecutaron migrate resolve ni migrate deploy. Producción conserva su esquema anterior. Tampoco se creó todavía el respaldo de producción, que corresponde después del ensayo aprobado e inmediatamente antes del cambio productivo. Las pruebas de restricciones y API de la rama están preparadas, no ejecutadas. El [reporte del ensayo](../../../ml/demand/reports/v2/closure/neon-reconcile-20261115-01/review.json) conserva resultados y límites. No se modificaron los diez archivos de migración, Prisma, datasets o modelos. No hubo entrenamiento, TEST evaluado, Git, commit o push. No se crearon nuevos Markdown.
+
+## Reconciliación Prisma / Neon completada, 15 de noviembre de 2026
+
+Esta actualización cierra el ensayo anterior. El usuario aprobó conservar `Product.quality` vacío como LEGACY y aceptar la equivalencia verificada de `20260909_close_schema_drift`. No se afirma que ocurrió el renombrado físico de esa columna. `Product.detalles` conserva su contenido. Se mantuvo también la clave foránea previa `RequestHistory_userId_fkey`, que protege una relación existente.
+
+Prisma CLI y cliente son 5.22.0. Había diez migraciones locales, cuatro distintas aplicadas y seis pendientes. Una de estas últimas tenía gran parte de sus efectos presentes. En la rama aislada se completaron las restricciones de AuditLog, su relación RESTRICT, el valor predeterminado INFO de Notification y los índices únicos completos de NIT. Las 87 comprobaciones de equivalencia pasaron. No se necesitó backfill, es decir, completar valores de filas existentes.
+
+Se ejecutó `prisma migrate resolve --applied 20260909_close_schema_drift` tras la aprobación. La primera ejecución aislada falló con un error genérico del motor, sin escribir una entrada en el historial. Se comprobó esa ausencia antes de reintentar. El reintento con 30 segundos de tiempo de conexión funcionó. Ambos resultados se conservan. Después, `prisma migrate deploy` aplicó las cinco migraciones restantes.
+
+| Migración | Resultado en ensayo y producción |
+|---|---|
+| `20260819182416_init` | Ya aplicada, conservada |
+| `20260820163545_add_quality_importers` | Ya aplicada, conservada |
+| `20260902130000_add_unique_nit` | Ya aplicada, conservada |
+| `20260902_add_movement_request_id` | Ya aplicada, conservadas sus entradas históricas |
+| `20260909_close_schema_drift` | Equivalencia aprobada, registrada con resolve |
+| `20260909b_add_etapa8_indexes` | Aplicada con deploy |
+| `20260928_request_abierta_unica` | Aplicada con deploy |
+| `20260929_reconcile_production_schema` | Aplicada con deploy |
+| `20261103_physical_stock_and_returns` | Aplicada con deploy |
+| `20261103b_commercial_controls` | Aplicada con deploy |
+
+El ensayo aprobó 58 comprobaciones de lectura Prisma, restricciones, duplicados, inventario, API, dashboard, permisos e inferencia del artefacto fijado. Las pruebas SQL usaron identificadores explícitos dentro de una transacción revertida. No quedaron filas de prueba ni se consumieron secuencias. Los conteos y huellas de todas las columnas originales en 20 tablas coincidieron antes de migrar, después de migrar y después de las pruebas.
+
+Antes de cambiar producción se creó `pre-h4-production-backup-20261115`, ID `br-withered-rain-aylwpqtb`, desde `production`, con datos y esquema completos. La consola registra su creación a las 21:09:52 de America/La_Paz. No tiene eliminación automática y se conserva. La rama de ensayo `br-cool-cake-ay7cr6sc` también permanece disponible. Se repitieron las consultas de precondiciones en producción. No habían cambiado el historial, las filas originales ni las condiciones de auditoría.
+
+En producción se aplicó exactamente el procedimiento ensayado. Las 87 comprobaciones del baseline volvieron a pasar antes de resolve. Deploy terminó correctamente. Status confirma diez migraciones aplicadas sin pendientes. El diff final es igual al del ensayo. Solo propone retirar `Product.quality` y la clave foránea extra de RequestHistory. Ese diff no se ejecutó. Ambas diferencias son LEGACY conocidas, no drift sin explicación.
+
+Pasaron 46 comprobaciones posteriores de solo lectura en producción. Los tres roles obtuvieron dashboard 200 con ventas disponibles. ADMIN accede al catálogo predictivo, TIENDA e INVENTARIO reciben 403. La consulta de inferencia conservó el artefacto 2.2.0 y utilizó junio de 2026, un mes de VALIDATION. No se repitió la evaluación de TEST. El backend local activo respondió 200 con `status: ready`. No se ejecutaron pruebas de escritura en producción.
+
+La revisión final de las 33 claves foráneas no encontró filas huérfanas. Las 37 restricciones CHECK o de relación consultadas figuran validadas. No se detectó pérdida o cambio de valores originales en las 20 tablas comparadas. Permanecen 247 ventas, 520 detalles, 62 productos, 414 inventarios, 247 pagos, 12 devoluciones, 41 movimientos, 43 solicitudes, 6 usuarios y 7 auditorías. Las nuevas tablas PurchaseInvoice y ReceivingAccount estaban vacías tras la migración. Los valores predeterminados nuevos clasifican registros antiguos como LEGACY cuando así lo prescribe la migración. Eso no certifica su procedencia ni inventa verificaciones históricas.
+
+La reconciliación del esquema queda cerrada con las dos excepciones documentadas. No significa que todos los datos históricos sean confiables ni que el modelo ampliado esté implementado. Se observaron respuestas del dashboard de 17 a 18 segundos en producción. Su rendimiento necesita una revisión aparte. La comprobación visual anterior utilizó fixtures, las comprobaciones actuales verificaron handlers con datos reales.
+
+El [reporte final](../../../ml/demand/reports/v2/closure/neon-reconcile-20261115-01/review.json) reúne comandos, resultados, aprobación, recuperación, hashes y límites. El estado anterior se conserva como `review-waiting-decision.json`. Los diez SQL originales no cambiaron. Los 610 archivos históricos protegidos siguen idénticos respecto al respaldo de referencia. El único cambio previo en esa referencia es el contrato activo preparation.v2.json, registrado antes de esta tarea. Ambos builds 3.0.0 conservan sus checksums. No hubo entrenamiento, cambios de datasets, RAW o modelos, nuevos Markdown, migrate dev, db push, reset, Git, commit, push o despliegue de la aplicación.

@@ -1,0 +1,94 @@
+{
+  "checkedAt": "2026-11-16T04:54:30.835Z",
+  "browser": "Brave",
+  "session": "USER_ADMIN",
+  "checks": [
+    {
+      "check": "dashboard_reload",
+      "passed": true,
+      "url": "http://localhost:5173/panel",
+      "role": "ADMIN",
+      "products": 62,
+      "stock": 6631,
+      "newDocumentObserved": true
+    },
+    {
+      "check": "historical_replay",
+      "passed": true,
+      "model": "2.2.0",
+      "month": "2026-06",
+      "predictedUnits": 0,
+      "testScored": false
+    },
+    {
+      "check": "scenario_price_comparison",
+      "passed": true,
+      "product": "Depósito de Expansión",
+      "store": "Tienda 3",
+      "month": "2028-04",
+      "retailBase": 600,
+      "retailScenario": 750,
+      "wholesaleScenario": 637.5,
+      "baseUnits": 27.57,
+      "scenarioUnits": 27.57,
+      "replenishment": "OUTSIDE_HORIZON",
+      "exportClicked": true
+    },
+    {
+      "check": "combined_scenario_and_replenishment",
+      "passed": true,
+      "historyJanuaryRetail": 5,
+      "fx": 10,
+      "costBOB": 350,
+      "physicalStock": 25,
+      "supplierDays": 7,
+      "internalDays": 2,
+      "safety": 5,
+      "unitsSuggested": 0,
+      "readsValidationInputsOnly": true
+    },
+    {
+      "check": "invalid_wholesale_rejected",
+      "passed": true,
+      "resultCleared": true
+    },
+    {
+      "check": "all_change_groups_with_wholesale_order",
+      "passed": true,
+      "orderUnits": 10,
+      "reservedUnits": 2,
+      "dueAt": "2028-04-15T00:00:00-04:00",
+      "invalidPriceRecovered": true,
+      "comparisonAvailable": true
+    }
+  ],
+  "export": {
+    "dialogOpened": true,
+    "saved": false,
+    "reason": "Native save-dialog targeting unavailable, cancelled without changing browser settings"
+  },
+  "constraints": {
+    "neonWrites": false,
+    "training": false,
+    "testEvaluation": false,
+    "newMarkdown": false
+  },
+  "validation": {
+    "frontendTests": 278,
+    "frontendFiles": 34,
+    "frontendBuild": "PASS",
+    "focusedScenarioTests": 12,
+    "previousBackendTestsNotRerun": 184,
+    "previousPythonTestsNotRerun": 68,
+    "protectedFilesCompared": 199,
+    "protectedFilesChanged": 0
+  },
+  "modifiedFiles": [
+    "frontend/src/components/DemandScenarioPanel.tsx",
+    "frontend/src/components/DemandScenarioPanel.test.tsx",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md"
+  ],
+  "git": "NOT_EXECUTED_USER_RESTRICTION"
+}

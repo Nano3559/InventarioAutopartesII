@@ -1,0 +1,27 @@
+{
+  "status": "PROPOSALS_ONLY_NOT_IMPLEMENTED",
+  "current_candidate": "REVIEW_REQUIRED_NOT_ACTIVE",
+  "selection_unchanged": true,
+  "decision_needed": [
+    "Accept a limited academic demonstration with explicit subgroup limitations, or require validated safeguards for low/zero rotation.",
+    "Agree business or academic group-error tolerances before any final acceptance.",
+    "Approve a separate training protocol if feature/loss/routing changes are requested."
+  ],
+  "actions_without_training": [
+    "Review all 17 worsened products using supplied row errors.",
+    "Review information available at cutoff for known orders, cancellations and availability.",
+    "Confirm synthetic academic scope and no claim of causal price/exchange effects."
+  ],
+  "future_experiments_require_authorization": [
+    "TRAIN-only frequency, recency and recent-level features with time-safe computation.",
+    "Intermittent-demand baseline or two-stage occurrence/quantity model.",
+    "Predeclared alternative loss or forest capacity search inside temporal TRAIN folds.",
+    "Fixed history-based routing rule tested temporally, never an oracle based on realized target.",
+    "Contract for known commitments distinct from uncommitted sales, avoiding double-counting."
+  ],
+  "not_done": [
+    "No new model selection, training, routing, deployment or TEST evaluation.",
+    "No dataset change, reweighting, deletion of difficult rows or use of future fulfilled quantities as features."
+  ],
+  "test_policy": "Keep existing TEST reserved. Never use it to select thresholds, repair subgroups or choose the next experiment."
+}

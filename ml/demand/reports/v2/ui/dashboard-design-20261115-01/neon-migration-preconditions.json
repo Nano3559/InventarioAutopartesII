@@ -1,0 +1,103 @@
+{
+  "real_neon": true,
+  "read_only": [
+    {
+      "transaction_read_only": "on"
+    }
+  ],
+  "applied": [
+    {
+      "migration_name": "20260819182416_init",
+      "checksum": "a00e6d061f27b5ca8c509a47749c03ab9dac79458b726ebf24a0ab9dfbd3e1c4",
+      "finished_at": "2026-08-19T22:48:26.272Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20260820163545_add_quality_importers",
+      "checksum": "4c87eae91d4039e3bb8e563b14bde3c09c74f7cc5b1fa93a1d68d68d67cd206d",
+      "finished_at": "2026-08-20T18:12:18.641Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20260902130000_add_unique_nit",
+      "checksum": "39cb8c359736681b4371af49bb4b7f2a595feb11932032ab45fadc1b0150b2a9",
+      "finished_at": "2026-09-02T06:47:45.014Z",
+      "rolled_back_at": null
+    },
+    {
+      "migration_name": "20260902_add_movement_request_id",
+      "checksum": "2590fac4a3539b59abdfe9a054a26de448111333f60b0eefc824dde876fc1e13",
+      "finished_at": null,
+      "rolled_back_at": "2026-09-02T15:03:03.620Z"
+    },
+    {
+      "migration_name": "20260902_add_movement_request_id",
+      "checksum": "2590fac4a3539b59abdfe9a054a26de448111333f60b0eefc824dde876fc1e13",
+      "finished_at": "2026-09-02T15:03:03.877Z",
+      "rolled_back_at": null
+    }
+  ],
+  "checks": [
+    {
+      "audit_user_null": 0,
+      "audit_target_null": 0,
+      "audit_orphans": 0,
+      "legacy_quality_not_null": 0,
+      "open_request_duplicates": 0
+    }
+  ],
+  "counts": [
+    {
+      "table": "Product",
+      "count": 62
+    },
+    {
+      "table": "Inventory",
+      "count": 414
+    },
+    {
+      "table": "Sale",
+      "count": 247
+    },
+    {
+      "table": "SaleItem",
+      "count": 520
+    },
+    {
+      "table": "Payment",
+      "count": 247
+    },
+    {
+      "table": "Return",
+      "count": 12
+    },
+    {
+      "table": "Movement",
+      "count": 41
+    },
+    {
+      "table": "ProductRequest",
+      "count": 43
+    },
+    {
+      "table": "User",
+      "count": 6
+    },
+    {
+      "table": "AuditLog",
+      "count": 7
+    }
+  ],
+  "local_migrations": [
+    "20260819182416_init",
+    "20260820163545_add_quality_importers",
+    "20260902130000_add_unique_nit",
+    "20260902_add_movement_request_id",
+    "20260909_close_schema_drift",
+    "20260909b_add_etapa8_indexes",
+    "20260928_request_abierta_unica",
+    "20260929_reconcile_production_schema",
+    "20261103_physical_stock_and_returns",
+    "20261103b_commercial_controls"
+  ]
+}

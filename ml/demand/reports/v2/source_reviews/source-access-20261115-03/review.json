@@ -1,0 +1,69 @@
+{
+  "schema_version": "source-access-review-1",
+  "recorded_at": "2026-11-15T16:14:44.839252+00:00",
+  "favorita": {
+    "source_id": "corporacion_favorita",
+    "confirmed_by": "ROSS",
+    "evidence_basis": "Confirmación expresa en el chat de aceptación de reglas y descarga desde su cuenta de la competición de 2017. No consulta independiente de su cuenta.",
+    "official_rules_url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/rules",
+    "rules_accepted": true,
+    "downloaded_from_own_account": true,
+    "competition": "favorita-grocery-sales-forecasting",
+    "competition_year": 2017,
+    "confirmation_date": "2026-11-15",
+    "actual_download_date": null,
+    "binary_identity_with_provider": "NOT_INDEPENDENTLY_VERIFIED",
+    "authorized_user_scope": [
+      "ROSS"
+    ],
+    "other_users_acceptance": "NOT_CONFIRMED",
+    "academic_use_status": "VERIFIED",
+    "commercial_use_status": "RESTRICTED",
+    "redistribution_status": "RESTRICTED",
+    "profiling_decision": "APPROVED_ACADEMIC_ONLY",
+    "execution_authorized_in_this_task": false,
+    "clauses": {
+      "7.A": "Investigación académica, educación y fines no comerciales tras aceptar las reglas, salvo restricciones específicas.",
+      "7.B": "Acceso y redistribución restringidos. La aceptación de Ross no acredita la de otras personas.",
+      "8.A": "Condiciones de compartir código en Kaggle. No presumir permiso general de publicación externa de derivados."
+    },
+    "remaining_limits": [
+      "No publicar ni redistribuir RAW o tablas que reproduzcan sus datos fuera de los permisos aplicables.",
+      "Aclarar publicación externa y uso comercial de código, parámetros, modelos o datos sintéticos derivados antes de esa incorporación. No presumir una autorización o prohibición universal.",
+      "Fecha real de adquisición desconocida. La URL de adquisición es la página declarada, no un enlace individual de archivo."
+    ]
+  },
+  "automotive": {
+    "source_id": "automotive_spare_parts_demand",
+    "decision": "BLOCKED_LICENSE",
+    "license_status": "UNKNOWN",
+    "academic_use_status": "UNKNOWN",
+    "commercial_use_status": "UNKNOWN",
+    "redistribution_status": "UNKNOWN",
+    "new_evidence_result": "No se encontró una declaración específica que resuelva los derechos de Auto o RAF. La documentación auto.Rd identifica datos y procedencia, no un permiso propio. El acceso al archivo LICENSE del repositorio de distribución no resultó legible. No se interpreta una licencia de software como licencia de datos.",
+    "documentation_checked": [
+      "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/man/auto.Rd",
+      "https://github.com/canerturkmen/gluon-ts/tree/intermittent-datasets/datasets/intermittent_auto",
+      "https://github.com/StefanoDamato/fable.intermittent/issues",
+      "https://github.com/canerturkmen/gluon-ts/blob/intermittent-datasets/LICENSE"
+    ],
+    "request_destination": "https://github.com/StefanoDamato/fable.intermittent/issues",
+    "request_route": "El mantenedor del paquete puede aclarar o remitir al titular de Auto. Una respuesta solo habilita uso si identifica el permiso y la autoridad correspondiente. No se contactó a nadie.",
+    "draft_title": "Clarification of Auto and RAF dataset licenses",
+    "draft_body": "We are students using fable.intermittent as a reference for an academic spare-parts forecasting simulator. Which licenses apply specifically to the Auto and RAF datasets, rather than to the package software? Who owns or can authorize their use? May we analyze them locally for non-commercial academic work and publish aggregate statistics, calibration parameters, code, trained models or synthetic data derived from their patterns without redistributing the original observations? Please clarify attribution, redistribution restrictions, any fees, and provide an authoritative license or permission reference.",
+    "independent_of_other_sources": true
+  },
+  "current_source_eligibility": {
+    "approved_for_future_academic_profiling": [
+      "monash_car_parts",
+      "uci_online_retail_ii",
+      "m5_walmart",
+      "corporacion_favorita"
+    ],
+    "blocked": [
+      "automotive_spare_parts_demand"
+    ]
+  },
+  "execution_scope": "Solo investigación y metadata. Ningún perfilado, extracción, descarga de datasets, construcción, entrenamiento o acceso a BD. No nuevos Markdown.",
+  "frozen_dataset": "2.1.0 no cambia. Nuevas fuentes no incorporadas automáticamente al dataset, simulador o modelos."
+}

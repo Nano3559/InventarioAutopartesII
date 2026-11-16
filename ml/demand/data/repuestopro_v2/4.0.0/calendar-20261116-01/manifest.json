@@ -1,0 +1,60 @@
+{
+  "dataset_version": "4.0.0",
+  "build_id": "calendar-20261116-01",
+  "seed": 42,
+  "origin": "ACADEMIC_SYNTHETIC_NOT_REAL_SALES",
+  "history_end": "2026-10",
+  "forecast_month": "2026-11",
+  "future_target_generated": false,
+  "generator": {
+    "path": "v2/calendar2026.py",
+    "sha256": "eba93329e0c5868c210d7555f01320b9691d1142fa60889c10792fa53336c4a5"
+  },
+  "reused_engine": {
+    "path": "v2/generate_scenarios_v1.py",
+    "sha256": "bcff135ae98645433fb3e5f4de979a1faaf59d229302911831aa52041090c3d3"
+  },
+  "dependencies": {
+    "dictionary": {
+      "path": "v2/contracts/dataset_dictionary.scenarios.v1.json",
+      "sha256": "42f426f74c1fbb5ba5b5b4ca65dc0aa7d5746987b58445ca22d90f2fa1fdcb55"
+    },
+    "sources": {
+      "path": "v2/contracts/scenario_sources.v1.json",
+      "sha256": "4bea8dfa4d58ad26d5acfaa0ffaf18e7632fe2151e07671378690ce23177d340"
+    },
+    "catalog": {
+      "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/catalog_reference.json",
+      "sha256": "3cb0c9c1f733d565dcacb33f7a33f9911ed0931b19e1740034289c38a5368404"
+    },
+    "calibration": {
+      "path": "reports/v2/calibration/calibration-retail-20261115-03/calibration.json",
+      "sha256": "9433d9c51d26a2cc9d561f441279f0e5bfef4eadcdf51ebbd846205dc43a1e1d"
+    },
+    "base_calibration": {
+      "path": "v2/contracts/calibration.v2.json",
+      "sha256": "0c26ad5e3f2d52287b86d56ac27959d15b5e40210142439d82e40500c20c4c63"
+    }
+  },
+  "counts": {
+    "scenario_context": 14112,
+    "closed_history_monthly": 42336,
+    "price_plan_events": 14654,
+    "exchange_quote_events": 14112,
+    "cost_plan_events": 14112,
+    "opening_stock_snapshot": 14112,
+    "open_order_plan": 1521,
+    "pending_shipment_plan": 10492,
+    "logistics_policy": 14112,
+    "replenishment_policy": 14112,
+    "receipt_outcomes": 10102,
+    "monthly_outcomes": 14112,
+    "supervised_monthly": 14112,
+    "decision_outputs": 0,
+    "daily_ledger": 428736,
+    "scenario_metadata": 14112
+  },
+  "automotive": "EXCLUDED_LICENSE_PENDING",
+  "deployment_history": "DEMO BASE outcomes only, independent from all evaluation partitions",
+  "stock_scope": "Independent monthly academic stock scenarios, not a certified continuous commercial inventory ledger"
+}

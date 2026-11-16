@@ -1,0 +1,76 @@
+{
+  "status": "CALIBRATION_EXTENSION_VALIDATED_NO_DATASET_OR_MODEL_BUILD",
+  "accepted_run": "calibration-retail-20261115-03",
+  "tests_passed": 58,
+  "tests_failed_final": 0,
+  "tests_new": 8,
+  "baseline_files_checked": 472,
+  "immutable_files_unchanged": 471,
+  "approved_metadata_change": [
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "immutable_counts": {
+    "sources/external_raw": 136,
+    "sources/external_curated": 16,
+    "data": 59,
+    "models": 14,
+    "reports": 178,
+    "candidates": 5,
+    "decisions": 4,
+    "lifecycle": 13
+  },
+  "versions": {
+    "python": "3.11.9",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "pyarrow": "26.0.1"
+  },
+  "configuration_sha256": "9433d9c51d26a2cc9d561f441279f0e5bfef4eadcdf51ebbd846205dc43a1e1d",
+  "code_sha256": "c32846e4d27b982e4cb86b70edf1f89e449e2586f3dcf9c941694d999fcae7c7",
+  "checks": [
+    "All curated output hashes and source identity match validated manifests",
+    "Positive reference/comparison/outside/unknown counts reconcile to 125489245",
+    "Single-observation series excluded from coefficient of variation",
+    "All final parameters use REFERENCE only",
+    "Price probability and selected magnitude valid",
+    "Exact per-series quantiles, equal series weighting",
+    "Unsupported parameters remain null",
+    "M5 annual comparison marked insufficient",
+    "Prior dataset/model/RAW/curated/reports unchanged",
+    "New documentation links valid"
+  ],
+  "attempts": [
+    {
+      "run": "calibration-retail-20261115-01",
+      "status": "FAILED_READER_WINDOW_LABEL_FIXED"
+    },
+    {
+      "run": "calibration-retail-20261115-02",
+      "status": "PRELIMINARY_SUPERSEDED_SINGLE_OBSERVATION_CV_RULE"
+    },
+    {
+      "run": "calibration-retail-20261115-03",
+      "status": "ACCEPTED_REFERENCE_CONFIGURATION"
+    }
+  ],
+  "new_files": [
+    "ml/demand/v2/calibrate_retail.py",
+    "ml/demand/tests/test_v2_calibrate_retail.py",
+    "reports/v2/calibration/<run_id>/*.json",
+    "tmp/calibration-retail-*/ temporary statistical partitions and verification scripts"
+  ],
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "automotive_status": "BLOCKED_LICENSE",
+  "raw_modified": false,
+  "neon_used": false,
+  "dataset_created": false,
+  "trained": false,
+  "existing_generator_modified": false,
+  "test_repeated": false,
+  "new_markdown_files": 0,
+  "git_used": false
+}

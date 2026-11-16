@@ -1,0 +1,735 @@
+{
+  "status": "PASSED_CALIBRATED_2_2_GATE",
+  "failures": [],
+  "counts": {
+    "base": 4032,
+    "supervised": 3528,
+    "audit": 8755,
+    "ledger": 4032,
+    "daily": 122640,
+    "orders": 3118,
+    "shipments": 1944,
+    "receipts": 1958,
+    "plans": 4032,
+    "quotes": 25,
+    "calibration_audit": 4032,
+    "price_events": 207,
+    "pricing_audit": 4200
+  },
+  "train_quote_ages_days": [
+    0,
+    2,
+    7,
+    30
+  ],
+  "wholesale_volume": {
+    "TRAIN": {
+      "orders": 922,
+      "fully_fulfilled": 856,
+      "partially_or_unfulfilled": 66,
+      "fulfilled_at_least": {
+        "20": 875,
+        "40": 589,
+        "80": 297
+      }
+    },
+    "VALIDATION": {
+      "orders": 184,
+      "fully_fulfilled": 172,
+      "partially_or_unfulfilled": 12,
+      "fulfilled_at_least": {
+        "20": 178,
+        "40": 120,
+        "80": 65
+      }
+    }
+  },
+  "statistics": {
+    "TRAIN": {
+      "rows": 2520,
+      "target": {
+        "zeros": 1143,
+        "positive": 1377,
+        "minimum": 0,
+        "maximum": 96,
+        "mean": 18.76388888888889,
+        "median": 1.0
+      },
+      "features": {
+        "ventas_mes_anterior": {
+          "nulls": 0,
+          "unique_nonnull": 79
+        },
+        "ventas_hace_2_meses": {
+          "nulls": 0,
+          "unique_nonnull": 77
+        },
+        "ventas_hace_3_meses": {
+          "nulls": 0,
+          "unique_nonnull": 73
+        },
+        "mes_sin": {
+          "nulls": 0,
+          "unique_nonnull": 11
+        },
+        "mes_cos": {
+          "nulls": 0,
+          "unique_nonnull": 11
+        },
+        "proporcion_por_mayor_mes_anterior": {
+          "nulls": 1152,
+          "unique_nonnull": 48
+        },
+        "cobertura_modalidad_mes_anterior": {
+          "nulls": 1152,
+          "unique_nonnull": 26
+        },
+        "precio_menor_cierre_anterior_bs": {
+          "nulls": 0,
+          "unique_nonnull": 91
+        },
+        "precio_mayor_cierre_anterior_bs": {
+          "nulls": 0,
+          "unique_nonnull": 92
+        },
+        "variacion_precio_menor_conocida": {
+          "nulls": 0,
+          "unique_nonnull": 173
+        },
+        "variacion_precio_mayor_conocida": {
+          "nulls": 0,
+          "unique_nonnull": 172
+        },
+        "tipo_cambio_bs_usd_conocido": {
+          "nulls": 0,
+          "unique_nonnull": 3
+        },
+        "variacion_tipo_cambio_ultimo_mes": {
+          "nulls": 0,
+          "unique_nonnull": 5
+        },
+        "antiguedad_tipo_cambio_dias": {
+          "nulls": 0,
+          "unique_nonnull": 4
+        },
+        "dias_sin_stock_mes_anterior": {
+          "nulls": 184,
+          "unique_nonnull": 23
+        },
+        "cobertura_stock_mes_anterior": {
+          "nulls": 0,
+          "unique_nonnull": 4
+        },
+        "categoryId": {
+          "nulls": 0,
+          "unique_nonnull": 7
+        }
+      },
+      "groups": {
+        "productId": {
+          "1": {
+            "rows": 45,
+            "positive_months": 15
+          },
+          "2": {
+            "rows": 45,
+            "positive_months": 22
+          },
+          "3": {
+            "rows": 45,
+            "positive_months": 39
+          },
+          "4": {
+            "rows": 45,
+            "positive_months": 31
+          },
+          "5": {
+            "rows": 45,
+            "positive_months": 18
+          },
+          "6": {
+            "rows": 45,
+            "positive_months": 33
+          },
+          "7": {
+            "rows": 45,
+            "positive_months": 27
+          },
+          "8": {
+            "rows": 45,
+            "positive_months": 14
+          },
+          "9": {
+            "rows": 45,
+            "positive_months": 19
+          },
+          "10": {
+            "rows": 45,
+            "positive_months": 45
+          },
+          "11": {
+            "rows": 45,
+            "positive_months": 31
+          },
+          "12": {
+            "rows": 45,
+            "positive_months": 7
+          },
+          "13": {
+            "rows": 45,
+            "positive_months": 19
+          },
+          "14": {
+            "rows": 45,
+            "positive_months": 9
+          },
+          "15": {
+            "rows": 45,
+            "positive_months": 24
+          },
+          "16": {
+            "rows": 45,
+            "positive_months": 41
+          },
+          "17": {
+            "rows": 45,
+            "positive_months": 16
+          },
+          "18": {
+            "rows": 45,
+            "positive_months": 29
+          },
+          "19": {
+            "rows": 45,
+            "positive_months": 25
+          },
+          "20": {
+            "rows": 45,
+            "positive_months": 27
+          },
+          "21": {
+            "rows": 45,
+            "positive_months": 20
+          },
+          "22": {
+            "rows": 45,
+            "positive_months": 21
+          },
+          "23": {
+            "rows": 45,
+            "positive_months": 20
+          },
+          "24": {
+            "rows": 45,
+            "positive_months": 12
+          },
+          "25": {
+            "rows": 45,
+            "positive_months": 22
+          },
+          "26": {
+            "rows": 45,
+            "positive_months": 24
+          },
+          "27": {
+            "rows": 45,
+            "positive_months": 37
+          },
+          "28": {
+            "rows": 45,
+            "positive_months": 17
+          },
+          "29": {
+            "rows": 45,
+            "positive_months": 31
+          },
+          "30": {
+            "rows": 45,
+            "positive_months": 36
+          },
+          "31": {
+            "rows": 45,
+            "positive_months": 29
+          },
+          "32": {
+            "rows": 45,
+            "positive_months": 22
+          },
+          "33": {
+            "rows": 45,
+            "positive_months": 26
+          },
+          "34": {
+            "rows": 45,
+            "positive_months": 8
+          },
+          "35": {
+            "rows": 45,
+            "positive_months": 26
+          },
+          "36": {
+            "rows": 45,
+            "positive_months": 33
+          },
+          "37": {
+            "rows": 45,
+            "positive_months": 19
+          },
+          "38": {
+            "rows": 45,
+            "positive_months": 39
+          },
+          "39": {
+            "rows": 45,
+            "positive_months": 19
+          },
+          "40": {
+            "rows": 45,
+            "positive_months": 15
+          },
+          "41": {
+            "rows": 45,
+            "positive_months": 34
+          },
+          "42": {
+            "rows": 45,
+            "positive_months": 20
+          },
+          "43": {
+            "rows": 45,
+            "positive_months": 20
+          },
+          "44": {
+            "rows": 45,
+            "positive_months": 21
+          },
+          "45": {
+            "rows": 45,
+            "positive_months": 26
+          },
+          "46": {
+            "rows": 45,
+            "positive_months": 18
+          },
+          "47": {
+            "rows": 45,
+            "positive_months": 45
+          },
+          "48": {
+            "rows": 45,
+            "positive_months": 21
+          },
+          "49": {
+            "rows": 45,
+            "positive_months": 17
+          },
+          "50": {
+            "rows": 45,
+            "positive_months": 37
+          },
+          "51": {
+            "rows": 45,
+            "positive_months": 26
+          },
+          "52": {
+            "rows": 45,
+            "positive_months": 13
+          },
+          "53": {
+            "rows": 45,
+            "positive_months": 31
+          },
+          "54": {
+            "rows": 45,
+            "positive_months": 30
+          },
+          "55": {
+            "rows": 45,
+            "positive_months": 22
+          },
+          "56": {
+            "rows": 45,
+            "positive_months": 29
+          }
+        },
+        "locationId": {
+          "5": {
+            "rows": 840,
+            "positive_months": 475
+          },
+          "6": {
+            "rows": 840,
+            "positive_months": 488
+          },
+          "7": {
+            "rows": 840,
+            "positive_months": 414
+          }
+        }
+      }
+    },
+    "VALIDATION": {
+      "rows": 504,
+      "target": {
+        "zeros": 219,
+        "positive": 285,
+        "minimum": 0,
+        "maximum": 96,
+        "mean": 19.623015873015873,
+        "median": 2.0
+      },
+      "features": {
+        "ventas_mes_anterior": {
+          "nulls": 0,
+          "unique_nonnull": 55
+        },
+        "ventas_hace_2_meses": {
+          "nulls": 0,
+          "unique_nonnull": 54
+        },
+        "ventas_hace_3_meses": {
+          "nulls": 0,
+          "unique_nonnull": 57
+        },
+        "mes_sin": {
+          "nulls": 0,
+          "unique_nonnull": 3
+        },
+        "mes_cos": {
+          "nulls": 0,
+          "unique_nonnull": 3
+        },
+        "proporcion_por_mayor_mes_anterior": {
+          "nulls": 219,
+          "unique_nonnull": 32
+        },
+        "cobertura_modalidad_mes_anterior": {
+          "nulls": 219,
+          "unique_nonnull": 16
+        },
+        "precio_menor_cierre_anterior_bs": {
+          "nulls": 0,
+          "unique_nonnull": 75
+        },
+        "precio_mayor_cierre_anterior_bs": {
+          "nulls": 0,
+          "unique_nonnull": 71
+        },
+        "variacion_precio_menor_conocida": {
+          "nulls": 0,
+          "unique_nonnull": 59
+        },
+        "variacion_precio_mayor_conocida": {
+          "nulls": 0,
+          "unique_nonnull": 54
+        },
+        "tipo_cambio_bs_usd_conocido": {
+          "nulls": 0,
+          "unique_nonnull": 2
+        },
+        "variacion_tipo_cambio_ultimo_mes": {
+          "nulls": 0,
+          "unique_nonnull": 3
+        },
+        "antiguedad_tipo_cambio_dias": {
+          "nulls": 0,
+          "unique_nonnull": 3
+        },
+        "dias_sin_stock_mes_anterior": {
+          "nulls": 37,
+          "unique_nonnull": 18
+        },
+        "cobertura_stock_mes_anterior": {
+          "nulls": 0,
+          "unique_nonnull": 4
+        },
+        "categoryId": {
+          "nulls": 0,
+          "unique_nonnull": 7
+        }
+      },
+      "groups": {
+        "productId": {
+          "1": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "2": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "3": {
+            "rows": 9,
+            "positive_months": 8
+          },
+          "4": {
+            "rows": 9,
+            "positive_months": 7
+          },
+          "5": {
+            "rows": 9,
+            "positive_months": 5
+          },
+          "6": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "7": {
+            "rows": 9,
+            "positive_months": 5
+          },
+          "8": {
+            "rows": 9,
+            "positive_months": 3
+          },
+          "9": {
+            "rows": 9,
+            "positive_months": 3
+          },
+          "10": {
+            "rows": 9,
+            "positive_months": 9
+          },
+          "11": {
+            "rows": 9,
+            "positive_months": 7
+          },
+          "12": {
+            "rows": 9,
+            "positive_months": 2
+          },
+          "13": {
+            "rows": 9,
+            "positive_months": 1
+          },
+          "14": {
+            "rows": 9,
+            "positive_months": 2
+          },
+          "15": {
+            "rows": 9,
+            "positive_months": 3
+          },
+          "16": {
+            "rows": 9,
+            "positive_months": 9
+          },
+          "17": {
+            "rows": 9,
+            "positive_months": 3
+          },
+          "18": {
+            "rows": 9,
+            "positive_months": 5
+          },
+          "19": {
+            "rows": 9,
+            "positive_months": 7
+          },
+          "20": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "21": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "22": {
+            "rows": 9,
+            "positive_months": 3
+          },
+          "23": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "24": {
+            "rows": 9,
+            "positive_months": 2
+          },
+          "25": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "26": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "27": {
+            "rows": 9,
+            "positive_months": 8
+          },
+          "28": {
+            "rows": 9,
+            "positive_months": 3
+          },
+          "29": {
+            "rows": 9,
+            "positive_months": 7
+          },
+          "30": {
+            "rows": 9,
+            "positive_months": 7
+          },
+          "31": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "32": {
+            "rows": 9,
+            "positive_months": 5
+          },
+          "33": {
+            "rows": 9,
+            "positive_months": 7
+          },
+          "34": {
+            "rows": 9,
+            "positive_months": 2
+          },
+          "35": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "36": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "37": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "38": {
+            "rows": 9,
+            "positive_months": 8
+          },
+          "39": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "40": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "41": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "42": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "43": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "44": {
+            "rows": 9,
+            "positive_months": 5
+          },
+          "45": {
+            "rows": 9,
+            "positive_months": 5
+          },
+          "46": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "47": {
+            "rows": 9,
+            "positive_months": 9
+          },
+          "48": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "49": {
+            "rows": 9,
+            "positive_months": 4
+          },
+          "50": {
+            "rows": 9,
+            "positive_months": 8
+          },
+          "51": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "52": {
+            "rows": 9,
+            "positive_months": 3
+          },
+          "53": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "54": {
+            "rows": 9,
+            "positive_months": 6
+          },
+          "55": {
+            "rows": 9,
+            "positive_months": 7
+          },
+          "56": {
+            "rows": 9,
+            "positive_months": 5
+          }
+        },
+        "locationId": {
+          "5": {
+            "rows": 168,
+            "positive_months": 100
+          },
+          "6": {
+            "rows": 168,
+            "positive_months": 100
+          },
+          "7": {
+            "rows": 168,
+            "positive_months": 85
+          }
+        }
+      }
+    }
+  },
+  "warnings": [
+    {
+      "code": "SYNTHETIC_ASSUMED_PROFILE_WEIGHTS",
+      "blocking": false,
+      "reason": "No prevalencia real certificada ni precisión comercial."
+    },
+    {
+      "code": "SHARED_SINGLE_ECONOMIC_TRAJECTORY",
+      "blocking": false,
+      "reason": "Edades variables no crean múltiples economías independientes."
+    },
+    {
+      "code": "KNOWN_ORDERS_NOT_FORECAST_FEATURES",
+      "blocking": false,
+      "reason": "Capacidad para atender no demuestra capacidad para anticipar pedidos."
+    },
+    {
+      "code": "STOCK_CENSORED_OBSERVED_SALES",
+      "blocking": false,
+      "reason": "Target conserva unidades realmente atendidas, no demanda perdida."
+    }
+  ],
+  "policy_scope": "Physical and temporal evidence for ages and wholesale. Not all 57 dynamic scenarios or backend validation.",
+  "test_target_statistics_computed": false,
+  "training_performed": false,
+  "training_authorized": false,
+  "commercial_accuracy_certified": false,
+  "administrative_price_reviews": 6,
+  "weekly_price_proposals": 207,
+  "applied_minor_bursts_train_validation": {
+    "P99": 219,
+    "P95": 248
+  },
+  "dataset_version": "2.2.0",
+  "old_test_repeated": false,
+  "serialized_files_revalidated": true,
+  "reproducibility_sha256": "5911effc3385a7a0d7054a1f0109e2250832cf64156a0811cf0657a2312522cc",
+  "reproducible": true,
+  "local_private_publication_only": true,
+  "economic_review_is_explicit_academic_assumption": true
+}

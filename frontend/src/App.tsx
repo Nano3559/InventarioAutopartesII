@@ -11,6 +11,7 @@ const ContactPage = lazy(() => import("./pages/ContactPage"));
 const PublicProductsPage = lazy(() => import("./pages/PublicProductsPage"));
 const PublicProductDetailPage = lazy(() => import("./pages/PublicProductDetailPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const PredictionsPage = lazy(() => import("./pages/PredictionsPage"));
 const InventoryPage = lazy(() => import("./pages/InventoryPage"));
 const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
 const SalesPage = lazy(() => import("./pages/SalesPage"));
@@ -68,6 +69,7 @@ export default function App() {
         >
           {/* Dashboard — todos los roles */}
           <Route index element={<DashboardPage />} />
+          <Route path="prediccion" element={<RoleRoute allowedRoles={["ADMIN"]}><PredictionsPage /></RoleRoute>} />
 
           {/* Inventario — ADMIN + INVENTARIO + TIENDA (solo lectura) */}
           <Route path="inventario" element={

@@ -1,0 +1,165 @@
+{
+  "status": "CALIBRATED_REFERENCE_CONFIGURATION_NOT_APPLIED_TO_GENERATOR",
+  "seed_for_future_simulation": 42,
+  "parameters": {
+    "weekly_price_change_probability": {
+      "value": 0.012048473339260742,
+      "unit": "probability_per_eligible_week",
+      "basis": "M5_EQUAL_SERIES_REFERENCE",
+      "application": "Representative scenario only. A fixed Bernoulli mechanism is an academic assumption, not measured independence."
+    },
+    "conditional_absolute_price_change": {
+      "value": 0.08593044263775979,
+      "unit": "relative_change",
+      "basis": "M5_MEDIAN_OF_CHANGING_SERIES_MEDIANS",
+      "application": "Typical nonzero-change size. Sign is separate. Stress levels use reference quantiles, without extrapolating causal sales response."
+    },
+    "conditional_up_share": {
+      "value": 0.586962588556756,
+      "unit": "probability_given_price_change",
+      "basis": "M5_EQUAL_CHANGING_SERIES_REFERENCE",
+      "application": "Representative direction mix, not weighted by frequency or a fitted joint distribution."
+    },
+    "store_volume_factor": {
+      "reference_quantiles": {
+        "n": 30240,
+        "mean": 1.0,
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "p10": 0.3834348614853932,
+        "p50": 0.9002515583813976,
+        "p90": 1.7505223911475765,
+        "p95": 2.0777266766924734,
+        "p99": 2.7991582353945783
+      },
+      "basis": "M5_WITHIN_PRODUCT_RELATIVE_VOLUME",
+      "application": "Sensitivity scenarios. No mapping of foreign stores to own stores and no claim of local factors."
+    },
+    "retail_monthly_zero_probability": {
+      "reference_quantiles": {
+        "n": 30490,
+        "mean": 0.36245647334668496,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "p10": 0.0,
+        "p50": 0.2978723404255319,
+        "p90": 0.8297872340425532,
+        "p95": 0.9361702127659575,
+        "p99": 1.0
+      },
+      "basis": "M5_OBSERVED_SALES_REFERENCE",
+      "application": "External contrast and stress only. Preserve Monash automotive baseline. Not stockout probability."
+    },
+    "monthly_variability": {
+      "reference_quantiles": {
+        "n": 29541,
+        "mean": 1.194055340430382,
+        "minimum": 0.10365695645488326,
+        "maximum": 6.782329983125271,
+        "p10": 0.41985850208561215,
+        "p50": 0.8827552082794773,
+        "p90": 2.2946513371065604,
+        "p95": 3.0322895517268362,
+        "p99": 6.180892357713423
+      },
+      "basis": "M5_CV_EQUAL_SERIES",
+      "application": "Sensitivity range, not a new noise distribution or replacement of existing academic assumptions."
+    },
+    "calendar_amplitude": {
+      "reference_quantiles": {
+        "n": 29541,
+        "mean": 0.769489095759587,
+        "minimum": 0.05866591219252405,
+        "maximum": 7.833333333333334,
+        "p10": 0.26822533136966126,
+        "p50": 0.5565123789020452,
+        "p90": 1.3662790697674418,
+        "p95": 1.9583333333333333,
+        "p99": 5.385416666666667
+      },
+      "basis": "M5_WITHIN_SERIES_MONTH_OF_YEAR",
+      "application": "External sensitivity reference. Bolivian peak months, phase and event effects remain assumptions, not copied from M5."
+    },
+    "positive_burst_p95_over_median": {
+      "reference_quantiles": {
+        "n": 131551,
+        "mean": 3.037847922551371,
+        "minimum": 1.0,
+        "maximum": 271.06666666666655,
+        "p10": 2.0,
+        "p50": 2.8,
+        "p90": 4.0,
+        "p95": 5.0,
+        "p99": 7.625
+      },
+      "basis": "FAVORITA_OBSERVED_INTEGER_COHORT_EQUAL_SERIES",
+      "application": "Conditional tail stress reference. Not wholesale probability, order size or local base demand."
+    },
+    "positive_burst_p99_over_median": {
+      "reference_quantiles": {
+        "n": 131551,
+        "mean": 4.715544237604069,
+        "minimum": 1.0,
+        "maximum": 701.2199999999989,
+        "p10": 2.6383333333333305,
+        "p50": 4.0,
+        "p90": 6.8249999999999815,
+        "p95": 8.632666666666651,
+        "p99": 17.32916666666663
+      },
+      "basis": "FAVORITA_OBSERVED_INTEGER_COHORT_EQUAL_SERIES",
+      "application": "Extreme observed-tail sensitivity only. Fractional and unknown cohorts cannot set integer units."
+    },
+    "promotion_daily_probability": {
+      "value": null,
+      "status": "NOT_IDENTIFIABLE_FROM_RECORDED_ROWS",
+      "application": "Favorita conditional frequency and coverage are diagnostics. A simulated promotion schedule requires an explicit independent academic assumption before feature cutoff."
+    },
+    "price_elasticity": {
+      "value": null,
+      "status": "NOT_CAUSALLY_IDENTIFIED"
+    },
+    "bolivian_exchange_rate_stock_modalities_cost_lead_time": {
+      "value": null,
+      "status": "NOT_SUPPORTED_BY_M5_OR_FAVORITA",
+      "application": "Retain versioned academic assumptions or obtain authorized own evidence. Lead times remain separate replenishment scope."
+    }
+  },
+  "integration": "No generator or frozen contract changed. A future version must explicitly consume this configuration before creating any new build.",
+  "unsupported": [
+    "Automotive pending license",
+    "Local commercial accuracy",
+    "Lost demand",
+    "Commercial use or redistribution automatically authorized"
+  ],
+  "causal_effects_estimated": false,
+  "run_id": "calibration-retail-20261115-02",
+  "recorded_at": "2026-11-15T17:30:06.719701+00:00",
+  "trace": {
+    "sources": {
+      "m5_walmart": {
+        "curated_manifest": "sources\\external_curated\\m5_walmart\\sha256-aa5d519ab121b284a7b07f4d\\processing-1-curate-retail-20261115-01\\manifest.json",
+        "curated_manifest_sha256": "a8c99b778372e0bd1a80d1eb8a74f135d98d6b4600c65ee3e386fb4faca9b544",
+        "snapshot_id": "sha256-aa5d519ab121b284a7b07f4d",
+        "processing_version": "processing-1-curate-retail-20261115-01"
+      },
+      "corporacion_favorita": {
+        "curated_manifest": "sources\\external_curated\\corporacion_favorita\\sha256-b69a1fa872a46632efa647d8\\processing-1-curate-retail-20261115-01\\manifest.json",
+        "curated_manifest_sha256": "f60a9aa6ebcba607526b551e6ee7e36618c9e75ee2bc13572e915f9dd9f6a644",
+        "snapshot_id": "sha256-b69a1fa872a46632efa647d8",
+        "processing_version": "processing-1-curate-retail-20261115-01"
+      }
+    },
+    "rules_sha256": "46abcf7e17e1f13ca14e16531d74a669aa9d87505c9b7086842d804bc40a719c",
+    "curation_validation_sha256": "c83c921832773809c75332e1b2f0897fab588c4baa10b7a7963fd33bd909e6e7"
+  },
+  "calibration_script_sha256": "c32846e4d27b982e4cb86b70edf1f89e449e2586f3dcf9c941694d999fcae7c7",
+  "quantiles": "Exact per series, then exact equal-series summaries. No systematic sample.",
+  "windows": "REFERENCE sets policy. COMPARISON descriptive only, previously observed globally. Not untouched TEST.",
+  "raw_read_for_statistics": false,
+  "curated_modified": false,
+  "dataset_created": false,
+  "trained": false,
+  "test_evaluated": false,
+  "neon_used": false
+}

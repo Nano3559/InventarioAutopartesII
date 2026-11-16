@@ -1,0 +1,60 @@
+{
+  "normal": [
+    "PRICE_UP",
+    "PRICE_DOWN",
+    "MID_MONTH_PRICE",
+    "FX_ONLY",
+    "COST_ONLY",
+    "NO_OPENING_STOCK",
+    "WHOLESALE_BULK",
+    "LATE_RECEIPT",
+    "LONG_LEAD",
+    "RETAIL_COMMITMENT",
+    "FUTURE_RESERVATION",
+    "UNCHANGED",
+    "IMPORT_USD"
+  ],
+  "ambiguous_excluded_from_supervised": [
+    {
+      "case": "NEW_PRODUCT_NO_HISTORY",
+      "expected": "ABSTAIN_OR_PARTIAL_NO_INVENTED_VALUE"
+    },
+    {
+      "case": "NEW_STORE",
+      "expected": "ABSTAIN_OR_PARTIAL_NO_INVENTED_VALUE"
+    },
+    {
+      "case": "INCOMPLETE_HISTORY_MONTH",
+      "expected": "ABSTAIN_OR_PARTIAL_NO_INVENTED_VALUE"
+    },
+    {
+      "case": "UNKNOWN_QUOTE",
+      "expected": "ABSTAIN_OR_PARTIAL_NO_INVENTED_VALUE"
+    },
+    {
+      "case": "UNKNOWN_LANDED_COST",
+      "expected": "ABSTAIN_OR_PARTIAL_NO_INVENTED_VALUE"
+    },
+    {
+      "case": "OUTSIDE_ONE_MONTH_HORIZON",
+      "expected": "ABSTAIN_OR_PARTIAL_NO_INVENTED_VALUE"
+    },
+    {
+      "case": "UNCONFIRMED_RECEIPT",
+      "expected": "ABSTAIN_OR_PARTIAL_NO_INVENTED_VALUE"
+    },
+    {
+      "case": "UNCERTAIN_PROMOTION",
+      "expected": "ABSTAIN_OR_PARTIAL_NO_INVENTED_VALUE"
+    }
+  ],
+  "invalid_rejected": [
+    "NEGATIVE_QUANTITY",
+    "WHOLESALE_ABOVE_RETAIL",
+    "PRICE_BELOW_COST",
+    "QUOTE_AFTER_CUTOFF",
+    "DUPLICATE_ORDER",
+    "RESERVATIONS_ABOVE_PHYSICAL",
+    "FUTURE_TARGET_AS_FEATURE"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "stage": "TRANSFORMATION_DESIGN_ONLY",
+  "status": "DEFINED_NOT_EXECUTED",
+  "contract": "v2/contracts/retail_transformations.v2.json",
+  "contract_sha256": "46abcf7e17e1f13ca14e16531d74a669aa9d87505c9b7086842d804bc40a719c",
+  "tests_passed": 22,
+  "tests_failed": 0,
+  "suites": [
+    "tests.test_v2_transformation_rules",
+    "tests.test_v2_provenance",
+    "tests.test_v2_structure"
+  ],
+  "protected_files_checked": 427,
+  "protected_changes": [],
+  "selected_patterns": 8,
+  "diagnostic_patterns": 1,
+  "raw_modified": false,
+  "curated_created": false,
+  "calibrated": false,
+  "dataset_built": false,
+  "trained": false,
+  "neon_used": false,
+  "new_markdown_files": 0,
+  "git_used": false,
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "new_files": [
+    "ml/demand/v2/contracts/retail_transformations.v2.json",
+    "ml/demand/tests/test_v2_transformation_rules.py",
+    "ml/demand/reports/v2/transformation_rules/transformation-rules-20261115-01/validation.json",
+    "ml/demand/tmp/transformation-rules-20261115-01/before.json"
+  ],
+  "remaining_gates": [
+    "Autorización para ejecutar curated",
+    "Validar datos transformados antes de calibrar",
+    "Revisión de publicación de derivados antes de distribuir",
+    "Automotive pendiente de licencia"
+  ]
+}

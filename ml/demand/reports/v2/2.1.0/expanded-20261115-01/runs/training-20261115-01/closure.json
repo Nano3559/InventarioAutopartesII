@@ -1,0 +1,216 @@
+{
+  "status": "TRAINED_VALIDATION_REVIEW_REQUIRED_TEST_RESERVED",
+  "run_id": "training-20261115-01",
+  "actual_model_fits": 102,
+  "actual_preprocessing_fits": 102,
+  "model_fit_failures": 0,
+  "validation_rows": 504,
+  "train_rows": 2520,
+  "test_evaluated": false,
+  "test_partition_loaded": false,
+  "active_model_changed": false,
+  "runner_training_permission_restored": true,
+  "selection": {
+    "candidate_id": "candidate-c95266c5c2c2ee15ffaba590",
+    "model": "random_forest",
+    "status": "REVIEW_REQUIRED",
+    "review_reasons": [
+      "GROUP_TRADEOFF:product:10",
+      "GROUP_TRADEOFF:product:12",
+      "GROUP_TRADEOFF:product:15",
+      "GROUP_TRADEOFF:product:17",
+      "GROUP_TRADEOFF:product:19",
+      "GROUP_TRADEOFF:product:20",
+      "GROUP_TRADEOFF:product:21",
+      "GROUP_TRADEOFF:product:29",
+      "GROUP_TRADEOFF:product:3",
+      "GROUP_TRADEOFF:product:32",
+      "GROUP_TRADEOFF:product:4",
+      "GROUP_TRADEOFF:product:41",
+      "GROUP_TRADEOFF:product:43",
+      "GROUP_TRADEOFF:product:44",
+      "GROUP_TRADEOFF:product:45",
+      "GROUP_TRADEOFF:product:47",
+      "GROUP_TRADEOFF:product:5",
+      "GROUP_TRADEOFF:product_store:1/5",
+      "GROUP_TRADEOFF:product_store:10/5",
+      "GROUP_TRADEOFF:product_store:10/6",
+      "GROUP_TRADEOFF:product_store:12/5",
+      "GROUP_TRADEOFF:product_store:12/7",
+      "GROUP_TRADEOFF:product_store:13/7",
+      "GROUP_TRADEOFF:product_store:14/7",
+      "GROUP_TRADEOFF:product_store:15/5",
+      "GROUP_TRADEOFF:product_store:15/6",
+      "GROUP_TRADEOFF:product_store:15/7",
+      "GROUP_TRADEOFF:product_store:16/5",
+      "GROUP_TRADEOFF:product_store:17/6",
+      "GROUP_TRADEOFF:product_store:17/7",
+      "GROUP_TRADEOFF:product_store:18/5",
+      "GROUP_TRADEOFF:product_store:18/6",
+      "GROUP_TRADEOFF:product_store:19/5",
+      "GROUP_TRADEOFF:product_store:19/7",
+      "GROUP_TRADEOFF:product_store:2/6",
+      "GROUP_TRADEOFF:product_store:20/5",
+      "GROUP_TRADEOFF:product_store:20/7",
+      "GROUP_TRADEOFF:product_store:21/5",
+      "GROUP_TRADEOFF:product_store:21/6",
+      "GROUP_TRADEOFF:product_store:23/6",
+      "GROUP_TRADEOFF:product_store:24/5",
+      "GROUP_TRADEOFF:product_store:25/6",
+      "GROUP_TRADEOFF:product_store:26/5",
+      "GROUP_TRADEOFF:product_store:26/7",
+      "GROUP_TRADEOFF:product_store:27/5",
+      "GROUP_TRADEOFF:product_store:28/5",
+      "GROUP_TRADEOFF:product_store:28/6",
+      "GROUP_TRADEOFF:product_store:29/6",
+      "GROUP_TRADEOFF:product_store:29/7",
+      "GROUP_TRADEOFF:product_store:3/5",
+      "GROUP_TRADEOFF:product_store:3/6",
+      "GROUP_TRADEOFF:product_store:3/7",
+      "GROUP_TRADEOFF:product_store:31/5",
+      "GROUP_TRADEOFF:product_store:31/6",
+      "GROUP_TRADEOFF:product_store:32/5",
+      "GROUP_TRADEOFF:product_store:32/7",
+      "GROUP_TRADEOFF:product_store:33/5",
+      "GROUP_TRADEOFF:product_store:33/6",
+      "GROUP_TRADEOFF:product_store:34/5",
+      "GROUP_TRADEOFF:product_store:35/6",
+      "GROUP_TRADEOFF:product_store:35/7",
+      "GROUP_TRADEOFF:product_store:38/5",
+      "GROUP_TRADEOFF:product_store:38/6",
+      "GROUP_TRADEOFF:product_store:4/5",
+      "GROUP_TRADEOFF:product_store:4/6",
+      "GROUP_TRADEOFF:product_store:4/7",
+      "GROUP_TRADEOFF:product_store:41/5",
+      "GROUP_TRADEOFF:product_store:41/6",
+      "GROUP_TRADEOFF:product_store:41/7",
+      "GROUP_TRADEOFF:product_store:42/6",
+      "GROUP_TRADEOFF:product_store:43/5",
+      "GROUP_TRADEOFF:product_store:43/6",
+      "GROUP_TRADEOFF:product_store:44/5",
+      "GROUP_TRADEOFF:product_store:44/7",
+      "GROUP_TRADEOFF:product_store:45/5",
+      "GROUP_TRADEOFF:product_store:47/7",
+      "GROUP_TRADEOFF:product_store:49/5",
+      "GROUP_TRADEOFF:product_store:49/6",
+      "GROUP_TRADEOFF:product_store:5/5",
+      "GROUP_TRADEOFF:product_store:50/5",
+      "GROUP_TRADEOFF:product_store:50/7",
+      "GROUP_TRADEOFF:product_store:52/5",
+      "GROUP_TRADEOFF:product_store:54/6",
+      "GROUP_TRADEOFF:product_store:55/5",
+      "GROUP_TRADEOFF:product_store:56/7",
+      "GROUP_TRADEOFF:product_store:6/5",
+      "GROUP_TRADEOFF:product_store:6/7",
+      "GROUP_TRADEOFF:product_store:7/7",
+      "GROUP_TRADEOFF:product_store:8/7",
+      "GROUP_TRADEOFF:product_store:9/5",
+      "GROUP_TRADEOFF:product_store:9/6",
+      "GROUP_TRADEOFF:rotation_train:LOW",
+      "GROUP_TRADEOFF:rotation_train:ZERO",
+      "GROUP_TRADEOFF:historical_mode:UNKNOWN_OR_PARTIAL"
+    ],
+    "test_status": "RESERVED_NOT_LOADED",
+    "active_model_changed": false
+  },
+  "tests": {
+    "distinct_checked": 230,
+    "initial_suite": {
+      "run": 230,
+      "passed": 229,
+      "failed": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "initial_failure": "Pre-training assertion that experiments.csv must not exist. Updated to require authorized-run evidence, matching hashes and restored training lock.",
+    "affected_suites_recheck": {
+      "run": 50,
+      "passed": 50,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "unresolved_failures": 0,
+    "new_artifact_tests": 8,
+    "no_additional_model_fits_in_tests": true
+  },
+  "integrity": {
+    "data": {
+      "previous_files_checked": 59,
+      "unchanged": true
+    },
+    "raw": {
+      "previous_files_checked": 136,
+      "unchanged": true
+    },
+    "reports": {
+      "previous_files_checked": 71,
+      "unchanged": true
+    },
+    "models": {
+      "previous_files_checked": 2,
+      "unchanged": true
+    },
+    "manifests": {
+      "previous_files_checked": 5,
+      "unchanged": true
+    },
+    "candidates": {
+      "previous_files_checked": 5,
+      "unchanged": true
+    },
+    "decisions": {
+      "previous_files_checked": 4,
+      "unchanged": true
+    },
+    "lifecycle": {
+      "previous_files_checked": 13,
+      "unchanged": true
+    },
+    "protected": {
+      "previous_files_checked": 44,
+      "unchanged": true
+    },
+    "model_changes": {
+      "old_models_unchanged": true,
+      "new_candidate_only": [
+        "ml/demand/models/v2/training-20261115-01/candidate.joblib",
+        "ml/demand/models/v2/training-20261115-01/manifest.json",
+        "ml/demand/models/v2/training-20261115-01/preprocessing.json"
+      ]
+    },
+    "no_new_markdown": true
+  },
+  "environment": {
+    "python": "3.11.9",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "joblib": "1.6.0"
+  },
+  "source_hashes": {
+    "v2/experiments.py": "abe20673fab4d9cc8fb7ec4d4052a8fa8e1c448384e0fba998fa5571b3211e0c",
+    "v2/preprocessing.py": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+    "v2/contracts/experiments.v2_1.json": "651ba7393487ea05d996dc285f36d995f36309073ca28f1cda4dd30e9d153abd",
+    "v2/contracts/preprocessing.v2_1.json": "36eed4f2b505487bf92985f4c06ad6dabaea0aee6735bf463e7c04eb2369b2b9",
+    "v2/contracts/runner.v2_1.json": "3258e6bd10f2f1ac3f2e05edcc4880db39c814475432d5f1760fd54d1e9fe3f6",
+    "tests/test_v2_training_results.py": "221502c97b4acdcc751bf9d301376392e4445ac74afdeec82f3027d87b7c2b8c",
+    "tests/test_v2_expanded.py": "46186a7eafd9776ddbc258b222af45aff6fef2a6e3b6db13f8078da64e55555c"
+  },
+  "evidence_hashes": {
+    "comparison.json": "6941f7277704fbe2f33c98de419406fde090cfcbc7e21eb1465505245e464115",
+    "execution_audit.json": "737078ba9af99ddfd09d7015310c4fe9b84dc5e87b8c95b13ff005db739a95d1",
+    "validation_comparison.csv": "515c17c5e3c9acad30b81893b58486d3c75410e3d5170574d8753f597077bdd5",
+    "group_review.json": "74793c58b5726f2c7b685ddf3dedac035306319f41aeaeeae5862c5de7191482",
+    "tests.txt": "de280c33b57988662b8900225625426b543b926e8d30f3bc8d27198c15eb00d0",
+    "tests-recheck.txt": "db44f1110947bee0ca31a3ba8b2607f4d722a8b0baaef30490dfbe65ba0ab2ac",
+    "integrity.json": "281e117a29355688a0d20ab8c762d2122be222975ede78afd3f3c5b6faf19617",
+    "before.json": "6e03867e14a0e40ac2df3818b395f4131fb224bd383e299af8ff631660ec3bd7"
+  },
+  "model_artifact_sha256": "6d53fc03f40621f9847ff2ebdcd53944ec99c4356c0a34333a50a16fcd0bf277",
+  "neon_used": false,
+  "git_used": false,
+  "new_markdown_created": false,
+  "dataset_origin": "SYNTHETIC",
+  "commercial_accuracy_certified": false
+}

@@ -1,0 +1,57 @@
+{
+  "status": "LOCAL_VERIFIED_WITH_EXPLICIT_ABSTENTIONS",
+  "datasetVersion": "4.0.0",
+  "historyEnd": "2026-10",
+  "forecastMonth": "2026-11",
+  "futureTargetKnown": false,
+  "historySource": "PUBLISHED_DEMO_BASE_REALIZATION",
+  "evaluationTestScoredOnce": true,
+  "testScoringRepeatedByReview": false,
+  "testCounts": {
+    "frontend": 294,
+    "backend": 184,
+    "pythonCalendarAndLegacyRuntime": 27,
+    "rawAndV1Integrity": 2,
+    "totalDistinct": 507
+  },
+  "builds": {
+    "frontend": "PASS",
+    "backend": "PASS"
+  },
+  "protectedFiles": 518,
+  "protectedFilesChanged": [],
+  "rawHashesMatchManifests": true,
+  "visualReview": {
+    "session": "FIXTURE_ADMIN_LOOPBACK_ONLY",
+    "api": "REAL_PRODUCTION_ROUTER_AND_INFERENCE",
+    "datasetVersion": "4.0.0",
+    "product": "Tensador de Correa",
+    "location": "Tienda 2",
+    "month": "2026-11",
+    "keepPrediction": 87.17,
+    "screenshot": "tmp/calendar2026-review/final.png",
+    "productionSessionVerified": false
+  },
+  "novemberCoverage": {
+    "pairs": 168,
+    "numeric": 136,
+    "abstentions": 32,
+    "reason": "TRUE_OCTOBER_CLOSING_STOCK_EXCEEDS_TRAIN_MAX_150",
+    "stockClipped": false,
+    "limitsRelaxedAfterTest": false
+  },
+  "restrictions": {
+    "neonUsed": false,
+    "rawModified": false,
+    "oldDatasetsModified": false,
+    "oldModelsModified": false,
+    "newMarkdownCreated": false,
+    "gitCommandsExecuted": false
+  },
+  "limitations": [
+    "Academic synthetic observations, not certified real sales",
+    "Independent monthly stock scenarios, not a continuous operational ledger",
+    "November incoming supply is an explicit assumption",
+    "No commercial accuracy guarantee"
+  ]
+}

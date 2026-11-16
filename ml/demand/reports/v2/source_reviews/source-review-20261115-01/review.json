@@ -1,0 +1,155 @@
+{
+  "schema_version": "source-review-1",
+  "run_id": "source-review-20261115-01",
+  "reviewed_at": "2026-11-15T15:15:10.531828+00:00",
+  "scope": "Revisión documental de procedencia, licencias y condiciones. Sin descarga de datasets, procesamiento o entrenamiento.",
+  "historical_matrix": "ml/demand/reports/v2/source_provenance_matrix.json",
+  "historical_matrix_preserved": true,
+  "sources": [
+    {
+      "source_id": "automotive_spare_parts_demand",
+      "decision": "BLOCKED_LICENSE",
+      "license_status": "UNKNOWN",
+      "academic_use_status": "UNKNOWN",
+      "commercial_use_status": "UNKNOWN",
+      "redistribution_status": "UNKNOWN",
+      "confirmed": [
+        "El paquete local es fable.intermittent 0.3.0. Sus 121 archivos incluyen auto, raf, pasta y tinyM5, no un solo dataset.",
+        "El paper de Türkmen et al. identifica Auto como 3000 series mensuales de 24 periodos y enlaza el repositorio canerturkmen/gluon-ts.",
+        "Auto es distinto de Monash Car Parts. La licencia de Monash no se transfiere a Auto.",
+        "El constructor local asigna a Auto un inicio en 2010. No acredita el calendario original.",
+        "El proveedor primario de pasta publica CC BY-NC 3.0, frente a CC BY 4.0 declarado en R/data.R."
+      ],
+      "not_verified": [
+        "Licencia específica de los datos Auto y RAF.",
+        "Identidad binaria entre los archivos locales y la publicación original, sin descargar ni comparar datos remotos.",
+        "Permiso para redistribuir un dataset o modelo derivado de Auto."
+      ],
+      "next_requirement": "Obtener del responsable de Auto una declaración aplicable al dataset que permita el uso académico previsto y aclare publicación de derivados. No contactar autores ni aceptar términos en esta tarea.",
+      "potential_roles": [
+        "DIRECT_DOMAIN_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "evidence": [
+        {
+          "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764",
+          "locator": "Data Availability y sección 5.1",
+          "finding": "Procedencia de Auto y RAF, distinta de Car Parts. La licencia del artículo no demuestra una licencia específica de cada dataset."
+        },
+        {
+          "url": "https://github.com/canerturkmen/gluon-ts/tree/intermittent-datasets/datasets",
+          "locator": "datasets/intermittent_auto y intermittent_raf",
+          "finding": "Distribución vinculada por los autores. Accesibilidad pública no basta para afirmar permiso de datos."
+        },
+        {
+          "url": "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/R/data.R",
+          "locator": "auto, raf, pasta y tinyM5",
+          "finding": "Documentación de los cuatro conjuntos, con derechos que deben revisarse por separado."
+        },
+        {
+          "url": "https://data.mendeley.com/datasets/njdkntcpc9/1",
+          "locator": "Licence",
+          "finding": "La fuente primaria de pasta declara CC BY-NC 3.0."
+        }
+      ],
+      "subdataset_scope": {
+        "auto": "Pendiente de licencia. Referencia automotriz potencial.",
+        "raf": "Pendiente de licencia. Aeronáutico, sin equivalencia automotriz.",
+        "pasta": "Permiso académico no comercial condicionado a atribución. No autoriza Auto ni todo el paquete. No se incorpora al alcance aprobado ni se procesa.",
+        "tinyM5": "Hereda la revisión pendiente de M5, no la licencia del software."
+      }
+    },
+    {
+      "source_id": "m5_walmart",
+      "decision": "BLOCKED_LICENSE",
+      "license_status": "PARTIALLY_VERIFIED",
+      "academic_use_status": "UNKNOWN",
+      "commercial_use_status": "UNKNOWN",
+      "redistribution_status": "UNKNOWN",
+      "confirmed": [
+        "La página oficial identifica datos de ventas diarias de Walmart, calendario y precios por producto y tienda.",
+        "La página Data enumera cinco CSV y declara Subject to Competition Rules. No declara una licencia Creative Commons.",
+        "University of Nicosia organiza la competición. Los datos no representan autopartes ni ventas bolivianas."
+      ],
+      "not_verified": [
+        "Texto específico completo de las reglas M5: las rutas /competitions y /c no devolvieron contenido legible.",
+        "Permisos académicos, comerciales, redistribución y condiciones aplicables a derivados.",
+        "Aceptación de condiciones por quienes utilizarían los archivos e identidad de la adquisición manual."
+      ],
+      "next_requirement": "El equipo debe revisar las reglas M5 desde su sesión de Kaggle, aportar el texto de las condiciones de datos y confirmar acceso autorizado. No se necesita descargar otra copia del dataset. Si sigue inaccesible, solicitar aclaración al organizador.",
+      "potential_roles": [
+        "DEMAND_PATTERN_REFERENCE",
+        "PRICE_PATTERN_REFERENCE",
+        "STORE_PATTERN_REFERENCE",
+        "CALENDAR_REFERENCE"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.kaggle.com/c/m5-forecasting-accuracy/data",
+          "locator": "Dataset Description, Files, License",
+          "finding": "Cinco CSV, ventas por producto-tienda, calendario, precios y licencia sujeta a las reglas de la competición."
+        },
+        {
+          "url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy/rules",
+          "locator": "Competition Rules",
+          "finding": "Intentos de lectura directa sin texto recuperable. No se sustituye por reglas de otra competición ni por licencias de notebooks."
+        }
+      ],
+      "secondary_evidence_policy": "Las páginas secundarias que describen uso no comercial no se consideran prueba suficiente para habilitar M5."
+    },
+    {
+      "source_id": "corporacion_favorita",
+      "decision": "BLOCKED_ACCESS_CONFIRMATION",
+      "license_status": "VERIFIED",
+      "academic_use_status": "PARTIALLY_VERIFIED",
+      "commercial_use_status": "RESTRICTED",
+      "redistribution_status": "RESTRICTED",
+      "confirmed": [
+        "Se revisó la competición Corporación Favorita Grocery Sales Forecasting de 2017, distinta de Store Sales - Time Series Forecasting.",
+        "La sección 7.A contempla investigación académica, educación y fines no comerciales tras aceptar las reglas, salvo restricciones específicas.",
+        "La sección 7.B limita acceso y distribución de los datos. No debe publicarse el RAW ni facilitarlo a terceros fuera de las condiciones.",
+        "La sección 8.A formula el permiso de compartir código en la plataforma de la competición. Antes de publicar código basado en estos datos fuera de Kaggle se necesita aclarar el alcance.",
+        "La licencia de las entregas ganadoras no es una licencia del dataset."
+      ],
+      "not_verified": [
+        "Aceptación de las reglas y participación/acceso autorizado de Ross, Erika u otros usuarios de los datos.",
+        "Alcance permitido de publicar fuera de Kaggle transformaciones, parámetros calibrados, modelos o un dataset sintético derivado. No se presume prohibición universal ni permiso automático.",
+        "Fecha y URL real de la adquisición manual."
+      ],
+      "next_requirement": "Ross y Erika deben confirmar que cada persona con acceso cumple y aceptó las reglas de esta competición. Aclarar con el proveedor el uso de derivados publicables fuera de Kaggle antes de incorporarlos al dataset distribuible o a la aplicación comercial.",
+      "potential_roles": [
+        "DEMAND_PATTERN_REFERENCE",
+        "STORE_PATTERN_REFERENCE",
+        "PROMOTION_REFERENCE",
+        "CALENDAR_REFERENCE"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/rules",
+          "locator": "General Competition Rules 7.A, 7.B y 8.A",
+          "finding": "Lectura mediante el resultado indexado de la página oficial. Uso académico condicionado, seguridad de datos y alcance del permiso de compartir código."
+        }
+      ],
+      "commercial_scope": "No se encontró autorización comercial en las cláusulas revisadas. La revisión académica no habilita el uso operativo en RepuestoPro."
+    }
+  ],
+  "approved_existing_references": [
+    "monash_car_parts",
+    "uci_online_retail_ii"
+  ],
+  "new_sources_approved": [],
+  "interpretation": "No se unen ventas de empresas distintas ni se cambian sus IDs por Product.id. La autorización de perfilado, la incorporación de patrones y la redistribución son decisiones distintas.",
+  "frozen_dataset_policy": "Conservar dataset 2.1.0, artefacto fijado y TEST cerrado. Una ampliación futura requiere otro contrato y build, además de evaluación independiente.",
+  "not_supplied_by_these_sources": [
+    "Tipo de cambio boliviano histórico certificado.",
+    "Plazos reales de proveedor y reposición de RepuestoPro.",
+    "Efecto causal de precios sobre ventas propias."
+  ],
+  "actions_performed": {
+    "dataset_downloads": 0,
+    "raw_transformations": 0,
+    "training_runs": 0,
+    "database_connections": 0,
+    "new_markdown_files": 0
+  }
+}

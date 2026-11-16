@@ -1,0 +1,70 @@
+vite v5.4.21 building for production...
+
+(!) outDir E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\ml\demand\tmp\ui-v2-20261115-01\frontend-build-final is not inside project root and will not be emptied.
+Use --emptyOutDir to override.
+
+transforming...
+✓ 2881 modules transformed.
+rendering chunks...
+computing gzip size...
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/index.html                                     0.48 kB │ gzip:   0.31 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/index-DNCe0IKT.css                     47.77 kB │ gzip:   8.82 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/check-W8Let_00.js                       0.29 kB │ gzip:   0.24 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/chevron-down-DA34HJqj.js                0.30 kB │ gzip:   0.24 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/chevron-left-BjNTDmqe.js                0.30 kB │ gzip:   0.25 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/chevron-right-BVjAOM2n.js               0.30 kB │ gzip:   0.25 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/plus-CHOugfft.js                        0.32 kB │ gzip:   0.25 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/saleDraft-CSR3Kf_5.js                   0.33 kB │ gzip:   0.23 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/filter-CJnQgBW2.js                      0.33 kB │ gzip:   0.26 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/arrow-left-uZGfw3Iw.js                  0.33 kB │ gzip:   0.27 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/search-Dfn4Icb-.js                      0.34 kB │ gzip:   0.27 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/circle-check-big-B4Jcu_kc.js            0.36 kB │ gzip:   0.28 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/info-BmeaSqFW.js                        0.37 kB │ gzip:   0.28 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/businessDate-D1k42-C3.js                0.38 kB │ gzip:   0.23 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/history-PcNXAE7i.js                     0.41 kB │ gzip:   0.30 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/eye-CS-KCdJT.js                         0.42 kB │ gzip:   0.30 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/upload-DoMhVgad.js                      0.43 kB │ gzip:   0.32 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/download-Csr_CJFR.js                    0.43 kB │ gzip:   0.32 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/triangle-alert-B7cZha1D.js              0.43 kB │ gzip:   0.31 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/shield-B6rqRlbl.js                      0.44 kB │ gzip:   0.33 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/pencil-d16AgSJr.js                      0.45 kB │ gzip:   0.33 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/users-5X6suFdQ.js                       0.47 kB │ gzip:   0.32 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/refresh-cw-BZ3AohtW.js                  0.49 kB │ gzip:   0.33 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/file-text-DB5_XXoT.js                   0.50 kB │ gzip:   0.32 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/trash-2-DKtk9xmY.js                     0.53 kB │ gzip:   0.35 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/file-spreadsheet-DO0lkixD.js            0.54 kB │ gzip:   0.33 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/truck-C21Fcs2N.js                       0.57 kB │ gzip:   0.37 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/eye-off-BWzakLk-.js                     0.60 kB │ gzip:   0.38 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/building-2-Bsa3VnLv.js                  0.61 kB │ gzip:   0.35 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/store-xFNvwaTl.js                       0.81 kB │ gzip:   0.40 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/PendingOperation-C0Qcs2NJ.js            1.76 kB │ gzip:   0.98 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/ProductImage-Bt37TgI0.js                1.76 kB │ gzip:   0.95 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/PhysicalStockPanel-C_qej7zm.js          3.94 kB │ gzip:   1.72 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/LoginPage-C0oVOUna.js                   4.08 kB │ gzip:   1.58 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/PublicProductDetailPage-D-ALsTAZ.js     6.07 kB │ gzip:   1.61 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/ColumnManager-Cb62jE_s.js               6.35 kB │ gzip:   2.12 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/salePdf-saaGFFQB.js                     6.36 kB │ gzip:   2.78 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/ContactPage-DSJbqqxv.js                 8.33 kB │ gzip:   2.30 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/PricesPage-csKROfD8.js                  8.99 kB │ gzip:   2.72 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/LandingPage-DyOqChql.js                12.02 kB │ gzip:   3.28 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/ProductDetailPage-MZUgpJ6G.js          13.00 kB │ gzip:   3.64 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/SettingsPage-BfoUbgjX.js               18.19 kB │ gzip:   4.44 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/ReturnsPage-D_v_Po4b.js                18.39 kB │ gzip:   4.98 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/MovementsPage-C35JPIbN.js              20.71 kB │ gzip:   4.79 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/RequestsPage-DZ--ZZAI.js               21.10 kB │ gzip:   5.42 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/WholesalePage-Cymh3Zur.js              26.10 kB │ gzip:   6.04 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/PredictionsPage-B8gl1nXx.js            26.22 kB │ gzip:   9.21 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/ReportsPage-yN8j9Ufe.js                28.31 kB │ gzip:   6.13 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/CostsPage-DhPTnpta.js                  28.75 kB │ gzip:   5.82 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/purify.es-CAi2OJFm.js                  30.47 kB │ gzip:  11.73 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/InventoryPage-BoGufllz.js              35.04 kB │ gzip:   8.40 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/DashboardPage-DU_YEFqH.js              41.91 kB │ gzip:  10.90 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/SalesPage-CvtK1Wwx.js                  43.29 kB │ gzip:   9.88 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/PublicProductsPage-L2x4dAXI.js         77.97 kB │ gzip:  19.62 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/index.es-gd93PA7k.js                  150.85 kB │ gzip:  51.62 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/html2canvas.esm-CBrSDip1.js           201.42 kB │ gzip:  48.03 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/index-C5InKgSF.js                     292.73 kB │ gzip:  97.09 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/xlsx-D2lTDdSb.js                      331.48 kB │ gzip: 108.64 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/generateCategoricalChart-CPqsnhwH.js  374.65 kB │ gzip: 103.67 kB
+../ml/demand/tmp/ui-v2-20261115-01/frontend-build-final/assets/jspdf.es.min-DFCneQJE.js              390.04 kB │ gzip: 128.55 kB
+✓ built in 8.80s

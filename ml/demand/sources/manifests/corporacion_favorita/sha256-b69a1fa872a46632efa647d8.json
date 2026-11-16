@@ -1,0 +1,216 @@
+{
+  "schema_version": "source-manifest-1",
+  "source_id": "corporacion_favorita",
+  "name": "corporación_favorita",
+  "domain": "GROCERY_RETAIL_NOT_AUTOPARTS",
+  "source_url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+  "provider": "Corporación Favorita C.A. / Kaggle",
+  "obtained_at": null,
+  "registered_at": "2026-11-11T13:55:33.557632+00:00",
+  "snapshot_id": "sha256-b69a1fa872a46632efa647d8",
+  "license": "Reglas específicas de Corporación Favorita Grocery Sales Forecasting, sección 7. No licencia CC verificada",
+  "license_url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/rules",
+  "commercial_use_allowed": false,
+  "original_filename": null,
+  "original_format": "DIRECTORY",
+  "sha256": "b69a1fa872a46632efa647d8c5592a5963c64cc2c2a26df7d01ef3c36c1bb938",
+  "hash_scope": "FILE_INVENTORY_SHA256",
+  "inventory_sha256": "b69a1fa872a46632efa647d8c5592a5963c64cc2c2a26df7d01ef3c36c1bb938",
+  "file_size_bytes": 479884308,
+  "file_count": 8,
+  "files": [
+    {
+      "relative_path": "holidays_events.csv.7z",
+      "original_format": "7Z",
+      "file_size_bytes": 1898,
+      "sha256": "1d514622ed75f2fa28e8cc5cba40953fb6c5df9e55eac88bdef1cccfa226ce5c"
+    },
+    {
+      "relative_path": "items.csv.7z",
+      "original_format": "7Z",
+      "file_size_bytes": 14315,
+      "sha256": "80d5bc389b4a89251697a0c92a160feecb8e1d38bc1ffb81de3aa1faf58f30e3"
+    },
+    {
+      "relative_path": "oil.csv.7z",
+      "original_format": "7Z",
+      "file_size_bytes": 3762,
+      "sha256": "1c71799ea0a32a9b32743135f59d335ad0eb24947fd186cd215341ab31b85bb9"
+    },
+    {
+      "relative_path": "sample_submission.csv.7z",
+      "original_format": "7Z",
+      "file_size_bytes": 666528,
+      "sha256": "c5ef726c61509dcea74f9dc463e4eeb33feefd32fc546069cb787142b34daee0"
+    },
+    {
+      "relative_path": "stores.csv.7z",
+      "original_format": "7Z",
+      "file_size_bytes": 648,
+      "sha256": "eb82e34b2e51fff66e3fdd04885db1125fe1d5de8ebb102546f29741c3b9fee4"
+    },
+    {
+      "relative_path": "test.csv.7z",
+      "original_format": "7Z",
+      "file_size_bytes": 4885065,
+      "sha256": "ef20570313bcf3bcef8ff66203409fa42082db04eb94e67d386c89296c5b5f90"
+    },
+    {
+      "relative_path": "train.csv.7z",
+      "original_format": "7Z",
+      "file_size_bytes": 474092593,
+      "sha256": "7d14532d53b12f5e5e69f2dec72ff081bfa6081dc59ad4ca4fa030c7a7a3cce1"
+    },
+    {
+      "relative_path": "transactions.csv.7z",
+      "original_format": "7Z",
+      "file_size_bytes": 219499,
+      "sha256": "ec2e21c10b7d3f9b4c856858a245e9dbfbb8ca68d6d28f669857102892d270d4"
+    }
+  ],
+  "raw_root": "sources/external_raw/corporación_favorita",
+  "temporal_coverage": null,
+  "geographic_scope": "Ecuador",
+  "currency": null,
+  "units": "unit_sales admite cantidades enteras o fraccionarias según producto. No incluye precio unitario de producto.",
+  "description": "Corporación Favorita Grocery Sales Forecasting (competición 2017). Diaria por producto y tienda. Transacciones por tienda y día, eventos y promociones. No confundir con la competición Store Sales de 2021 agregada por familia.",
+  "intended_use": "Roles conceptuales: PROMOTION_REFERENCE, STORE_PATTERN_REFERENCE, CALENDAR_REFERENCE, DEMAND_PATTERN_REFERENCE. Decisión de acceso: BLOCKED_ACCESS_CONFIRMATION. Sin transformación o mezcla autorizada en esta revisión.",
+  "limitations": [
+    "Las reglas 7.A contemplan investigación y educación después de aceptarlas. 7.B restringe compartir los datos con personas no participantes o que no aceptaron las reglas.",
+    "Los ocho archivos coinciden por nombre con la competición de 2017. No se extrajeron 7Z ni se verificaron los bytes contra el proveedor.",
+    "No se certificó aquí el rango exacto de train mediante una página primaria legible o el archivo. Se mantiene temporal_coverage=null en lugar de copiar fechas de blogs o de la competición de 2021.",
+    "La descripción de Data no estuvo legible directamente. Se identificaron variables con documentación de la competición reproducida en una entrada de datos de Kaggle, utilizada solo como corroboración secundaria.",
+    "Las devoluciones pueden aparecer como unit_sales negativas y hay cantidades fraccionarias según esa documentación. Revisarlo posteriormente, sin trasladar esas reglas a ventas brutas de RepuestoPro.",
+    "oil no es tipo de cambio Bs/USD ni precio unitario del producto. No inferir moneda de las columnas solo por el país.",
+    "No se asigna CANCELLATION_REFERENCE: las devoluciones negativas no equivalen por sí solas a anulaciones identificadas por factura.",
+    "Se revisó la competición Corporación Favorita Grocery Sales Forecasting de 2017, distinta de Store Sales - Time Series Forecasting.",
+    "La sección 7.A contempla investigación académica, educación y fines no comerciales tras aceptar las reglas, salvo restricciones específicas.",
+    "La sección 7.B limita acceso y distribución de los datos. No debe publicarse el RAW ni facilitarlo a terceros fuera de las condiciones.",
+    "La sección 8.A formula el permiso de compartir código en la plataforma de la competición. Antes de publicar código basado en estos datos fuera de Kaggle se necesita aclarar el alcance.",
+    "La licencia de las entregas ganadoras no es una licencia del dataset.",
+    "Alcance permitido de publicar fuera de Kaggle transformaciones, parámetros calibrados, modelos o un dataset sintético derivado. No se presume prohibición universal ni permiso automático.",
+    "No publicar ni redistribuir RAW o tablas que reproduzcan sus datos fuera de los permisos aplicables.",
+    "Aclarar publicación externa y uso comercial de código, parámetros, modelos o datos sintéticos derivados antes de esa incorporación. No presumir una autorización o prohibición universal.",
+    "Fecha real de adquisición desconocida. La URL de adquisición es la página declarada, no un enlace individual de archivo."
+  ],
+  "processing_status": "APPROVED_FOR_PROFILING",
+  "completeness": "UNKNOWN",
+  "contains_archives": true,
+  "documentation_files": [],
+  "evidence": [
+    {
+      "path": "reports/v2/source_reviews/source-access-20261115-03/review.json",
+      "scope": "USER_ATTESTATION_AND_OFFICIAL_RULES",
+      "finding": "Ross confirma aceptación y descarga desde la competición de 2017. Reglas oficiales 7.A y 7.B: alcance académico no comercial y restricciones de acceso. Fecha de adquisición e identidad binaria no certificadas."
+    }
+  ],
+  "visible_structure": [],
+  "archive_inspection": [
+    {
+      "path": "holidays_events.csv.7z",
+      "status": "NOT_LISTED_NO_EXTRACTOR_USED",
+      "entries": null
+    },
+    {
+      "path": "items.csv.7z",
+      "status": "NOT_LISTED_NO_EXTRACTOR_USED",
+      "entries": null
+    },
+    {
+      "path": "oil.csv.7z",
+      "status": "NOT_LISTED_NO_EXTRACTOR_USED",
+      "entries": null
+    },
+    {
+      "path": "sample_submission.csv.7z",
+      "status": "NOT_LISTED_NO_EXTRACTOR_USED",
+      "entries": null
+    },
+    {
+      "path": "stores.csv.7z",
+      "status": "NOT_LISTED_NO_EXTRACTOR_USED",
+      "entries": null
+    },
+    {
+      "path": "test.csv.7z",
+      "status": "NOT_LISTED_NO_EXTRACTOR_USED",
+      "entries": null
+    },
+    {
+      "path": "train.csv.7z",
+      "status": "NOT_LISTED_NO_EXTRACTOR_USED",
+      "entries": null
+    },
+    {
+      "path": "transactions.csv.7z",
+      "status": "NOT_LISTED_NO_EXTRACTOR_USED",
+      "entries": null
+    }
+  ],
+  "notes": [
+    "null significa desconocido, no permiso denegado ni valor cero.",
+    "registered_at es el registro actual, no la fecha de adquisición.",
+    "sha256 en directorios es hash del inventario canónico. Cada files[].sha256 corresponde a bytes originales.",
+    "Las licencias de software incluidas no se atribuyen automáticamente a los datos."
+  ],
+  "official_name": "Corporación Favorita Grocery Sales Forecasting (competición 2017)",
+  "authors": [
+    "Corporación Favorita C.A."
+  ],
+  "data_type": "DAILY_PRODUCT_STORE_SALES_AND_AUXILIARY_FILES",
+  "real_or_synthetic": "REAL",
+  "granularity": "Diaria por producto y tienda. Transacciones por tienda y día, eventos y promociones. No confundir con la competición Store Sales de 2021 agregada por familia.",
+  "variables": [
+    "date",
+    "store_nbr",
+    "item_nbr",
+    "unit_sales",
+    "onpromotion",
+    "transactions",
+    "family/class/perishable",
+    "city/state/type/cluster",
+    "holidays_events",
+    "oil"
+  ],
+  "license_status": "VERIFIED",
+  "academic_use_status": "VERIFIED",
+  "commercial_use_status": "RESTRICTED",
+  "redistribution_status": "RESTRICTED",
+  "intended_role_v2": [
+    "PROMOTION_REFERENCE",
+    "STORE_PATTERN_REFERENCE",
+    "CALENDAR_REFERENCE",
+    "DEMAND_PATTERN_REFERENCE"
+  ],
+  "profiling_decision": "APPROVED_ACADEMIC_ONLY",
+  "citation": "Corporación Favorita C.A. (2017). Corporación Favorita Grocery Sales Forecasting. Kaggle. Cita recomendada, no obligación de atribución contractual certificada.",
+  "citation_required": null,
+  "doi": null,
+  "evidence_urls": [
+    "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+    "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/data",
+    "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/rules"
+  ],
+  "verification_status": "PARTIALLY_VERIFIED",
+  "verified_at": "2026-11-15T16:14:44.839252+00:00",
+  "obtained_from_url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/data",
+  "acquisition_verification_status": "PARTIALLY_VERIFIED",
+  "review_notes": [
+    "Ross confirmó el 15 de noviembre de 2026 que aceptó las reglas de la competición de 2017 y descargó los archivos desde su cuenta. Evidencia declarada por el usuario, no verificación de su cuenta.",
+    "Habilitación documental para futuro perfilado académico no comercial por Ross. No autoriza ejecutarlo en esta tarea ni incorporar datos a un build.",
+    "obtained_at sigue null. obtained_from_url identifica la página de adquisición declarada, sin certificar URL de cada archivo ni identidad binaria frente al proveedor.",
+    "No se confirma aceptación de Erika ni de terceros. Redistribución y uso comercial siguen restringidos.",
+    "Registro vigente: reports/v2/source_reviews/source-access-20261115-03/review.json. Revisiones previas conservadas como historia.",
+    "Perfilado descriptivo autorizado por Ross y completado el 15 de noviembre de 2026: reports/v2/profiling/profile-retail-20261115-01/corporacion_favorita_profile.json. Sin curated, dataset nuevo o entrenamiento. Las notas de tareas anteriores reflejan su autorización en aquel momento.",
+    "Transformación privada y validación independiente completadas el 15 de noviembre de 2026. Salidas: sources/external_curated/corporacion_favorita/sha256-b69a1fa872a46632efa647d8/processing-1-curate-retail-20261115-01. Evidencia: reports/v2/curation/curate-retail-20261115-01/validation.json. No calibración o dataset final. El estado de registro RAW conserva su habilitación de acceso."
+  ],
+  "hash_semantics": {
+    "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+    "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+    "sha256_scope": "FILE_INVENTORY_SHA256",
+    "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+    "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+  },
+  "related_publications": [],
+  "paper_review_note": "No se identificó en esta revisión un paper primario específico para esta edición. El DOI de UCI corresponde al dataset."
+}

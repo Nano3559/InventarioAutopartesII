@@ -1,0 +1,79 @@
+{
+  "status": "ACADEMIC_RECOMMENDATION_ONLY_NOT_PROMOTED",
+  "recommended": "absolute_forest-d4",
+  "secondary": "low_median_routing",
+  "new_model_fits": 0,
+  "test_loaded": false,
+  "test_evaluated": false,
+  "active_model_changed": false,
+  "selection_closed": false,
+  "dataset_modified": false,
+  "neon_used": false,
+  "git_used": false,
+  "new_markdown_created": false,
+  "artifact_regression_tests": {
+    "run": 17,
+    "passed": 17,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "additional_model_fits": 0
+  },
+  "paired_metrics_checks": 8,
+  "large_error_rows_reviewed": 21,
+  "outstanding_products_reviewed": 7,
+  "integrity": {
+    "data": {
+      "files_checked": 59,
+      "unchanged": true
+    },
+    "models": {
+      "files_checked": 14,
+      "unchanged": true
+    },
+    "reports": {
+      "files_checked": 107,
+      "unchanged": true
+    },
+    "candidates": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "decisions": {
+      "files_checked": 4,
+      "unchanged": true
+    },
+    "lifecycle": {
+      "files_checked": 13,
+      "unchanged": true
+    },
+    "raw": {
+      "files_checked": 136,
+      "unchanged": true
+    },
+    "manifests": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "protected": {
+      "files_checked": 44,
+      "unchanged": true
+    }
+  },
+  "recommended_artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "evidence_hashes": {
+    "analysis_source.py": "3583d400f8970251e4a61df44d3ecc32ee94d285c96ecb98c21a1af6664d9d87",
+    "before.json": "336fc16185e6317b7a30032852f32b51f474e7c02cd118c5fa558779b631871d",
+    "large_errors.csv": "81216f3e71193301ee34e4569fc4f7f2af6d4e41cf279a11023139baeb9aa1bd",
+    "paired_review.json": "33911cd0800e7ba8100915749dbe3edcedda0bc43bd9c3018008fd7c42739c17",
+    "recommendation.json": "cccc969a50f739a20dccaf6d1d50fb2de52f43e59835ff02ea6dfa1ffb9a83f6",
+    "seven_products.csv": "90400ce588913385fe28bbe3911519194d4bdbf103817daaa44cdde0f115e875",
+    "tests.txt": "9176642312abd236816ff977a916e3a534de2d76c035d13cde2e1202b10f2856"
+  },
+  "interpretation": "Recommendation follows predeclared academic MAE. Documented tail and aggregate bias remain blockers for automatic commercial use. Reused VALIDATION is exploratory.",
+  "pending": [
+    "Team acceptance and inference contract review with Erika.",
+    "Freeze artifact and policy before separately authorized TEST.",
+    "No per-ID exceptions from VALIDATION and no implicit change to shortage-cost objective."
+  ]
+}

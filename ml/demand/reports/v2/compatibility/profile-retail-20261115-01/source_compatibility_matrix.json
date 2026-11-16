@@ -1,0 +1,273 @@
+{
+  "report_version": "retail-compatibility-1",
+  "reviewed_at": "2026-11-15T16:27:11.924458+00:00",
+  "status": "PROFILED_COMPATIBLE_AS_CONDITIONAL_REFERENCES_ONLY",
+  "dictionary_reference": "v2/contracts/dataset_columns.v2_1.json",
+  "profile_run": "profile-retail-20261115-01",
+  "sources": [
+    {
+      "source_id": "m5_walmart",
+      "decision": "REFERENCE_ONLY",
+      "roles": [
+        "DEMAND_PATTERN_REFERENCE",
+        "PRICE_PATTERN_REFERENCE",
+        "STORE_PATTERN_REFERENCE",
+        "CALENDAR_REFERENCE"
+      ],
+      "period_start": "2011-01-29",
+      "period_end": "2016-05-22",
+      "key_findings": [
+        "Los dos históricos comparten exactamente los primeros 1913 días. No concatenarlos.",
+        "Calendario hasta junio de 2016 no significa ventas etiquetadas hasta junio.",
+        "M5 no tiene clasificación por mayor/menor, stock histórico, costo de compra, cotización Bs/USD o plazos de proveedor."
+      ],
+      "license_scope": "Perfilado académico no comercial de Ross, con restricciones de acceso y redistribución. No permiso comercial o de publicación automática.",
+      "training_monthly_dataset_not_created": true
+    },
+    {
+      "source_id": "corporacion_favorita",
+      "decision": "REFERENCE_ONLY_WITH_UNIT_AND_RETURN_POLICIES",
+      "roles": [
+        "DEMAND_PATTERN_REFERENCE",
+        "STORE_PATTERN_REFERENCE",
+        "PROMOTION_REFERENCE",
+        "CALENDAR_REFERENCE"
+      ],
+      "period_start": "2013-01-01",
+      "period_end": "2017-08-15",
+      "key_findings": [
+        "unit_sales tiene valores negativos y fraccionarios. No copiar como target bruto entero de RepuestoPro.",
+        "onpromotion faltante no equivale a False.",
+        "Sin precio unitario de producto, modalidad mayorista o minorista, stock histórico ni plazo de proveedor.",
+        "oil es referencia de petróleo, no moneda o precio del producto. transactions son conteos por tienda-fecha, no líneas de producto o modalidad."
+      ],
+      "license_scope": "Perfilado académico no comercial de Ross, con restricciones. La aceptación no habilita redistribución automática."
+    }
+  ],
+  "variables": [
+    {
+      "variable": "mes_objetivo",
+      "role": "IDENTIFIER",
+      "m5": "CALENDAR_REFERENCE",
+      "favorita": "CALENDAR_REFERENCE",
+      "decision": "Calendario calculable, pero no trasladar automáticamente eventos o estacionalidad de Estados Unidos o Ecuador a Bolivia.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "productId",
+      "role": "IDENTIFIER",
+      "m5": "EXTERNAL_IDS_NOT_REPUESTOPRO_IDS",
+      "favorita": "EXTERNAL_IDS_NOT_REPUESTOPRO_IDS",
+      "decision": "Referencias externas de producto, tienda o categoría. No mapear IDs por sustitución. categoryId sigue procediendo del catálogo congelado.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "locationId",
+      "role": "IDENTIFIER",
+      "m5": "EXTERNAL_IDS_NOT_REPUESTOPRO_IDS",
+      "favorita": "EXTERNAL_IDS_NOT_REPUESTOPRO_IDS",
+      "decision": "Referencias externas de producto, tienda o categoría. No mapear IDs por sustitución. categoryId sigue procediendo del catálogo congelado.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "ventas_mes_anterior",
+      "role": "FEATURE",
+      "m5": "DEMAND_PATTERN_REFERENCE",
+      "favorita": "DEMAND_PATTERN_REFERENCE_WITH_RETURNS_AND_FRACTIONAL_UNITS",
+      "decision": "Referencia para simulación posterior, no observaciones RepuestoPro. Una futura agregación mensual debe separar meses incompletos, devoluciones y cantidades fraccionarias.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "ventas_hace_2_meses",
+      "role": "FEATURE",
+      "m5": "DEMAND_PATTERN_REFERENCE",
+      "favorita": "DEMAND_PATTERN_REFERENCE_WITH_RETURNS_AND_FRACTIONAL_UNITS",
+      "decision": "Referencia para simulación posterior, no observaciones RepuestoPro. Una futura agregación mensual debe separar meses incompletos, devoluciones y cantidades fraccionarias.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "ventas_hace_3_meses",
+      "role": "FEATURE",
+      "m5": "DEMAND_PATTERN_REFERENCE",
+      "favorita": "DEMAND_PATTERN_REFERENCE_WITH_RETURNS_AND_FRACTIONAL_UNITS",
+      "decision": "Referencia para simulación posterior, no observaciones RepuestoPro. Una futura agregación mensual debe separar meses incompletos, devoluciones y cantidades fraccionarias.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "mes_sin",
+      "role": "FEATURE",
+      "m5": "CALENDAR_REFERENCE",
+      "favorita": "CALENDAR_REFERENCE",
+      "decision": "Calendario calculable, pero no trasladar automáticamente eventos o estacionalidad de Estados Unidos o Ecuador a Bolivia.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "mes_cos",
+      "role": "FEATURE",
+      "m5": "CALENDAR_REFERENCE",
+      "favorita": "CALENDAR_REFERENCE",
+      "decision": "Calendario calculable, pero no trasladar automáticamente eventos o estacionalidad de Estados Unidos o Ecuador a Bolivia.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "proporcion_por_mayor_mes_anterior",
+      "role": "FEATURE",
+      "m5": "NO_DIRECT_SOURCE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "No fabricar esta variable ni afirmar respaldo externo.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "cobertura_modalidad_mes_anterior",
+      "role": "FEATURE",
+      "m5": "NO_DIRECT_SOURCE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "No fabricar esta variable ni afirmar respaldo externo.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "precio_menor_cierre_anterior_bs",
+      "role": "FEATURE",
+      "m5": "PRICE_PATTERN_REFERENCE_SINGLE_PRICE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "M5 tiene un precio semanal por producto-tienda, no dos modalidades. Solo posibles patrones relativos. No copiar USD como Bs ni inferir precio mayorista.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "precio_mayor_cierre_anterior_bs",
+      "role": "FEATURE",
+      "m5": "PRICE_PATTERN_REFERENCE_SINGLE_PRICE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "M5 tiene un precio semanal por producto-tienda, no dos modalidades. Solo posibles patrones relativos. No copiar USD como Bs ni inferir precio mayorista.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "variacion_precio_menor_conocida",
+      "role": "FEATURE",
+      "m5": "PRICE_PATTERN_REFERENCE_SINGLE_PRICE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "M5 tiene un precio semanal por producto-tienda, no dos modalidades. Solo posibles patrones relativos. No copiar USD como Bs ni inferir precio mayorista.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "variacion_precio_mayor_conocida",
+      "role": "FEATURE",
+      "m5": "PRICE_PATTERN_REFERENCE_SINGLE_PRICE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "M5 tiene un precio semanal por producto-tienda, no dos modalidades. Solo posibles patrones relativos. No copiar USD como Bs ni inferir precio mayorista.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "tipo_cambio_bs_usd_conocido",
+      "role": "FEATURE",
+      "m5": "NO_DIRECT_SOURCE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "No fabricar esta variable ni afirmar respaldo externo.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "variacion_tipo_cambio_ultimo_mes",
+      "role": "FEATURE",
+      "m5": "NO_DIRECT_SOURCE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "No fabricar esta variable ni afirmar respaldo externo.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "antiguedad_tipo_cambio_dias",
+      "role": "FEATURE",
+      "m5": "NO_DIRECT_SOURCE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "No fabricar esta variable ni afirmar respaldo externo.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "dias_sin_stock_mes_anterior",
+      "role": "FEATURE",
+      "m5": "NO_DIRECT_SOURCE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "No fabricar esta variable ni afirmar respaldo externo.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "cobertura_stock_mes_anterior",
+      "role": "FEATURE",
+      "m5": "NO_DIRECT_SOURCE",
+      "favorita": "NO_DIRECT_SOURCE",
+      "decision": "No fabricar esta variable ni afirmar respaldo externo.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "categoryId",
+      "role": "FEATURE",
+      "m5": "EXTERNAL_IDS_NOT_REPUESTOPRO_IDS",
+      "favorita": "EXTERNAL_IDS_NOT_REPUESTOPRO_IDS",
+      "decision": "Referencias externas de producto, tienda o categoría. No mapear IDs por sustitución. categoryId sigue procediendo del catálogo congelado.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "target_ventas_mes",
+      "role": "TARGET",
+      "m5": "DEMAND_PATTERN_REFERENCE",
+      "favorita": "DEMAND_PATTERN_REFERENCE_WITH_RETURNS_AND_FRACTIONAL_UNITS",
+      "decision": "Referencia para simulación posterior, no observaciones RepuestoPro. Una futura agregación mensual debe separar meses incompletos, devoluciones y cantidades fraccionarias.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "feature_cutoff_at",
+      "role": "CONTROL",
+      "m5": "LOCAL_CONTROL_REQUIRED",
+      "favorita": "LOCAL_CONTROL_REQUIRED",
+      "decision": "Controles que deberá producir el pipeline propio, no copiar de los archivos externos.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "history_snapshot_id",
+      "role": "CONTROL",
+      "m5": "LOCAL_CONTROL_REQUIRED",
+      "favorita": "LOCAL_CONTROL_REQUIRED",
+      "decision": "Controles que deberá producir el pipeline propio, no copiar de los archivos externos.",
+      "changes_to_frozen_dictionary": false
+    },
+    {
+      "variable": "quality_status",
+      "role": "CONTROL",
+      "m5": "LOCAL_CONTROL_REQUIRED",
+      "favorita": "LOCAL_CONTROL_REQUIRED",
+      "decision": "Controles que deberá producir el pipeline propio, no copiar de los archivos externos.",
+      "changes_to_frozen_dictionary": false
+    }
+  ],
+  "candidate_features_not_approved_for_current_model": [
+    {
+      "name": "promotion_known_at_cutoff",
+      "source": "Favorita onpromotion",
+      "conditions": "Propuesta futura. Debe existir registro de disponibilidad anterior al corte y reglas para faltantes. No habilitada como nueva feature del modelo 2.1.0."
+    }
+  ],
+  "future_transformations_to_approve": [
+    "Seleccionar subconjuntos y ventanas solo después de fijar objetivo y reglas.",
+    "Una sola versión de las ventas M5, sin duplicar el prefijo compartido.",
+    "Resolver política de devoluciones y cantidades fraccionarias Favorita. No abs() o recorte silencioso.",
+    "Mantener ausencias como desconocidas hasta justificar ceros.",
+    "Separar meses incompletos y tablas sin target.",
+    "Usar precios conocidos antes del corte y patrones relativos. Precio semanal no implica que fuera conocido en una fecha anterior.",
+    "Revisar unidades, geografías, calendarios y disponibilidad antes de calibrar.",
+    "Revisar permisos de publicación de derivados y proteger datos restringidos."
+  ],
+  "no_causal_claims": true,
+  "data_joined": false,
+  "curated_created": false,
+  "dataset_created": false,
+  "models_trained": false,
+  "frozen_test_used": false,
+  "automotive": "BLOCKED_LICENSE, sin lectura analítica",
+  "next_step": "Aprobar reglas de transformación, compatibilidad de variables y alcance publicable. Después autorizar curated y calibración por separado. No construir V2 automáticamente.",
+  "statistical_scope": "Se calcularon resúmenes mensuales de conteos y unidades para perfilado, sin construir una tabla mensual de entrenamiento o realizar joins entre tablas.",
+  "small_table_exact_quantiles": "reports/v2/profiling/profile-retail-20261115-01/favorita_small_table_statistics.json",
+  "profile_warnings": [
+    "Pandas DtypeWarning: onpromotion combina valores booleanos y faltantes. El perfil normaliza únicamente la lectura a string nullable para contar True, False y ausentes, sin escribir datos transformados. Las cuentas cubren todas las filas.",
+    "Pandas4Warning: uso de sort_values(inplace=True) en la inspección auxiliar de precios. No alteró archivos o resultados.",
+    "Percentiles de tablas pequeñas en el perfil principal proceden de muestra sistemática insuficiente. El suplemento calcula percentiles exactos para oil y transactions, que deben preferirse."
+  ]
+}

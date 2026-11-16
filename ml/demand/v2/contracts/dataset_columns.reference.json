@@ -1,0 +1,105 @@
+{
+  "schema_version": "dataset-schema-1",
+  "status": "DRAFT",
+  "columns": [
+    {
+      "name": "mes_objetivo",
+      "type": "month",
+      "unit": null,
+      "role": "IDENTIFIER",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Conocido antes de emitir",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    },
+    {
+      "name": "productId",
+      "type": "integer",
+      "unit": null,
+      "role": "IDENTIFIER",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Cat\u00e1logo de referencia",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    },
+    {
+      "name": "locationId",
+      "type": "integer",
+      "unit": null,
+      "role": "IDENTIFIER",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Cat\u00e1logo de referencia",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    },
+    {
+      "name": "ventas_mes_anterior",
+      "type": "integer",
+      "unit": "unidades",
+      "role": "FEATURE",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Mes anterior cerrado",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    },
+    {
+      "name": "ventas_hace_2_meses",
+      "type": "integer",
+      "unit": "unidades",
+      "role": "FEATURE",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Dos meses anteriores cerrados",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    },
+    {
+      "name": "ventas_hace_3_meses",
+      "type": "integer",
+      "unit": "unidades",
+      "role": "FEATURE",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Tres meses anteriores cerrados",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    },
+    {
+      "name": "mes_sin",
+      "type": "number",
+      "unit": null,
+      "role": "FEATURE",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Calendario conocido antes de emitir",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    },
+    {
+      "name": "mes_cos",
+      "type": "number",
+      "unit": null,
+      "role": "FEATURE",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Calendario conocido antes de emitir",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    },
+    {
+      "name": "target_ventas_mes",
+      "type": "integer",
+      "unit": "unidades",
+      "role": "TARGET",
+      "source": "Referencia V1.1, no contrato final V2",
+      "nullable": false,
+      "availability_time": "Solo despu\u00e9s del cierre del mes objetivo",
+      "description": "Referencia de columna V1.1. Requiere revisi\u00f3n para V2.",
+      "approval_status": "V1_REFERENCE"
+    }
+  ]
+}
