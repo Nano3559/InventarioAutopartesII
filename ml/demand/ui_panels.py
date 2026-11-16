@@ -162,6 +162,54 @@ def compare_reference_models(features, *, complete=True):
     return result
 
 
+def render_reference_predictions(features, *, complete=True):
+    """R23/R30: las tres referencias visibles, separadas de ACTIVE/CANDIDATE."""
+    st.subheader("Comparar baseline, LinearRegression y V1")
+    st.caption("Emisión puntual sobre las mismas cinco entradas. El baseline y LinearRegression "
+               "son referencias independientes. RandomForest requiere V1 activa. No entrena ni selecciona modelos.")
+    eng = engine()
+    selected = eng.status()
+    observed_known = (journal().is_locked((selected["product_id"], selected["location_id"], selected["viewing_month"])) or
+                      eng.is_closed(selected["viewing_month"]) or
+                      (selected["viewing_month"] == selected["open_month"] and
+                       selected["pending_observed"] is not None))
+    if st.button("COMPARAR TRES REFERENCIAS", disabled=observed_known):
+        try:
+            compare_reference_models(features, complete=complete)
+            st.session_state.pop("reference_comparison_error", None)
+        except Exception:
+            st.session_state.reference_comparison_error = "No se pudo comparar las referencias verificadas. No se muestran salidas ficticias."
+    if st.session_state.get("reference_comparison_error"):
+        st.error(st.session_state.reference_comparison_error)
+    result = st.session_state.get("reference_comparison_result")
+    if not result:
+        st.info("Pulsa COMPARAR TRES REFERENCIAS para emitir baseline y LinearRegression, incluso sin ACTIVE.")
+        return
+    if result["month"] != selected["viewing_month"] or result["features"] != features or result["scenario"] != selected["scenario"]:
+        st.warning("Emisión anterior: cambió el mes, escenario o entrada. Vuelve a comparar antes de interpretar estos valores como actuales.")
+    try:
+        current_active = active_info(runtime())
+    except Exception:
+        current_active = None
+    recorded = next(r["model"] for r in result["predictions"] if r["id"] == "RF_V1")
+    if (current_active.artifact_hash if current_active else None) != (recorded or {}).get("artifact_hash"):
+        st.warning("La referencia ACTIVE cambió desde esta comparación. Se conservan sus resultados originales.")
+    table = []
+    for row in result["predictions"]:
+        model = row["model"] or {}
+        table.append({"Referencia": row["id"], "Modelo": model.get("name", "RandomForest V1"),
+                      "Papel": model.get("role", "SIN ACTIVE"), "Versión": model.get("version", "NO DISPONIBLE"),
+                      "Unidades previstas": row["prediction"], "Salida original": row["raw_prediction"],
+                      "Motivo": row["reason"]})
+    st.dataframe(pd.DataFrame(table), hide_index=True, width="stretch")
+    available = [row for row in table if row["Unidades previstas"] is not None]
+    if available:
+        st.bar_chart(pd.DataFrame(available), x="Referencia", y="Unidades previstas", y_label="Unidades")
+    st.caption(f"SIMULACIÓN · Mes {result['month']} · Emisión {result['id']} · Corte {result['issued_at']}")
+    st.caption("Una salida negativa de una referencia se conserva como salida original, con abstención visible. "
+               "Estos valores no son MAE de validation/test ni justifican activar un candidato.")
+
+
 def reconnect_runtime():
     provider = st.session_state.get("h4_runtime")
     before = provider.get_active_model() if provider else None
@@ -502,7 +550,7 @@ def render_monitoring():
                f"Modelo sobre esos mismos casos: MAE {formatted(stats['model_comparable']['MAE'])}.")
     frame = pd.DataFrame(record_table(selected))
     st.dataframe(frame, hide_index=True, width="stretch")
-    for dimension in ("Tienda", "Producto", "Rotación", "Mes"):
+    for dimension in ("Tienda", "Producto", "Rotación", "Mes", "Escenario"):
         with st.expander(f"Errores por {dimension.lower()}"):
             st.dataframe(pd.DataFrame(group_errors(selected, dimension)), hide_index=True, width="stretch")
     pairs = list(dict.fromkeys((r.forecast.product_id, r.forecast.location_id) for r in selected))
@@ -569,7 +617,7 @@ def render_comparison(reference):
     st.write(report["reason"] or "Sin justificación adjunta. No hay promoción automática.")
     chosen = st.selectbox("Modelo para desglosar el reporte", report["models"], format_func=lambda m: m.label)
     rows = report["groups"][chosen.artifact_hash]
-    for dimension in ("Tienda", "Rotación", "Mes", "Producto"):
+    for dimension in ("Tienda", "Rotación", "Mes", "Producto", "Escenario"):
         with st.expander(f"Reporte: errores por {dimension.lower()}"):
             st.dataframe(pd.DataFrame(group_errors(rows, dimension)), hide_index=True, width="stretch")
-    st.caption("SIN DATO en rotación indica que el reporte no adjunta ese metadato. No se infiere a partir del ID.")
+    st.caption("SIN DATO en rotación o NO REGISTRADO en escenario indican metadatos no adjuntos. No se infieren a partir del ID.")

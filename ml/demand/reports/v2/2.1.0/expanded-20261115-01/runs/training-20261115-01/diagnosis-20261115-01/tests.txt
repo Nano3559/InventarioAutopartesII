@@ -1,0 +1,13 @@
+test_all_actual_fits_used_only_approved_train_windows (test_v2_training_results.FrozenTrainingResultsTests.test_all_actual_fits_used_only_approved_train_windows) ... ok
+test_baseline_metrics_independently_recomputed_on_validation (test_v2_training_results.FrozenTrainingResultsTests.test_baseline_metrics_independently_recomputed_on_validation) ... ok
+test_complete_comparison_and_no_omitted_failures (test_v2_training_results.FrozenTrainingResultsTests.test_complete_comparison_and_no_omitted_failures) ... ok
+test_execution_permission_was_scoped_and_restored (test_v2_training_results.FrozenTrainingResultsTests.test_execution_permission_was_scoped_and_restored) ... ok
+test_restored_preprocessing_matches_frozen_pipeline (test_v2_training_results.FrozenTrainingResultsTests.test_restored_preprocessing_matches_frozen_pipeline) ... ok
+test_selected_artifact_reproduces_validation_metrics_without_fit (test_v2_training_results.FrozenTrainingResultsTests.test_selected_artifact_reproduces_validation_metrics_without_fit) ... ok
+test_tracking_records_same_run_and_model_hash (test_v2_training_results.FrozenTrainingResultsTests.test_tracking_records_same_run_and_model_hash) ... ok
+test_winner_selected_from_validation_and_review_not_bypassed (test_v2_training_results.FrozenTrainingResultsTests.test_winner_selected_from_validation_and_review_not_bypassed) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.797s
+
+OK

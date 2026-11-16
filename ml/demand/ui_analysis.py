@@ -4,7 +4,7 @@ import hashlib
 import math
 from collections import defaultdict
 
-from simulator_inputs import InputError, offset_month, parse_month, validate_quantity
+from simulator_inputs import InputError, SCENARIOS, offset_month, parse_month, validate_quantity
 from ui_runtime import ClosedObservation, Forecast, ORIGIN, checked_number, model_info
 
 
@@ -46,6 +46,7 @@ def group_errors(rows, dimension):
         "Producto": lambda r: r.forecast.product_id,
         "Mes": lambda r: r.forecast.month,
         "Rotación": lambda r: r.rotation,
+        "Escenario": lambda r: r.forecast.scenario,
     }
     groups = defaultdict(list)
     for row in rows:
@@ -163,6 +164,9 @@ def parse_comparison(payload, reference):
             rotation = row.get("rotation", "SIN DATO")
             if rotation not in ("ALTA", "MEDIA", "BAJA", "SIN DATO"):
                 raise InputError("Rotación de diagnóstico inválida.")
+            scenario = row.get("scenario", "NO REGISTRADO")
+            if scenario not in (*SCENARIOS, "NO REGISTRADO"):
+                raise InputError("Escenario de diagnóstico inválido.")
             if set(row["predictions"]) != set(groups):
                 raise InputError("Cada fila debe declarar la predicción o abstención de cada modelo.")
             for model in models:
@@ -171,7 +175,7 @@ def parse_comparison(payload, reference):
                 value = row["predictions"][model.artifact_hash]
                 prediction = None if value is None else checked_number(value)
                 forecast = Forecast(p, loc, month, None, prediction, None, model,
-                                    "ABSTENCIÓN" if value is None else "", "REPORTE IMPORTADO")
+                                    "ABSTENCIÓN" if value is None else "", "REPORTE IMPORTADO", scenario)
                 groups[model.artifact_hash].append(ClosedObservation(forecast, observed, "REPORTE IMPORTADO", rotation))
         return {"groups": groups, "models": models, "roles": roles, "purpose": data["purpose"],
                 "decision": data.get("decision", "PENDIENTE"), "reason": data.get("reason", "")}

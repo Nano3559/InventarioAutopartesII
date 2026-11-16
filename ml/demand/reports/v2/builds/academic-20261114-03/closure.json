@@ -1,0 +1,211 @@
+{
+  "stage": "V2-06",
+  "recorded_on": "2026-11-14",
+  "status": "FIRST_BUILD_CREATED_PENDING_EXHAUSTIVE_V2_07",
+  "active_build": "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03",
+  "manifest_sha256": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+  "files_sha256": {
+    "base_mensual.csv": "da1d02405e5d080dbb305ecc5d22bc7f4e8ea2abcf6f1863d5f8e1eb9c298879",
+    "catalog_reference.json": "5f0633e93b38793caf8ec97f315947864f400210c612654780a464b778980218",
+    "dataset_supervisado.csv": "985c2168965bc9bf20951c13115b502f798607bbca5d60ca61997456d1eafefe",
+    "escenarios_metadatos.csv": "75a0845aa27150b45ea10f59965c8accd5b83b84c2a730002cae46f8b6685492",
+    "generator_config.json": "590400bfbb4baff263432902e06245a4642084ffad33d8f7fd081700cfd3c980",
+    "manifest.json": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+    "schema.json": "2eb59d1b4a8d814140c808e5815fc629fdf6e948cce6a3ab49b354d9b31d75b6",
+    "simulation_ledger.csv": "d1e59f5468b236ac358638598faf7107d0b6653f67b6213c11baf1a9578cf556",
+    "split_manifest.json": "2312549f1acfd1121e2c5cf3ee26a1c566f8ab57f053de3fbdaaf6703ca26b4d",
+    "validation.json": "32644b674d9081677af8f86a00c895f09f40f650223b1879e9ac08701e89ca25"
+  },
+  "counts": {
+    "selected_products": 56,
+    "stores": [
+      5,
+      6,
+      7
+    ],
+    "base_rows": 4032,
+    "supervised_rows": 3528,
+    "audit_instances": 4413,
+    "supervised_columns": 24,
+    "features": 17,
+    "train_rows": 2520,
+    "validation_rows": 504,
+    "test_rows": 504
+  },
+  "scope": {
+    "origin": "SYNTHETIC",
+    "raw_rows_joined": false,
+    "external_reference_sources": [
+      "monash_car_parts",
+      "uci_online_retail_ii"
+    ],
+    "catalog": "FROZEN_EXISTING_REFERENCE_NOT_NEW_DB_READ",
+    "variant": "geometric_hurdle_with_explicit_assumed_economic_and_stock_effects"
+  },
+  "scenario_coverage": {
+    "all_57_scenarios_validated": false,
+    "mandatory_combinations_validated": false,
+    "observed_ids": [
+      "A06",
+      "A07",
+      "A08",
+      "A10",
+      "G05",
+      "G06",
+      "G18",
+      "N01",
+      "N02",
+      "N04"
+    ],
+    "unexecuted_ids": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A09",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15",
+      "A16",
+      "A17",
+      "A18",
+      "A19",
+      "A20",
+      "A21",
+      "A22",
+      "A23",
+      "A24",
+      "A25",
+      "G01",
+      "G02",
+      "G03",
+      "G04",
+      "G07",
+      "G08",
+      "G09",
+      "G10",
+      "G11",
+      "G12",
+      "G13",
+      "G14",
+      "G15",
+      "G16",
+      "G17",
+      "G19",
+      "G20",
+      "N03",
+      "N05",
+      "N06",
+      "N07",
+      "N08",
+      "N09",
+      "N10",
+      "N11",
+      "N12"
+    ]
+  },
+  "test_reservation": {
+    "new_version_and_partition_streams": true,
+    "content_sha256": "e086badfd3657d2347ef34fcad0dacdf64ffcf66bd760f461ae46b4de3601181",
+    "access": "GENERATION_AND_INTEGRITY_CHECKS_ONLY_NOT_SELECTION",
+    "model_selection_performed": false,
+    "training_authorized": false
+  },
+  "tests": {
+    "executed": 110,
+    "passed": 110,
+    "failed": 0,
+    "skipped": 0,
+    "new_generation_tests": 15,
+    "log": "ml/demand/tmp/build-20261114-01/final-tests.txt",
+    "reproducible_csv_bytes_across_two_temporary_builds": true,
+    "overwrite_rejected": true,
+    "prior_v1_integrity_tests_included": true
+  },
+  "integrity_before_after": {
+    "protected": {
+      "files": 44,
+      "unchanged": true
+    },
+    "raw": {
+      "files": 136,
+      "unchanged": true
+    },
+    "reports": {
+      "files": 45,
+      "unchanged": true
+    },
+    "models": {
+      "files": 2,
+      "unchanged": true
+    },
+    "manifests": {
+      "files": 5,
+      "unchanged": true
+    }
+  },
+  "revisions": [
+    {
+      "build_id": "academic-20261114-01",
+      "status": "FAILED_BEFORE_PUBLICATION",
+      "reason": "Design-only definition_status constant rejected a generated schema. Added a compatible explicit pending-build enum value.",
+      "preserved_in_tmp": true
+    },
+    {
+      "build_id": "academic-20261114-02",
+      "status": "PRESERVED_UNCHANGED_SUPERSEDED_METADATA",
+      "reason": "Build schema retained completed future-work and old reference-use wording. CSV bytes identical to active build."
+    },
+    {
+      "build_id": "academic-20261114-03",
+      "status": "CURRENT_PENDING_V2_07",
+      "reason": "Generated schema records current stage and reference use without changing predictive columns."
+    }
+  ],
+  "modified_files": [
+    "ml/demand/v2/contracts/dataset_schema.schema.json",
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/README.md",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "new_source_files": [
+    "ml/demand/v2/generate.py",
+    "ml/demand/tests/test_v2_generation.py"
+  ],
+  "new_build_files": [
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/base_mensual.csv",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/catalog_reference.json",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/checksums.sha256",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/dataset_supervisado.csv",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/escenarios_metadatos.csv",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/generator_config.json",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/manifest.json",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/schema.json",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/simulation_ledger.csv",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/split_manifest.json",
+    "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03/validation.json"
+  ],
+  "assertions": {
+    "new_markdown_files": 0,
+    "raw_modified": false,
+    "v1_v1_1_modified": false,
+    "prior_reports_modified": false,
+    "prior_models_modified": false,
+    "curated_created": false,
+    "neon_used": false,
+    "prisma_used": false,
+    "training_performed": false,
+    "git_commands_executed": false
+  },
+  "pending": [
+    "V2-07 independent exhaustive quality review, distributions and sensitivity, all scenario fixtures and eight mandatory combinations",
+    "No scaler or encoder fitted. Future transformations fit only TRAIN",
+    "V2-09B backend contract review with Erika remains unrecorded",
+    "No V2 model exists or is approved for production"
+  ],
+  "next_step": "V2-07. Do not train until its gate passes and training is authorized."
+}

@@ -1,0 +1,96 @@
+{
+  "stage": "V2-08_PREPARATION",
+  "recorded_on": "2026-11-14",
+  "status": "PREPARED_NOT_TRAINED",
+  "preflight": {
+    "path": "ml/demand/reports/v2/experiments_preparation/experiments-preparation-20261114-02/preflight.json",
+    "sha256": "2df819cadec796e86fd6a70dbd28439e6afdbeae11dea3d805d1ee8f8cd61ff2"
+  },
+  "contract": {
+    "path": "ml/demand/v2/contracts/experiments.v2.json",
+    "sha256": "c0ffed3682b75119461d1cef299aec3c4921552b656d65564c74a6ea580facb8"
+  },
+  "decisions": {
+    "constant": "Exclude age only in explicitly named model feature variants; raw17 retained, effective_full16",
+    "wholesale": "Prepare separate new generator and build with historical/known-order supply, preserve unexpected and partially fulfilled orders. No new data published.",
+    "quote_age": "Derived from observed and published timestamps, common source and rate kind per cutoff, no artificial jitter",
+    "known_orders_limit": "Stock planning controls are not approved forecast features. High-volume fulfillment does not prove predictability."
+  },
+  "experiment_plan": {
+    "feature_set_sizes": [
+      5,
+      7,
+      11,
+      13,
+      15,
+      16
+    ],
+    "internal_month_folds": 3,
+    "planned_fits": 102,
+    "actual_fits": 0,
+    "metrics_computed": false,
+    "training_authorized": false,
+    "erika_backend_artifact_review_completed": false
+  },
+  "tests": {
+    "executed": 150,
+    "passed": 150,
+    "failed": 0,
+    "skipped": 0,
+    "new_methods": 17,
+    "log": "ml/demand/tmp/experiments-preparation-20261114-01/tests-final.txt"
+  },
+  "integrity": {
+    "raw": {
+      "files": 136,
+      "unchanged": true
+    },
+    "reports": {
+      "files": 57,
+      "unchanged": true
+    },
+    "models": {
+      "files": 2,
+      "unchanged": true
+    },
+    "manifests": {
+      "files": 5,
+      "unchanged": true
+    },
+    "builds": {
+      "files": 22,
+      "unchanged": true
+    },
+    "protected": {
+      "files": 44,
+      "unchanged": true
+    }
+  },
+  "modified_files": [
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/v2/contracts/candidate_groups.json",
+    "ml/demand/README.md",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "new_files": [
+    "ml/demand/v2/experiment_preparation.py",
+    "ml/demand/v2/contracts/experiments.v2.json",
+    "ml/demand/tests/test_v2_experiment_preparation.py",
+    "ml/demand/reports/v2/experiments_preparation/experiments-preparation-20261114-01/preflight.json",
+    "ml/demand/reports/v2/experiments_preparation/experiments-preparation-20261114-02/preflight.json"
+  ],
+  "assertions": {
+    "no_new_markdown": true,
+    "no_new_official_build": true,
+    "no_existing_generator_modification": true,
+    "no_training": true,
+    "no_scaler_or_encoder_fitted": true,
+    "no_test_selection": true,
+    "no_experiments_csv_created": true,
+    "no_neon_or_other_db": true,
+    "no_git": true
+  },
+  "neon_not_needed_reason": "Current limitations come from synthetic generator configuration. Current production values cannot certify missing historical prices, quote ages or wholesale history.",
+  "next_recommended_step": "Implement and validate the separately versioned expanded dataset before claiming large-wholesale coverage. Training requires explicit authorization. V2-08 remains in progress."
+}

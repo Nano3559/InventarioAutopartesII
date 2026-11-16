@@ -1,0 +1,599 @@
+{
+  "source_id": "uci_online_retail_ii",
+  "sheets": [
+    {
+      "sheet": "Year 2009-2010",
+      "original_headers": [
+        "Invoice",
+        "StockCode",
+        "Description",
+        "Quantity",
+        "InvoiceDate",
+        "Price",
+        "Customer ID",
+        "Country"
+      ],
+      "rows": 525461,
+      "quantity": {
+        "valid": 525461,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": -9600.0,
+        "maximum": 19152.0,
+        "mean": 10.337667305470815,
+        "median": 3.0,
+        "p95": 30.0,
+        "p99": 120.0,
+        "zero": 0,
+        "negative": 12326,
+        "fractional": 0
+      },
+      "unit_price": {
+        "valid": 525461,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": -53594.36,
+        "maximum": 25111.09,
+        "mean": 4.688834478676819,
+        "median": 2.1,
+        "p95": 10.17,
+        "p99": 19.95,
+        "zero": 3687,
+        "negative": 3,
+        "fractional": 519941
+      },
+      "positive_quantity": {
+        "valid": 513135,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": 1.0,
+        "maximum": 19152.0,
+        "mean": 11.715412123515254,
+        "median": 3.0,
+        "p95": 32.0,
+        "p99": 120.0,
+        "zero": 0,
+        "negative": 0,
+        "fractional": 0
+      },
+      "positive_unit_price": {
+        "valid": 521771,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": 0.001,
+        "maximum": 25111.09,
+        "mean": 4.983702953977895,
+        "median": 2.1,
+        "p95": 10.17,
+        "p99": 19.95,
+        "zero": 0,
+        "negative": 0,
+        "fractional": 519938
+      },
+      "missing_by_column": {
+        "customer_id": 107927,
+        "description": 2928
+      },
+      "flags": {
+        "c_prefix_rows": 10206,
+        "negative_quantity_without_c_prefix": 2121,
+        "c_prefix_with_positive_quantity": 1,
+        "zero_price_with_positive_quantity": 1566,
+        "negative_price_with_positive_quantity": 3
+      },
+      "unique_invoice_identifiers": 28816,
+      "unique_stock_codes": 4632,
+      "unique_nonmissing_customer_ids": 4383,
+      "country_count": 40,
+      "exact_duplicate_rows_after_first": 6865,
+      "exact_duplicate_groups": 6418,
+      "repeated_invoice_product_groups": 12064,
+      "cross_sheet_duplicate_occurrences": 0,
+      "earliest_date": "2009-12-01T07:45:00",
+      "latest_date": "2010-12-09T20:01:00",
+      "monthly_distribution": {
+        "2009-12": {
+          "rows": 45228,
+          "c_prefix_rows": 1015,
+          "negative_quantity_rows": 1105,
+          "zero_price_rows": 256
+        },
+        "2010-01": {
+          "rows": 31555,
+          "c_prefix_rows": 686,
+          "negative_quantity_rows": 814,
+          "zero_price_rows": 231
+        },
+        "2010-02": {
+          "rows": 29388,
+          "c_prefix_rows": 576,
+          "negative_quantity_rows": 1023,
+          "zero_price_rows": 531
+        },
+        "2010-03": {
+          "rows": 41511,
+          "c_prefix_rows": 844,
+          "negative_quantity_rows": 1034,
+          "zero_price_rows": 303
+        },
+        "2010-04": {
+          "rows": 34057,
+          "c_prefix_rows": 626,
+          "negative_quantity_rows": 701,
+          "zero_price_rows": 162
+        },
+        "2010-05": {
+          "rows": 35323,
+          "c_prefix_rows": 983,
+          "negative_quantity_rows": 1352,
+          "zero_price_rows": 545
+        },
+        "2010-06": {
+          "rows": 39983,
+          "c_prefix_rows": 793,
+          "negative_quantity_rows": 933,
+          "zero_price_rows": 290
+        },
+        "2010-07": {
+          "rows": 33383,
+          "c_prefix_rows": 734,
+          "negative_quantity_rows": 822,
+          "zero_price_rows": 145
+        },
+        "2010-08": {
+          "rows": 33306,
+          "c_prefix_rows": 573,
+          "negative_quantity_rows": 666,
+          "zero_price_rows": 260
+        },
+        "2010-09": {
+          "rows": 42091,
+          "c_prefix_rows": 812,
+          "negative_quantity_rows": 905,
+          "zero_price_rows": 170
+        },
+        "2010-10": {
+          "rows": 59098,
+          "c_prefix_rows": 1041,
+          "negative_quantity_rows": 1159,
+          "zero_price_rows": 259
+        },
+        "2010-11": {
+          "rows": 78015,
+          "c_prefix_rows": 1194,
+          "negative_quantity_rows": 1419,
+          "zero_price_rows": 357
+        },
+        "2010-12": {
+          "rows": 22523,
+          "c_prefix_rows": 329,
+          "negative_quantity_rows": 393,
+          "zero_price_rows": 178
+        }
+      }
+    },
+    {
+      "sheet": "Year 2010-2011",
+      "original_headers": [
+        "Invoice",
+        "StockCode",
+        "Description",
+        "Quantity",
+        "InvoiceDate",
+        "Price",
+        "Customer ID",
+        "Country"
+      ],
+      "rows": 541910,
+      "quantity": {
+        "valid": 541910,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": -80995.0,
+        "maximum": 80995.0,
+        "mean": 9.552233765754462,
+        "median": 3.0,
+        "p95": 29.0,
+        "p99": 100.0,
+        "zero": 0,
+        "negative": 10624,
+        "fractional": 0
+      },
+      "unit_price": {
+        "valid": 541910,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": -11062.06,
+        "maximum": 38970.0,
+        "mean": 4.611138332933514,
+        "median": 2.08,
+        "p95": 9.95,
+        "p99": 18.0,
+        "zero": 2515,
+        "negative": 2,
+        "fractional": 537406
+      },
+      "positive_quantity": {
+        "valid": 531286,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": 1.0,
+        "maximum": 80995.0,
+        "mean": 10.655244068166676,
+        "median": 3.0,
+        "p95": 30.0,
+        "p99": 100.0,
+        "zero": 0,
+        "negative": 0,
+        "fractional": 0
+      },
+      "positive_unit_price": {
+        "valid": 539393,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": 0.001,
+        "maximum": 38970.0,
+        "mean": 4.673672246395484,
+        "median": 2.08,
+        "p95": 9.95,
+        "p99": 18.0,
+        "zero": 0,
+        "negative": 0,
+        "fractional": 537404
+      },
+      "missing_by_column": {
+        "description": 1454,
+        "customer_id": 135080
+      },
+      "flags": {
+        "c_prefix_rows": 9288,
+        "negative_quantity_without_c_prefix": 1336,
+        "c_prefix_with_positive_quantity": 0,
+        "zero_price_with_positive_quantity": 1179,
+        "negative_price_with_positive_quantity": 2
+      },
+      "unique_invoice_identifiers": 25900,
+      "unique_stock_codes": 4070,
+      "unique_nonmissing_customer_ids": 4372,
+      "country_count": 38,
+      "exact_duplicate_rows_after_first": 5268,
+      "exact_duplicate_groups": 4879,
+      "repeated_invoice_product_groups": 9694,
+      "cross_sheet_duplicate_occurrences": 0,
+      "earliest_date": "2010-12-01T08:26:00",
+      "latest_date": "2011-12-09T12:50:00",
+      "monthly_distribution": {
+        "2010-12": {
+          "rows": 42481,
+          "c_prefix_rows": 728,
+          "negative_quantity_rows": 798,
+          "zero_price_rows": 273
+        },
+        "2011-01": {
+          "rows": 35147,
+          "c_prefix_rows": 701,
+          "negative_quantity_rows": 797,
+          "zero_price_rows": 140
+        },
+        "2011-02": {
+          "rows": 27707,
+          "c_prefix_rows": 475,
+          "negative_quantity_rows": 523,
+          "zero_price_rows": 127
+        },
+        "2011-03": {
+          "rows": 36748,
+          "c_prefix_rows": 699,
+          "negative_quantity_rows": 833,
+          "zero_price_rows": 246
+        },
+        "2011-04": {
+          "rows": 29916,
+          "c_prefix_rows": 559,
+          "negative_quantity_rows": 745,
+          "zero_price_rows": 261
+        },
+        "2011-05": {
+          "rows": 37030,
+          "c_prefix_rows": 621,
+          "negative_quantity_rows": 738,
+          "zero_price_rows": 245
+        },
+        "2011-06": {
+          "rows": 36874,
+          "c_prefix_rows": 711,
+          "negative_quantity_rows": 818,
+          "zero_price_rows": 186
+        },
+        "2011-07": {
+          "rows": 39518,
+          "c_prefix_rows": 685,
+          "negative_quantity_rows": 802,
+          "zero_price_rows": 188
+        },
+        "2011-08": {
+          "rows": 35284,
+          "c_prefix_rows": 668,
+          "negative_quantity_rows": 718,
+          "zero_price_rows": 131
+        },
+        "2011-09": {
+          "rows": 50226,
+          "c_prefix_rows": 805,
+          "negative_quantity_rows": 903,
+          "zero_price_rows": 160
+        },
+        "2011-10": {
+          "rows": 60742,
+          "c_prefix_rows": 1200,
+          "negative_quantity_rows": 1346,
+          "zero_price_rows": 238
+        },
+        "2011-11": {
+          "rows": 84711,
+          "c_prefix_rows": 1076,
+          "negative_quantity_rows": 1213,
+          "zero_price_rows": 266
+        },
+        "2011-12": {
+          "rows": 25526,
+          "c_prefix_rows": 360,
+          "negative_quantity_rows": 390,
+          "zero_price_rows": 54
+        }
+      }
+    }
+  ],
+  "combined": {
+    "rows": 1067371,
+    "quantity": {
+      "valid": 1067371,
+      "missing": 0,
+      "invalid": 0,
+      "minimum": -80995.0,
+      "maximum": 80995.0,
+      "mean": 9.9388984711033,
+      "median": 3.0,
+      "p95": 30.0,
+      "p99": 100.0,
+      "zero": 0,
+      "negative": 22950,
+      "fractional": 0
+    },
+    "unit_price": {
+      "valid": 1067371,
+      "missing": 0,
+      "invalid": 0,
+      "minimum": -53594.36,
+      "maximum": 38970.0,
+      "mean": 4.64938772741624,
+      "median": 2.1,
+      "p95": 9.95,
+      "p99": 18.0,
+      "zero": 6202,
+      "negative": 5,
+      "fractional": 1057347
+    },
+    "positive_quantity": {
+      "valid": 1044421,
+      "missing": 0,
+      "invalid": 0,
+      "minimum": 1.0,
+      "maximum": 80995.0,
+      "mean": 11.176115761747418,
+      "median": 3.0,
+      "p95": 30.0,
+      "p99": 108.0,
+      "zero": 0,
+      "negative": 0,
+      "fractional": 0
+    },
+    "positive_unit_price": {
+      "valid": 1061164,
+      "missing": 0,
+      "invalid": 0,
+      "minimum": 0.001,
+      "maximum": 38970.0,
+      "mean": 4.826113369846697,
+      "median": 2.1,
+      "p95": 9.95,
+      "p99": 18.22,
+      "zero": 0,
+      "negative": 0,
+      "fractional": 1057342
+    },
+    "missing_by_column": {
+      "customer_id": 243007,
+      "description": 4382
+    },
+    "flags": {
+      "c_prefix_rows": 19494,
+      "negative_quantity_without_c_prefix": 3457,
+      "c_prefix_with_positive_quantity": 1,
+      "zero_price_with_positive_quantity": 2745,
+      "negative_price_with_positive_quantity": 5
+    },
+    "unique_invoice_identifiers": 53628,
+    "unique_stock_codes": 5305,
+    "unique_nonmissing_customer_ids": 5942,
+    "country_count": 43,
+    "exact_duplicate_rows_after_first": 34335,
+    "exact_duplicate_groups": 32907,
+    "repeated_invoice_product_groups": 42638,
+    "cross_sheet_duplicate_occurrences": 22523,
+    "earliest_date": "2009-12-01T07:45:00",
+    "latest_date": "2011-12-09T12:50:00",
+    "monthly_distribution": {
+      "2009-12": {
+        "rows": 45228,
+        "c_prefix_rows": 1015,
+        "negative_quantity_rows": 1105,
+        "zero_price_rows": 256
+      },
+      "2010-01": {
+        "rows": 31555,
+        "c_prefix_rows": 686,
+        "negative_quantity_rows": 814,
+        "zero_price_rows": 231
+      },
+      "2010-02": {
+        "rows": 29388,
+        "c_prefix_rows": 576,
+        "negative_quantity_rows": 1023,
+        "zero_price_rows": 531
+      },
+      "2010-03": {
+        "rows": 41511,
+        "c_prefix_rows": 844,
+        "negative_quantity_rows": 1034,
+        "zero_price_rows": 303
+      },
+      "2010-04": {
+        "rows": 34057,
+        "c_prefix_rows": 626,
+        "negative_quantity_rows": 701,
+        "zero_price_rows": 162
+      },
+      "2010-05": {
+        "rows": 35323,
+        "c_prefix_rows": 983,
+        "negative_quantity_rows": 1352,
+        "zero_price_rows": 545
+      },
+      "2010-06": {
+        "rows": 39983,
+        "c_prefix_rows": 793,
+        "negative_quantity_rows": 933,
+        "zero_price_rows": 290
+      },
+      "2010-07": {
+        "rows": 33383,
+        "c_prefix_rows": 734,
+        "negative_quantity_rows": 822,
+        "zero_price_rows": 145
+      },
+      "2010-08": {
+        "rows": 33306,
+        "c_prefix_rows": 573,
+        "negative_quantity_rows": 666,
+        "zero_price_rows": 260
+      },
+      "2010-09": {
+        "rows": 42091,
+        "c_prefix_rows": 812,
+        "negative_quantity_rows": 905,
+        "zero_price_rows": 170
+      },
+      "2010-10": {
+        "rows": 59098,
+        "c_prefix_rows": 1041,
+        "negative_quantity_rows": 1159,
+        "zero_price_rows": 259
+      },
+      "2010-11": {
+        "rows": 78015,
+        "c_prefix_rows": 1194,
+        "negative_quantity_rows": 1419,
+        "zero_price_rows": 357
+      },
+      "2010-12": {
+        "rows": 65004,
+        "c_prefix_rows": 1057,
+        "negative_quantity_rows": 1191,
+        "zero_price_rows": 451
+      },
+      "2011-01": {
+        "rows": 35147,
+        "c_prefix_rows": 701,
+        "negative_quantity_rows": 797,
+        "zero_price_rows": 140
+      },
+      "2011-02": {
+        "rows": 27707,
+        "c_prefix_rows": 475,
+        "negative_quantity_rows": 523,
+        "zero_price_rows": 127
+      },
+      "2011-03": {
+        "rows": 36748,
+        "c_prefix_rows": 699,
+        "negative_quantity_rows": 833,
+        "zero_price_rows": 246
+      },
+      "2011-04": {
+        "rows": 29916,
+        "c_prefix_rows": 559,
+        "negative_quantity_rows": 745,
+        "zero_price_rows": 261
+      },
+      "2011-05": {
+        "rows": 37030,
+        "c_prefix_rows": 621,
+        "negative_quantity_rows": 738,
+        "zero_price_rows": 245
+      },
+      "2011-06": {
+        "rows": 36874,
+        "c_prefix_rows": 711,
+        "negative_quantity_rows": 818,
+        "zero_price_rows": 186
+      },
+      "2011-07": {
+        "rows": 39518,
+        "c_prefix_rows": 685,
+        "negative_quantity_rows": 802,
+        "zero_price_rows": 188
+      },
+      "2011-08": {
+        "rows": 35284,
+        "c_prefix_rows": 668,
+        "negative_quantity_rows": 718,
+        "zero_price_rows": 131
+      },
+      "2011-09": {
+        "rows": 50226,
+        "c_prefix_rows": 805,
+        "negative_quantity_rows": 903,
+        "zero_price_rows": 160
+      },
+      "2011-10": {
+        "rows": 60742,
+        "c_prefix_rows": 1200,
+        "negative_quantity_rows": 1346,
+        "zero_price_rows": 238
+      },
+      "2011-11": {
+        "rows": 84711,
+        "c_prefix_rows": 1076,
+        "negative_quantity_rows": 1213,
+        "zero_price_rows": 266
+      },
+      "2011-12": {
+        "rows": 25526,
+        "c_prefix_rows": 360,
+        "negative_quantity_rows": 390,
+        "zero_price_rows": 54
+      }
+    }
+  },
+  "sheet_date_overlap": {
+    "start": "2010-12-01T08:26:00",
+    "end": "2010-12-09T20:01:00"
+  },
+  "limitations": [
+    "Las filas son líneas, no facturas únicas. Se informa por hoja y combinado, sin crear una tabla combinada persistente.",
+    "Se detectan repeticiones de valores decodificados de las ocho celdas. No se elimina ninguna fila ni se decide automáticamente que sea una operación duplicada.",
+    "Prefijo C se informa por separado de quantity negativa. Cancelación no equivale automáticamente a devolución operativa de RepuestoPro.",
+    "Los precios GBP no son costos, elasticidad causal o tipo de cambio Bs/USD.",
+    "No se exportan identificadores de clientes, facturas o productos. Solo conteos y estadísticas.",
+    "Las fechas se interpretan como aparecen en Excel, sin inventar zona horaria."
+  ],
+  "run_id": "profile-20261114-01",
+  "recorded_at": "2026-11-14T19:49:04.347343+00:00",
+  "source_sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+  "snapshot_id": "sha256-4dc26799b20addb7559df7e2",
+  "purpose": "DESCRIPTIVE_PROFILING_ONLY",
+  "transformed": false,
+  "trained": false,
+  "final_dataset_created": false
+}

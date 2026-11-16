@@ -1,0 +1,130 @@
+{
+  "schema_version": "source-manifest-1",
+  "source_id": "monash_car_parts",
+  "name": "monash_car_parts",
+  "domain": "AUTOMOTIVE_PARTS_SALES",
+  "source_url": "https://zenodo.org/records/4656022",
+  "provider": "Monash Time Series Forecasting Repository / Zenodo, extraído de expsmooth",
+  "obtained_at": null,
+  "registered_at": "2026-11-11T13:55:34.011059+00:00",
+  "snapshot_id": "sha256-d69d3412b9c45248f1c9c441",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "commercial_use_allowed": true,
+  "original_filename": "car_parts_dataset_with_missing_values.tsf",
+  "original_format": "TSF",
+  "sha256": "818470cd0a65679b38b48a20e4d916d11fbd2ccbf7f5f9d8d97093dd6c784600",
+  "hash_scope": "FILE_BYTES",
+  "inventory_sha256": "d69d3412b9c45248f1c9c44154b50bb6bd9f58e6a6132957b839f8d493b1fd0e",
+  "file_size_bytes": 344783,
+  "file_count": 1,
+  "files": [
+    {
+      "relative_path": "car_parts_dataset_with_missing_values.tsf",
+      "original_format": "TSF",
+      "file_size_bytes": 344783,
+      "sha256": "818470cd0a65679b38b48a20e4d916d11fbd2ccbf7f5f9d8d97093dd6c784600"
+    }
+  ],
+  "raw_root": "sources/external_raw/monash_car_parts",
+  "temporal_coverage": {
+    "start": "1998-01",
+    "end": "2002-03",
+    "precision": "MONTH",
+    "basis": "OFFICIAL_DOCUMENTATION"
+  },
+  "geographic_scope": "Empresa automotriz de Estados Unidos según sección 5.2 de Türkmen et al. (2021). No identifica países por registro.",
+  "currency": null,
+  "units": "Ventas de repuestos por serie y mes. Unidad física específica no declarada.",
+  "description": "Car Parts Dataset (with Missing Values), versión 2. 2674 series mensuales, 51 periodos documentados. Cada serie representa ventas de repuestos, no una tienda RepuestoPro.",
+  "intended_use": "Roles conceptuales: DIRECT_DOMAIN_REFERENCE, DEMAND_PATTERN_REFERENCE. Decisión de acceso: APPROVED_ACADEMIC_ONLY. Sin transformación o mezcla autorizada en esta revisión.",
+  "limitations": [
+    "La licencia CC BY 4.0 consta explícitamente en la API y en la metadata HTML de Zenodo.",
+    "El encabezado local coincide con descripción, frecuencia y periodo oficiales. No se descargó el ZIP para comparar bytes del TSF interno.",
+    "La URL y fecha de adquisición real del archivo local siguen desconocidas. No confundir el MD5 del ZIP publicado con el SHA-256 del TSF extraído.",
+    "Conservar atribución y licencia e indicar cambios futuros. No usar estas series como historia real de RepuestoPro."
+  ],
+  "processing_status": "APPROVED_FOR_PROFILING",
+  "completeness": "UNKNOWN",
+  "contains_archives": false,
+  "documentation_files": [],
+  "evidence": [
+    {
+      "path": "car_parts_dataset_with_missing_values.tsf",
+      "scope": "HEADER_ONLY_NOT_PROFILED",
+      "finding": "El encabezado declara 2674 series mensuales de ventas de repuestos, enero 1998 a marzo 2002, extraídas de expsmooth. Las filas y la cobertura no se verificaron."
+    }
+  ],
+  "visible_structure": [],
+  "archive_inspection": [],
+  "notes": [
+    "null significa desconocido, no permiso denegado ni valor cero.",
+    "registered_at es el registro actual, no la fecha de adquisición.",
+    "sha256 en directorios es hash del inventario canónico. Cada files[].sha256 corresponde a bytes originales.",
+    "Las licencias de software incluidas no se atribuyen automáticamente a los datos."
+  ],
+  "official_name": "Car Parts Dataset (with Missing Values), versión 2",
+  "authors": [
+    "Rakshitha Godahewa",
+    "Christoph Bergmeir",
+    "Geoff Webb",
+    "Rob Hyndman",
+    "Pablo Montero-Manso"
+  ],
+  "data_type": "TSF_MONTHLY_COLLECTION",
+  "real_or_synthetic": "REAL_DERIVED",
+  "granularity": "2674 series mensuales, 51 periodos documentados. Cada serie representa ventas de repuestos, no una tienda RepuestoPro.",
+  "variables": [
+    "series_name",
+    "start_timestamp",
+    "monthly values",
+    "missing values"
+  ],
+  "license_status": "VERIFIED",
+  "academic_use_status": "VERIFIED",
+  "commercial_use_status": "VERIFIED",
+  "redistribution_status": "VERIFIED",
+  "intended_role_v2": [
+    "DIRECT_DOMAIN_REFERENCE",
+    "DEMAND_PATTERN_REFERENCE"
+  ],
+  "profiling_decision": "APPROVED_ACADEMIC_ONLY",
+  "citation": "Godahewa, R., Bergmeir, C., Webb, G., Hyndman, R., & Montero-Manso, P. (2020). Car Parts Dataset (with Missing Values), versión 2. Zenodo. https://doi.org/10.5281/zenodo.4656022",
+  "citation_required": true,
+  "doi": "10.5281/zenodo.4656022",
+  "evidence_urls": [
+    "https://zenodo.org/records/4656022",
+    "https://zenodo.org/api/records/4656022",
+    "https://forecastingdata.org/",
+    "https://creativecommons.org/licenses/by/4.0/",
+    "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764",
+    "https://arxiv.org/abs/2105.06643"
+  ],
+  "verification_status": "PARTIALLY_VERIFIED",
+  "verified_at": "2026-11-11T14:20:58.689392+00:00",
+  "obtained_from_url": null,
+  "acquisition_verification_status": "UNKNOWN",
+  "review_notes": [
+    "Revisión académica de fuentes públicas. No garantiza identidad binaria con una descarga del proveedor.",
+    "source_url identifica publicación oficial, no la URL utilizada realmente por la descarga manual.",
+    "obtained_from_url y obtained_at siguen desconocidos. No se cambió snapshot_id para aparentar otra adquisición.",
+    "La aprobación se limita a profiling académico local con atribución. No autoriza construir V2 o entrenar ahora."
+  ],
+  "hash_semantics": {
+    "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+    "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+    "sha256_scope": "FILE_BYTES",
+    "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+    "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+  },
+  "related_publications": [
+    {
+      "title": "Monash Time Series Forecasting Archive",
+      "year": 2021,
+      "doi": null,
+      "url": "https://arxiv.org/abs/2105.06643",
+      "scope": "Publicación del repositorio. El DOI del dataset es distinto."
+    }
+  ],
+  "paper_review_note": "Se registran publicaciones comprobadas, sin atribuir al dataset la licencia del artículo."
+}

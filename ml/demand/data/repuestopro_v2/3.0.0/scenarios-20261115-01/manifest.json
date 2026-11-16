@@ -1,0 +1,48 @@
+{
+  "dataset_version": "3.0.0",
+  "build_id": "scenarios-20261115-01",
+  "origin": "ACADEMIC_SYNTHETIC_NOT_REAL_REPUESTOPRO_SALES",
+  "seed": 42,
+  "generator": {
+    "path": "v2/generate_scenarios_v1.py",
+    "sha256": "8fc480b9ff7591c41688b7103e517284fbe901d13aac9f2248a3302e3c4a2435"
+  },
+  "recipe": {
+    "path": "v2/contracts/generator.scenarios.v1.json",
+    "sha256": "00fd75f1a0d8e9b62095c0e8069425bfa3810f31f830593c991ec54d5f24c193"
+  },
+  "row_counts": {
+    "scenario_context": 7056,
+    "closed_history_monthly": 21168,
+    "price_plan_events": 7327,
+    "exchange_quote_events": 7056,
+    "cost_plan_events": 7056,
+    "opening_stock_snapshot": 7056,
+    "open_order_plan": 759,
+    "pending_shipment_plan": 5326,
+    "logistics_policy": 7056,
+    "replenishment_policy": 7056,
+    "receipt_outcomes": 5129,
+    "monthly_outcomes": 7056,
+    "supervised_monthly": 7056,
+    "decision_outputs": 0,
+    "daily_ledger": 214704,
+    "scenario_metadata": 7056
+  },
+  "automotive": "EXCLUDED_LICENSE_PENDING",
+  "csv_table_names": {
+    "supervised_monthly": "dataset_supervisado",
+    "monthly_outcomes": "base_mensual",
+    "scenario_metadata": "escenarios_metadatos"
+  },
+  "artifact": null,
+  "training_performed": false,
+  "test_scored": false,
+  "economic_effects": "ASSUMED_NOT_CAUSALLY_ESTIMATED",
+  "publication_scope": "PRIVATE_ACADEMIC_REVIEW",
+  "notes": [
+    "No statistical predictions in decision_outputs: header only until Erika supplies an accepted artifact.",
+    "14 dictionary tables plus daily ledger and metadata. Structural validation may read TEST but never score a model.",
+    "Decision flags, latent quantities, partitions, family IDs and outcomes are excluded from X."
+  ]
+}

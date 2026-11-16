@@ -287,10 +287,10 @@ export default function ReportsPage() {
         <p className="text-gray-400 text-sm mt-1">Informes y estadísticas del sistema</p>
       </div>
 
-      <div className="flex gap-2 bg-dark-800/50 border border-dark-700/50 rounded-xl p-1">
+      <div className="flex flex-wrap gap-2 bg-dark-800/50 border border-dark-700/50 rounded-xl p-1">
         {TABS.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === tab.key
                 ? "bg-primary-600/20 text-primary-400 border border-primary-600/30"
                 : "text-gray-400 hover:text-gray-200 border border-transparent"

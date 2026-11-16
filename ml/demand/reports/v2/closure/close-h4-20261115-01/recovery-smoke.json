@@ -1,0 +1,26 @@
+{
+  "status": "PASSED",
+  "results": [
+    {
+      "release": "2.2.0",
+      "prediction": 0,
+      "artifact": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+      "policy": "NONNEGATIVE_CONTINUOUS_1"
+    },
+    {
+      "release": "2.1.0",
+      "prediction": 40.8725,
+      "artifact": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+      "policy": "NONNEGATIVE_V1"
+    },
+    {
+      "release": "2.2.0",
+      "prediction": 0,
+      "artifact": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+      "policy": "NONNEGATIVE_CONTINUOUS_1"
+    }
+  ],
+  "test_repeated": false,
+  "fit_calls": 0,
+  "neon_used": false
+}

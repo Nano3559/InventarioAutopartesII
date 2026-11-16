@@ -1,0 +1,23 @@
+{
+  "splits": {
+    "TRAIN": [
+      "2027-01",
+      "2028-03"
+    ],
+    "VALIDATION": [
+      "2028-04",
+      "2028-06"
+    ],
+    "TEST": [
+      "2028-07",
+      "2028-09"
+    ]
+  },
+  "warmup": [
+    "2026-10",
+    "2026-12"
+  ],
+  "world_policy": "Independent RNG worlds for TRAIN, VALIDATION and sealed TEST; the same month and all paired variants stay in one partition. Entity profiles remain stable. Each world has its own closed synthetic history.",
+  "test_status": "SEALED_NOT_SCORED",
+  "random_split": false
+}

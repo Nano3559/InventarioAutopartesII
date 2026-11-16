@@ -1,0 +1,88 @@
+{
+  "generator_version": "scenario-generator-1.0.0",
+  "dataset_version": "3.0.0",
+  "seed": 42,
+  "status": "ACADEMIC_SYNTHETIC_ONLY",
+  "dictionary": {
+    "path": "v2/contracts/dataset_dictionary.scenarios.v1.json",
+    "sha256": "42f426f74c1fbb5ba5b5b4ca65dc0aa7d5746987b58445ca22d90f2fa1fdcb55"
+  },
+  "sources": {
+    "path": "v2/contracts/scenario_sources.v1.json",
+    "sha256": "4bea8dfa4d58ad26d5acfaa0ffaf18e7632fe2151e07671378690ce23177d340"
+  },
+  "catalog": {
+    "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/catalog_reference.json",
+    "sha256": "3cb0c9c1f733d565dcacb33f7a33f9911ed0931b19e1740034289c38a5368404"
+  },
+  "calibration": {
+    "path": "reports/v2/calibration/calibration-retail-20261115-03/calibration.json",
+    "sha256": "9433d9c51d26a2cc9d561f441279f0e5bfef4eadcdf51ebbd846205dc43a1e1d"
+  },
+  "base_calibration": {
+    "path": "v2/contracts/calibration.v2.json",
+    "sha256": "0c26ad5e3f2d52287b86d56ac27959d15b5e40210142439d82e40500c20c4c63"
+  },
+  "period": [
+    "2026-10",
+    "2028-09"
+  ],
+  "splits": {
+    "TRAIN": [
+      "2027-01",
+      "2028-03"
+    ],
+    "VALIDATION": [
+      "2028-04",
+      "2028-06"
+    ],
+    "TEST": [
+      "2028-07",
+      "2028-09"
+    ]
+  },
+  "warmup": [
+    "2026-10",
+    "2026-12"
+  ],
+  "world_policy": "Independent RNG worlds for TRAIN, VALIDATION and sealed TEST; the same month and all paired variants stay in one partition. Entity profiles remain stable. Each world has its own closed synthetic history.",
+  "elasticities": [
+    0,
+    -0.4,
+    -0.8,
+    -1.2
+  ],
+  "price_changes": [
+    -0.15,
+    0,
+    0.1,
+    0.25
+  ],
+  "lead_days": [
+    0,
+    7,
+    15,
+    35,
+    60
+  ],
+  "quote_age_days": [
+    0,
+    1,
+    7,
+    30,
+    90
+  ],
+  "variant_policy": "BASE plus one named intervention per family. Same random demand stream for paired variants; no scenario label as feature.",
+  "assumed_not_estimated": [
+    "elasticities",
+    "initial prices and cost",
+    "Bs/USD",
+    "lead days",
+    "stock supply and order modality",
+    "commitments and reservation rates"
+  ],
+  "calibrated_patterns": "Approved aggregate Monash intermittent-demand references and M5/Favorita relative variation metadata. They do not identify a Bolivian price elasticity. No row-level external data is copied.",
+  "new_model_required": true,
+  "do_not_activate_automatically": true,
+  "test_policy": "Sealed new synthetic TEST, no model scoring or selection in generator. Structural validation only. Old 2.2 TEST never reused."
+}

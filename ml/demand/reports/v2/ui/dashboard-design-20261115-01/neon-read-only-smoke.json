@@ -1,0 +1,65 @@
+{
+  "real_neon": true,
+  "read_only": [
+    {
+      "transaction_read_only": "on"
+    }
+  ],
+  "roles": [
+    {
+      "role": "ADMIN",
+      "status": 200,
+      "availability": {
+        "sales": "SCHEMA_UNAVAILABLE"
+      },
+      "summary": {
+        "totalProducts": 62,
+        "productsWithoutStock": 2,
+        "productsWithLowStock": 24,
+        "salesToday": null,
+        "salesTodayTotal": null,
+        "salesMonth": null,
+        "salesMonthTotal": null,
+        "pendingRequests": 3,
+        "criticalStock": 24
+      }
+    },
+    {
+      "role": "TIENDA",
+      "status": 200,
+      "availability": {
+        "sales": "SCHEMA_UNAVAILABLE"
+      },
+      "summary": {
+        "totalProducts": 60,
+        "productsWithoutStock": 5,
+        "productsWithLowStock": 6,
+        "salesToday": null,
+        "salesTodayTotal": null,
+        "salesMonth": null,
+        "salesMonthTotal": null,
+        "pendingRequests": 1,
+        "criticalStock": 6
+      }
+    },
+    {
+      "role": "INVENTARIO",
+      "status": 200,
+      "availability": {
+        "sales": "SCHEMA_UNAVAILABLE"
+      },
+      "summary": {
+        "totalProducts": 62,
+        "productsWithoutStock": 2,
+        "productsWithLowStock": 24,
+        "salesToday": null,
+        "salesTodayTotal": null,
+        "salesMonth": null,
+        "salesMonthTotal": null,
+        "pendingRequests": 3,
+        "criticalStock": 24
+      }
+    }
+  ],
+  "no_writes": true
+}

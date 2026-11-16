@@ -1,0 +1,7 @@
+{
+  "target": "br-cool-cake-ay7cr6sc",
+  "recorded_at": "2026-11-16T00:35:02.137Z",
+  "script_sha256": "bd91882cce9614cf56d3338e708b403fbf296a4cf401efc15f5a041125057724",
+  "exit_code": 0,
+  "output": "Script executed successfully.\n\n┌─────────────────────────────────────────────────────────┐\n│  Update available 5.22.0 -> 8.0.0-rc.33                 │\n│                                                         │\n│  This is a major update - please follow the guide at    │\n│  https://pris.ly/d/major-version-upgrade                │\n│                                                         │\n│  Run the following to update                            │\n│    npm i --save-dev prisma@latest                       │\n│    npm i @prisma/client@latest                          │\n└─────────────────────────────────────────────────────────┘\n"
+}

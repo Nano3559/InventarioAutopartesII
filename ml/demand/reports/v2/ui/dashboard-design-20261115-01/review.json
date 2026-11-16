@@ -1,0 +1,129 @@
+{
+  "recorded_at": "2026-11-15T23:40:45.653269+00:00",
+  "scope": "Dashboard compatibility repair and prediction UI redesign. Not a completed schema reconciliation or expanded model release.",
+  "root_cause": {
+    "real_neon_read_only_verified": true,
+    "missing_columns_confirmed": [
+      "Sale.status",
+      "Movement.status"
+    ],
+    "main_dashboard_failure": "Sale.status required by CONFIRMED filters"
+  },
+  "dashboard_result": {
+    "handler_status_by_role": {
+      "ADMIN": 200,
+      "TIENDA": 200,
+      "INVENTARIO": 200
+    },
+    "verification": "Real Neon, transaction_read_only=on, injected handler with role scope, no production writes",
+    "sales_status": "SCHEMA_UNAVAILABLE",
+    "unknown_sales_values": "null, never zero or unfiltered canceled sales",
+    "unaffected_sections": [
+      "inventory",
+      "requests",
+      "movements"
+    ],
+    "local_api_health": 200,
+    "local_backend_hot_reload": true,
+    "real_browser_verification": "Not completed. Native Brave window minimized and CUA could not restore it. Visual review uses isolated fixtures."
+  },
+  "design_changes": [
+    "Centered bounded-width layout",
+    "Separate history and scenarios modes",
+    "Compact synthetic-data label",
+    "Technical notes, assumptions and hashes moved into details",
+    "Unavailable scenario service hides inactive forms",
+    "Short group labels and explanations on demand",
+    "Readable null values and mobile cards"
+  ],
+  "validation": {
+    "backend_tests_passed": 177,
+    "frontend_tests_passed": 272,
+    "focused_frontend_recheck": 23,
+    "final_failed": 0,
+    "backend_build": "PASS",
+    "frontend_build": "PASS",
+    "real_neon_handler_role_checks": 3,
+    "visual": "FIXTURES_DESKTOP_AND_MOBILE_390PX",
+    "mobile_horizontal_overflow": false,
+    "production_bundle_contains_visual_fixtures": false
+  },
+  "migration_review": {
+    "prisma_cli": "5.22.0",
+    "prisma_client": "5.22.0",
+    "local_migrations": 10,
+    "distinct_applied_in_neon": 4,
+    "pending_local": 6,
+    "audit_user_null": 0,
+    "audit_target_null": 0,
+    "audit_orphans": 0,
+    "legacy_quality_not_null": 0,
+    "open_request_duplicates": 0,
+    "checksum_note": "Two applied migrations match raw bytes, two match after CRLF to LF normalization. No migration file was edited.",
+    "production_changes": false,
+    "test_branch_created": false,
+    "backup_branch_created": false,
+    "console_state": "Awaiting user sign-in. Handoff tab opened.",
+    "no_migrate_deploy_or_resolve": true
+  },
+  "integrity": {
+    "reference": "Snapshot before earlier Ross delivery, with active preparation metadata excluded",
+    "preserved_files": 610,
+    "unexpected_changes": [],
+    "dataset_3_0_checksum_errors": [],
+    "datasets_raw_models_unchanged": true
+  },
+  "files_modified": [
+    "backend/src/modules/dashboard/dashboard.routes.ts",
+    "backend/src/modules/dashboard/dashboard.test.ts",
+    "frontend/src/pages/DashboardPage.tsx",
+    "frontend/src/pages/PredictionsPage.tsx",
+    "frontend/src/components/DemandScenarioPanel.tsx",
+    "frontend/src/components/DemandScenarioPanel.test.tsx",
+    "frontend/src/pages/__tests__/DashboardPage.test.tsx",
+    "frontend/src/pages/__tests__/PredictionsPage.test.tsx",
+    "frontend/src/test/fixtures/ScenarioVisual.tsx"
+  ],
+  "new_markdown_files": [],
+  "no_training": true,
+  "no_test_scored": true,
+  "no_neon_writes": true,
+  "git_status": "NOT_EXECUTED_USER_RESTRICTION",
+  "git_diff_stat": "NOT_EXECUTED_USER_RESTRICTION",
+  "all_h4_complete": false,
+  "remaining": [
+    "Neon console sign-in, isolated branch, migration effect audit, recovery point and reconciliation",
+    "Expanded scenario backend and compatible model, not implemented by a visual redesign"
+  ],
+  "documentation_modified": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md",
+    "docs/H3/cierre_saneamiento/PLAN_SANEAMIENTO_REPUESTOPRO_PRE_H4.md",
+    "ml/demand/README.md"
+  ],
+  "files_created": [
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/dashboard-desktop.jpg",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/dashboard-mobile.jpg",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/neon-diagnosis.json",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/neon-migration-preconditions.json",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/neon-read-only-smoke.json",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/predictions-desktop.jpg",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/predictions-mobile.jpg",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/review.json",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/scenario-controls-desktop.jpg",
+    "ml/demand/reports/v2/ui/dashboard-design-20261115-01/scenarios-unavailable.jpg"
+  ],
+  "source_sha256": {
+    "backend/src/modules/dashboard/dashboard.routes.ts": "25f830f8a56cfaa513b9d1c7097e6e4f983f7889bc95e4bd8f2fbd6db950dd17",
+    "backend/src/modules/dashboard/dashboard.test.ts": "588957240b63177964cc42db4bd518d3808fe421dee7ea39eb1befe8ddef5307",
+    "frontend/src/pages/DashboardPage.tsx": "c9564755356ff2788d8035eddc6b9010c2e29464e0a86be1a73dbeb9b09518df",
+    "frontend/src/pages/PredictionsPage.tsx": "d9ab66c8a231a631ed890b258dcdf3b0773660aa39cdc444f0347f26cd85d22a",
+    "frontend/src/components/DemandScenarioPanel.tsx": "0d105169f76c1a33cc089837bdb6f855198057174477715453b6adc4730d9409",
+    "frontend/src/components/DemandScenarioPanel.test.tsx": "94d4c94a5d798ff093645a2442fc7d5aafce0200e9a58df65b0908175a77782f",
+    "frontend/src/pages/__tests__/DashboardPage.test.tsx": "9361b57f02293d39d04b632acef9a61ca10a4ebdc147f6e7830551ed3c3fc3a5",
+    "frontend/src/pages/__tests__/PredictionsPage.test.tsx": "f539af7d7aa980c16adb7edfcda7c584d8bba9744df8fa8e9be3eca01ec3f34a",
+    "frontend/src/test/fixtures/ScenarioVisual.tsx": "4c1de00ef3f9a6d4a375c1e8e3cfd6281a5a7186cffbf11bbfb1156b1f68b8f4"
+  },
+  "console_access_pending_user": true
+}

@@ -1,0 +1,87 @@
+{
+  "recorded_at": "2026-11-14T21:13:15.445743+00:00",
+  "all_prerequisites_complete": false,
+  "advanced_to_v2_04d": false,
+  "corrected_issue": {
+    "component": "ml/demand/v2/structure.py",
+    "problem": "Date-time podía no comprobarse sin extras opcionales de jsonschema",
+    "correction": "Validador local de calendario, hora y zona explícita, reutilizado en manifests y pruebas del contrato"
+  },
+  "specification_updates": [
+    "Esquema de respuesta OK y ABSTAINED",
+    "Origen sintético y modo académico obligatorios",
+    "Identidad de artefactos y snapshot",
+    "Abstención sin cero inventado ni métricas antiguas",
+    "Fechas con zona y año válido",
+    "Política académica prospectiva de comparación con baseline",
+    "Comprobaciones semánticas pendientes de implementación identificadas"
+  ],
+  "tests": {
+    "executed": 43,
+    "passed": 43,
+    "failed": 0,
+    "skipped": 0,
+    "log": "ml/demand/tmp/visual-20261114-01/contract-tests-final.txt",
+    "initial_attempt": {
+      "executed": 41,
+      "failed": 1,
+      "reason": "Prueba detectó fecha sin zona aceptada, corregido después"
+    },
+    "frontend_backend_rerun": false
+  },
+  "visual_review": {
+    "status": "BLOCKED_NOT_COMPLETED",
+    "url": "http://127.0.0.1:5186/panel",
+    "server": "Vite temporal con API sustituida, escrituras rechazadas y sin proxy a backend",
+    "browser_result": "ERR_CONNECTION_TIMED_OUT; continuación bloqueada por política del navegador en su página de error",
+    "pages_verified": 0,
+    "responsive_verified": false,
+    "server_stopped": true,
+    "operational_backend_started": false,
+    "firewall_modified": false,
+    "fixture_scope": "Solo objetos de interfaz. No dataset ni entrenamiento. Fixtures no acreditados visualmente."
+  },
+  "integrity": {
+    "protected": {
+      "checked": 44,
+      "unchanged": true
+    },
+    "raw": {
+      "checked": 136,
+      "unchanged": true
+    },
+    "previous_reports": {
+      "checked": 6,
+      "unchanged": true
+    }
+  },
+  "raw_file_inventory_unchanged": true,
+  "operational_source_hashes_match_prior_audit": true,
+  "remaining": [
+    "Recorrido visual local completo",
+    "Aceptación conjunta del contrato y reglas",
+    "Fuentes o supuestos sintéticos aprobados para variables nuevas",
+    "Tolerancias comerciales si se pretende certificar uso comercial",
+    "Condiciones de las otras tres fuentes externas"
+  ],
+  "files_modified": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/v2/structure.py",
+    "ml/demand/tests/test_v2_preparation.py"
+  ],
+  "files_created": [
+    "ml/demand/reports/v2/preparation/visual-20261114-01/review.json"
+  ],
+  "restrictions": {
+    "new_markdown": false,
+    "neon": false,
+    "prisma": false,
+    "migrations": false,
+    "raw_transformation": false,
+    "v2_dataset": false,
+    "training": false,
+    "production_code_changed": false,
+    "git": false
+  }
+}

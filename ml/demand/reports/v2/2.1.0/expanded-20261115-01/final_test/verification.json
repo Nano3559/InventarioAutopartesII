@@ -1,0 +1,10 @@
+{
+  "artifact_sha256_after": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "preprocessing_state_sha256_before": "0a443d3286e877d4a955435dfe740ecbddd2afaf515e9690042e801b21e837cb",
+  "preprocessing_state_sha256_after": "0a443d3286e877d4a955435dfe740ecbddd2afaf515e9690042e801b21e837cb",
+  "row_keys_sha256": "29f5232d8faaaab143e97364e5d8feb7df4059dea987d1334065948a1af8a2ff",
+  "test_labels_sha256": "3b90ce5e11b795269b16bac0d01fbac388f18499a1da48e1f7d180d35e1cbc73",
+  "model_fit_calls": 0,
+  "model_predict_calls": 1,
+  "result_sha256": "c7672cecd1fa0a589294478f9dda8c5936ec5ee45c371bd53510b191053bcabd"
+}

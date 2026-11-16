@@ -1,0 +1,7 @@
+{
+  "transaction_read_only": true,
+  "foreign_keys": 33,
+  "orphans": [],
+  "unvalidated": [],
+  "constraints_checked": 37
+}

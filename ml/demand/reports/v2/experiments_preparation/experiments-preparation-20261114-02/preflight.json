@@ -1,0 +1,260 @@
+{
+  "stage": "V2-08_PREPARATION",
+  "status": "PREPARED_NOT_TRAINED",
+  "constant_features": [
+    "antiguedad_tipo_cambio_dias"
+  ],
+  "training_feature_profile": {
+    "rows": 2520,
+    "months": {
+      "2025-01": 168,
+      "2025-02": 168,
+      "2025-03": 168,
+      "2025-04": 168,
+      "2025-05": 168,
+      "2025-06": 168,
+      "2025-07": 168,
+      "2025-08": 168,
+      "2025-09": 168,
+      "2025-10": 168,
+      "2025-11": 168,
+      "2025-12": 168,
+      "2026-01": 168,
+      "2026-02": 168,
+      "2026-03": 168
+    },
+    "columns": {
+      "ventas_mes_anterior": {
+        "unique_nonnull": 9,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "ventas_hace_2_meses": {
+        "unique_nonnull": 9,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "ventas_hace_3_meses": {
+        "unique_nonnull": 9,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "mes_sin": {
+        "unique_nonnull": 11,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "mes_cos": {
+        "unique_nonnull": 11,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "proporcion_por_mayor_mes_anterior": {
+        "unique_nonnull": 4,
+        "nulls": 1920,
+        "constant_value": null
+      },
+      "cobertura_modalidad_mes_anterior": {
+        "unique_nonnull": 4,
+        "nulls": 1920,
+        "constant_value": null
+      },
+      "precio_menor_cierre_anterior_bs": {
+        "unique_nonnull": 24,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "precio_mayor_cierre_anterior_bs": {
+        "unique_nonnull": 24,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "variacion_precio_menor_conocida": {
+        "unique_nonnull": 11,
+        "nulls": 18,
+        "constant_value": null
+      },
+      "variacion_precio_mayor_conocida": {
+        "unique_nonnull": 22,
+        "nulls": 18,
+        "constant_value": null
+      },
+      "tipo_cambio_bs_usd_conocido": {
+        "unique_nonnull": 3,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "variacion_tipo_cambio_ultimo_mes": {
+        "unique_nonnull": 5,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "antiguedad_tipo_cambio_dias": {
+        "unique_nonnull": 1,
+        "nulls": 0,
+        "constant_value": 2.0
+      },
+      "dias_sin_stock_mes_anterior": {
+        "unique_nonnull": 23,
+        "nulls": 12,
+        "constant_value": null
+      },
+      "cobertura_stock_mes_anterior": {
+        "unique_nonnull": 3,
+        "nulls": 0,
+        "constant_value": null
+      },
+      "categoryId": {
+        "unique_nonnull": 7,
+        "nulls": 0,
+        "constant_value": null
+      }
+    },
+    "labels_processed": false,
+    "validation_features_processed": false,
+    "test_features_processed": false
+  },
+  "folds": [
+    {
+      "id": "F1",
+      "train": [
+        "2025-01",
+        "2025-06"
+      ],
+      "validation": [
+        "2025-07",
+        "2025-09"
+      ],
+      "train_rows": 1008,
+      "validation_rows": 504
+    },
+    {
+      "id": "F2",
+      "train": [
+        "2025-01",
+        "2025-09"
+      ],
+      "validation": [
+        "2025-10",
+        "2025-12"
+      ],
+      "train_rows": 1512,
+      "validation_rows": 504
+    },
+    {
+      "id": "F3",
+      "train": [
+        "2025-01",
+        "2025-12"
+      ],
+      "validation": [
+        "2026-01",
+        "2026-03"
+      ],
+      "train_rows": 2016,
+      "validation_rows": 504
+    }
+  ],
+  "feature_set_sizes": {
+    "baseline_v1_features_no_constant_age": 5,
+    "with_modality_no_constant_age": 7,
+    "with_prices_no_constant_age": 11,
+    "with_exchange_no_constant_age": 13,
+    "with_availability_no_constant_age": 15,
+    "v2_full_no_constant_age": 16
+  },
+  "current_build_suitable_scope": "INITIAL_LOW_VOLUME_ACADEMIC_EXPERIMENTS_ONLY",
+  "expanded_volume_build_exists": false,
+  "planned_fit_count": 102,
+  "actual_fit_count": 0,
+  "training_authorized": false,
+  "neon_used": false,
+  "new_dataset_created": false,
+  "input_manifest_sha256": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+  "contract_sha256": "c0ffed3682b75119461d1cef299aec3c4921552b656d65564c74a6ea580facb8",
+  "implementation_sha256": "a64ddf3bbe42e246ac8e0e6f24791c7a3c6a782d46836be430bb0531b95c25b8",
+  "versions": {
+    "python": "3.11.9",
+    "scikit_learn": "1.9.1"
+  },
+  "simulations": {
+    "scope": "PREPARATION_FIXTURES_NOT_A_NEW_DATASET",
+    "quote_ages": [
+      {
+        "expected_age": 0,
+        "selected": {
+          "value": 10,
+          "age_days": 0,
+          "observed_at": "2026-02-01T00:00:00-04:00",
+          "available_at": "2026-02-01T00:00:00-04:00",
+          "status": "KNOWN_WITH_AGE"
+        }
+      },
+      {
+        "expected_age": 2,
+        "selected": {
+          "value": 10,
+          "age_days": 2,
+          "observed_at": "2026-01-30T00:00:00-04:00",
+          "available_at": "2026-01-30T00:00:00-04:00",
+          "status": "KNOWN_WITH_AGE"
+        }
+      },
+      {
+        "expected_age": 7,
+        "selected": {
+          "value": 10,
+          "age_days": 7,
+          "observed_at": "2026-01-25T00:00:00-04:00",
+          "available_at": "2026-01-25T00:00:00-04:00",
+          "status": "KNOWN_WITH_AGE"
+        }
+      },
+      {
+        "expected_age": 30,
+        "selected": {
+          "value": 10,
+          "age_days": 30,
+          "observed_at": "2026-01-02T00:00:00-04:00",
+          "available_at": "2026-01-02T00:00:00-04:00",
+          "status": "KNOWN_WITH_AGE"
+        }
+      }
+    ],
+    "planned_order": {
+      "order_units": 42,
+      "position": 5,
+      "incoming_firm_pending": 0,
+      "known_commitments": 40,
+      "reference_units": 2.0,
+      "required_units": 45,
+      "known_unreserved_commitments": 40,
+      "sellable_now": 5,
+      "reserved_units": 0,
+      "required_by": "2026-02-15T00:00:00-04:00",
+      "fulfillment_guaranteed": false,
+      "rule": "MAX_HISTORY_OR_COMMITMENTS_NOT_SUM",
+      "commercial_replenishment_rule_approved": false,
+      "warning": "Fixtures de simulación. Reservas de esta ventana identificadas sin duplicarlas como demanda nueva. No cambia features ni stock real."
+    },
+    "full_receipt": {
+      "sold": 40,
+      "closing_stock": 7,
+      "remaining_transit": 0,
+      "unmet_simulated_units": 0
+    },
+    "partial_receipt": {
+      "sold": 26,
+      "closing_stock": 0,
+      "remaining_transit": 21,
+      "unmet_simulated_units": 14
+    },
+    "sampled_sales_dataset_created": false
+  },
+  "pending": [
+    "Explicit training authorization and executable V2 preprocessing adapter",
+    "Erika V2-09B feature-set contract review with actual selected artifact later",
+    "Implement and validate a separate expanded-volume generator/build before claiming that coverage",
+    "No precision, superiority or commercial tolerance can be claimed before results"
+  ]
+}

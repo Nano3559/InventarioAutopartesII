@@ -4,126 +4,160 @@ import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authenticate, authorize, requireTiendaLocation } from "../../shared/middlewares/auth";
 import { AuthRequest } from "../../shared/types";
+import { dashboardFailure } from "./dashboardFailure";
 
 const router = Router();
 import prisma from "../../config/database";
 
-router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requireTiendaLocation, async (req: AuthRequest, res: Response) => {
+export function createDashboardHandler(database = prisma) {
+return async function dashboardHandler(req: AuthRequest, res: Response) {
+  const prisma = database;
   try {
     const now = new Date();
     const startOfDay = inicioDiaNegocio(fechaNegocio(now))!;
-    const startOfMonth = rangoMesNegocio(fechaNegocio(now).slice(0, 7))!.gte;
+    const currentMonth = fechaNegocio(now).slice(0, 7);
+    const selectedMonth = req.query?.month ?? currentMonth;
+    const range = rangoMesNegocio(selectedMonth);
+    if (!range || typeof selectedMonth !== "string" || selectedMonth > currentMonth) return res.status(400).json({ code: "INVALID_PERIOD", message: "Seleccione un mes válido hasta el mes actual." });
+    const startOfMonth = range.gte;
+    const endOfMonth = new Date(Math.min(now.getTime(), range.lte.getTime()));
 
     // Un usuario TIENDA solo ve los datos de su propia tienda.
     const userLoc = req.user?.locationId ?? null;
     const isTienda = req.user?.role === "TIENDA";
-    const locWhere: any = isTienda && userLoc ? { locationId: userLoc } : {};
+    if (isTienda && !userLoc) return res.status(403).json({ message: "Usuario TIENDA sin ubicación asignada" });
+    const rawLocation = req.query?.locationId;
+    if (rawLocation !== undefined && (typeof rawLocation !== "string" || !/^[1-9]\d{0,9}$/.test(rawLocation) || Number(rawLocation) > 2147483647)) return res.status(400).json({ code: "INVALID_LOCATION" });
+    if (isTienda && rawLocation !== undefined && Number(rawLocation) !== userLoc) return res.status(403).json({ code: "LOCATION_FORBIDDEN" });
+    const scopedLocation = isTienda ? userLoc : rawLocation === undefined ? null : Number(rawLocation);
+    const locWhere: any = scopedLocation ? { locationId: scopedLocation } : {};
+    const productScope = scopedLocation ? { inventories: { some: { locationId: scopedLocation } } } : {};
 
-    const totalProducts = await prisma.product.count();
-
-    const productsWithInventory = await prisma.product.findMany({
-      where: { inventories: { some: {} } },
-      select: { id: true, inventories: { ...(isTienda ? { where: { locationId: userLoc! } } : {}), select: { stock: true } } },
-    });
-    const productsWithoutStock = productsWithInventory.filter((p) =>
-      p.inventories.every((inv) => inv.stock === 0)
-    ).length;
-
-    const lowStockItems = await prisma.inventory.findMany({
-      where: { stock: { gt: 0 }, minStock: { gt: 0 }, ...locWhere },
-    });
-    const criticalStockItems = lowStockItems.filter((item) => item.stock <= item.minStock);
+    const totalProducts = await prisma.product.count({ where: productScope });
+    const [productsWithInventory, lowStockItems, locations, stockAgg] = await Promise.all([
+      prisma.product.findMany({ where: productScope, select: { id: true, inventories: { ...(scopedLocation ? { where: { locationId: scopedLocation } } : {}), select: { stock: true } } } }),
+      prisma.inventory.findMany({ where: { stock: { gt: 0 }, minStock: { gt: 0 }, ...locWhere }, select: { productId: true, locationId: true, stock: true, minStock: true } }),
+      prisma.location.findMany({ select: { id: true, name: true, type: true } }),
+      prisma.inventory.groupBy({ by: ["locationId"], ...(scopedLocation ? { where: { locationId: scopedLocation } } : {}), _sum: { stock: true } }),
+    ]);
+    if (rawLocation !== undefined && !locations.some(l => l.id === Number(rawLocation))) return res.status(400).json({ code: "UNKNOWN_LOCATION" });
+    const productsWithoutStock = productsWithInventory.filter(p => p.inventories.every(inv => inv.stock === 0)).length;
+    const criticalStockItems = lowStockItems.filter(item => item.stock <= item.minStock);
     const productsWithLowStock = criticalStockItems.length;
-
-    const locations = await prisma.location.findMany({ select: { id: true, name: true, type: true } });
-
-    const stockAgg = await prisma.inventory.groupBy({
-      by: ["locationId"],
-      ...(isTienda && userLoc ? { where: { locationId: userLoc } } : {}),
-      _sum: { stock: true },
-    });
-    const stockByLocation = stockAgg.map((agg) => {
-      const loc = locations.find((l) => l.id === agg.locationId);
-      return {
-        locationId: agg.locationId,
-        name: loc?.name || "Desconocido",
-        type: loc?.type || "TIENDA",
-        totalStock: Number(agg._sum.stock || 0),
-      };
+    const stockByLocation = stockAgg.map(agg => {
+      const loc = locations.find(l => l.id === agg.locationId);
+      return { locationId: agg.locationId, name: loc?.name || "Desconocido", type: loc?.type || "TIENDA", totalStock: Number(agg._sum.stock || 0) };
     });
 
-    const salesToday = await prisma.sale.aggregate({
-      where: { status: "CONFIRMED", saleDate: { gte: startOfDay, lte: now }, ...locWhere },
-      _count: true,
-      _sum: { total: true },
-    });
+    // A missing sales column must not hide independently available inventory.
+    // Never relax the CONFIRMED filter or convert unknown financial totals to zero.
+    const sales = await (async () => {
+      try {
+        // Avoid a failed statement inside read-only transactions on legacy DBs.
+        if (typeof prisma.$queryRaw === "function") {
+          const columns = await prisma.$queryRaw<{ ready: boolean }[]>`
+            SELECT EXISTS (
+              SELECT 1 FROM information_schema.columns
+              WHERE table_schema = 'public' AND table_name = 'Sale' AND column_name = 'status'
+            ) AS ready`;
+          if (!columns[0]?.ready) return null;
+        }
+        const salesToday = await prisma.sale.aggregate({
+          where: { status: "CONFIRMED", saleDate: { gte: startOfDay, lte: now }, ...locWhere },
+          _count: true,
+          _sum: { total: true },
+        });
+        const [salesMonth, salesByLocationAgg, saleItems, recentSales] = await Promise.all([
 
-    const salesMonth = await prisma.sale.aggregate({
-      where: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: now }, ...locWhere },
-      _count: true,
-      _sum: { total: true },
-    });
+          prisma.sale.aggregate({
+          where: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: endOfMonth }, ...locWhere },
+          _count: true,
+          _sum: { total: true },
+        }),
+          prisma.sale.groupBy({
+          by: ["locationId"],
+          where: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: endOfMonth }, ...locWhere },
+          _count: true,
+          _sum: { total: true },
+        }),
+          prisma.saleItem.findMany({
+          where: { sale: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: endOfMonth }, ...locWhere } },
+          include: { product: { select: { brand: true, model: true, name: true, itemCode: true } } },
+        }),
+          prisma.sale.findMany({
+          where: { status: "CONFIRMED", ...locWhere },
+          take: 10,
+          orderBy: { saleDate: "desc" },
+          select: {
+            id: true, saleDate: true, total: true, type: true,
+            location: { select: { name: true } },
+            user: { select: { name: true } },
+            customer: { select: { name: true } },
+            items: { select: { id: true } },
+          },
+        })
+        ]);
 
-    const salesByLocationAgg = await prisma.sale.groupBy({
-      by: ["locationId"],
-      where: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: now }, ...locWhere },
-      _count: true,
-      _sum: { total: true },
-    });
-    const salesByLocation = salesByLocationAgg.map((agg) => {
-      const loc = locations.find((l) => l.id === agg.locationId);
-      return {
-        locationId: agg.locationId,
-        name: loc?.name || "Desconocido",
-        count: agg._count,
-        total: Number(agg._sum.total || 0),
-      };
-    });
 
-    const saleItems = await prisma.saleItem.findMany({
-      where: { sale: { status: "CONFIRMED", saleDate: { gte: startOfMonth, lte: now }, ...locWhere } },
-      include: { product: { select: { brand: true, model: true } } },
-    });
 
-    const brandMap = new Map<string, { totalQuantity: number; totalAmount: number }>();
-    const vehicleMap = new Map<string, { totalQuantity: number; totalAmount: number }>();
-    for (const item of saleItems) {
-      const brand = item.product.brand;
-      const brandExisting = brandMap.get(brand) || { totalQuantity: 0, totalAmount: 0 };
-      brandExisting.totalQuantity += item.quantity;
-      brandExisting.totalAmount += Number(item.subtotal);
-      brandMap.set(brand, brandExisting);
 
-      const model = item.product.model;
-      const vehicleExisting = vehicleMap.get(model) || { totalQuantity: 0, totalAmount: 0 };
-      vehicleExisting.totalQuantity += item.quantity;
-      vehicleExisting.totalAmount += Number(item.subtotal);
-      vehicleMap.set(model, vehicleExisting);
-    }
-    const salesByBrand = Array.from(brandMap.entries())
-      .map(([brand, v]) => ({ brand, ...v }))
-      .sort((a, b) => b.totalAmount - a.totalAmount);
-    const salesByVehicle = Array.from(vehicleMap.entries())
-      .map(([model, v]) => ({ model, ...v }))
-      .sort((a, b) => b.totalAmount - a.totalAmount);
+        const salesByLocation = salesByLocationAgg.map((agg) => {
+          const loc = locations.find((l) => l.id === agg.locationId);
+          return {
+            locationId: agg.locationId,
+            name: loc?.name || "Desconocido",
+            count: agg._count,
+            total: Number(agg._sum.total || 0),
+          };
+        });
 
-    const recentSales = await prisma.sale.findMany({
-      where: { status: "CONFIRMED", ...(isTienda ? locWhere : {}) },
-      take: 10,
-      orderBy: { saleDate: "desc" },
-      include: {
-        location: { select: { name: true } },
-        user: { select: { name: true } },
-        customer: { select: { name: true } },
-        items: true,
-      },
-    });
+
+
+        const brandMap = new Map<string, { totalQuantity: number; totalAmount: number }>();
+        const vehicleMap = new Map<string, { totalQuantity: number; totalAmount: number }>();
+        for (const item of saleItems) {
+          const brand = item.product.brand;
+          const brandExisting = brandMap.get(brand) || { totalQuantity: 0, totalAmount: 0 };
+          brandExisting.totalQuantity += item.quantity;
+          brandExisting.totalAmount += Number(item.subtotal);
+          brandMap.set(brand, brandExisting);
+
+          const model = item.product.model;
+          const vehicleExisting = vehicleMap.get(model) || { totalQuantity: 0, totalAmount: 0 };
+          vehicleExisting.totalQuantity += item.quantity;
+          vehicleExisting.totalAmount += Number(item.subtotal);
+          vehicleMap.set(model, vehicleExisting);
+        }
+        const salesByBrand = Array.from(brandMap.entries())
+          .map(([brand, v]) => ({ brand, ...v }))
+          .sort((a, b) => b.totalAmount - a.totalAmount);
+        const salesByVehicle = Array.from(vehicleMap.entries())
+          .map(([model, v]) => ({ model, ...v }))
+          .sort((a, b) => b.totalAmount - a.totalAmount);
+
+
+
+        const productMap = new Map<number, { productId: number; name: string; itemCode: string; units: number; amount: number }>();
+        for (const item of saleItems) {
+          const row = productMap.get(item.productId) ?? { productId: item.productId, name: item.product.name, itemCode: item.product.itemCode, units: 0, amount: 0 };
+          row.units += item.quantity; row.amount += Number(item.subtotal); productMap.set(item.productId, row);
+        }
+        return { salesToday, salesMonth, salesByLocation, salesByBrand, salesByVehicle, recentSales,
+          soldUnits: saleItems.reduce((sum, item) => sum + item.quantity, 0),
+          topProducts: [...productMap.values()].sort((a, b) => b.units - a.units || a.productId - b.productId).slice(0, 10) };
+      } catch (error) {
+        const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+        if (code === "P2021" || code === "P2022") return null;
+        throw error;
+      }
+    })();
 
     const recentMovements = await prisma.movement.findMany({
-      ...(isTienda && userLoc ? { where: { OR: [{ fromLocationId: userLoc }, { toLocationId: userLoc }] } } : {}),
+      ...(scopedLocation ? { where: { OR: [{ fromLocationId: scopedLocation }, { toLocationId: scopedLocation }] } } : {}),
       take: 10,
       orderBy: { date: "desc" },
-      include: {
+      select: {
+        id: true, date: true, quantity: true,
         product: { select: { name: true, itemCode: true } },
         fromLocation: { select: { name: true } },
         toLocation: { select: { name: true } },
@@ -131,11 +165,13 @@ router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requir
       },
     });
 
+    const pendingRequestCount = await prisma.productRequest.count({ where: { status: "PENDIENTE", ...locWhere } });
     const pendingRequests = await prisma.productRequest.findMany({
       where: { status: "PENDIENTE", ...locWhere },
       take: 10,
       orderBy: { createdAt: "desc" },
-      include: {
+      select: {
+        id: true, quantity: true, createdAt: true,
         product: { select: { name: true, itemCode: true } },
         location: { select: { name: true } },
         requestedBy: { select: { name: true } },
@@ -173,22 +209,26 @@ router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requir
     }));
 
     res.json({
+      period: { month: selectedMonth, locationId: scopedLocation, timeZone: "America/La_Paz", generatedAt: now.toISOString(), inventory: "CURRENT_NOT_HISTORICAL" },
+      availableLocations: locations.filter(l => !isTienda || l.id === userLoc),
+      analytics: sales ? { soldUnits: sales.soldUnits, topProducts: sales.topProducts } : null,
       summary: {
         totalProducts,
         productsWithoutStock,
         productsWithLowStock,
-        salesToday: salesToday._count,
-        salesTodayTotal: Number(salesToday._sum.total || 0),
-        salesMonth: salesMonth._count,
-        salesMonthTotal: Number(salesMonth._sum.total || 0),
-        pendingRequests: pendingRequests.length,
+        salesToday: sales ? sales.salesToday._count : null,
+        salesTodayTotal: sales ? Number(sales.salesToday._sum.total || 0) : null,
+        salesMonth: sales ? sales.salesMonth._count : null,
+        salesMonthTotal: sales ? Number(sales.salesMonth._sum.total || 0) : null,
+        pendingRequests: pendingRequestCount,
         criticalStock: criticalStockFormatted.length,
       },
       stockByLocation,
-      salesByLocation,
-      salesByBrand,
-      salesByVehicle,
-      recentSales: recentSales.map((sale) => ({
+      availability: { sales: sales ? "AVAILABLE" : "SCHEMA_UNAVAILABLE" },
+      salesByLocation: sales?.salesByLocation ?? [],
+      salesByBrand: sales?.salesByBrand ?? [],
+      salesByVehicle: sales?.salesByVehicle ?? [],
+      recentSales: sales ? sales.recentSales.map((sale) => ({
         id: sale.id,
         date: sale.saleDate,
         total: Number(sale.total),
@@ -197,7 +237,7 @@ router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requir
         user: sale.user.name,
         customer: sale.customer?.name || "Cliente general",
         itemCount: sale.items.length,
-      })),
+      })) : [],
       recentMovements: recentMovements.map((m) => ({
         id: m.id,
         date: m.date,
@@ -221,8 +261,12 @@ router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requir
     });
   } catch (error) {
     console.error("Error en dashboard:", safeError(error));
-    res.status(500).json({ message: "Error al obtener datos del dashboard" });
+    const failure = dashboardFailure(error);
+    res.status(failure.status).json({ message: failure.message, code: failure.code });
   }
-});
+}
+}
+export const dashboardHandler = createDashboardHandler();
+router.get("/", authenticate, authorize("ADMIN", "TIENDA", "INVENTARIO"), requireTiendaLocation, dashboardHandler);
 
 export default router;

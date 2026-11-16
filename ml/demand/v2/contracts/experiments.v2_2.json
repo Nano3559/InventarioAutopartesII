@@ -1,0 +1,358 @@
+{
+  "contract_version": "v2.2-experiment-plan-1",
+  "stage": "V2-08_PREPARATION_2_2",
+  "status": "PREPARED_NOT_TRAINED",
+  "owners": {
+    "Erika": "Modelos y backend, ejecución futura de entrenamiento e inferencia",
+    "Ross": "Dataset, contratos de experimentos, frontend, visualización y revisión de calidad"
+  },
+  "input_build": {
+    "relative_path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01",
+    "manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+    "origin": "SYNTHETIC",
+    "scope": "CALIBRATED_M5_FAVORITA_WITH_AUDITED_SYNTHETIC_PRICE_REVIEW"
+  },
+  "training_authorized": false,
+  "constant_policy": {
+    "scope": "CURRENT_2_2_BUILD_TRAIN_ONLY",
+    "expected_constants_for_this_build": [],
+    "action": "USE_ALL_17_APPROVED_RAW_FEATURES_UNLESS_A_FUTURE_FOLD_REQUIRES_REVIEW",
+    "original_full_feature_count": 17,
+    "primary_effective_feature_count": 17,
+    "raw_schema_columns_unchanged": true,
+    "additional_constants": "REQUIRE_REVIEW_NO_SILENT_DROP",
+    "age_evidence": "Ages 0,2,7,30 derived from actual simulated event timestamps, not jitter."
+  },
+  "feature_sets": [
+    {
+      "id": "expanded_baseline_v1_features",
+      "source_feature_set": "baseline_v1_features",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos"
+      ],
+      "excluded_if_present": [],
+      "source_schema_sha256": "b48425a12dd49e892b9bf775b3016cc5f0ff0d381280b90dd9e998b1eda2f266"
+    },
+    {
+      "id": "expanded_with_modality",
+      "source_feature_set": "with_modality",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior"
+      ],
+      "excluded_if_present": [],
+      "source_schema_sha256": "b48425a12dd49e892b9bf775b3016cc5f0ff0d381280b90dd9e998b1eda2f266"
+    },
+    {
+      "id": "expanded_with_prices",
+      "source_feature_set": "with_prices",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior",
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida"
+      ],
+      "excluded_if_present": [],
+      "source_schema_sha256": "b48425a12dd49e892b9bf775b3016cc5f0ff0d381280b90dd9e998b1eda2f266"
+    },
+    {
+      "id": "expanded_with_exchange",
+      "source_feature_set": "with_exchange",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior",
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida",
+        "tipo_cambio_bs_usd_conocido",
+        "variacion_tipo_cambio_ultimo_mes",
+        "antiguedad_tipo_cambio_dias"
+      ],
+      "excluded_if_present": [],
+      "source_schema_sha256": "b48425a12dd49e892b9bf775b3016cc5f0ff0d381280b90dd9e998b1eda2f266"
+    },
+    {
+      "id": "expanded_with_availability",
+      "source_feature_set": "with_availability",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior",
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida",
+        "tipo_cambio_bs_usd_conocido",
+        "variacion_tipo_cambio_ultimo_mes",
+        "antiguedad_tipo_cambio_dias",
+        "dias_sin_stock_mes_anterior",
+        "cobertura_stock_mes_anterior"
+      ],
+      "excluded_if_present": [],
+      "source_schema_sha256": "b48425a12dd49e892b9bf775b3016cc5f0ff0d381280b90dd9e998b1eda2f266"
+    },
+    {
+      "id": "expanded_v2_full",
+      "source_feature_set": "v2_full",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior",
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida",
+        "tipo_cambio_bs_usd_conocido",
+        "variacion_tipo_cambio_ultimo_mes",
+        "antiguedad_tipo_cambio_dias",
+        "dias_sin_stock_mes_anterior",
+        "cobertura_stock_mes_anterior",
+        "categoryId"
+      ],
+      "excluded_if_present": [],
+      "source_schema_sha256": "b48425a12dd49e892b9bf775b3016cc5f0ff0d381280b90dd9e998b1eda2f266"
+    }
+  ],
+  "preprocessing": {
+    "fit_scope": "TRAIN_ONLY_EACH_FOLD",
+    "all_missing_train_column": "FAIL_GROUP_NO_SILENT_DROP",
+    "numeric_missing": "TRAIN median plus fixed missing indicators for nullable numeric features",
+    "category": "categoryId as label. TRAIN vocabulary plus reserved UNKNOWN bucket, map missing or unseen values to UNKNOWN. No ordinal numeric category. No productId or locationId feature.",
+    "linear_scaling": "StandardScaler on numeric imputed features only. Optional for OLS, explicitly selected for this plan. Do not scale categorical one-hot columns.",
+    "forest_scaling": "NONE",
+    "artifact": "One frozen preprocessing+selected-columns+model pipeline. Backend must use the same object. No fitted objects created now."
+  },
+  "models": {
+    "baseline": {
+      "rule": "prediction = ventas_mes_anterior",
+      "fit_required": false
+    },
+    "linear_regression": {
+      "class": "LinearRegression",
+      "parameters": {
+        "fit_intercept": true
+      },
+      "configurations": 1
+    },
+    "random_forest": {
+      "class": "RandomForestRegressor",
+      "fixed": {
+        "n_estimators": 200,
+        "max_features": 1.0,
+        "random_state": 42,
+        "n_jobs": 1,
+        "bootstrap": true
+      },
+      "grid": {
+        "max_depth": [
+          4,
+          8
+        ],
+        "min_samples_leaf": [
+          2,
+          5
+        ],
+        "criterion": [
+          "squared_error",
+          "absolute_error"
+        ]
+      },
+      "configurations": 8,
+      "selection_note": "Comparar ambos criterios de nuevo. El ganador 2.1.0 no es automáticamente ganador en 2.2.0."
+    },
+    "mlp": {
+      "status": "OPTIONAL_NOT_IN_INITIAL_GRID",
+      "reason": "More tuning and normalization, no need to add complexity before comparing baseline, OLS and forest."
+    }
+  },
+  "temporal_validation": {
+    "outer_train": [
+      "2025-01",
+      "2026-03"
+    ],
+    "outer_validation": [
+      "2026-04",
+      "2026-06"
+    ],
+    "test": [
+      "2026-07",
+      "2026-09"
+    ],
+    "random_row_split": false,
+    "group_unit": "COMPLETE_MONTHS_ALL_PRODUCTS_AND_STORES",
+    "folds": [
+      {
+        "id": "F1",
+        "train": [
+          "2025-01",
+          "2025-06"
+        ],
+        "validation": [
+          "2025-07",
+          "2025-09"
+        ]
+      },
+      {
+        "id": "F2",
+        "train": [
+          "2025-01",
+          "2025-09"
+        ],
+        "validation": [
+          "2025-10",
+          "2025-12"
+        ]
+      },
+      {
+        "id": "F3",
+        "train": [
+          "2025-01",
+          "2025-12"
+        ],
+        "validation": [
+          "2026-01",
+          "2026-03"
+        ]
+      }
+    ],
+    "selection": "Choose RF configuration per feature set using mean fold MAE inside TRAIN. Refit each LR and selected RF on outer TRAIN. Compare the 12 resulting candidates and baseline on outer VALIDATION. Keep TEST reserved until one final selection.",
+    "one_step": "Validation history updates only from previous closed months. Do not refit on validation targets. Do not average or fit transforms across all partitions."
+  },
+  "metrics_and_selection": {
+    "primary": "MAE",
+    "secondary": [
+      "RMSE",
+      "R2"
+    ],
+    "accuracy": false,
+    "mape_primary": false,
+    "rows": "Same VALIDATION rows, explicit coverage and abstentions for every candidate",
+    "tie_numerical_tolerance": 1e-09,
+    "tie_policy": [
+      "BASELINE",
+      "LINEAR_REGRESSION",
+      "RANDOM_FOREST"
+    ],
+    "tolerance_meaning": "Floating-point tie convention, not commercially meaningful improvement threshold",
+    "promotion": "Strictly better validation MAE than baseline beyond numerical tolerance, plus RMSE and group review. If RMSE or relevant groups degrade, flag review, no automatic promotion. Baseline remains valid if nothing improves. No promise RF wins.",
+    "groups": "Report product, store, rotation defined using TRAIN, stock coverage and mode only when known. Report n and undefined R2, never silently drop hard rows.",
+    "r2": "Not accuracy percentage. Undefined for fewer than two samples or constant target: null with reason.",
+    "commercial_error_tolerance": null,
+    "full_coverage_required_for_automatic_selection": true,
+    "abstention_policy": "Any missing or invalid prediction blocks automatic promotion. Report coverage and reasons, do not compare a favorable subset against complete baseline as equivalent.",
+    "within_family_tie_policy": "Prefer fewer raw features, then smaller max_depth and larger min_samples_leaf, then deterministic configuration ID. No TEST-based tie breaking."
+  },
+  "prediction_policy": {
+    "version": "NONNEGATIVE_V1",
+    "nonfinite": "REJECT_RESPONSE_COUNT_FAILURE",
+    "negative": "clip to zero before all reported metrics, record raw negative count and publish raw metrics separately",
+    "rounding": "No integer rounding before metrics. UI rounding is separate from replenishment decisions.",
+    "scope": "Predeclared policy, no fitted or predicted values produced now"
+  },
+  "execution_budget": {
+    "feature_sets": 6,
+    "folds": 3,
+    "rf_configs": 8,
+    "lr_configs": 1,
+    "cv_fits": 162,
+    "outer_train_refits": 12,
+    "maximum_planned_fits": 174,
+    "actual_fits": 0,
+    "final_test_evaluation": "Only after selection. Not part of these executed results, none exist."
+  },
+  "tracking": {
+    "path": "reports/v2/2.2.0/calibrated-20261115-01/experiments.csv",
+    "create_when": "FIRST_AUTHORIZED_EXPERIMENT_ONLY",
+    "columns": [
+      "run_id",
+      "dataset_version",
+      "build_id",
+      "dataset_sha256",
+      "config_sha256",
+      "split_sha256",
+      "feature_set_id",
+      "columns_sha256",
+      "model",
+      "parameters_json",
+      "preprocessing_version",
+      "prediction_policy_version",
+      "fit_partition",
+      "evaluation_partition",
+      "fold_id",
+      "seed",
+      "mae",
+      "rmse",
+      "r2",
+      "r2_status",
+      "rows_requested",
+      "rows_scored",
+      "abstentions",
+      "negative_raw_predictions",
+      "fit_seconds",
+      "predict_seconds",
+      "python_version",
+      "sklearn_version",
+      "artifact_sha256",
+      "notes"
+    ],
+    "v1_log_allowed": false,
+    "planned_runs_are_not_experiments": true
+  },
+  "pending": [
+    "Explicit authorization before any real preprocessing fit or regressor training",
+    "Compare baseline, LinearRegression and both RandomForest criteria without using TEST",
+    "Review model errors by product/store/rotation before final selection",
+    "No automatic backend artifact replacement"
+  ],
+  "preparation_policy": {
+    "test": "METADATA_ONLY_NO_ROWS_OR_TARGETS",
+    "actual_preprocessing_fit_allowed": false,
+    "model_fit_allowed": false,
+    "baseline_metrics_now": false,
+    "row_reading": "Read bounded chronological CSV prefix only. Never parse rows after outer VALIDATION. Whole-file byte hashes are integrity only.",
+    "price_causality": "Synthetic demand has no assumed causal price elasticity in this build. Do not claim a learned causal effect."
+  },
+  "input_dataset_evidence": {
+    "dataset_version": "2.2.0",
+    "build_id": "calibrated-20261115-01",
+    "status": "GENERATED_VALIDATED_PRIVATE_NOT_TRAINED",
+    "manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+    "limitations": [
+      "Synthetic academic data, not certified real company history",
+      "Six audited synthetic administrative price reviews",
+      "No identified causal price elasticity",
+      "No wholesale identity inferred from high-volume minor sales",
+      "Existing administrator artifact remains 2.1.0"
+    ]
+  }
+}

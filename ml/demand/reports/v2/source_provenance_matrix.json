@@ -1,0 +1,635 @@
+{
+  "schema_version": "source-provenance-matrix-1",
+  "reviewed_at": "2026-11-11T14:20:58.689392+00:00",
+  "scope": "V2-04B, investigación y metadata. Sin profiling, transformación o entrenamiento.",
+  "status_meanings": {
+    "VERIFIED": "Condición explícita comprobada en evidencia primaria, con los límites indicados.",
+    "PARTIALLY_VERIFIED": "Existe evidencia, pero quedan comprobaciones o condiciones pendientes.",
+    "UNKNOWN": "Evidencia insuficiente para afirmar un permiso o propiedad.",
+    "RESTRICTED": "La evidencia identifica límites, no un permiso general."
+  },
+  "acquisition_note": "Las URLs de adquisición manual y fechas reales de obtención no están demostradas para ninguna fuente.",
+  "approved_academic_profiling": [
+    "monash_car_parts",
+    "uci_online_retail_ii"
+  ],
+  "blocked": [
+    "automotive_spare_parts_demand",
+    "m5_walmart",
+    "corporacion_favorita"
+  ],
+  "sources": [
+    {
+      "source_id": "automotive_spare_parts_demand",
+      "manifest_path": "sources/manifests/automotive_spare_parts_demand/sha256-190bf444c8dca0888e126613.json",
+      "official_name": "fable.intermittent 0.3.0, paquete con auto, raf, pasta y tinyM5",
+      "provider": "Proyecto fable.intermittent, empaquetador. El propietario original de Auto no está identificado con suficiente detalle.",
+      "authors": [
+        "Stefano Damato",
+        "Lorenzo Zambon",
+        "Dario Azzimonti"
+      ],
+      "official_url": "https://github.com/StefanoDamato/fable.intermittent",
+      "source_url": "https://github.com/StefanoDamato/fable.intermittent",
+      "domain": "MIXED_INTERMITTENT_SERIES_PACKAGE",
+      "data_type": "R_PACKAGE_WITH_MULTIPLE_DATASETS",
+      "real_or_synthetic": "REAL_DERIVED",
+      "temporal_coverage": null,
+      "granularity": "auto y raf mensuales, pasta diaria según proveedor, tinyM5 diaria",
+      "geography": null,
+      "geographic_scope": null,
+      "currency": null,
+      "units": "Cantidad por serie y periodo. Pasta incluye indicador de promoción. Las unidades físicas no están certificadas para todo el paquete.",
+      "variables": [
+        "series_id",
+        "index",
+        "value",
+        "promotion (pasta)",
+        "item_id/store_id/date/sell_price (tinyM5)"
+      ],
+      "license": null,
+      "license_url": null,
+      "license_status": "UNKNOWN",
+      "academic_use_status": "UNKNOWN",
+      "commercial_use_status": "UNKNOWN",
+      "redistribution_status": "UNKNOWN",
+      "academic_use": "UNKNOWN",
+      "commercial_use": "UNKNOWN",
+      "redistribution": "UNKNOWN",
+      "commercial_use_allowed": null,
+      "intended_role_v2": [
+        "DIRECT_DOMAIN_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "profiling_decision": "BLOCKED_LICENSE",
+      "citation": "Citar el paquete y la fuente original de cada subdataset. Para auto: Türkmen et al. (2021), DOI 10.1371/journal.pone.0259764.",
+      "citation_required": null,
+      "doi": null,
+      "evidence_urls": [
+        "https://github.com/StefanoDamato/fable.intermittent",
+        "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/R/data.R",
+        "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764",
+        "https://data.mendeley.com/datasets/njdkntcpc9/1"
+      ],
+      "limitations": [
+        "Los 121 archivos no son un único dataset. No se ejecutó código R ni se decodificaron RDA.",
+        "LGPL >= 3 corresponde al software. No acredita licencia de Auto o RAF.",
+        "El calendario de auto y raf se construye con fechas iniciales fijadas en data-raw/build_datasets.R. No se certifican como fechas originales de observación.",
+        "Conflicto pasta: R/data.R declara CC BY 4.0, mientras Mendeley versión 1 declara CC BY-NC 3.0. Prevalece como evidencia la publicación primaria, sin relicenciar RAW.",
+        "DIRECT_DOMAIN_REFERENCE es potencial únicamente para auto, no para RAF, pasta o tinyM5. Uso bloqueado hasta aclarar derechos del subdataset."
+      ],
+      "verification_status": "PARTIALLY_VERIFIED",
+      "verified_at": "2026-11-11T14:20:58.689392+00:00",
+      "obtained_from_url": null,
+      "acquisition_verification_status": "UNKNOWN",
+      "subdatasets": [
+        {
+          "name": "auto",
+          "files": [
+            "fable.intermittent-main/data-raw/Auto.csv",
+            "fable.intermittent-main/data/auto.rda"
+          ],
+          "provider": "Fuente citada por Türkmen et al. (2021), antecedentes Syntetos y Boylan (2005)",
+          "real_or_synthetic": "REAL_DERIVED",
+          "series_documented": 3000,
+          "periods_documented": 24,
+          "frequency": "MONTHLY",
+          "variables": [
+            "series_id",
+            "index",
+            "value"
+          ],
+          "calendar": "2010-01 a 2011-12 asignado por el constructor del paquete, no certificado como calendario original",
+          "license": null,
+          "license_status": "UNKNOWN",
+          "academic_use_status": "UNKNOWN",
+          "commercial_use_status": "UNKNOWN",
+          "redistribution_status": "UNKNOWN",
+          "doi": "10.1371/journal.pone.0259764",
+          "evidence_urls": [
+            "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/R/data.R",
+            "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764"
+          ],
+          "intended_role_v2": [
+            "DIRECT_DOMAIN_REFERENCE",
+            "DEMAND_PATTERN_REFERENCE"
+          ]
+        },
+        {
+          "name": "raf",
+          "files": [
+            "fable.intermittent-main/data-raw/RAF.csv",
+            "fable.intermittent-main/data/raf.rda"
+          ],
+          "provider": "Royal Air Force, según documentación y paper",
+          "real_or_synthetic": "REAL_DERIVED",
+          "series_documented": 5000,
+          "periods_documented": 84,
+          "frequency": "MONTHLY",
+          "calendar": "1996-01 a 2002-12 asignado por el constructor, no certificado como calendario original",
+          "license": null,
+          "license_status": "UNKNOWN",
+          "academic_use_status": "UNKNOWN",
+          "commercial_use_status": "UNKNOWN",
+          "redistribution_status": "UNKNOWN",
+          "intended_role_v2": [
+            "DEMAND_PATTERN_REFERENCE"
+          ],
+          "limitation": "Repuestos aeronáuticos, no automotrices"
+        },
+        {
+          "name": "pasta",
+          "files": [
+            "fable.intermittent-main/data-raw/pasta.csv",
+            "fable.intermittent-main/data/pasta.rda"
+          ],
+          "provider": "Paolo Mancuso, Veronica Piccialli, Antonio M. Sudoso",
+          "real_or_synthetic": "REAL_DERIVED",
+          "series_documented": 118,
+          "frequency": "DAILY, según Mendeley. El constructor usa una columna llamada week, sin demostrar agregación semanal.",
+          "temporal_coverage": "2014-01-01 a 2018-12-31 según proveedor. El test local comienza 2014-01-02, no se verificaron filas.",
+          "license": "CC BY-NC 3.0",
+          "license_status": "VERIFIED",
+          "academic_use_status": "VERIFIED",
+          "commercial_use_status": "RESTRICTED",
+          "redistribution_status": "RESTRICTED",
+          "citation_required": true,
+          "doi": "10.17632/njdkntcpc9.1",
+          "evidence_urls": [
+            "https://data.mendeley.com/datasets/njdkntcpc9/1"
+          ],
+          "intended_role_v2": [
+            "DEMAND_PATTERN_REFERENCE",
+            "PROMOTION_REFERENCE"
+          ],
+          "limitation": "No automotriz. No habilita el paquete completo. Contradicción de licencia registrada."
+        },
+        {
+          "name": "tinyM5",
+          "files": [
+            "fable.intermittent-main/data/tinyM5.rda"
+          ],
+          "provider": "Derivado de m5/Walmart, según documentación",
+          "real_or_synthetic": "REAL_DERIVED",
+          "series_documented": 280,
+          "products_documented": 28,
+          "stores_documented": 10,
+          "frequency": "DAILY",
+          "temporal_coverage": "2011-01-29 a 2016-04-24 según tests del paquete",
+          "license": "Subject to M5 Competition Rules",
+          "license_status": "PARTIALLY_VERIFIED",
+          "academic_use_status": "UNKNOWN",
+          "commercial_use_status": "UNKNOWN",
+          "redistribution_status": "UNKNOWN",
+          "intended_role_v2": [
+            "STORE_PATTERN_REFERENCE",
+            "PRICE_PATTERN_REFERENCE",
+            "CALENDAR_REFERENCE"
+          ],
+          "limitation": "No automotriz. No hereda LGPL del paquete."
+        }
+      ],
+      "processing_status": "PENDING_SOURCE_REVIEW",
+      "hash_semantics": {
+        "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+        "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+        "sha256_scope": "FILE_INVENTORY_SHA256",
+        "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+        "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+      },
+      "sha256": "190bf444c8dca0888e126613fcb00f1348669ab19a4940b7518524072789c9ae",
+      "inventory_sha256": "190bf444c8dca0888e126613fcb00f1348669ab19a4940b7518524072789c9ae",
+      "snapshot_id": "sha256-190bf444c8dca0888e126613",
+      "related_publications": [
+        {
+          "title": "Forecasting intermittent and sparse time series: A unified probabilistic framework via deep renewal processes",
+          "year": 2021,
+          "doi": "10.1371/journal.pone.0259764",
+          "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764",
+          "scope": "Auto y RAF, antecedentes. No licencia de datos."
+        }
+      ],
+      "paper_review_note": "Se registran publicaciones comprobadas, sin atribuir al dataset la licencia del artículo."
+    },
+    {
+      "source_id": "monash_car_parts",
+      "manifest_path": "sources/manifests/monash_car_parts/sha256-d69d3412b9c45248f1c9c441.json",
+      "official_name": "Car Parts Dataset (with Missing Values), versión 2",
+      "provider": "Monash Time Series Forecasting Repository / Zenodo, extraído de expsmooth",
+      "authors": [
+        "Rakshitha Godahewa",
+        "Christoph Bergmeir",
+        "Geoff Webb",
+        "Rob Hyndman",
+        "Pablo Montero-Manso"
+      ],
+      "official_url": "https://zenodo.org/records/4656022",
+      "source_url": "https://zenodo.org/records/4656022",
+      "domain": "AUTOMOTIVE_PARTS_SALES",
+      "data_type": "TSF_MONTHLY_COLLECTION",
+      "real_or_synthetic": "REAL_DERIVED",
+      "temporal_coverage": {
+        "start": "1998-01",
+        "end": "2002-03",
+        "precision": "MONTH",
+        "basis": "OFFICIAL_DOCUMENTATION"
+      },
+      "granularity": "2674 series mensuales, 51 periodos documentados. Cada serie representa ventas de repuestos, no una tienda RepuestoPro.",
+      "geography": "Empresa automotriz de Estados Unidos según sección 5.2 de Türkmen et al. (2021). No identifica países por registro.",
+      "geographic_scope": "Empresa automotriz de Estados Unidos según sección 5.2 de Türkmen et al. (2021). No identifica países por registro.",
+      "currency": null,
+      "units": "Ventas de repuestos por serie y mes. Unidad física específica no declarada.",
+      "variables": [
+        "series_name",
+        "start_timestamp",
+        "monthly values",
+        "missing values"
+      ],
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "license_status": "VERIFIED",
+      "academic_use_status": "VERIFIED",
+      "commercial_use_status": "VERIFIED",
+      "redistribution_status": "VERIFIED",
+      "academic_use": "VERIFIED",
+      "commercial_use": "VERIFIED",
+      "redistribution": "VERIFIED",
+      "commercial_use_allowed": true,
+      "intended_role_v2": [
+        "DIRECT_DOMAIN_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "profiling_decision": "APPROVED_ACADEMIC_ONLY",
+      "citation": "Godahewa, R., Bergmeir, C., Webb, G., Hyndman, R., & Montero-Manso, P. (2020). Car Parts Dataset (with Missing Values), versión 2. Zenodo. https://doi.org/10.5281/zenodo.4656022",
+      "citation_required": true,
+      "doi": "10.5281/zenodo.4656022",
+      "evidence_urls": [
+        "https://zenodo.org/records/4656022",
+        "https://zenodo.org/api/records/4656022",
+        "https://forecastingdata.org/",
+        "https://creativecommons.org/licenses/by/4.0/",
+        "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764",
+        "https://arxiv.org/abs/2105.06643"
+      ],
+      "limitations": [
+        "La licencia CC BY 4.0 consta explícitamente en la API y en la metadata HTML de Zenodo.",
+        "El encabezado local coincide con descripción, frecuencia y periodo oficiales. No se descargó el ZIP para comparar bytes del TSF interno.",
+        "La URL y fecha de adquisición real del archivo local siguen desconocidas. No confundir el MD5 del ZIP publicado con el SHA-256 del TSF extraído.",
+        "Conservar atribución y licencia e indicar cambios futuros. No usar estas series como historia real de RepuestoPro."
+      ],
+      "verification_status": "PARTIALLY_VERIFIED",
+      "verified_at": "2026-11-11T14:20:58.689392+00:00",
+      "obtained_from_url": null,
+      "acquisition_verification_status": "UNKNOWN",
+      "processing_status": "APPROVED_FOR_PROFILING",
+      "hash_semantics": {
+        "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+        "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+        "sha256_scope": "FILE_BYTES",
+        "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+        "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+      },
+      "sha256": "818470cd0a65679b38b48a20e4d916d11fbd2ccbf7f5f9d8d97093dd6c784600",
+      "inventory_sha256": "d69d3412b9c45248f1c9c44154b50bb6bd9f58e6a6132957b839f8d493b1fd0e",
+      "snapshot_id": "sha256-d69d3412b9c45248f1c9c441",
+      "related_publications": [
+        {
+          "title": "Monash Time Series Forecasting Archive",
+          "year": 2021,
+          "doi": null,
+          "url": "https://arxiv.org/abs/2105.06643",
+          "scope": "Publicación del repositorio. El DOI del dataset es distinto."
+        }
+      ],
+      "paper_review_note": "Se registran publicaciones comprobadas, sin atribuir al dataset la licencia del artículo."
+    },
+    {
+      "source_id": "uci_online_retail_ii",
+      "manifest_path": "sources/manifests/uci_online_retail_ii/sha256-4dc26799b20addb7559df7e2.json",
+      "official_name": "Online Retail II",
+      "provider": "UCI Machine Learning Repository. Comercio electrónico británico no identificado por nombre",
+      "authors": [
+        "Daqing Chen"
+      ],
+      "official_url": "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+      "source_url": "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+      "domain": "ONLINE_GIFTWARE_RETAIL_WITH_WHOLESALERS",
+      "data_type": "TRANSACTION_LINES_XLSX",
+      "real_or_synthetic": "REAL",
+      "temporal_coverage": {
+        "start": "2009-12-01",
+        "end": "2011-12-09",
+        "precision": "DAY",
+        "basis": "OFFICIAL_DOCUMENTATION"
+      },
+      "granularity": "1067371 registros documentados. Son líneas de transacción, no necesariamente facturas únicas.",
+      "geography": "Empresa del Reino Unido, clientes en varios países",
+      "geographic_scope": "Empresa del Reino Unido, clientes en varios países",
+      "currency": "GBP",
+      "units": "Quantity por artículo y operación. Precio unitario en libras esterlinas.",
+      "variables": [
+        "InvoiceNo/Invoice",
+        "StockCode",
+        "Description",
+        "Quantity",
+        "InvoiceDate",
+        "UnitPrice/Price",
+        "CustomerID/Customer ID",
+        "Country"
+      ],
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "license_status": "VERIFIED",
+      "academic_use_status": "VERIFIED",
+      "commercial_use_status": "VERIFIED",
+      "redistribution_status": "VERIFIED",
+      "academic_use": "VERIFIED",
+      "commercial_use": "VERIFIED",
+      "redistribution": "VERIFIED",
+      "commercial_use_allowed": true,
+      "intended_role_v2": [
+        "WHOLESALE_PATTERN_REFERENCE",
+        "CANCELLATION_REFERENCE",
+        "PRICE_PATTERN_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "profiling_decision": "APPROVED_ACADEMIC_ONLY",
+      "citation": "Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D",
+      "citation_required": true,
+      "doi": "10.24432/C5CG6D",
+      "evidence_urls": [
+        "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+        "https://archive.ics.uci.edu/api/dataset?id=502",
+        "https://creativecommons.org/licenses/by/4.0/"
+      ],
+      "limitations": [
+        "No es de autopartes. Muchas personas compradoras son mayoristas según UCI, pero no se identifican todas las líneas mayoristas con una etiqueta.",
+        "UCI define cancelación por prefijo c en InvoiceNo. No se calcularon cantidades negativas, anulaciones o distribución.",
+        "La ficha informa faltantes, pero su API devuelve has_missing_values=no y variables vacías. Resolver esa contradicción en profiling, sin asumir limpieza.",
+        "Los nombres Price y UnitPrice son variantes entre archivo y descripción, no se renombraron columnas.",
+        "No se verificó equivalencia binaria con una descarga oficial. No publicar identificadores de clientes innecesarios. Mantener atribución y señalar transformaciones."
+      ],
+      "verification_status": "PARTIALLY_VERIFIED",
+      "verified_at": "2026-11-11T14:20:58.689392+00:00",
+      "obtained_from_url": null,
+      "acquisition_verification_status": "UNKNOWN",
+      "processing_status": "APPROVED_FOR_PROFILING",
+      "hash_semantics": {
+        "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+        "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+        "sha256_scope": "FILE_BYTES",
+        "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+        "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+      },
+      "sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+      "inventory_sha256": "4dc26799b20addb7559df7e26ac855c20d780def99542912433b6f553d3e18f4",
+      "snapshot_id": "sha256-4dc26799b20addb7559df7e2",
+      "related_publications": [],
+      "paper_review_note": "No se identificó en esta revisión un paper primario específico para esta edición. El DOI de UCI corresponde al dataset."
+    },
+    {
+      "source_id": "m5_walmart",
+      "manifest_path": "sources/manifests/m5_walmart/sha256-aa5d519ab121b284a7b07f4d.json",
+      "official_name": "M5 Forecasting - Accuracy",
+      "provider": "Walmart / organizadores de M5 / Kaggle",
+      "authors": [
+        "Spyros Makridakis",
+        "Evangelos Spiliotis",
+        "Vassilios Assimakopoulos"
+      ],
+      "official_url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy",
+      "source_url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy",
+      "domain": "GENERAL_RETAIL_NOT_AUTOPARTS",
+      "data_type": "DAILY_PRODUCT_STORE_SERIES",
+      "real_or_synthetic": "REAL",
+      "temporal_coverage": {
+        "start": "2011-01-29",
+        "end": "2016-05-22",
+        "precision": "DAY",
+        "basis": "OFFICIAL_DOCUMENTATION"
+      },
+      "granularity": "3049 productos en 10 tiendas, 30490 series inferiores. Ventas diarias y precios semanales por producto y tienda.",
+      "geography": "Estados Unidos: California, Texas y Wisconsin",
+      "geographic_scope": "Estados Unidos: California, Texas y Wisconsin",
+      "currency": "USD",
+      "units": "Unidades vendidas por día y precio unitario semanal en USD",
+      "variables": [
+        "item_id",
+        "store_id",
+        "state_id",
+        "d_1..d_1941",
+        "wm_yr_wk",
+        "sell_price",
+        "date",
+        "event_name/type",
+        "snap_CA/TX/WI"
+      ],
+      "license": "Subject to Competition Rules, no licencia CC verificada",
+      "license_url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy/rules",
+      "license_status": "PARTIALLY_VERIFIED",
+      "academic_use_status": "UNKNOWN",
+      "commercial_use_status": "UNKNOWN",
+      "redistribution_status": "UNKNOWN",
+      "academic_use": "UNKNOWN",
+      "commercial_use": "UNKNOWN",
+      "redistribution": "UNKNOWN",
+      "commercial_use_allowed": null,
+      "intended_role_v2": [
+        "PRICE_PATTERN_REFERENCE",
+        "STORE_PATTERN_REFERENCE",
+        "CALENDAR_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "profiling_decision": "BLOCKED_LICENSE",
+      "citation": "Walmart y M5 (2020), M5 Forecasting - Accuracy, Kaggle. Publicación asociada: Makridakis, Spiliotis y Assimakopoulos (2022), DOI 10.1016/j.ijforecast.2021.11.013.",
+      "citation_required": null,
+      "doi": null,
+      "evidence_urls": [
+        "https://www.kaggle.com/c/m5-forecasting-accuracy/data",
+        "https://www.kaggle.com/competitions/m5-forecasting-accuracy/rules",
+        "https://storage.googleapis.com/kaggle-forum-message-attachments/772349/15032/M5-Competitors-Guide-Final-10-March-2020.pdf",
+        "https://github.com/Mcompetitions/M5-methods",
+        "https://doi.org/10.1016/j.ijforecast.2021.11.013"
+      ],
+      "limitations": [
+        "No representa autopartes ni ventas en Bolivia. No convertir directamente sus IDs a Product.id.",
+        "Los cinco nombres de archivo y los extremos d_1913/d_1941 concuerdan con la página oficial y las cabeceras locales.",
+        "d_1941 corresponde al 22 de mayo de 2016 desde el inicio declarado. La guía también menciona 19 de junio de 2016, que incluye el horizonte posterior. No confundir calendario con etiquetas disponibles.",
+        "La página Data declara Subject to Competition Rules. El texto específico de Rules no resultó legible y la respuesta HTML contiene un desafío de acceso. No se eludió.",
+        "No extrapolar las reglas de Favorita ni interpretar una licencia de código de soluciones como permiso de datos. Falta comprobar uso académico, comercial y redistribución."
+      ],
+      "verification_status": "PARTIALLY_VERIFIED",
+      "verified_at": "2026-11-11T14:20:58.689392+00:00",
+      "obtained_from_url": null,
+      "acquisition_verification_status": "UNKNOWN",
+      "processing_status": "PENDING_SOURCE_REVIEW",
+      "hash_semantics": {
+        "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+        "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+        "sha256_scope": "FILE_INVENTORY_SHA256",
+        "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+        "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+      },
+      "sha256": "aa5d519ab121b284a7b07f4da781082c491dfba802491ae55497a30fd178c35a",
+      "inventory_sha256": "aa5d519ab121b284a7b07f4da781082c491dfba802491ae55497a30fd178c35a",
+      "snapshot_id": "sha256-aa5d519ab121b284a7b07f4d",
+      "related_publications": [
+        {
+          "title": "M5 accuracy competition: Results, findings, and conclusions",
+          "year": 2022,
+          "doi": "10.1016/j.ijforecast.2021.11.013",
+          "url": "https://doi.org/10.1016/j.ijforecast.2021.11.013",
+          "scope": "Artículo de resultados, no DOI del dataset ni licencia."
+        }
+      ],
+      "paper_review_note": "Se registran publicaciones comprobadas, sin atribuir al dataset la licencia del artículo."
+    },
+    {
+      "source_id": "corporacion_favorita",
+      "manifest_path": "sources/manifests/corporacion_favorita/sha256-b69a1fa872a46632efa647d8.json",
+      "official_name": "Corporación Favorita Grocery Sales Forecasting (competición 2017)",
+      "provider": "Corporación Favorita C.A. / Kaggle",
+      "authors": [
+        "Corporación Favorita C.A."
+      ],
+      "official_url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+      "source_url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+      "domain": "GROCERY_RETAIL_NOT_AUTOPARTS",
+      "data_type": "DAILY_PRODUCT_STORE_SALES_AND_AUXILIARY_FILES",
+      "real_or_synthetic": "REAL",
+      "temporal_coverage": null,
+      "granularity": "Diaria por producto y tienda. Transacciones por tienda y día, eventos y promociones. No confundir con la competición Store Sales de 2021 agregada por familia.",
+      "geography": "Ecuador",
+      "geographic_scope": "Ecuador",
+      "currency": null,
+      "units": "unit_sales admite cantidades enteras o fraccionarias según producto. No incluye precio unitario de producto.",
+      "variables": [
+        "date",
+        "store_nbr",
+        "item_nbr",
+        "unit_sales",
+        "onpromotion",
+        "transactions",
+        "family/class/perishable",
+        "city/state/type/cluster",
+        "holidays_events",
+        "oil"
+      ],
+      "license": "Reglas específicas de Corporación Favorita Grocery Sales Forecasting, sección 7. No licencia CC verificada",
+      "license_url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/rules",
+      "license_status": "VERIFIED",
+      "academic_use_status": "PARTIALLY_VERIFIED",
+      "commercial_use_status": "RESTRICTED",
+      "redistribution_status": "RESTRICTED",
+      "academic_use": "PARTIALLY_VERIFIED",
+      "commercial_use": "RESTRICTED",
+      "redistribution": "RESTRICTED",
+      "commercial_use_allowed": false,
+      "intended_role_v2": [
+        "PROMOTION_REFERENCE",
+        "STORE_PATTERN_REFERENCE",
+        "CALENDAR_REFERENCE",
+        "DEMAND_PATTERN_REFERENCE"
+      ],
+      "profiling_decision": "BLOCKED_ACCESS_CONFIRMATION",
+      "citation": "Corporación Favorita C.A. (2017). Corporación Favorita Grocery Sales Forecasting. Kaggle. Cita recomendada, no obligación de atribución contractual certificada.",
+      "citation_required": null,
+      "doi": null,
+      "evidence_urls": [
+        "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+        "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/data",
+        "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/rules"
+      ],
+      "limitations": [
+        "Las reglas 7.A contemplan investigación y educación después de aceptarlas. 7.B restringe compartir los datos con personas no participantes o que no aceptaron las reglas.",
+        "No se aceptaron términos por el usuario ni se comprobó su aceptación previa. Mantener bloqueado el acceso analítico hasta acreditar el cumplimiento de esas condiciones.",
+        "Los ocho archivos coinciden por nombre con la competición de 2017. No se extrajeron 7Z ni se verificaron los bytes contra el proveedor.",
+        "No se certificó aquí el rango exacto de train mediante una página primaria legible o el archivo. Se mantiene temporal_coverage=null en lugar de copiar fechas de blogs o de la competición de 2021.",
+        "La descripción de Data no estuvo legible directamente. Se identificaron variables con documentación de la competición reproducida en una entrada de datos de Kaggle, utilizada solo como corroboración secundaria.",
+        "Las devoluciones pueden aparecer como unit_sales negativas y hay cantidades fraccionarias según esa documentación. Revisarlo posteriormente, sin trasladar esas reglas a ventas brutas de RepuestoPro.",
+        "oil no es tipo de cambio Bs/USD ni precio unitario del producto. No inferir moneda de las columnas solo por el país.",
+        "No se asigna CANCELLATION_REFERENCE: las devoluciones negativas no equivalen por sí solas a anulaciones identificadas por factura."
+      ],
+      "verification_status": "PARTIALLY_VERIFIED",
+      "verified_at": "2026-11-11T14:20:58.689392+00:00",
+      "obtained_from_url": null,
+      "acquisition_verification_status": "UNKNOWN",
+      "processing_status": "PENDING_SOURCE_REVIEW",
+      "hash_semantics": {
+        "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+        "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+        "sha256_scope": "FILE_INVENTORY_SHA256",
+        "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+        "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+      },
+      "sha256": "b69a1fa872a46632efa647d8c5592a5963c64cc2c2a26df7d01ef3c36c1bb938",
+      "inventory_sha256": "b69a1fa872a46632efa647d8c5592a5963c64cc2c2a26df7d01ef3c36c1bb938",
+      "snapshot_id": "sha256-b69a1fa872a46632efa647d8",
+      "related_publications": [],
+      "paper_review_note": "No se identificó en esta revisión un paper primario específico para esta edición. El DOI de UCI corresponde al dataset."
+    }
+  ],
+  "evidence_register": [
+    {
+      "url": "https://zenodo.org/api/records/4656022",
+      "locator": "metadata.license.id, creators, description, doi",
+      "finding": "CC BY 4.0 explícita para Car Parts con faltantes. Metadata guardada en tmp/provenance-20261111-01/monash_zenodo_api.txt."
+    },
+    {
+      "url": "https://zenodo.org/records/4656022",
+      "locator": "Rights y metadata HTML de licencia",
+      "finding": "CC BY 4.0 corroborada en HTML, aunque el lector web inicialmente no mostró el texto de licencia."
+    },
+    {
+      "url": "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+      "locator": "Dataset Information, Additional Variable Information, Citation, License",
+      "finding": "CC BY 4.0, Daqing Chen, GBP, cancelación por prefijo c y periodo 2009-12-01 a 2011-12-09."
+    },
+    {
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "locator": "Freedoms and terms",
+      "finding": "Permite compartir y adaptar, también comercialmente, manteniendo crédito, enlace de licencia e indicación de cambios."
+    },
+    {
+      "url": "https://data.mendeley.com/datasets/njdkntcpc9/1",
+      "locator": "Licence y descripción de versión 1",
+      "finding": "CC BY NC 3.0 para pasta, contradice CC BY 4.0 en documentación del paquete R."
+    },
+    {
+      "url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/rules",
+      "locator": "General Competition Rules, 7.A y 7.B",
+      "finding": "Contenido primario indexado: investigación y educación tras aceptar reglas, restricciones de acceso y redistribución. No se aceptaron términos ni se certificó aceptación previa."
+    },
+    {
+      "url": "https://www.kaggle.com/c/m5-forecasting-accuracy/data",
+      "locator": "Files, Size y License",
+      "finding": "Cinco CSV, 450.47 MB, Subject to Competition Rules. Nombres y cabeceras locales consistentes, sin comparación binaria con descarga remota."
+    },
+    {
+      "url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy/rules",
+      "locator": "Acceso directo",
+      "finding": "Sin contenido de reglas legible. HTML capturado contiene desafío de acceso. No se utilizó una copia secundaria ni se extrapolaron reglas de otra competición."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/R/data.R",
+      "locator": "auto, raf, pasta, tinyM5",
+      "finding": "Documentación del empaquetador. Se contrastó con copia local y fuentes originales, sin ejecutar R."
+    },
+    {
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764",
+      "locator": "5.2 Real data y Data Availability",
+      "finding": "Distingue Auto, Car Parts, RAF y M5 como datos reales. La licencia del artículo no demuestra derechos de cada archivo de terceros."
+    },
+    {
+      "url": "https://storage.googleapis.com/kaggle-forum-message-attachments/772349/15032/M5-Competitors-Guide-Final-10-March-2020.pdf",
+      "locator": "The dataset, páginas 3 a 5",
+      "finding": "Jerarquía, tiendas, productos, unidades, calendario y precios. No se usó como sustituto de cláusulas de licencia."
+    }
+  ],
+  "corroborating_secondary_evidence": [
+    {
+      "url": "https://www.kaggle.com/sandraezzat/favorita-grocery-sales-forecasting/data",
+      "scope": "Texto Data de la competición reproducido como entrada de un notebook. Solo corroboración secundaria para variables, sin aprobar permisos ni certificar cobertura temporal."
+    }
+  ]
+}

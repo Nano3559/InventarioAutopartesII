@@ -1,0 +1,134 @@
+{
+  "schema_version": "source-manifest-1",
+  "source_id": "uci_online_retail_ii",
+  "name": "uci_online_retail_II",
+  "domain": "ONLINE_GIFTWARE_RETAIL_WITH_WHOLESALERS",
+  "source_url": "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+  "provider": "UCI Machine Learning Repository. Comercio electrónico británico no identificado por nombre",
+  "obtained_at": null,
+  "registered_at": "2026-11-11T13:55:34.077902+00:00",
+  "snapshot_id": "sha256-4dc26799b20addb7559df7e2",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "commercial_use_allowed": true,
+  "original_filename": "online_retail_II.xlsx",
+  "original_format": "XLSX",
+  "sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+  "hash_scope": "FILE_BYTES",
+  "inventory_sha256": "4dc26799b20addb7559df7e26ac855c20d780def99542912433b6f553d3e18f4",
+  "file_size_bytes": 45622278,
+  "file_count": 1,
+  "files": [
+    {
+      "relative_path": "online_retail_II.xlsx",
+      "original_format": "XLSX",
+      "file_size_bytes": 45622278,
+      "sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980"
+    }
+  ],
+  "raw_root": "sources/external_raw/uci_online_retail_II",
+  "temporal_coverage": {
+    "start": "2009-12-01",
+    "end": "2011-12-09",
+    "precision": "DAY",
+    "basis": "OFFICIAL_DOCUMENTATION"
+  },
+  "geographic_scope": "Empresa del Reino Unido, clientes en varios países",
+  "currency": "GBP",
+  "units": "Quantity por artículo y operación. Precio unitario en libras esterlinas.",
+  "description": "Online Retail II. 1067371 registros documentados. Son líneas de transacción, no necesariamente facturas únicas.",
+  "intended_use": "Roles conceptuales: WHOLESALE_PATTERN_REFERENCE, CANCELLATION_REFERENCE, PRICE_PATTERN_REFERENCE, DEMAND_PATTERN_REFERENCE. Decisión de acceso: APPROVED_ACADEMIC_ONLY. Sin transformación o mezcla autorizada en esta revisión.",
+  "limitations": [
+    "No es de autopartes. Muchas personas compradoras son mayoristas según UCI, pero no se identifican todas las líneas mayoristas con una etiqueta.",
+    "UCI define cancelación por prefijo c en InvoiceNo. No se calcularon cantidades negativas, anulaciones o distribución.",
+    "La ficha informa faltantes, pero su API devuelve has_missing_values=no y variables vacías. Resolver esa contradicción en profiling, sin asumir limpieza.",
+    "Los nombres Price y UnitPrice son variantes entre archivo y descripción, no se renombraron columnas.",
+    "No se verificó equivalencia binaria con una descarga oficial. No publicar identificadores de clientes innecesarios. Mantener atribución y señalar transformaciones."
+  ],
+  "processing_status": "APPROVED_FOR_PROFILING",
+  "completeness": "UNKNOWN",
+  "contains_archives": true,
+  "documentation_files": [],
+  "evidence": [],
+  "visible_structure": [],
+  "archive_inspection": [
+    {
+      "path": "online_retail_II.xlsx",
+      "status": "CENTRAL_DIRECTORY_ONLY_NO_EXTRACTION",
+      "entries": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "xl/workbook.xml",
+        "xl/_rels/workbook.xml.rels",
+        "xl/worksheets/sheet1.xml",
+        "xl/worksheets/sheet2.xml",
+        "xl/theme/theme1.xml",
+        "xl/styles.xml",
+        "xl/sharedStrings.xml",
+        "docProps/core.xml",
+        "docProps/app.xml"
+      ]
+    }
+  ],
+  "notes": [
+    "null significa desconocido, no permiso denegado ni valor cero.",
+    "registered_at es el registro actual, no la fecha de adquisición.",
+    "sha256 en directorios es hash del inventario canónico. Cada files[].sha256 corresponde a bytes originales.",
+    "Las licencias de software incluidas no se atribuyen automáticamente a los datos."
+  ],
+  "official_name": "Online Retail II",
+  "authors": [
+    "Daqing Chen"
+  ],
+  "data_type": "TRANSACTION_LINES_XLSX",
+  "real_or_synthetic": "REAL",
+  "granularity": "1067371 registros documentados. Son líneas de transacción, no necesariamente facturas únicas.",
+  "variables": [
+    "InvoiceNo/Invoice",
+    "StockCode",
+    "Description",
+    "Quantity",
+    "InvoiceDate",
+    "UnitPrice/Price",
+    "CustomerID/Customer ID",
+    "Country"
+  ],
+  "license_status": "VERIFIED",
+  "academic_use_status": "VERIFIED",
+  "commercial_use_status": "VERIFIED",
+  "redistribution_status": "VERIFIED",
+  "intended_role_v2": [
+    "WHOLESALE_PATTERN_REFERENCE",
+    "CANCELLATION_REFERENCE",
+    "PRICE_PATTERN_REFERENCE",
+    "DEMAND_PATTERN_REFERENCE"
+  ],
+  "profiling_decision": "APPROVED_ACADEMIC_ONLY",
+  "citation": "Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D",
+  "citation_required": true,
+  "doi": "10.24432/C5CG6D",
+  "evidence_urls": [
+    "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+    "https://archive.ics.uci.edu/api/dataset?id=502",
+    "https://creativecommons.org/licenses/by/4.0/"
+  ],
+  "verification_status": "PARTIALLY_VERIFIED",
+  "verified_at": "2026-11-11T14:20:58.689392+00:00",
+  "obtained_from_url": null,
+  "acquisition_verification_status": "UNKNOWN",
+  "review_notes": [
+    "Revisión académica de fuentes públicas. No garantiza identidad binaria con una descarga del proveedor.",
+    "source_url identifica publicación oficial, no la URL utilizada realmente por la descarga manual.",
+    "obtained_from_url y obtained_at siguen desconocidos. No se cambió snapshot_id para aparentar otra adquisición.",
+    "La aprobación se limita a profiling académico local con atribución. No autoriza construir V2 o entrenar ahora."
+  ],
+  "hash_semantics": {
+    "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+    "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+    "sha256_scope": "FILE_BYTES",
+    "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+    "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+  },
+  "related_publications": [],
+  "paper_review_note": "No se identificó en esta revisión un paper primario específico para esta edición. El DOI de UCI corresponde al dataset."
+}

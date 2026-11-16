@@ -1,0 +1,48 @@
+{
+  "stage": "V2-10",
+  "status": "ADMIN_API_CONNECTED_TO_FROZEN_V2_ACADEMIC_REPLAY",
+  "api_contract": "v2-admin-api-2.1-1",
+  "paths": {
+    "catalog": "GET /api/predictions/catalog",
+    "demand": "POST /api/predictions/demand"
+  },
+  "source_hashes": {
+    "ml/demand/admin_prediction_v2.py": "d18a2f274d8405c9108bfc7b7b80337c6b194ea5d5057994f14c4abc82497db1",
+    "ml/demand/v2/contracts/admin_api.v2_1.json": "0dcf6f5cbb7ac79cf4937fad1351339dcb8a8e875ae38d8f0235b79bb0670c02",
+    "ml/demand/tests/test_admin_prediction_v2.py": "4efef7c2b2d3f981863ced1c310e4e26d41322d286b2f67077314f8e55ecb4ad",
+    "backend/src/modules/predictions/predictions.routes.ts": "f82cb205b1e0ec16c8848bbd564b8f7a81d042461ef0bc86bd75c6a072a3a2c3",
+    "backend/src/modules/predictions/predictions.service.ts": "0316f6499c561af93b0c042e178b6ddbdd3a54dd29b16dee2c77c07475eb2e2c",
+    "backend/src/modules/predictions/predictions.test.ts": "19f2403e4acdf269894e9b12967a1c233b2ff67cf5e6efa0b542840f805d30b8",
+    "frontend/src/pages/PredictionsPage.tsx": "fb8715df8fad117c49560d608bb6fce99a9272dcf497682ce435fadae9afc2af",
+    "frontend/src/pages/__tests__/PredictionsPage.test.tsx": "5fb51be62a29b67a6b8de701a9cc5de7b4d59d11ea9a03f6ba57ff2b6feba99f"
+  },
+  "selection_sha256": "e4881d38ec32a087904d499fc122e14953cc23946b0c4123e6ce15630ee9f3e0",
+  "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "policy": "NONNEGATIVE_V1",
+  "server_resolves_snapshots": true,
+  "default_month": "2026-06",
+  "approved_window": [
+    "2026-04",
+    "2026-06"
+  ],
+  "role": "ADMIN",
+  "v1_fallback": false,
+  "legacy_v1_files_preserved": true,
+  "history": "Three preceding closed months from accepted input lags, no current target",
+  "metrics_source": "Previously saved final TEST report, never recomputed on request",
+  "verified_http_case": {
+    "productId": 20,
+    "locationId": 5,
+    "targetMonth": "2026-06",
+    "prediction": 40.8725,
+    "baseline": 21,
+    "explicit_snapshot_same_prediction": true,
+    "wrong_snapshot_status": 409,
+    "test_month_status": 422
+  },
+  "real_database_session_validation_tested": false,
+  "auth_test_scope": "Actual authenticate/authorize with missing/invalid tokens, or simulated JWT claims and Prisma reads. Role freshness and revocation tested without DB.",
+  "global_live_model_active": false,
+  "human_erika_review_recorded": false,
+  "deploy_performed": false
+}

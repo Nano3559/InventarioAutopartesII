@@ -1,0 +1,470 @@
+{
+  "contract_version": "v2-calibration-1",
+  "stage": "V2-05A",
+  "status": "ACADEMIC_PARAMETERS_JUSTIFIED_NOT_GENERATED",
+  "scope": "Referencia estadística y supuestos fijados antes de generar datos. No calibración comercial.",
+  "seed": 42,
+  "reference_statistics": {
+    "monash": {
+      "all_observed": {
+        "n": 130252,
+        "positive": 32854,
+        "zero_probability": 0.7477658692380923,
+        "occurrence_probability": 0.2522341307619077,
+        "positive_mean": 2.0147927193035855,
+        "positive_mean_formula": "observed_values.mean * valid / (valid - zero)"
+      },
+      "complete_series": {
+        "n": 2509,
+        "excluded_incomplete": 165,
+        "occurrence_probability": 0.2509241241335115,
+        "rotation_groups": [
+          {
+            "label": "BAJA",
+            "count": 1792,
+            "weight": 0.7142287764049422,
+            "occurrence_probability": 0.15753019957983194,
+            "interval": {
+              "lower_exclusive": 0,
+              "upper_inclusive": 0.3333333333333333
+            }
+          },
+          {
+            "label": "MEDIA",
+            "count": 690,
+            "weight": 0.2750099641291351,
+            "occurrence_probability": 0.4754475703324808,
+            "interval": {
+              "lower_exclusive": 0.3333333333333333,
+              "upper_inclusive": 0.6666666666666666
+            }
+          },
+          {
+            "label": "ALTA",
+            "count": 27,
+            "weight": 0.010761259465922678,
+            "occurrence_probability": 0.7116920842411039,
+            "interval": {
+              "lower_exclusive": 0.6666666666666666,
+              "upper_inclusive": 1
+            }
+          }
+        ],
+        "zero_run_quantiles": {
+          "0.5": 16.0,
+          "0.9": 28.0,
+          "0.95": 31.0
+        },
+        "warning": "Rotación significa frecuencia de meses positivos, no importancia comercial. No se eliminan trayectorias iguales sin prueba de duplicación."
+      },
+      "missing_probability_descriptive_only": 0.04489125493129189,
+      "missing_policy": "No imputar cero. No usar esta tasa como averías aleatorias: los faltantes son finales de serie.",
+      "transfer_limit": "Empresa y época distintas. Media de positivos global y grupos de series completas tienen poblaciones diferentes. No se afirma reproducir exactamente la distribución conjunta."
+    },
+    "uci": {
+      "rows": 1067371,
+      "positive_quantity_quantiles": {
+        "valid": 1044421,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": 1.0,
+        "maximum": 80995.0,
+        "mean": 11.176115761747418,
+        "median": 3.0,
+        "p95": 30.0,
+        "p99": 108.0,
+        "zero": 0,
+        "negative": 0,
+        "fractional": 0
+      },
+      "p95_over_median": 10.0,
+      "p99_over_median": 36.0,
+      "negative_quantity_line_fraction": 0.021501427338760374,
+      "exact_repeat_occurrence_fraction": 0.032167821685243465,
+      "cross_sheet_repeat_occurrences": 22523,
+      "use": "Referencias descriptivas de cola y problemas de calidad, nunca tasas de devoluciones, mayoristas o precios para RepuestoPro.",
+      "excluded_transfer": [
+        "GBP a Bs",
+        "precios nominales",
+        "etiqueta mayorista inferida por cantidad",
+        "tasa causal de cancelación",
+        "elasticidad precio",
+        "identificadores"
+      ]
+    }
+  },
+  "parameter_decisions": {
+    "noise": {
+      "levels": [
+        "CONTEOS",
+        "SOBREDISPERSION",
+        "INTERMITENCIA"
+      ],
+      "unit": "mecanismo",
+      "basis": "REFERENCE_INFORMED_WITH_ASSUMED_MECHANISM",
+      "empirically_estimated": false,
+      "reason": "Monash fundamenta intermitencia y media positiva. El perfil no identifica dispersión condicional ni dependencia temporal.",
+      "application": "Hurdle: indicador Bernoulli por mes y tamaño entero positivo condicionado.",
+      "occurrence_groups": [
+        {
+          "label": "BAJA",
+          "count": 1792,
+          "weight": 0.7142287764049422,
+          "occurrence_probability": 0.15753019957983194,
+          "interval": {
+            "lower_exclusive": 0,
+            "upper_inclusive": 0.3333333333333333
+          }
+        },
+        {
+          "label": "MEDIA",
+          "count": 690,
+          "weight": 0.2750099641291351,
+          "occurrence_probability": 0.4754475703324808,
+          "interval": {
+            "lower_exclusive": 0.3333333333333333,
+            "upper_inclusive": 0.6666666666666666
+          }
+        },
+        {
+          "label": "ALTA",
+          "count": 27,
+          "weight": 0.010761259465922678,
+          "occurrence_probability": 0.7116920842411039,
+          "interval": {
+            "lower_exclusive": 0.6666666666666666,
+            "upper_inclusive": 1
+          }
+        }
+      ],
+      "positive_size": {
+        "primary": "GEOMETRIC_ON_1_INFINITY",
+        "mean": 2.0147927193035855,
+        "success_probability": 0.49632897241441826,
+        "alternative": "ZERO_TRUNCATED_POISSON_MATCHING_SAME_POSITIVE_MEAN",
+        "alternative_equation": "lambda / (1-exp(-lambda)) = positive_mean",
+        "warning": "Mecanismos hipotéticos. No se estimó varianza ni se ajustó una distribución completa."
+      }
+    },
+    "trend_annual": {
+      "levels": [
+        -0.1,
+        0,
+        0.2
+      ],
+      "unit": "variacion_anual",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Probar caída, estabilidad y crecimiento moderado. No extrapolar 1998-2002 a Bolivia ni ajustar usando TEST.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "seasonality": {
+      "levels": [
+        0.8,
+        1,
+        1.2
+      ],
+      "unit": "multiplicador",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Amplitud hasta 20% y fase por serie supuestas. Sin trasladar fiestas británicas ni estimar estacionalidad con cobertura cambiante.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "store_level": {
+      "levels": [
+        0.75,
+        1,
+        1.25
+      ],
+      "unit": "multiplicador",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Variación simétrica de 25%, sin evidencia de tiendas comparable en estas fuentes. No asignar por orden de ID.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "price_change": {
+      "levels": [
+        -0.1,
+        0,
+        0.1,
+        0.25,
+        0.5
+      ],
+      "unit": "proporcion",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Cambios relativos de sensibilidad. El ejemplo 120 a 150 equivale a 25%. UCI no identifica elasticidad causal de repuestos.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "fx_change": {
+      "levels": [
+        -0.15,
+        0,
+        0.15,
+        0.3
+      ],
+      "unit": "proporcion",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Escenarios de dirección e intensidad. Ninguna fuente registra Bs/USD. No son cotizaciones ni pronósticos monetarios.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "fx_age": {
+      "levels": [
+        0,
+        2,
+        7,
+        30
+      ],
+      "unit": "dias",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Contrastar información reciente/antigua y transmisión nula/parcial/completa con retraso. Sin evidencia comercial de esos coeficientes.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "pass_through": {
+      "levels": [
+        0,
+        0.5,
+        1
+      ],
+      "unit": "proporcion",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Contrastar información reciente/antigua y transmisión nula/parcial/completa con retraso. Sin evidencia comercial de esos coeficientes.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "pass_through_delay": {
+      "levels": [
+        0,
+        1,
+        2
+      ],
+      "unit": "meses",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Contrastar información reciente/antigua y transmisión nula/parcial/completa con retraso. Sin evidencia comercial de esos coeficientes.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "bulk_size": {
+      "levels": [
+        2,
+        4,
+        8
+      ],
+      "unit": "multiplicador_pedido_habitual",
+      "basis": "UCI_TAIL_REFERENCE_WITH_ASSUMED_MULTIPLIERS",
+      "empirically_estimated": false,
+      "reason": "Las razones p95/mediana y p99/mediana UCI apoyan probar colas. Los multiplicadores 2,4,8 son pruebas moderadas, no cuantiles automotrices.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY",
+      "uci_ratios": {
+        "p95_over_median": 10.0,
+        "p99_over_median": 36.0
+      }
+    },
+    "stockout": {
+      "levels": [
+        0,
+        1,
+        7,
+        "MES_COMPLETO"
+      ],
+      "unit": "dias",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Prueba operativa con límites de calendario y conservación de unidades. Monash y UCI no observan stock ni plazos del proveedor.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "stock_coverage": {
+      "levels": [
+        "NINGUNA",
+        "PARCIAL",
+        "COMPLETA"
+      ],
+      "unit": "cobertura",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Prueba operativa con límites de calendario y conservación de unidades. Monash y UCI no observan stock ni plazos del proveedor.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "receipt_fraction": {
+      "levels": [
+        0.25,
+        0.5,
+        1
+      ],
+      "unit": "proporcion",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Prueba operativa con límites de calendario y conservación de unidades. Monash y UCI no observan stock ni plazos del proveedor.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "supplier_lead_days": {
+      "levels": [
+        0,
+        7,
+        30,
+        60
+      ],
+      "unit": "dias",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Prueba operativa con límites de calendario y conservación de unidades. Monash y UCI no observan stock ni plazos del proveedor.",
+      "application": "CONTEXT_ONLY_NOT_FORECAST_FEATURE"
+    },
+    "regime_change": {
+      "levels": [
+        0.5,
+        0.75,
+        1.25,
+        1.5
+      ],
+      "unit": "multiplicador",
+      "basis": "ACADEMIC_ASSUMPTION",
+      "empirically_estimated": false,
+      "reason": "Cambios de nivel de estrés, simétricos alrededor de uno. Ninguna fuente demuestra estos tamaños para RepuestoPro.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "entity_age": {
+      "levels": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "unit": "meses_completos",
+      "basis": "CONTRACT_BOUNDARY_RULE",
+      "empirically_estimated": false,
+      "reason": "Límites de los tres lags, proporciones con conteos enteros y reloj de conocimiento. No requiere estimación comercial.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "modality_coverage": {
+      "levels": [
+        0,
+        0.5,
+        1
+      ],
+      "unit": "proporcion_objetivo",
+      "basis": "CONTRACT_BOUNDARY_RULE",
+      "empirically_estimated": false,
+      "reason": "Límites de los tres lags, proporciones con conteos enteros y reloj de conocimiento. No requiere estimación comercial.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    },
+    "boundary_clock": {
+      "levels": [
+        "ANTES",
+        "EN_EL_CORTE",
+        "DESPUES"
+      ],
+      "unit": "posicion_relativa_al_corte",
+      "basis": "CONTRACT_BOUNDARY_RULE",
+      "empirically_estimated": false,
+      "reason": "Límites de los tres lags, proporciones con conteos enteros y reloj de conocimiento. No requiere estimación comercial.",
+      "application": "FORCED_COVERAGE_AND_SENSITIVITY_ONLY"
+    }
+  },
+  "simulation_recipe": {
+    "status": "SPECIFICATION_ONLY_NOT_EXECUTED",
+    "rotation": "Asignar grupo a la pareja producto-tienda con pesos de series completas, seed 42 y claves estables. Usar probabilidad del grupo. No copiar ni mapear series externas.",
+    "rotation_weights": {
+      "BAJA": 0.7142287764049422,
+      "MEDIA": 0.2750099641291351,
+      "ALTA": 0.010761259465922678
+    },
+    "primary_positive_mean_multiplier": 1,
+    "scale_sensitivity_multipliers": [
+      1,
+      3,
+      10
+    ],
+    "scale_note": "La escala primaria es referencia externa, no volumen propio. 3 y 10 son estrés separados, no tasas estimadas ni pesos.",
+    "time_effects": "Multiplicar media positiva por (1+annual_trend)^(elapsed_months/12), factor tienda y 1+a*sin(2*pi*mes/12+fase). Amplitud a entre 0 y 0.2. Media positiva nunca menor a 1. No alterar entradas con futuros.",
+    "price_elasticity_sensitivity": [
+      0,
+      -0.5,
+      -1
+    ],
+    "price_response": "Media positiva *= (precio_vigente/precio_base)^elasticidad, aplicada por modalidad. Parámetros supuestos y escenarios separados, incluyendo efecto nulo. No volver a aplicar variacion_precio como otro efecto.",
+    "fx_response": "Una trayectoria Bs/USD común a todas las parejas por ejecución. FX afecta costo importado y después precio mediante pass_through y retraso. No sumar otro efecto FX directo sobre ventas por defecto.",
+    "fx_base_bs_per_usd": 10,
+    "fx_base_warning": "Ancla ficticia para aritmética. No cotización actual, oficial ni paralela. Ninguna consulta externa la respalda.",
+    "price_base_retail_bs": 120,
+    "price_base_wholesale_bs": 108,
+    "cost_base_bs": 80,
+    "price_base_warning": "Anclas ficticias 120/108/80, no Product actual ni historia propia. Descuento mayorista 10% y margen son supuestos. No exportarlos como features extra.",
+    "cost_imported_fraction": 1,
+    "cost_formula": "cost_t = cost_base * (fx_t/fx_base). Hipótesis 100% costo importado para escenario, no estructura contable real.",
+    "pricing_policy": "precio_t = precio_base * (1 + pass_through * (cost_t_lag/cost_base - 1)); aplicar cambio de precio de escenario explícito una sola vez. Si viola costo <= mayor <= menor, rechazar escenario inválido o registrar decisión de repricing explícita antes del evento. No reparar silenciosamente.",
+    "wholesale_unit_share_sensitivity": [
+      0,
+      0.25,
+      0.75,
+      1
+    ],
+    "wholesale_share_note": "Niveles ficticios de sensibilidad. Etiqueta viene de modalidad simulada explícita. Distribuir enteros conservando total, sin inferir modalidad por precio o tamaño. Multiplicador bulk afecta solo evento forzado, no cada mes.",
+    "stock_accounting": "Pedidos latentes de simulación no son target. Atender unidades enteras cronológicamente hasta stock vendible, con entradas solo al recibir y devoluciones solo tras inspección. Registrar días observados y días sin stock de forma independiente.",
+    "target": "Unidades brutas válidas atendidas por mes. No restar devoluciones futuras ni etiquetar como demanda perdida.",
+    "base_distribution": "Referencia de frecuencia positiva y tamaño Monash. No sumar conjuntamente todos los niveles de estrés ni imponer todos los adversos al dataset de entrenamiento.",
+    "scenario_frequency_policy": "Sin prevalencia estimada: 57 casos y 8 combinaciones se verifican en suite separada de cobertura forzada. No usar su proporción como pesos poblacionales ni como distribución comercial.",
+    "scenario_training_policy": "Solo casos validados y elegibles. Una mezcla de estrés para experimentos será una variante separada identificada, no una contaminación silenciosa del conjunto base.",
+    "random_streams": "Streams independientes para asignación, calendario, conteos, precios/FX, stock, modo y escenarios. Derivar seeds con SHA-256 de seed, versión y nombre, nunca hash() de Python.",
+    "availability": "Conservar event_at y available_at. Solo información disponible al corte alimenta features. Cambios intra-mes no anunciados afectan resultado, no entradas.",
+    "missing": "Ceros solo observados. Valores opcionales desconocidos permanecen null. Falta de lags no se disfraza con cero."
+  },
+  "future_checks": {
+    "exact": [
+      "unidades enteras y no negativas",
+      "conservación de stock y modalidad",
+      "mayor <= menor y costo <= ambos",
+      "sin información posterior al corte",
+      "57 casos y 8 combinaciones trazables"
+    ],
+    "reference_only": [
+      "fracción cero por grupo",
+      "media de tamaño positivo",
+      "rachas de ceros",
+      "colas de pedidos",
+      "dispersión por pareja"
+    ],
+    "numeric_validation": "Antes de aplicar efectos, para N Bernoulli independientes por grupo usar margen diagnóstico 3*sqrt(p*(1-p)/N). Con heterogeneidad, dependencia o efectos, no reutilizarlo como test formal. No exigir 74.78% exacto ni máxima 52.",
+    "no_metric_tuning": "No ajustar generador, escenarios o seed para ganar a baseline o mirando TEST.",
+    "heldout": "Congelar nueva ejecución independiente y manifiesto de TEST antes de seleccionar modelos. Periodos de V1 no constituyen TEST nuevo. V2-08 no está ejecutado."
+  },
+  "limitations": [
+    "No elasticidad causal, demanda perdida, cotización real ni plazo comercial certificados.",
+    "UCI tiene repetidos y cancelaciones sin limpiar. Sus cuantiles son descriptivos de líneas positivas con esas limitaciones, no distribución de pedidos depurada.",
+    "El mecanismo de conteos, independencia temporal y efectos económicos son hipótesis. Un modelo puede aprender la fórmula sintética.",
+    "La configuración especifica diseño implementable, no acredita funcionamiento del generador aún inexistente."
+  ],
+  "dataset_created": false,
+  "raw_modified": false,
+  "trained": false,
+  "recorded_on": "2026-11-14",
+  "input_evidence": [
+    {
+      "source_id": "monash_car_parts",
+      "profile_path": "ml/demand/reports/v2/profiling/profile-20261114-01/monash_car_parts_profile.json",
+      "profile_sha256": "4bf6a4ee2188dc80f4fee979d7aab5bc52b07feaa8bfc81504d0d8ff70d8fc05",
+      "raw_sha256": "818470cd0a65679b38b48a20e4d916d11fbd2ccbf7f5f9d8d97093dd6c784600",
+      "snapshot_id": "sha256-d69d3412b9c45248f1c9c441",
+      "manifest_path": "ml/demand/sources/manifests/monash_car_parts/sha256-d69d3412b9c45248f1c9c441.json",
+      "license": "CC BY 4.0",
+      "attribution": "Godahewa, R., Bergmeir, C., Webb, G., Hyndman, R., & Montero-Manso, P. (2020). Car Parts Dataset (with Missing Values), versión 2. Zenodo. https://doi.org/10.5281/zenodo.4656022",
+      "official_url": "https://zenodo.org/records/4656022",
+      "availability": "EXTERNAL_REFERENCE_PRIOR_TO_SYNTHETIC_BUILD_NOT_A_FUTURE_FEATURE"
+    },
+    {
+      "source_id": "uci_online_retail_ii",
+      "profile_path": "ml/demand/reports/v2/profiling/profile-20261114-01/uci_online_retail_ii_profile.json",
+      "profile_sha256": "3df24f9c239575f82ba12d176d9c1640eba6ad21ecbaf612d8337ed8c0f4e1c2",
+      "raw_sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+      "snapshot_id": "sha256-4dc26799b20addb7559df7e2",
+      "manifest_path": "ml/demand/sources/manifests/uci_online_retail_ii/sha256-4dc26799b20addb7559df7e2.json",
+      "license": "CC BY 4.0",
+      "attribution": "Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D",
+      "official_url": "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+      "availability": "EXTERNAL_REFERENCE_PRIOR_TO_SYNTHETIC_BUILD_NOT_A_FUTURE_FEATURE"
+    }
+  ],
+  "implementation_sha256": "6e67d1d9e722b38b011051fa391f62420c12124f21a298572105f22776d5f60a"
+}

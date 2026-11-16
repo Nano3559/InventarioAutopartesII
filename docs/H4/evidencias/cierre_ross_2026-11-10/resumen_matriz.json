@@ -1,0 +1,12 @@
+{
+  "total": 73,
+  "statuses": {
+    "CUMPLIDO": 61,
+    "PARCIAL": 6,
+    "NO VERIFICADO": 1,
+    "NO APLICA": 5
+  },
+  "applicable": 68,
+  "strict_percent": 89.70588235294117,
+  "note": "Cumplimiento técnico y documental. No equivale a nota, precisión o aceptación humana."
+}

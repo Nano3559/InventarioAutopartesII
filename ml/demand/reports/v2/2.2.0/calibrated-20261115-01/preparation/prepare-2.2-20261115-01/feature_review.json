@@ -1,0 +1,430 @@
+[
+  {
+    "fold_id": null,
+    "columns": {
+      "ventas_mes_anterior": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 79,
+        "status": "READY"
+      },
+      "ventas_hace_2_meses": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 77,
+        "status": "READY"
+      },
+      "ventas_hace_3_meses": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 73,
+        "status": "READY"
+      },
+      "mes_sin": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 11,
+        "status": "READY"
+      },
+      "mes_cos": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 11,
+        "status": "READY"
+      },
+      "proporcion_por_mayor_mes_anterior": {
+        "nonmissing": 1368,
+        "missing": 1152,
+        "unique_nonmissing": 48,
+        "status": "READY"
+      },
+      "cobertura_modalidad_mes_anterior": {
+        "nonmissing": 1368,
+        "missing": 1152,
+        "unique_nonmissing": 26,
+        "status": "READY"
+      },
+      "precio_menor_cierre_anterior_bs": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 91,
+        "status": "READY"
+      },
+      "precio_mayor_cierre_anterior_bs": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 92,
+        "status": "READY"
+      },
+      "variacion_precio_menor_conocida": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 173,
+        "status": "READY"
+      },
+      "variacion_precio_mayor_conocida": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 172,
+        "status": "READY"
+      },
+      "tipo_cambio_bs_usd_conocido": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 3,
+        "status": "READY"
+      },
+      "variacion_tipo_cambio_ultimo_mes": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 5,
+        "status": "READY"
+      },
+      "antiguedad_tipo_cambio_dias": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "dias_sin_stock_mes_anterior": {
+        "nonmissing": 2336,
+        "missing": 184,
+        "unique_nonmissing": 23,
+        "status": "READY"
+      },
+      "cobertura_stock_mes_anterior": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "categoryId": {
+        "nonmissing": 2520,
+        "missing": 0,
+        "unique_nonmissing": 7,
+        "status": "READY"
+      }
+    }
+  },
+  {
+    "fold_id": "F1",
+    "columns": {
+      "ventas_mes_anterior": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 65,
+        "status": "READY"
+      },
+      "ventas_hace_2_meses": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 65,
+        "status": "READY"
+      },
+      "ventas_hace_3_meses": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 63,
+        "status": "READY"
+      },
+      "mes_sin": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 5,
+        "status": "READY"
+      },
+      "mes_cos": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 6,
+        "status": "READY"
+      },
+      "proporcion_por_mayor_mes_anterior": {
+        "nonmissing": 537,
+        "missing": 471,
+        "unique_nonmissing": 39,
+        "status": "READY"
+      },
+      "cobertura_modalidad_mes_anterior": {
+        "nonmissing": 537,
+        "missing": 471,
+        "unique_nonmissing": 20,
+        "status": "READY"
+      },
+      "precio_menor_cierre_anterior_bs": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 50,
+        "status": "READY"
+      },
+      "precio_mayor_cierre_anterior_bs": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 50,
+        "status": "READY"
+      },
+      "variacion_precio_menor_conocida": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 67,
+        "status": "READY"
+      },
+      "variacion_precio_mayor_conocida": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 65,
+        "status": "READY"
+      },
+      "tipo_cambio_bs_usd_conocido": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 3,
+        "status": "READY"
+      },
+      "variacion_tipo_cambio_ultimo_mes": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "antiguedad_tipo_cambio_dias": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "dias_sin_stock_mes_anterior": {
+        "nonmissing": 938,
+        "missing": 70,
+        "unique_nonmissing": 23,
+        "status": "READY"
+      },
+      "cobertura_stock_mes_anterior": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "categoryId": {
+        "nonmissing": 1008,
+        "missing": 0,
+        "unique_nonmissing": 7,
+        "status": "READY"
+      }
+    }
+  },
+  {
+    "fold_id": "F2",
+    "columns": {
+      "ventas_mes_anterior": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 71,
+        "status": "READY"
+      },
+      "ventas_hace_2_meses": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 71,
+        "status": "READY"
+      },
+      "ventas_hace_3_meses": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 70,
+        "status": "READY"
+      },
+      "mes_sin": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 8,
+        "status": "READY"
+      },
+      "mes_cos": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 9,
+        "status": "READY"
+      },
+      "proporcion_por_mayor_mes_anterior": {
+        "nonmissing": 816,
+        "missing": 696,
+        "unique_nonmissing": 40,
+        "status": "READY"
+      },
+      "cobertura_modalidad_mes_anterior": {
+        "nonmissing": 816,
+        "missing": 696,
+        "unique_nonmissing": 21,
+        "status": "READY"
+      },
+      "precio_menor_cierre_anterior_bs": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 57,
+        "status": "READY"
+      },
+      "precio_mayor_cierre_anterior_bs": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 56,
+        "status": "READY"
+      },
+      "variacion_precio_menor_conocida": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 110,
+        "status": "READY"
+      },
+      "variacion_precio_mayor_conocida": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 107,
+        "status": "READY"
+      },
+      "tipo_cambio_bs_usd_conocido": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 3,
+        "status": "READY"
+      },
+      "variacion_tipo_cambio_ultimo_mes": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 5,
+        "status": "READY"
+      },
+      "antiguedad_tipo_cambio_dias": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "dias_sin_stock_mes_anterior": {
+        "nonmissing": 1400,
+        "missing": 112,
+        "unique_nonmissing": 23,
+        "status": "READY"
+      },
+      "cobertura_stock_mes_anterior": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "categoryId": {
+        "nonmissing": 1512,
+        "missing": 0,
+        "unique_nonmissing": 7,
+        "status": "READY"
+      }
+    }
+  },
+  {
+    "fold_id": "F3",
+    "columns": {
+      "ventas_mes_anterior": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 73,
+        "status": "READY"
+      },
+      "ventas_hace_2_meses": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 72,
+        "status": "READY"
+      },
+      "ventas_hace_3_meses": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 72,
+        "status": "READY"
+      },
+      "mes_sin": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 11,
+        "status": "READY"
+      },
+      "mes_cos": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 11,
+        "status": "READY"
+      },
+      "proporcion_por_mayor_mes_anterior": {
+        "nonmissing": 1097,
+        "missing": 919,
+        "unique_nonmissing": 41,
+        "status": "READY"
+      },
+      "cobertura_modalidad_mes_anterior": {
+        "nonmissing": 1097,
+        "missing": 919,
+        "unique_nonmissing": 23,
+        "status": "READY"
+      },
+      "precio_menor_cierre_anterior_bs": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 72,
+        "status": "READY"
+      },
+      "precio_mayor_cierre_anterior_bs": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 74,
+        "status": "READY"
+      },
+      "variacion_precio_menor_conocida": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 134,
+        "status": "READY"
+      },
+      "variacion_precio_mayor_conocida": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 132,
+        "status": "READY"
+      },
+      "tipo_cambio_bs_usd_conocido": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 3,
+        "status": "READY"
+      },
+      "variacion_tipo_cambio_ultimo_mes": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 5,
+        "status": "READY"
+      },
+      "antiguedad_tipo_cambio_dias": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "dias_sin_stock_mes_anterior": {
+        "nonmissing": 1863,
+        "missing": 153,
+        "unique_nonmissing": 23,
+        "status": "READY"
+      },
+      "cobertura_stock_mes_anterior": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 4,
+        "status": "READY"
+      },
+      "categoryId": {
+        "nonmissing": 2016,
+        "missing": 0,
+        "unique_nonmissing": 7,
+        "status": "READY"
+      }
+    }
+  }
+]

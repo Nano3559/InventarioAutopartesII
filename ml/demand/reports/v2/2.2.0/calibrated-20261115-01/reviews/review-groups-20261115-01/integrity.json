@@ -1,0 +1,17 @@
+{
+  "status": "PASSED",
+  "existing_protected_files_checked": 566,
+  "changed_existing_protected_files": [],
+  "test_rows_loaded": 0,
+  "fit_calls": 0,
+  "neon_used": false,
+  "new_markdown_files": 0,
+  "diagnostic_script_sha256": "095fd2af97077bccc99c29d139fbf465ce975c66d62b9be0a7a3182b42464b0e",
+  "checksums": {
+    "mechanism_checks.json": "8113f56fd3635b2a55528a81c8970e0c2ef8c47f69f7667735b9922340d34cd0",
+    "products.csv": "103a0c7554727dc188e6c5b81f9ee55967ec487f463bfe80a6f7d098116e3d4d",
+    "product_store.csv": "ba2ab0466bd9d777988bfd8daca274e0d596d3c8e26751e41254e4a94c53aa91",
+    "review.json": "640cf6cca79e07c9df3a9e404df8b246b0c92deae686b820b137669f2b838062",
+    "validation_diagnostics.csv": "92ab8209e0bc80213426e0afe4bf96379593c1c98e9006a7e28a29be1f5e0cc8"
+  }
+}

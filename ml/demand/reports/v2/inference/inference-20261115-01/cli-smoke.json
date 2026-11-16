@@ -1,0 +1,51 @@
+[
+  {
+    "case": "valid",
+    "exit_code": 0,
+    "response": {
+      "status": "OK",
+      "contractVersion": "v2-inference-2.1-1",
+      "productId": 1,
+      "locationId": 5,
+      "targetMonth": "2026-04",
+      "issuedAt": "2026-11-15T06:37:38.844612+00:00",
+      "historyCutoff": "2026-04-01T00:00:00-04:00",
+      "horizonMonths": 1,
+      "prediction": 0.0,
+      "modelVersion": "accepted-absolute-2.1-20261115-01",
+      "datasetVersion": "2.1.0",
+      "buildId": "expanded-20261115-01",
+      "historySnapshotId": "history-v2-883588abb2728fb06df5a197",
+      "origin": "SYNTHETIC",
+      "mode": "ACADEMIC_REPLAY",
+      "selectionId": "accepted-absolute-2.1-20261115-01",
+      "artifactSha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+      "policyVersion": "NONNEGATIVE_V1",
+      "warnings": [
+        "DATOS_SINTETICOS_NO_VALIDA_VENTAS_REALES",
+        "NO_REPOSICION_AUTOMATICA",
+        "PEDIDOS_EXTRAORDINARIOS_NO_INCLUIDOS"
+      ],
+      "evaluationContext": {
+        "origin": "SYNTHETIC",
+        "split": "TEST",
+        "mae": 7.632738095238095,
+        "rmse": 15.425266214001542,
+        "r2": 0.6428720792171163
+      },
+      "featureSnapshotSha256": "337d7cb3bb07ce5174e50400684b2a317215797f2e492184cbda6d80d4201a83"
+    },
+    "stderr_empty": true
+  },
+  {
+    "case": "invalid_json",
+    "exit_code": 1,
+    "response": {
+      "error": {
+        "code": "INVALID_INPUT",
+        "message": "No se pudo consultar la referencia V2 fijada."
+      }
+    },
+    "stderr_empty": true
+  }
+]

@@ -1,0 +1,75 @@
+{
+  "precio": {
+    "status": "DEFINED_SYNTHETIC_ONLY",
+    "source": "v2/contracts/dataset_columns.v2.json",
+    "approved_for_training": false,
+    "columns": [
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "design_defined": true,
+    "approval_limit": "Datos sintéticos de la variante inicial verificados en V2-07. V2-08 preparado, sin autorización de entrenamiento ni certificación de historia real."
+  },
+  "tipo_de_cambio": {
+    "status": "DEFINED_SYNTHETIC_ONLY",
+    "source": "v2/contracts/dataset_columns.v2.json",
+    "approved_for_training": false,
+    "columns": [
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "design_defined": true,
+    "approval_limit": "Datos sintéticos de la variante inicial verificados en V2-07. V2-08 preparado, sin autorización de entrenamiento ni certificación de historia real."
+  },
+  "modalidad": {
+    "status": "DEFINED_SYNTHETIC_ONLY",
+    "source": "v2/contracts/dataset_columns.v2.json",
+    "approved_for_training": false,
+    "columns": [
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "design_defined": true,
+    "approval_limit": "Datos sintéticos de la variante inicial verificados en V2-07. V2-08 preparado, sin autorización de entrenamiento ni certificación de historia real."
+  },
+  "disponibilidad_historica": {
+    "status": "DEFINED_SYNTHETIC_ONLY",
+    "source": "v2/contracts/dataset_columns.v2.json",
+    "approved_for_training": false,
+    "columns": [
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "design_defined": true,
+    "approval_limit": "Datos sintéticos de la variante inicial verificados en V2-07. V2-08 preparado, sin autorización de entrenamiento ni certificación de historia real."
+  },
+  "categoria": {
+    "status": "DEFINED_FROZEN_CATALOG_REFERENCE",
+    "source": "v2/contracts/dataset_columns.v2.json",
+    "approved_for_training": false,
+    "columns": [
+      "categoryId"
+    ],
+    "design_defined": true,
+    "approval_limit": "Datos sintéticos de la variante inicial verificados en V2-07. V2-08 preparado, sin autorización de entrenamiento ni certificación de historia real."
+  },
+  "tiempos_proveedor": {
+    "status": "SEPARATE_REPLENISHMENT_SCOPE",
+    "source": null,
+    "approved_for_training": false,
+    "columns": [],
+    "design_defined": false,
+    "approval_limit": "Contexto separado de reposición. No son features iniciales ni existe regla comercial aprobada por esta preparación."
+  },
+  "reposicion": {
+    "status": "SEPARATE_REPLENISHMENT_SCOPE",
+    "source": null,
+    "approved_for_training": false,
+    "columns": [],
+    "design_defined": false,
+    "approval_limit": "Contexto separado de reposición. No son features iniciales ni existe regla comercial aprobada por esta preparación."
+  }
+}

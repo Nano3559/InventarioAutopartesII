@@ -1,0 +1,91 @@
+{
+  "stage": "V2-07",
+  "status": "PASSED_FOR_INITIAL_ACADEMIC_DATA_AND_OFFLINE_POLICY_SCOPE",
+  "recorded_on": "2026-11-14",
+  "scope_limits": [
+    "Not full dynamic generator coverage",
+    "Not backend integration verification",
+    "Not model accuracy or commercial validation"
+  ],
+  "core_closure": {
+    "path": "ml/demand/reports/v2/2.0.0/academic-20261114-03/validation-20261114-02/closure.json",
+    "sha256": "ff42c3b8d8bc6daf83d824765d901c1e410d807817422947336f70541952a810"
+  },
+  "tests": {
+    "executed": 133,
+    "passed": 133,
+    "failed": 0,
+    "skipped": 0,
+    "new_test_methods": 23,
+    "log": "ml/demand/tmp/validation-20261114-01/tests-closed.txt"
+  },
+  "scenario_policy": {
+    "individual_cases": 57,
+    "combinations": 8,
+    "passed": 65,
+    "all_dynamic_scenarios_validated": false,
+    "backend_or_model_tested": false
+  },
+  "integrity_before_after": {
+    "raw": {
+      "files": 136,
+      "unchanged": true
+    },
+    "reports": {
+      "files": 46,
+      "unchanged": true
+    },
+    "models": {
+      "files": 2,
+      "unchanged": true
+    },
+    "manifests": {
+      "files": 5,
+      "unchanged": true
+    },
+    "builds": {
+      "files": 22,
+      "unchanged": true
+    },
+    "protected": {
+      "files": 44,
+      "unchanged": true
+    }
+  },
+  "warnings": [
+    "antiguedad_tipo_cambio_dias constant in TRAIN",
+    "Only one simulated economic path",
+    "TRAIN observed monthly sales range 0..9, insufficient to claim high-volume wholesale coverage",
+    "Only ten scenario IDs observed in the build; offline fixtures are a separate kind of evidence"
+  ],
+  "modified_files": [
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/README.md",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "new_source_files": [
+    "ml/demand/v2/validate_build.py",
+    "ml/demand/v2/scenario_checks.py",
+    "ml/demand/v2/validate.py",
+    "ml/demand/tests/test_v2_validation.py"
+  ],
+  "new_report_directories": [
+    "ml/demand/reports/v2/2.0.0/academic-20261114-03/validation-20261114-01",
+    "ml/demand/reports/v2/2.0.0/academic-20261114-03/validation-20261114-02"
+  ],
+  "assertions": {
+    "official_builds_added_or_modified": false,
+    "no_new_markdown": true,
+    "no_raw_modifications": true,
+    "no_neon": true,
+    "no_prisma": true,
+    "no_git": true,
+    "no_model_training": true,
+    "no_scaler_or_encoder_fit": true,
+    "test_used_for_selection": false,
+    "test_target_statistics_published": false
+  },
+  "training_authorized": false,
+  "next_step": "Plan V2-08 with explicit volume scope and feature treatment. No automatic training."
+}

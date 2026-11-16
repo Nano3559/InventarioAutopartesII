@@ -1,0 +1,70 @@
+
+> inventario-frontend@1.0.0 build
+> tsc -b && vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 2883 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                     0.48 kB │ gzip:   0.31 kB
+dist/assets/index-CrxJ9JHv.css                     48.64 kB │ gzip:   8.93 kB
+dist/assets/check-CyHwBnC9.js                       0.29 kB │ gzip:   0.24 kB
+dist/assets/chevron-down-CzmWNeuT.js                0.30 kB │ gzip:   0.24 kB
+dist/assets/chevron-left-CgrQHSZ6.js                0.30 kB │ gzip:   0.25 kB
+dist/assets/chevron-right-B12UrhdH.js               0.30 kB │ gzip:   0.25 kB
+dist/assets/plus-D4FWhZwy.js                        0.32 kB │ gzip:   0.25 kB
+dist/assets/saleDraft-CSR3Kf_5.js                   0.33 kB │ gzip:   0.23 kB
+dist/assets/filter-6jcvwaPi.js                      0.33 kB │ gzip:   0.26 kB
+dist/assets/arrow-left-DyVPIcPb.js                  0.33 kB │ gzip:   0.27 kB
+dist/assets/search-BsmL5Nxm.js                      0.34 kB │ gzip:   0.27 kB
+dist/assets/circle-check-big-CZ7-gWLr.js            0.36 kB │ gzip:   0.28 kB
+dist/assets/info-DoWki6_J.js                        0.37 kB │ gzip:   0.28 kB
+dist/assets/businessDate-D1k42-C3.js                0.38 kB │ gzip:   0.23 kB
+dist/assets/history-pSPWj5PT.js                     0.41 kB │ gzip:   0.30 kB
+dist/assets/eye-CfquxwwO.js                         0.42 kB │ gzip:   0.30 kB
+dist/assets/upload-BAtl5SNF.js                      0.43 kB │ gzip:   0.32 kB
+dist/assets/download-BhiJxEdG.js                    0.43 kB │ gzip:   0.32 kB
+dist/assets/triangle-alert-DLRAeW_T.js              0.43 kB │ gzip:   0.31 kB
+dist/assets/shield-DCFe6pIK.js                      0.44 kB │ gzip:   0.33 kB
+dist/assets/pencil-CxloS0ET.js                      0.45 kB │ gzip:   0.32 kB
+dist/assets/users-ertWP09E.js                       0.47 kB │ gzip:   0.32 kB
+dist/assets/refresh-cw-D9IoVXGX.js                  0.49 kB │ gzip:   0.32 kB
+dist/assets/file-text-7uroixRI.js                   0.50 kB │ gzip:   0.32 kB
+dist/assets/trash-2-CRViwjmo.js                     0.53 kB │ gzip:   0.35 kB
+dist/assets/file-spreadsheet-Du-4ZYfs.js            0.54 kB │ gzip:   0.33 kB
+dist/assets/truck-BdyYnaXj.js                       0.57 kB │ gzip:   0.37 kB
+dist/assets/eye-off-Dv3iwD57.js                     0.60 kB │ gzip:   0.38 kB
+dist/assets/building-2-BQwqxlpr.js                  0.61 kB │ gzip:   0.35 kB
+dist/assets/store-DNbuErX4.js                       0.81 kB │ gzip:   0.40 kB
+dist/assets/PendingOperation-C5UflZd4.js            1.76 kB │ gzip:   0.98 kB
+dist/assets/ProductImage-BOppYO2W.js                1.76 kB │ gzip:   0.95 kB
+dist/assets/PhysicalStockPanel-PkTjnwJk.js          3.94 kB │ gzip:   1.72 kB
+dist/assets/LoginPage-ClfCGpuO.js                   4.08 kB │ gzip:   1.57 kB
+dist/assets/PublicProductDetailPage-igcWtcJn.js     6.07 kB │ gzip:   1.61 kB
+dist/assets/ColumnManager-D_pQJWzi.js               6.35 kB │ gzip:   2.12 kB
+dist/assets/salePdf-DF3T9reN.js                     6.36 kB │ gzip:   2.77 kB
+dist/assets/ContactPage-CrtDPvyw.js                 8.33 kB │ gzip:   2.29 kB
+dist/assets/PricesPage-B8R4GDwV.js                  8.99 kB │ gzip:   2.72 kB
+dist/assets/LandingPage-C8e2QFcl.js                12.02 kB │ gzip:   3.28 kB
+dist/assets/ProductDetailPage-CiJ0F3jR.js          13.00 kB │ gzip:   3.64 kB
+dist/assets/SettingsPage-DKios148.js               18.19 kB │ gzip:   4.44 kB
+dist/assets/ReturnsPage-wmEQ4-Vr.js                18.39 kB │ gzip:   4.98 kB
+dist/assets/MovementsPage-DLmhmsEq.js              20.71 kB │ gzip:   4.79 kB
+dist/assets/RequestsPage-BgwUpV-T.js               21.10 kB │ gzip:   5.42 kB
+dist/assets/WholesalePage-D-1Mekts.js              26.10 kB │ gzip:   6.04 kB
+dist/assets/ReportsPage-BxcBGJ8A.js                28.31 kB │ gzip:   6.13 kB
+dist/assets/CostsPage-Dh9Km04i.js                  28.75 kB │ gzip:   5.82 kB
+dist/assets/purify.es-CAi2OJFm.js                  30.47 kB │ gzip:  11.73 kB
+dist/assets/InventoryPage-B1gkapw1.js              35.04 kB │ gzip:   8.41 kB
+dist/assets/SalesPage-CKsUcOmr.js                  43.29 kB │ gzip:   9.88 kB
+dist/assets/DashboardPage-hkVzSq6R.js              45.41 kB │ gzip:  11.93 kB
+dist/assets/PredictionsPage-hXYaaoDo.js            64.02 kB │ gzip:  20.47 kB
+dist/assets/PublicProductsPage-CZpKaEDq.js         77.97 kB │ gzip:  19.62 kB
+dist/assets/index.es-g7aH8Hpy.js                  150.85 kB │ gzip:  51.62 kB
+dist/assets/html2canvas.esm-CBrSDip1.js           201.42 kB │ gzip:  48.03 kB
+dist/assets/index-DFctgw8l.js                     292.73 kB │ gzip:  97.08 kB
+dist/assets/xlsx-D2lTDdSb.js                      331.48 kB │ gzip: 108.64 kB
+dist/assets/generateCategoricalChart-DgTDXIj-.js  374.65 kB │ gzip: 103.67 kB
+dist/assets/jspdf.es.min-BaBDxtYw.js              390.04 kB │ gzip: 128.55 kB
+✓ built in 9.57s

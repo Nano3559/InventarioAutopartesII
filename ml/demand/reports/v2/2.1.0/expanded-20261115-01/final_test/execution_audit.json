@@ -1,0 +1,11 @@
+{
+  "test_load_calls": 1,
+  "selected_model_predict_calls": 1,
+  "fit_calls": 0,
+  "rows": 504,
+  "window": [
+    "2026-07",
+    "2026-09"
+  ],
+  "status": "COMPLETED"
+}

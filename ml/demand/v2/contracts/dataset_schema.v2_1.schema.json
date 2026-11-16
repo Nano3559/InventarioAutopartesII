@@ -1,0 +1,242 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "columns"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "dataset-schema-1"
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "APPROVED"
+      ]
+    },
+    "columns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "type",
+          "unit",
+          "role",
+          "source",
+          "nullable",
+          "availability_time",
+          "description",
+          "approval_status"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "enum": [
+              "integer",
+              "number",
+              "string",
+              "boolean",
+              "date",
+              "month",
+              "datetime"
+            ]
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "role": {
+            "enum": [
+              "IDENTIFIER",
+              "FEATURE",
+              "TARGET",
+              "METADATA",
+              "CONTROL"
+            ]
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "nullable": {
+            "type": "boolean"
+          },
+          "availability_time": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approval_status": {
+            "enum": [
+              "V1_REFERENCE",
+              "CANDIDATE",
+              "APPROVED_V2"
+            ]
+          },
+          "encoding": {
+            "enum": [
+              "NONE",
+              "CATEGORICAL"
+            ]
+          },
+          "source_kind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "availability_class": {
+            "enum": [
+              "PRE_CUTOFF",
+              "POST_TARGET_CLOSE",
+              "AUDIT_ONLY"
+            ]
+          },
+          "derivation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "missing_policy": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bounds": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "minimum": {
+                "type": "number"
+              },
+              "maximum": {
+                "type": "number"
+              },
+              "exclusiveMinimum": {
+                "type": "number"
+              },
+              "exclusiveMaximum": {
+                "type": "number"
+              }
+            }
+          },
+          "example": {
+            "type": [
+              "number",
+              "string",
+              "boolean",
+              "null"
+            ]
+          },
+          "allowed_values": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "design": {
+      "type": "object",
+      "required": [
+        "dataset_version",
+        "dataset_name",
+        "origin",
+        "definition_status",
+        "primary_key",
+        "target",
+        "feature_sets",
+        "row_policy",
+        "split_design",
+        "supporting_tables",
+        "publication",
+        "reference_use"
+      ],
+      "properties": {
+        "dataset_version": {
+          "const": "2.1.0"
+        },
+        "origin": {
+          "const": "SYNTHETIC"
+        },
+        "definition_status": {
+          "enum": [
+            "DESIGN_DEFINED_NOT_BUILT_NOT_TRAINED",
+            "BUILD_GENERATED_PENDING_EXHAUSTIVE_V2_07"
+          ]
+        },
+        "feature_sets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "supporting_tables": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "primary_key",
+              "columns"
+            ],
+            "properties": {
+              "columns": {
+                "$ref": "#/properties/columns"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "APPROVED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "columns": {
+            "items": {
+              "properties": {
+                "approval_status": {
+                  "const": "APPROVED_V2"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

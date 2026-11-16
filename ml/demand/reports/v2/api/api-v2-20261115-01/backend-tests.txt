@@ -1,0 +1,17 @@
+✔ predicciones rechaza sesión ausente y roles no ADMIN antes de consultar (487.9615ms)
+✔ ADMIN puede consultar catálogo y predicción (20.0262ms)
+✔ IDs inválidos no llegan a Python (48.6008ms)
+✔ selección inexistente es 400 y fallo de modelo es 503 sin filtrar detalles (11.0503ms)
+✔ HTTP → Node → Python → V2 fijado: catálogo, replay y snapshots reales sin BD (20138.3781ms)
+✔ variables, targets y snapshots inválidos se rechazan antes de Python (65.3247ms)
+✔ errores de snapshot, falta de historia e integridad tienen estados explícitos (30.7302ms)
+✔ authenticate real rechaza ausencia o token inválido antes de cualquier consulta (17.8344ms)
+✔ puente Node rechaza V1, hashes ajenos y datos no finitos (1.6154ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21585.0031

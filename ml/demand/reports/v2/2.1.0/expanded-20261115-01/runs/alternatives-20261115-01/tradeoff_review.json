@@ -1,0 +1,858 @@
+{
+  "status": "EXPLORATORY_REVIEW_REQUIRED_NO_PROMOTION",
+  "best_mae_id": "absolute_forest-d4",
+  "mae_improvement_vs_baseline_percent": 31.037407939644336,
+  "mae_improvement_vs_previous_percent": 10.781669279622097,
+  "rmse_change_vs_previous_percent": 3.4936887024004992,
+  "alternatives": [
+    {
+      "id": "lag1",
+      "mae": 11.045634920634921,
+      "rmse": 21.685385686700442,
+      "r2": 0.3050173528450141,
+      "rotation_mae": {
+        "HIGH": 28.238095238095237,
+        "LOW": 1.1851851851851851,
+        "MEDIUM": 3.8,
+        "ZERO": 0.4444444444444444
+      },
+      "worse_than_baseline": {
+        "product": 0,
+        "product_store": 0,
+        "store": 0,
+        "rotation_train": 0
+      },
+      "worse_than_prior": {
+        "product": 39,
+        "product_store": 94,
+        "store": 3,
+        "rotation_train": 2
+      },
+      "zero_target_mae": 1.4581497797356828,
+      "positive_predictions": 277
+    },
+    {
+      "id": "median3",
+      "mae": 9.700396825396826,
+      "rmse": 19.289101701334992,
+      "r2": 0.45012539210559765,
+      "rotation_mae": {
+        "HIGH": 25.077380952380956,
+        "LOW": 0.7345679012345679,
+        "MEDIUM": 3.3636363636363646,
+        "ZERO": 0.2222222222222222
+      },
+      "worse_than_baseline": {
+        "product": 17,
+        "product_store": 41,
+        "store": 0,
+        "rotation_train": 0
+      },
+      "worse_than_prior": {
+        "product": 33,
+        "product_store": 72,
+        "store": 3,
+        "rotation_train": 2
+      },
+      "zero_target_mae": 0.9515418502202643,
+      "positive_predictions": 261
+    },
+    {
+      "id": "weighted_recent",
+      "mae": 9.644841269841269,
+      "rmse": 17.723482315753454,
+      "r2": 0.535765115490573,
+      "rotation_mae": {
+        "HIGH": 24.361904761904764,
+        "LOW": 1.0858024691358024,
+        "MEDIUM": 3.5684848484848484,
+        "ZERO": 0.38888888888888895
+      },
+      "worse_than_baseline": {
+        "product": 14,
+        "product_store": 48,
+        "store": 0,
+        "rotation_train": 0
+      },
+      "worse_than_prior": {
+        "product": 33,
+        "product_store": 96,
+        "store": 3,
+        "rotation_train": 2
+      },
+      "zero_target_mae": 1.6440528634361233,
+      "positive_predictions": 393
+    },
+    {
+      "id": "tsb-a0.1-b0.1",
+      "mae": 8.76385327634072,
+      "rmse": 15.229478176803035,
+      "r2": 0.6572245534252715,
+      "rotation_mae": {
+        "HIGH": 21.96755707647769,
+        "LOW": 1.331335242926326,
+        "MEDIUM": 3.0803342204092745,
+        "ZERO": 0.2778896339863679
+      },
+      "worse_than_baseline": {
+        "product": 14,
+        "product_store": 65,
+        "store": 0,
+        "rotation_train": 1
+      },
+      "worse_than_prior": {
+        "product": 21,
+        "product_store": 63,
+        "store": 2,
+        "rotation_train": 1
+      },
+      "zero_target_mae": 1.789668859671839,
+      "positive_predictions": 501
+    },
+    {
+      "id": "absolute_forest-d4",
+      "mae": 7.617356150793651,
+      "rmse": 15.175210693946056,
+      "r2": 0.6596630373722141,
+      "rotation_mae": {
+        "HIGH": 19.175505952380952,
+        "LOW": 0.7611574074074074,
+        "MEDIUM": 2.9818181818181815,
+        "ZERO": 0.26166666666666666
+      },
+      "worse_than_baseline": {
+        "product": 7,
+        "product_store": 31,
+        "store": 0,
+        "rotation_train": 0
+      },
+      "worse_than_prior": {
+        "product": 9,
+        "product_store": 51,
+        "store": 0,
+        "rotation_train": 0
+      },
+      "zero_target_mae": 0.6905066079295155,
+      "positive_predictions": 276
+    },
+    {
+      "id": "derived_forest-d4",
+      "mae": 8.474271572567748,
+      "rmse": 14.584791298080226,
+      "r2": 0.6856307222029032,
+      "rotation_mae": {
+        "HIGH": 20.64569295757926,
+        "LOW": 1.542298265100536,
+        "MEDIUM": 3.2964066329843664,
+        "ZERO": 0.97744914579129
+      },
+      "worse_than_baseline": {
+        "product": 17,
+        "product_store": 75,
+        "store": 0,
+        "rotation_train": 2
+      },
+      "worse_than_prior": {
+        "product": 18,
+        "product_store": 54,
+        "store": 1,
+        "rotation_train": 0
+      },
+      "zero_target_mae": 2.057331456135208,
+      "positive_predictions": 504
+    },
+    {
+      "id": "residual_forest-d4",
+      "mae": 8.65685677391681,
+      "rmse": 14.886357473391687,
+      "r2": 0.6724960465669286,
+      "rotation_mae": {
+        "HIGH": 20.932253851769786,
+        "LOW": 1.673546857758346,
+        "MEDIUM": 3.436420439612517,
+        "ZERO": 0.9236892737589658
+      },
+      "worse_than_baseline": {
+        "product": 19,
+        "product_store": 76,
+        "store": 0,
+        "rotation_train": 2
+      },
+      "worse_than_prior": {
+        "product": 30,
+        "product_store": 68,
+        "store": 3,
+        "rotation_train": 3
+      },
+      "zero_target_mae": 2.2262754166816197,
+      "positive_predictions": 504
+    },
+    {
+      "id": "low_median_routing",
+      "mae": 8.232878460727454,
+      "rmse": 14.651411607812333,
+      "r2": 0.6827522153063925,
+      "rotation_mae": {
+        "HIGH": 20.690022357166043,
+        "LOW": 0.7345679012345679,
+        "MEDIUM": 3.348163564865105,
+        "ZERO": 0.2222222222222222
+      },
+      "worse_than_baseline": {
+        "product": 11,
+        "product_store": 36,
+        "store": 0,
+        "rotation_train": 0
+      },
+      "worse_than_prior": {
+        "product": 5,
+        "product_store": 7,
+        "store": 0,
+        "rotation_train": 0
+      },
+      "zero_target_mae": 1.3153662332462857,
+      "positive_predictions": 345
+    },
+    {
+      "id": "previous_squared_forest",
+      "mae": 8.537882393997549,
+      "rmse": 14.662933444746447,
+      "r2": 0.6822530532335891,
+      "rotation_mae": {
+        "HIGH": 20.690022357166043,
+        "LOW": 1.6340436722691323,
+        "MEDIUM": 3.348163564865105,
+        "ZERO": 1.1118786067253972
+      },
+      "worse_than_baseline": {
+        "product": 17,
+        "product_store": 74,
+        "store": 0,
+        "rotation_train": 2
+      },
+      "worse_than_prior": {
+        "product": 0,
+        "product_store": 0,
+        "store": 0,
+        "rotation_train": 0
+      },
+      "zero_target_mae": 2.1361018055996475,
+      "positive_predictions": 504
+    }
+  ],
+  "posthoc_volume_analysis": {
+    "decreased_vs_previous_month": {
+      "rows": 166,
+      "mae": {
+        "lag1": 16.99397590361446,
+        "median3": 11.843373493975903,
+        "weighted_recent": 13.524096385542169,
+        "tsb-a0.1-b0.1": 10.741033702527114,
+        "absolute_forest-d4": 7.173358433734941,
+        "derived_forest-d4": 9.874552074345146,
+        "residual_forest-d4": 10.385675976733188,
+        "low_median_routing": 9.643324136582395,
+        "previous_squared_forest": 9.852040019790499
+      }
+    },
+    "increased_vs_previous_month": {
+      "rows": 155,
+      "mae": {
+        "lag1": 17.716129032258063,
+        "median3": 16.81935483870968,
+        "weighted_recent": 15.127741935483872,
+        "tsb-a0.1-b0.1": 13.769852601230726,
+        "absolute_forest-d4": 15.02117741935484,
+        "derived_forest-d4": 13.241902937420688,
+        "residual_forest-d4": 13.381707428478903,
+        "low_median_routing": 13.558572743461124,
+        "previous_squared_forest": 13.36260156826243
+      }
+    },
+    "unchanged_vs_previous_month": {
+      "rows": 183,
+      "mae": {
+        "lag1": 0.0,
+        "median3": 1.726775956284153,
+        "weighted_recent": 1.481967213114754,
+        "tsb-a0.1-b0.1": 2.730291275767544,
+        "absolute_forest-d4": 1.7491120218579235,
+        "derived_forest-d4": 3.165914059741226,
+        "residual_forest-d4": 3.0867155765143846,
+        "low_median_routing": 2.4426238376911766,
+        "previous_squared_forest": 3.259294208791618
+      }
+    }
+  },
+  "product_review": [
+    {
+      "productId": 1,
+      "rows": 9,
+      "baseline_mae": 13.777777777777779,
+      "previous_mae": 11.02954175531885,
+      "absolute_forest_mae": 11.206666666666667,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": -0.17712491134781772
+    },
+    {
+      "productId": 2,
+      "rows": 9,
+      "baseline_mae": 17.666666666666668,
+      "previous_mae": 13.07755298683499,
+      "absolute_forest_mae": 11.091111111111111,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.9864418757238784
+    },
+    {
+      "productId": 3,
+      "rows": 9,
+      "baseline_mae": 10.444444444444445,
+      "previous_mae": 15.291411855480467,
+      "absolute_forest_mae": 13.325833333333334,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": true,
+      "improvement_vs_previous": 1.9655785221471334
+    },
+    {
+      "productId": 4,
+      "rows": 9,
+      "baseline_mae": 0.0,
+      "previous_mae": 1.321244168905551,
+      "absolute_forest_mae": 0.0,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.321244168905551
+    },
+    {
+      "productId": 5,
+      "rows": 9,
+      "baseline_mae": 3.2222222222222223,
+      "previous_mae": 3.7710926345225864,
+      "absolute_forest_mae": 2.9775,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.7935926345225863
+    },
+    {
+      "productId": 6,
+      "rows": 9,
+      "baseline_mae": 9.333333333333334,
+      "previous_mae": 6.511984778708238,
+      "absolute_forest_mae": 5.870833333333334,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.6411514453749048
+    },
+    {
+      "productId": 7,
+      "rows": 9,
+      "baseline_mae": 8.444444444444445,
+      "previous_mae": 8.115186456672966,
+      "absolute_forest_mae": 5.645833333333333,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 2.4693531233396326
+    },
+    {
+      "productId": 8,
+      "rows": 9,
+      "baseline_mae": 21.333333333333332,
+      "previous_mae": 10.568549367190057,
+      "absolute_forest_mae": 10.04888888888889,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.5196604783011676
+    },
+    {
+      "productId": 9,
+      "rows": 9,
+      "baseline_mae": 2.0,
+      "previous_mae": 1.8587436543192248,
+      "absolute_forest_mae": 1.0458333333333334,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.8129103209858914
+    },
+    {
+      "productId": 10,
+      "rows": 9,
+      "baseline_mae": 1.3333333333333333,
+      "previous_mae": 1.4339441756180709,
+      "absolute_forest_mae": 1.2622222222222221,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.17172195339584873
+    },
+    {
+      "productId": 11,
+      "rows": 9,
+      "baseline_mae": 2.4444444444444446,
+      "previous_mae": 1.6899466794514566,
+      "absolute_forest_mae": 1.676388888888889,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.013557790562567673
+    },
+    {
+      "productId": 12,
+      "rows": 9,
+      "baseline_mae": 0.8888888888888888,
+      "previous_mae": 1.2673208312137985,
+      "absolute_forest_mae": 0.4469444444444444,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.8203763867693541
+    },
+    {
+      "productId": 13,
+      "rows": 9,
+      "baseline_mae": 11.555555555555555,
+      "previous_mae": 8.321060953694387,
+      "absolute_forest_mae": 6.898611111111111,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.4224498425832754
+    },
+    {
+      "productId": 14,
+      "rows": 9,
+      "baseline_mae": 12.444444444444445,
+      "previous_mae": 7.074406745940498,
+      "absolute_forest_mae": 6.186388888888889,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.8880178570516088
+    },
+    {
+      "productId": 15,
+      "rows": 9,
+      "baseline_mae": 1.1111111111111112,
+      "previous_mae": 1.9087440741707837,
+      "absolute_forest_mae": 1.147777777777778,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": true,
+      "improvement_vs_previous": 0.7609662963930057
+    },
+    {
+      "productId": 16,
+      "rows": 9,
+      "baseline_mae": 15.88888888888889,
+      "previous_mae": 8.68920624892801,
+      "absolute_forest_mae": 8.41472222222222,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.27448402670578886
+    },
+    {
+      "productId": 17,
+      "rows": 9,
+      "baseline_mae": 9.222222222222221,
+      "previous_mae": 9.924977674875457,
+      "absolute_forest_mae": 9.802777777777779,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": true,
+      "improvement_vs_previous": 0.12219989709767809
+    },
+    {
+      "productId": 18,
+      "rows": 9,
+      "baseline_mae": 17.555555555555557,
+      "previous_mae": 10.281401123396902,
+      "absolute_forest_mae": 8.832222222222223,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.4491789011746796
+    },
+    {
+      "productId": 19,
+      "rows": 9,
+      "baseline_mae": 1.1111111111111112,
+      "previous_mae": 1.179147288445967,
+      "absolute_forest_mae": 0.5572222222222223,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.6219250662237448
+    },
+    {
+      "productId": 20,
+      "rows": 9,
+      "baseline_mae": 2.6666666666666665,
+      "previous_mae": 9.755951357717501,
+      "absolute_forest_mae": 6.983611111111112,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": true,
+      "improvement_vs_previous": 2.7723402466063893
+    },
+    {
+      "productId": 21,
+      "rows": 9,
+      "baseline_mae": 10.88888888888889,
+      "previous_mae": 11.976607146782257,
+      "absolute_forest_mae": 6.550833333333333,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 5.425773813448924
+    },
+    {
+      "productId": 22,
+      "rows": 9,
+      "baseline_mae": 34.333333333333336,
+      "previous_mae": 20.98392127393042,
+      "absolute_forest_mae": 19.958333333333332,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.025587940597088
+    },
+    {
+      "productId": 23,
+      "rows": 9,
+      "baseline_mae": 17.333333333333332,
+      "previous_mae": 10.764965375113727,
+      "absolute_forest_mae": 12.278333333333332,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": -1.5133679582196056
+    },
+    {
+      "productId": 24,
+      "rows": 9,
+      "baseline_mae": 8.11111111111111,
+      "previous_mae": 8.055430721266932,
+      "absolute_forest_mae": 7.137777777777779,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.9176529434891529
+    },
+    {
+      "productId": 25,
+      "rows": 9,
+      "baseline_mae": 1.8888888888888888,
+      "previous_mae": 1.464836518492398,
+      "absolute_forest_mae": 0.9225,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.542336518492398
+    },
+    {
+      "productId": 26,
+      "rows": 9,
+      "baseline_mae": 13.555555555555555,
+      "previous_mae": 9.51919719495828,
+      "absolute_forest_mae": 8.208333333333334,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.3108638616249468
+    },
+    {
+      "productId": 27,
+      "rows": 9,
+      "baseline_mae": 4.111111111111111,
+      "previous_mae": 3.2730370976361214,
+      "absolute_forest_mae": 3.1694444444444443,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.1035926531916771
+    },
+    {
+      "productId": 28,
+      "rows": 9,
+      "baseline_mae": 6.888888888888889,
+      "previous_mae": 5.9919003392438945,
+      "absolute_forest_mae": 4.62,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.3719003392438944
+    },
+    {
+      "productId": 29,
+      "rows": 9,
+      "baseline_mae": 12.88888888888889,
+      "previous_mae": 14.94513397973604,
+      "absolute_forest_mae": 12.001388888888888,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 2.943745090847152
+    },
+    {
+      "productId": 30,
+      "rows": 9,
+      "baseline_mae": 22.555555555555557,
+      "previous_mae": 14.698904526402979,
+      "absolute_forest_mae": 14.310000000000002,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.38890452640297646
+    },
+    {
+      "productId": 31,
+      "rows": 9,
+      "baseline_mae": 9.666666666666666,
+      "previous_mae": 9.5314750765031,
+      "absolute_forest_mae": 5.227500000000001,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 4.303975076503098
+    },
+    {
+      "productId": 32,
+      "rows": 9,
+      "baseline_mae": 7.555555555555555,
+      "previous_mae": 11.669651691368431,
+      "absolute_forest_mae": 13.925277777777776,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": true,
+      "improvement_vs_previous": -2.255626086409345
+    },
+    {
+      "productId": 33,
+      "rows": 9,
+      "baseline_mae": 2.2222222222222223,
+      "previous_mae": 2.1129632049812788,
+      "absolute_forest_mae": 1.3647222222222222,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.7482409827590566
+    },
+    {
+      "productId": 34,
+      "rows": 9,
+      "baseline_mae": 11.666666666666666,
+      "previous_mae": 7.5903187950180815,
+      "absolute_forest_mae": 4.961666666666667,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 2.6286521283514146
+    },
+    {
+      "productId": 35,
+      "rows": 9,
+      "baseline_mae": 1.6666666666666667,
+      "previous_mae": 1.4855840045663993,
+      "absolute_forest_mae": 0.9908333333333333,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.49475067123306593
+    },
+    {
+      "productId": 36,
+      "rows": 9,
+      "baseline_mae": 1.6666666666666667,
+      "previous_mae": 1.2638443569162883,
+      "absolute_forest_mae": 1.0416666666666667,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.22217769024962153
+    },
+    {
+      "productId": 37,
+      "rows": 9,
+      "baseline_mae": 30.0,
+      "previous_mae": 17.18540766460395,
+      "absolute_forest_mae": 18.35972222222222,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": -1.1743145576182705
+    },
+    {
+      "productId": 38,
+      "rows": 9,
+      "baseline_mae": 17.555555555555557,
+      "previous_mae": 12.357301686447423,
+      "absolute_forest_mae": 10.479166666666666,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.878135019780757
+    },
+    {
+      "productId": 39,
+      "rows": 9,
+      "baseline_mae": 26.11111111111111,
+      "previous_mae": 20.377959732077024,
+      "absolute_forest_mae": 19.5525,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.8254597320770252
+    },
+    {
+      "productId": 40,
+      "rows": 9,
+      "baseline_mae": 33.22222222222222,
+      "previous_mae": 22.179167723422886,
+      "absolute_forest_mae": 23.607222222222227,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": -1.4280544987993409
+    },
+    {
+      "productId": 41,
+      "rows": 9,
+      "baseline_mae": 0.3333333333333333,
+      "previous_mae": 1.1670265638278545,
+      "absolute_forest_mae": 0.2916666666666667,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.8753598971611878
+    },
+    {
+      "productId": 42,
+      "rows": 9,
+      "baseline_mae": 3.6666666666666665,
+      "previous_mae": 1.7873566355533161,
+      "absolute_forest_mae": 1.4191666666666665,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.3681899688866497
+    },
+    {
+      "productId": 43,
+      "rows": 9,
+      "baseline_mae": 15.555555555555555,
+      "previous_mae": 20.594872612681673,
+      "absolute_forest_mae": 21.072777777777777,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": true,
+      "improvement_vs_previous": -0.4779051650961037
+    },
+    {
+      "productId": 44,
+      "rows": 9,
+      "baseline_mae": 1.6666666666666667,
+      "previous_mae": 2.0739089887815907,
+      "absolute_forest_mae": 1.483888888888889,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.5900200998927017
+    },
+    {
+      "productId": 45,
+      "rows": 9,
+      "baseline_mae": 9.777777777777779,
+      "previous_mae": 12.07063810119028,
+      "absolute_forest_mae": 6.901944444444445,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 5.168693656745835
+    },
+    {
+      "productId": 46,
+      "rows": 9,
+      "baseline_mae": 16.0,
+      "previous_mae": 7.774605542874734,
+      "absolute_forest_mae": 6.691666666666666,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.0829388762080674
+    },
+    {
+      "productId": 47,
+      "rows": 9,
+      "baseline_mae": 1.3333333333333333,
+      "previous_mae": 1.3456914556824797,
+      "absolute_forest_mae": 0.9300000000000002,
+      "old_worse_than_baseline": true,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.41569145568247956
+    },
+    {
+      "productId": 48,
+      "rows": 9,
+      "baseline_mae": 20.77777777777778,
+      "previous_mae": 10.339907702692326,
+      "absolute_forest_mae": 11.035,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": -0.6950922973076743
+    },
+    {
+      "productId": 49,
+      "rows": 9,
+      "baseline_mae": 13.555555555555555,
+      "previous_mae": 10.509147516704115,
+      "absolute_forest_mae": 9.024999999999999,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 1.484147516704116
+    },
+    {
+      "productId": 50,
+      "rows": 9,
+      "baseline_mae": 8.88888888888889,
+      "previous_mae": 8.879973020002469,
+      "absolute_forest_mae": 8.930555555555555,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": true,
+      "improvement_vs_previous": -0.05058253555308667
+    },
+    {
+      "productId": 51,
+      "rows": 9,
+      "baseline_mae": 20.88888888888889,
+      "previous_mae": 12.70208723211322,
+      "absolute_forest_mae": 12.925833333333333,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": -0.2237461012201134
+    },
+    {
+      "productId": 52,
+      "rows": 9,
+      "baseline_mae": 14.0,
+      "previous_mae": 9.589013676763134,
+      "absolute_forest_mae": 8.923333333333334,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.6656803434298002
+    },
+    {
+      "productId": 53,
+      "rows": 9,
+      "baseline_mae": 15.666666666666666,
+      "previous_mae": 9.018511985713657,
+      "absolute_forest_mae": 8.714722222222223,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.3037897634914337
+    },
+    {
+      "productId": 54,
+      "rows": 9,
+      "baseline_mae": 23.77777777777778,
+      "previous_mae": 16.951470889963794,
+      "absolute_forest_mae": 14.018888888888888,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 2.9325820010749055
+    },
+    {
+      "productId": 55,
+      "rows": 9,
+      "baseline_mae": 13.222222222222221,
+      "previous_mae": 10.451750056407576,
+      "absolute_forest_mae": 9.970833333333333,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.4809167230742428
+    },
+    {
+      "productId": 56,
+      "rows": 9,
+      "baseline_mae": 3.111111111111111,
+      "previous_mae": 2.366429162036896,
+      "absolute_forest_mae": 2.1480555555555556,
+      "old_worse_than_baseline": false,
+      "new_worse_than_baseline": false,
+      "improvement_vs_previous": 0.2183736064813404
+    }
+  ],
+  "previously_worsened_products_improved": 15,
+  "previously_worsened_products_no_longer_worse_than_baseline": 11,
+  "limitations": [
+    "Validation reused for discovery and comparison: exploratory, not independent accuracy.",
+    "Volume-rise/fall groups use observed target only for diagnosis, never route selection.",
+    "RF absolute_error optimized leaf medians rather than means. Lower MAE does not guarantee lower RMSE.",
+    "No acceptance threshold or automatic model activation."
+  ],
+  "next_decision": "Choose whether MAE/low-rotation improvement is worth higher RMSE than prior candidate. Review remaining product losses before final acceptance. Keep TEST reserved."
+}

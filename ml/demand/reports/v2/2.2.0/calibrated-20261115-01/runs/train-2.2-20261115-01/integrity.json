@@ -1,0 +1,25 @@
+{
+  "status": "PASSED",
+  "baseline_files": 532,
+  "changed_existing_files": [
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "missing_files": [],
+  "unchanged_protected_counts": {
+    "ml/demand/sources/external_curated/": 16,
+    "ml/demand/sources/external_raw/": 136,
+    "ml/demand/data/": 89,
+    "ml/demand/models/": 14,
+    "ml/demand/reports/": 194,
+    "ml/demand/candidates/": 5,
+    "ml/demand/decisions/": 4,
+    "ml/demand/lifecycle/": 13
+  },
+  "raw_unchanged": true,
+  "datasets_unchanged": true,
+  "previous_models_unchanged": true,
+  "previous_reports_unchanged": true,
+  "neon_used": false,
+  "test_loaded": false,
+  "new_markdown_files": 0
+}

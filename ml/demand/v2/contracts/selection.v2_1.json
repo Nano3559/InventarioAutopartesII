@@ -1,0 +1,114 @@
+{
+  "evaluation_version": "final-test-2.1-1",
+  "selection_id": "accepted-absolute-2.1-20261115-01",
+  "user_accepted": true,
+  "accepted_candidate": "absolute_forest-d4",
+  "acceptance_evidence": "User explicitly accepts the absolute-error forest for H4 and authorizes one final TEST evaluation, no retraining.",
+  "accepted_scope": "SYNTHETIC_ACADEMIC_H4_ONLY_NOT_COMMERCIAL_DEPLOYMENT",
+  "frozen_at": "2026-11-15T06:22:36.243180+00:00",
+  "artifact": "models/v2/alternatives-20261115-01/absolute_forest-d4.joblib",
+  "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "model_spec": {
+    "id": "absolute_forest-d4",
+    "family": "absolute_forest",
+    "max_depth": 4,
+    "min_samples_leaf": 5
+  },
+  "regressor_parameters": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "criterion": "absolute_error",
+    "max_depth": 4,
+    "max_features": 1.0,
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 5,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 200,
+    "n_jobs": 1,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "preprocessing_state_sha256": "0a443d3286e877d4a955435dfe740ecbddd2afaf515e9690042e801b21e837cb",
+  "features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos",
+    "proporcion_por_mayor_mes_anterior",
+    "cobertura_modalidad_mes_anterior",
+    "precio_menor_cierre_anterior_bs",
+    "precio_mayor_cierre_anterior_bs",
+    "variacion_precio_menor_conocida",
+    "variacion_precio_mayor_conocida",
+    "tipo_cambio_bs_usd_conocido",
+    "variacion_tipo_cambio_ultimo_mes",
+    "antiguedad_tipo_cambio_dias"
+  ],
+  "feature_role": "14 accepted raw features, product/store/month identities excluded from numeric model matrix",
+  "input_hashes": {
+    "models/v2/alternatives-20261115-01/absolute_forest-d4.joblib": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+    "models/v2/alternatives-20261115-01/manifest.json": "767da86673dcc25d3f135858ad0acefc946d9b4605651f88eda0965ad5027b0b",
+    "v2/alternatives.py": "07f8c69c957cb794a534b031e9c718b00a300ea6d4615d3ce92adc24505ffc33",
+    "v2/preprocessing.py": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+    "v2/experiments.py": "abe20673fab4d9cc8fb7ec4d4052a8fa8e1c448384e0fba998fa5571b3211e0c",
+    "v2/contracts/experiments.v2_1.json": "651ba7393487ea05d996dc285f36d995f36309073ca28f1cda4dd30e9d153abd",
+    "v2/contracts/preprocessing.v2_1.json": "36eed4f2b505487bf92985f4c06ad6dabaea0aee6735bf463e7c04eb2369b2b9",
+    "data/repuestopro_v2/2.1.0/expanded-20261115-01/manifest.json": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+    "data/repuestopro_v2/2.1.0/expanded-20261115-01/schema.json": "b56642e8d7c0bc2b272a7e3688b2eeac8dfe87122b24db6d252f34d622c06ecc",
+    "data/repuestopro_v2/2.1.0/expanded-20261115-01/split_manifest.json": "9c2d41d0a173f2e975c8c8bd4bb04604d2422598e5c1156187f860ff6477da2f",
+    "data/repuestopro_v2/2.1.0/expanded-20261115-01/dataset_supervisado.csv": "382c9b0ff45e0d1b3130322a9638e2a046268c04d207806b5ffddf8534846a7d"
+  },
+  "evaluation_implementation_sha256": "ef3878d41a229508dac324d7d6c04a11229bd5616df825cc1835193e9b7b7265",
+  "prediction_policy": {
+    "version": "NONNEGATIVE_V1",
+    "nonfinite": "REJECT_ALL_NO_SUBSET",
+    "negative": "CLIP_ZERO",
+    "rounding": "NONE"
+  },
+  "test_authorization": "ONE_FINAL_EVALUATION_NO_RETRAINING",
+  "test_window": [
+    "2026-07",
+    "2026-09"
+  ],
+  "test_expected_rows": 504,
+  "horizon": "One month ahead with preceding closed-month history refreshed, no model or transformer refit. Not three months jointly forecast from June.",
+  "baseline": "lag1 computed on same TEST rows only as fixed reference, no alternative model comparison.",
+  "metrics": {
+    "primary": "MAE",
+    "secondary": [
+      "RMSE",
+      "R2"
+    ],
+    "predeclared_diagnostics": [
+      "monthly metrics",
+      "TRAIN-defined rotation groups",
+      "product/store groups",
+      "historical stock coverage and modality",
+      "tail errors >20 and >40 descriptive only",
+      "aggregate units bias"
+    ]
+  },
+  "training_allowed": false,
+  "active_model_promotion_allowed": false,
+  "dataset_origin": "SYNTHETIC",
+  "validation_reused_exploratorily": true,
+  "known_limitations_before_test": [
+    "Large wholesale orders not explicit features.",
+    "Seven products worse than baseline in validation.",
+    "Greater RMSE and negative aggregate bias versus routing in validation.",
+    "No commercial acceptance tolerance or causal price/exchange effect established."
+  ],
+  "environment": {
+    "scikit-learn": "1.9.1",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "joblib": "1.6.0"
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "status": "SELECTED_FROZEN_TEST_EVALUATED_ONCE_NOT_ACTIVE",
+  "stage_v2_08": "COMPLETE_ACADEMIC_SCOPE_ONLY",
+  "selection_id": "accepted-absolute-2.1-20261115-01",
+  "selected_candidate": "absolute_forest-d4",
+  "artifact": "models/v2/alternatives-20261115-01/absolute_forest-d4.joblib",
+  "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "selection_sha256": "e4881d38ec32a087904d499fc122e14953cc23946b0c4123e6ce15630ee9f3e0",
+  "evaluation_implementation_sha256": "ef3878d41a229508dac324d7d6c04a11229bd5616df825cc1835193e9b7b7265",
+  "test_loader_calls": 1,
+  "selected_model_predict_calls": 1,
+  "model_fit_calls": 0,
+  "preprocessing_fit_calls": 0,
+  "tests": {
+    "run": 15,
+    "passed": 15,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "real_test_predictions_in_tests": 0,
+    "description": "Seven guard tests with temporary fixtures and eight checks against stored final evidence. Actual guard denies a second invocation before any read."
+  },
+  "integrity": {
+    "data": {
+      "files_checked": 59,
+      "unchanged": true
+    },
+    "models": {
+      "files_checked": 14,
+      "unchanged": true
+    },
+    "reports": {
+      "files_checked": 115,
+      "unchanged": true
+    },
+    "candidates": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "decisions": {
+      "files_checked": 4,
+      "unchanged": true
+    },
+    "lifecycle": {
+      "files_checked": 13,
+      "unchanged": true
+    },
+    "raw": {
+      "files_checked": 136,
+      "unchanged": true
+    },
+    "manifests": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "protected": {
+      "files_checked": 44,
+      "unchanged": true
+    }
+  },
+  "model_metrics": {
+    "rows_requested": 504,
+    "rows_scored": 504,
+    "abstentions": 0,
+    "negative_raw_predictions": 0,
+    "mae": 7.632738095238095,
+    "rmse": 15.425266214001542,
+    "r2": 0.6428720792171163,
+    "r2_status": "DEFINED",
+    "raw_metrics": {
+      "mae": 7.632738095238095,
+      "rmse": 15.425266214001542,
+      "r2": 0.6428720792171163,
+      "r2_status": "DEFINED"
+    },
+    "status": "OK"
+  },
+  "baseline_metrics": {
+    "rows_requested": 504,
+    "rows_scored": 504,
+    "abstentions": 0,
+    "negative_raw_predictions": 0,
+    "mae": 11.76388888888889,
+    "rmse": 23.055273473126164,
+    "r2": 0.20219082694825763,
+    "r2_status": "DEFINED",
+    "raw_metrics": {
+      "mae": 11.76388888888889,
+      "rmse": 23.055273473126164,
+      "r2": 0.20219082694825763,
+      "r2_status": "DEFINED"
+    },
+    "status": "OK"
+  },
+  "no_new_markdown": true,
+  "neon_used": false,
+  "git_used": false,
+  "active_model_changed": false,
+  "commercial_accuracy_certified": false,
+  "test_consumed": true,
+  "evidence_hashes": {
+    "before.json": "64e23db71801528db90cfe0e3d71465314e446e87fed8c1f5f803131f5bea048",
+    "evaluation_started.json": "7a0108146b96b93d72e2500a7a9f9f0b587647040d88c2a04789107f8a050f70",
+    "execution.txt": "13920c69afa0887c7f891ef886ecf114e5ba5df0809389ee1d82d38731b8e1f6",
+    "execution_audit.json": "6d4d5c2569590cd586c24e21695afd5f87a8f0740de53bde3c295ed5ecddcd86",
+    "guard-tests.txt": "c11775b0332447603fc53a1befea3e2df66763c5b70b22585a8d85912563e108",
+    "predictions.csv": "50e47c63b614d31294d4791f54dc66397b3ab1dceed166d5e997fa240645646b",
+    "prediction_started.json": "6e9c1167a619493383259a9a25fe1d0fdf96c7e0e6767d8d8a513fc8239e957f",
+    "preflight.json": "1f82a1de243c4b92eb36267c8319538ade3e0025947b329d430e3df7b993dea2",
+    "result.json": "c7672cecd1fa0a589294478f9dda8c5936ec5ee45c371bd53510b191053bcabd",
+    "selection_frozen.json": "e4881d38ec32a087904d499fc122e14953cc23946b0c4123e6ce15630ee9f3e0",
+    "tests-final.txt": "8cc3552eee1be429bd7d4d420a0c7036d53681e6278afd9171892daead1c17d1",
+    "verification.json": "15b74d558806bea26f39d9ebb6317c74984c7eca16093c7e18813f71493d7a69"
+  },
+  "pending": [
+    "V2-09B inference/artifact contract review with Erika.",
+    "No deployment or automatic replenishment approved.",
+    "Any changed model/policy requires a separately approved protocol. This TEST cannot become an unseen test again."
+  ]
+}

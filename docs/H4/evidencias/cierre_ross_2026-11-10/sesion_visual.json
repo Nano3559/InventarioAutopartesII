@@ -1,0 +1,2881 @@
+{
+  "extensions": {
+    "h4_traceability": {
+      "authority": "EVIDENCE_ONLY",
+      "authorizes_model_changes": false,
+      "document_sha256": "75db1edeaf54a9dc64be672a1b5b4fe42b9dd3157fc8a1b97aa3825fbafd32d7",
+      "engine": {
+        "engine_session_id": "31f4b162994f4df7bcf15cbe9e011414",
+        "first_simulable_month": "2026-10",
+        "generator_seed": 42,
+        "history_before_tracking": "UNKNOWN",
+        "journal_id": "6600a4cfe00a46e7bcf31770910753d4",
+        "origin": "SIMULACION",
+        "pairs": [
+          {
+            "cached_generated_results": [
+              {
+                "availability": null,
+                "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+                "month": "2026-10",
+                "simulated_observed": 23
+              },
+              {
+                "availability": null,
+                "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+                "month": "2026-11",
+                "simulated_observed": 24
+              },
+              {
+                "availability": null,
+                "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+                "month": "2026-12",
+                "simulated_observed": 25
+              },
+              {
+                "availability": null,
+                "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+                "month": "2027-01",
+                "simulated_observed": 26
+              },
+              {
+                "availability": null,
+                "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+                "month": "2027-02",
+                "simulated_observed": 27
+              },
+              {
+                "availability": null,
+                "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+                "month": "2027-03",
+                "simulated_observed": 26
+              }
+            ],
+            "calendar": {
+              "closed_months": [
+                "2026-10",
+                "2026-11",
+                "2026-12",
+                "2027-01",
+                "2027-02",
+                "2027-03"
+              ],
+              "open_month": "2027-04",
+              "viewing_month": "2027-04"
+            },
+            "closed_observations": [
+              {
+                "month": "2026-10",
+                "observed": 23,
+                "source": "GENERATED"
+              },
+              {
+                "month": "2026-11",
+                "observed": 24,
+                "source": "GENERATED"
+              },
+              {
+                "month": "2026-12",
+                "observed": 25,
+                "source": "GENERATED"
+              },
+              {
+                "month": "2027-01",
+                "observed": 26,
+                "source": "GENERATED"
+              },
+              {
+                "month": "2027-02",
+                "observed": 27,
+                "source": "GENERATED"
+              },
+              {
+                "month": "2027-03",
+                "observed": 26,
+                "source": "GENERATED"
+              }
+            ],
+            "effective_lags_for_open_month": [
+              26,
+              27,
+              26
+            ],
+            "hypothetical_lags": null,
+            "location_id": 5,
+            "pending_observation": {
+              "source": null,
+              "value": null
+            },
+            "product_id": 1,
+            "reference_history_for_simulation": [
+              {
+                "month": "2024-10",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 28
+              },
+              {
+                "month": "2024-11",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 21
+              },
+              {
+                "month": "2024-12",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 24
+              },
+              {
+                "month": "2025-01",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 20
+              },
+              {
+                "month": "2025-02",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 22
+              },
+              {
+                "month": "2025-03",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 16
+              },
+              {
+                "month": "2025-04",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 19
+              },
+              {
+                "month": "2025-05",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 19
+              },
+              {
+                "month": "2025-06",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 23
+              },
+              {
+                "month": "2025-07",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 30
+              },
+              {
+                "month": "2025-08",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 5
+              },
+              {
+                "month": "2025-09",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 29
+              },
+              {
+                "month": "2025-10",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 31
+              },
+              {
+                "month": "2025-11",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 35
+              },
+              {
+                "month": "2025-12",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 27
+              },
+              {
+                "month": "2026-01",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 26
+              },
+              {
+                "month": "2026-02",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 28
+              },
+              {
+                "month": "2026-03",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 25
+              },
+              {
+                "month": "2026-04",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 20
+              },
+              {
+                "month": "2026-05",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 21
+              },
+              {
+                "month": "2026-06",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 15
+              },
+              {
+                "month": "2026-07",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 26
+              },
+              {
+                "month": "2026-08",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 18
+              },
+              {
+                "month": "2026-09",
+                "origin": "HISTORICAL_SYNTHETIC_1_1_REFERENCE",
+                "value": 22
+              }
+            ],
+            "rng": {
+              "algorithm": "python.random.Random/MT19937",
+              "gauss_next": null,
+              "internal_state": [
+                1980519699,
+                3232975886,
+                2570737540,
+                2225295936,
+                3924529084,
+                3473271532,
+                526670484,
+                905225806,
+                937435838,
+                120927394,
+                3359806458,
+                2025506073,
+                2112774722,
+                794539115,
+                2185488111,
+                3749709034,
+                914885812,
+                3386557296,
+                350525745,
+                2743534778,
+                3671998877,
+                770901107,
+                1037121725,
+                3329765457,
+                904270606,
+                3840334961,
+                2784870869,
+                1238660999,
+                172012729,
+                3015488992,
+                95943202,
+                2680595355,
+                3286468169,
+                2978185202,
+                696167607,
+                3580735877,
+                1388888024,
+                2423013359,
+                3830114929,
+                3619296380,
+                1438553592,
+                1677740657,
+                1085484877,
+                2221167484,
+                2066352632,
+                2294512284,
+                2665587856,
+                375988047,
+                2541542525,
+                559128759,
+                821810477,
+                3797705593,
+                794099438,
+                3985917936,
+                2713752265,
+                2790215821,
+                1393532105,
+                2957589819,
+                942486062,
+                1383232554,
+                1608976595,
+                4165121122,
+                1477538938,
+                2554880789,
+                3220933024,
+                1966335280,
+                3908472043,
+                834625509,
+                2700531198,
+                1254880774,
+                2645534376,
+                2038333485,
+                1431107437,
+                1366499188,
+                1467186588,
+                4197209524,
+                3810972896,
+                1573423227,
+                2030644927,
+                4029758736,
+                1175572088,
+                4285704356,
+                602215336,
+                1179466715,
+                2632545786,
+                4245078080,
+                3487623114,
+                539802338,
+                3281899976,
+                4240368949,
+                2965974017,
+                14962529,
+                1761312161,
+                4225152103,
+                4048426669,
+                2334901007,
+                102537557,
+                3364881853,
+                4150207123,
+                4250473879,
+                2849735611,
+                770950306,
+                4117453933,
+                1039779616,
+                594181161,
+                4058232178,
+                1812682458,
+                2970289198,
+                3284131665,
+                3907786212,
+                2498900975,
+                2941992116,
+                895059645,
+                3446338412,
+                2616006197,
+                729562417,
+                4165318692,
+                756962884,
+                1302183409,
+                1920357769,
+                859625018,
+                2277261581,
+                3068843096,
+                2093149652,
+                1436942544,
+                3191280570,
+                4234192439,
+                3262538584,
+                860883156,
+                551576708,
+                1019493764,
+                4247286944,
+                1398956478,
+                2568581219,
+                874942250,
+                3661087487,
+                1554951134,
+                1039957942,
+                1900889209,
+                2373215358,
+                1305737448,
+                3370998599,
+                3198222217,
+                4232550097,
+                2188979190,
+                1127898515,
+                1678673686,
+                1559726641,
+                3401395910,
+                1036785751,
+                1255653403,
+                2368496632,
+                2077031501,
+                455067521,
+                3355135248,
+                2628928394,
+                1890476819,
+                2839791937,
+                3844474419,
+                4098531342,
+                2243025506,
+                3688978915,
+                2973297449,
+                1639859833,
+                3549992992,
+                3238110092,
+                2934643417,
+                3098866244,
+                1032835348,
+                3314006567,
+                4284963140,
+                927498167,
+                3576455505,
+                171028381,
+                1114790761,
+                3762385039,
+                3925376363,
+                1454081477,
+                2227053324,
+                74582414,
+                4207877037,
+                958992394,
+                2555845591,
+                2153115260,
+                79341252,
+                3616045842,
+                627711510,
+                2474622338,
+                3564420694,
+                390635858,
+                415222825,
+                2725798645,
+                412024664,
+                2029337965,
+                3633888920,
+                1735847439,
+                1718179592,
+                376908397,
+                1100527748,
+                50583580,
+                2297170854,
+                1620003012,
+                3538601180,
+                1093391140,
+                323578280,
+                2959875856,
+                2821499582,
+                4112195204,
+                2962664031,
+                3030584227,
+                3436524149,
+                3261771468,
+                1650169124,
+                2872644336,
+                3283713080,
+                1461613813,
+                1621009368,
+                3419593797,
+                2116857718,
+                1646434434,
+                2361393224,
+                1113352903,
+                812341239,
+                2406183446,
+                1277512200,
+                792347429,
+                3293060132,
+                2662641862,
+                1566138047,
+                2209679448,
+                1743311690,
+                3966859067,
+                2309752104,
+                3308223556,
+                1920087444,
+                3655051809,
+                503004403,
+                2439748106,
+                2006266470,
+                3516562672,
+                2347250956,
+                1811265824,
+                182573424,
+                2503921189,
+                2069943307,
+                977307191,
+                959643592,
+                1557544815,
+                4263293705,
+                4208625608,
+                2430932878,
+                436104997,
+                2162930127,
+                2373164002,
+                4212047728,
+                3337622964,
+                1236612794,
+                2452743627,
+                3588689904,
+                3241215337,
+                346630024,
+                30692953,
+                33353929,
+                2854645448,
+                1886257744,
+                3763756519,
+                2191462630,
+                274079810,
+                2747062662,
+                2139244369,
+                3637509257,
+                1019184816,
+                376554209,
+                1298507495,
+                3663547782,
+                944481902,
+                770147863,
+                3831603001,
+                1854728187,
+                2021578524,
+                544614695,
+                1630097840,
+                3749800352,
+                3698546300,
+                1488128567,
+                904338733,
+                181054588,
+                1251569094,
+                2783622007,
+                1044672977,
+                673425981,
+                1077947130,
+                3441213326,
+                3855007114,
+                1211378321,
+                1987845495,
+                2475954299,
+                1861748820,
+                798217545,
+                2445480335,
+                244552226,
+                1229709404,
+                1192844966,
+                3757183352,
+                3466648799,
+                3616530170,
+                312956498,
+                1027769950,
+                1467100811,
+                153341438,
+                2180216968,
+                4154645922,
+                1919773559,
+                595337728,
+                2206030960,
+                1821755700,
+                1231609363,
+                1968364396,
+                2315058353,
+                3767626685,
+                571789998,
+                1863659589,
+                2842389223,
+                1339760884,
+                368190774,
+                568676404,
+                2287534618,
+                3695150405,
+                2441328269,
+                462259028,
+                2461578686,
+                3979237557,
+                4236654264,
+                4101566752,
+                4238768858,
+                3825754295,
+                3092400878,
+                3533223504,
+                1123399347,
+                2042311653,
+                1665495713,
+                3158731267,
+                1155664019,
+                2936696978,
+                3536295242,
+                3184624416,
+                1836090333,
+                2519304569,
+                2346947590,
+                1784326885,
+                3160661583,
+                3520058256,
+                3715741448,
+                2001192827,
+                970818424,
+                3684555130,
+                2606739401,
+                3785943758,
+                1510367647,
+                379509103,
+                3892534004,
+                2733383852,
+                2528454573,
+                977121030,
+                1850239116,
+                426109952,
+                4156446503,
+                2276759067,
+                2870415827,
+                1268852295,
+                993446905,
+                10274211,
+                1374106950,
+                261332281,
+                2818836589,
+                1336978099,
+                3805190264,
+                1366748758,
+                919192121,
+                2562165535,
+                2530230997,
+                1282108901,
+                1163334914,
+                1679973916,
+                2713095074,
+                4123931115,
+                226834626,
+                1300535471,
+                2060642515,
+                726238656,
+                4218571083,
+                2463683227,
+                29940629,
+                3634780802,
+                1444676905,
+                2495332057,
+                447246222,
+                2746904979,
+                3928017313,
+                1967204847,
+                3675899310,
+                1194036101,
+                154244630,
+                2241337728,
+                652232215,
+                3960866131,
+                352080280,
+                2017569488,
+                4260609352,
+                1350527552,
+                75171313,
+                1212932602,
+                435251143,
+                489246577,
+                3599037569,
+                3738663545,
+                3954251920,
+                920298781,
+                722152724,
+                3795298909,
+                649084923,
+                4086516195,
+                2299863584,
+                2153831587,
+                2491621252,
+                2941344299,
+                1806502478,
+                109656854,
+                3885449535,
+                1487079212,
+                2194096113,
+                4215023979,
+                3965886225,
+                3600963842,
+                2840678893,
+                3635649881,
+                4194556157,
+                1801589505,
+                54646001,
+                190605365,
+                1640141635,
+                2545228560,
+                623984770,
+                1497354375,
+                1650227624,
+                4026799624,
+                3888993060,
+                2225071530,
+                2682447740,
+                1857464487,
+                2799285138,
+                967665228,
+                322789021,
+                2953136813,
+                1736455542,
+                3029236517,
+                550375608,
+                1484517891,
+                2262091112,
+                1798666519,
+                3598302455,
+                743625273,
+                154738267,
+                1601696178,
+                2240324471,
+                2350495240,
+                3172674866,
+                2514599019,
+                3843712057,
+                1224920473,
+                4237173176,
+                3714857643,
+                457722531,
+                2426722026,
+                2498080671,
+                828795253,
+                355762329,
+                222885944,
+                1921327147,
+                2460128984,
+                2178483351,
+                1662472043,
+                3773555839,
+                1539348295,
+                1254333210,
+                1461999931,
+                3047926017,
+                678294022,
+                1403233131,
+                3296242715,
+                3395240253,
+                3875016073,
+                3915746685,
+                4001500689,
+                185457951,
+                1052036725,
+                4083740139,
+                1774351528,
+                2392699266,
+                2270349965,
+                3377671492,
+                4216324212,
+                2155907998,
+                2922181785,
+                1229709153,
+                1383091346,
+                2120030064,
+                3438920684,
+                2072216122,
+                1810131709,
+                3238001878,
+                1467713474,
+                655371195,
+                1239352484,
+                3592457138,
+                14374629,
+                2103120379,
+                2257179265,
+                3168975807,
+                3664147032,
+                4026905990,
+                4187415801,
+                901927664,
+                705340860,
+                1133114450,
+                3046583603,
+                1180315705,
+                16435746,
+                2816360705,
+                4005064936,
+                59759988,
+                620417100,
+                3497725179,
+                2444513983,
+                727168177,
+                2494409989,
+                1895965913,
+                2304172625,
+                2753605353,
+                958488683,
+                1454849670,
+                3235938114,
+                3057077862,
+                967743089,
+                1536764981,
+                1993402758,
+                2287445676,
+                2302012213,
+                2288209851,
+                723922312,
+                1451912673,
+                3183609248,
+                385079469,
+                1676236291,
+                1299204245,
+                728960627,
+                1686716424,
+                738161500,
+                478074727,
+                3362968461,
+                1070111774,
+                254372653,
+                1797056913,
+                1559404809,
+                3390661258,
+                1155927827,
+                644966112,
+                702615675,
+                2001786572,
+                2529546228,
+                4061888200,
+                417001966,
+                4069090973,
+                1205938816,
+                1450542324,
+                3044477521,
+                1359170933,
+                4108800083,
+                2429935048,
+                1903332814,
+                3486281197,
+                3260450745,
+                3315544445,
+                1012931182,
+                3104511729,
+                2955525914,
+                3230121782,
+                1389933051,
+                2028706740,
+                364001516,
+                2182564602,
+                1334883360,
+                361506287,
+                3778825604,
+                3994112716,
+                928053061,
+                3196104384,
+                4249063048,
+                2019845572,
+                3004137490,
+                3784125033,
+                1477299552,
+                2364814441,
+                73750837,
+                3148564473,
+                1609412749,
+                1546920443,
+                3765164995,
+                2089469521,
+                2336542829,
+                2975690334,
+                2057713388,
+                2295935936,
+                1826305167,
+                955101882,
+                3008913321,
+                3352408880,
+                2364444722,
+                964675695,
+                2635738293,
+                869275059,
+                36371170,
+                763161953,
+                4171691480,
+                12
+              ],
+              "pair_seed_sha256": "6c14c8fb97e4064ba09551699e9e5e395612812bb5cb382a32feb0c438e6b310",
+              "python_version": "3.11.9",
+              "seed_derivation": "H4_PAIR_RNG_V1|seed|product_id|location_id",
+              "state_version": 3
+            },
+            "scenario": "NORMAL",
+            "simulated_only": false
+          }
+        ],
+        "revisions": [
+          {
+            "availability": null,
+            "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+            "id": "REV-62aebf83ed9348e49dcdce466870b690",
+            "location_id": 5,
+            "month": "2026-10",
+            "month_generated": "2026-10",
+            "product_id": 1,
+            "sequence": 1,
+            "simulated_observed": 23,
+            "timestamp": "2026-11-10T21:28:00.903625+00:00",
+            "type": "SIMULATION_DRAW_CACHED"
+          },
+          {
+            "id": "REV-970b0815c0d34e949352e4195f83c7a6",
+            "location_id": 5,
+            "month": "2026-10",
+            "product_id": 1,
+            "sequence": 2,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:00.903625+00:00",
+            "type": "OBSERVED_GENERATED",
+            "value": 23
+          },
+          {
+            "id": "REV-11497e5ecdbe411996327b37f7f2cdbd",
+            "location_id": 5,
+            "month": "2026-10",
+            "month_closed": "2026-10",
+            "observed": 23,
+            "product_id": 1,
+            "sequence": 3,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:01.773031+00:00",
+            "type": "MONTH_CLOSED"
+          },
+          {
+            "after": "2026-11",
+            "before": "2026-10",
+            "id": "REV-4e4dbb6991764827ad0474c57487af7a",
+            "location_id": 5,
+            "month": "2026-10",
+            "product_id": 1,
+            "sequence": 4,
+            "timestamp": "2026-11-10T21:28:01.773031+00:00",
+            "type": "MONTH_ADVANCED"
+          },
+          {
+            "availability": null,
+            "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+            "id": "REV-95382070cdda4154997700cda788fdab",
+            "location_id": 5,
+            "month": "2026-11",
+            "month_generated": "2026-11",
+            "product_id": 1,
+            "sequence": 5,
+            "simulated_observed": 24,
+            "timestamp": "2026-11-10T21:28:03.460855+00:00",
+            "type": "SIMULATION_DRAW_CACHED"
+          },
+          {
+            "id": "REV-e5a912f7eae64c3a971eb0cd937a6ec9",
+            "location_id": 5,
+            "month": "2026-11",
+            "product_id": 1,
+            "sequence": 6,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:03.460855+00:00",
+            "type": "OBSERVED_GENERATED",
+            "value": 24
+          },
+          {
+            "id": "REV-4bf5a37c597143129f57a8b5d807d3c9",
+            "location_id": 5,
+            "month": "2026-11",
+            "month_closed": "2026-11",
+            "observed": 24,
+            "product_id": 1,
+            "sequence": 7,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:04.310890+00:00",
+            "type": "MONTH_CLOSED"
+          },
+          {
+            "after": "2026-12",
+            "before": "2026-11",
+            "id": "REV-6a1af72f56574f86b6e515c109d1ada6",
+            "location_id": 5,
+            "month": "2026-11",
+            "product_id": 1,
+            "sequence": 8,
+            "timestamp": "2026-11-10T21:28:04.310890+00:00",
+            "type": "MONTH_ADVANCED"
+          },
+          {
+            "availability": null,
+            "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+            "id": "REV-bc19ca73307f4addb0f4f052149de6f4",
+            "location_id": 5,
+            "month": "2026-12",
+            "month_generated": "2026-12",
+            "product_id": 1,
+            "sequence": 9,
+            "simulated_observed": 25,
+            "timestamp": "2026-11-10T21:28:05.659427+00:00",
+            "type": "SIMULATION_DRAW_CACHED"
+          },
+          {
+            "id": "REV-6761bbea1f2a47b9856fbc6b361399bd",
+            "location_id": 5,
+            "month": "2026-12",
+            "product_id": 1,
+            "sequence": 10,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:05.659427+00:00",
+            "type": "OBSERVED_GENERATED",
+            "value": 25
+          },
+          {
+            "id": "REV-77a0ff11be6b40e3880a03e215a96841",
+            "location_id": 5,
+            "month": "2026-12",
+            "month_closed": "2026-12",
+            "observed": 25,
+            "product_id": 1,
+            "sequence": 11,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:06.547135+00:00",
+            "type": "MONTH_CLOSED"
+          },
+          {
+            "after": "2027-01",
+            "before": "2026-12",
+            "id": "REV-394d24d0db1247e98fe98b67d54ccc7b",
+            "location_id": 5,
+            "month": "2026-12",
+            "product_id": 1,
+            "sequence": 12,
+            "timestamp": "2026-11-10T21:28:06.547135+00:00",
+            "type": "MONTH_ADVANCED"
+          },
+          {
+            "availability": null,
+            "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+            "id": "REV-762954e68f734964a0c777e8ecd2c028",
+            "location_id": 5,
+            "month": "2027-01",
+            "month_generated": "2027-01",
+            "product_id": 1,
+            "sequence": 13,
+            "simulated_observed": 26,
+            "timestamp": "2026-11-10T21:28:07.870181+00:00",
+            "type": "SIMULATION_DRAW_CACHED"
+          },
+          {
+            "id": "REV-35da95010cef4bb7b6d22089df259583",
+            "location_id": 5,
+            "month": "2027-01",
+            "product_id": 1,
+            "sequence": 14,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:07.870181+00:00",
+            "type": "OBSERVED_GENERATED",
+            "value": 26
+          },
+          {
+            "id": "REV-c71099f11dd24968a9d0f3801ca953da",
+            "location_id": 5,
+            "month": "2027-01",
+            "month_closed": "2027-01",
+            "observed": 26,
+            "product_id": 1,
+            "sequence": 15,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:08.536483+00:00",
+            "type": "MONTH_CLOSED"
+          },
+          {
+            "after": "2027-02",
+            "before": "2027-01",
+            "id": "REV-5b6fe96ce21a4b63bb1f93c3d0060db2",
+            "location_id": 5,
+            "month": "2027-01",
+            "product_id": 1,
+            "sequence": 16,
+            "timestamp": "2026-11-10T21:28:08.536483+00:00",
+            "type": "MONTH_ADVANCED"
+          },
+          {
+            "availability": null,
+            "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+            "id": "REV-dbb1b013a9374457911099e171f38f8e",
+            "location_id": 5,
+            "month": "2027-02",
+            "month_generated": "2027-02",
+            "product_id": 1,
+            "sequence": 17,
+            "simulated_observed": 27,
+            "timestamp": "2026-11-10T21:28:09.872218+00:00",
+            "type": "SIMULATION_DRAW_CACHED"
+          },
+          {
+            "id": "REV-5457a4e3e1bd4d43b0b80c674321f522",
+            "location_id": 5,
+            "month": "2027-02",
+            "product_id": 1,
+            "sequence": 18,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:09.872218+00:00",
+            "type": "OBSERVED_GENERATED",
+            "value": 27
+          },
+          {
+            "id": "REV-54ecf26ef07d4c6da8aa4d8cb817f2ec",
+            "location_id": 5,
+            "month": "2027-02",
+            "month_closed": "2027-02",
+            "observed": 27,
+            "product_id": 1,
+            "sequence": 19,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:10.650779+00:00",
+            "type": "MONTH_CLOSED"
+          },
+          {
+            "after": "2027-03",
+            "before": "2027-02",
+            "id": "REV-74356bf9532c4807b35aee2a2440bcc1",
+            "location_id": 5,
+            "month": "2027-02",
+            "product_id": 1,
+            "sequence": 20,
+            "timestamp": "2026-11-10T21:28:10.651539+00:00",
+            "type": "MONTH_ADVANCED"
+          },
+          {
+            "availability": null,
+            "classification": "SIMULATION_DRAW_NOT_CLOSED_SALES",
+            "id": "REV-d278473434324c55a557f9b50fc8ca8b",
+            "location_id": 5,
+            "month": "2027-03",
+            "month_generated": "2027-03",
+            "product_id": 1,
+            "sequence": 21,
+            "simulated_observed": 26,
+            "timestamp": "2026-11-10T21:28:12.107947+00:00",
+            "type": "SIMULATION_DRAW_CACHED"
+          },
+          {
+            "id": "REV-35b34901ebad42468b2b903f8e0bd190",
+            "location_id": 5,
+            "month": "2027-03",
+            "product_id": 1,
+            "sequence": 22,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:12.107947+00:00",
+            "type": "OBSERVED_GENERATED",
+            "value": 26
+          },
+          {
+            "id": "REV-ea524152063b4be29503f4cf29d8071f",
+            "location_id": 5,
+            "month": "2027-03",
+            "month_closed": "2027-03",
+            "observed": 26,
+            "product_id": 1,
+            "sequence": 23,
+            "source": "GENERATED",
+            "timestamp": "2026-11-10T21:28:12.839129+00:00",
+            "type": "MONTH_CLOSED"
+          },
+          {
+            "after": "2027-04",
+            "before": "2027-03",
+            "id": "REV-2fb752d7b45a4b388864478ed0c90311",
+            "location_id": 5,
+            "month": "2027-03",
+            "product_id": 1,
+            "sequence": 24,
+            "timestamp": "2026-11-10T21:28:12.840134+00:00",
+            "type": "MONTH_ADVANCED"
+          }
+        ],
+        "selected_pair": [
+          1,
+          5
+        ],
+        "trace_started_at": "2026-11-10T21:26:46.848896+00:00"
+      },
+      "exported_at": "2026-11-10T21:29:21.495041+00:00",
+      "journal": {
+        "history_before_tracking": "UNKNOWN",
+        "pending": [],
+        "revealed": [
+          {
+            "location_id": 5,
+            "month": "2026-10",
+            "observed": 23,
+            "product_id": 1
+          },
+          {
+            "location_id": 5,
+            "month": "2026-11",
+            "observed": 24,
+            "product_id": 1
+          },
+          {
+            "location_id": 5,
+            "month": "2026-12",
+            "observed": 25,
+            "product_id": 1
+          },
+          {
+            "location_id": 5,
+            "month": "2027-01",
+            "observed": 26,
+            "product_id": 1
+          },
+          {
+            "location_id": 5,
+            "month": "2027-02",
+            "observed": 27,
+            "product_id": 1
+          },
+          {
+            "location_id": 5,
+            "month": "2027-03",
+            "observed": 26,
+            "product_id": 1
+          }
+        ],
+        "revisions": [
+          {
+            "forecast": {
+              "baseline": 22.0,
+              "features": [
+                22,
+                18,
+                26,
+                -1.0,
+                -0.0
+              ],
+              "issued_at": "2026-11-10T21:28:00.317661+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2026-10",
+              "prediction": 21.773409189130824,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-db69d5a822ef4ca183cd707d17ffe7a7",
+            "location_id": 5,
+            "month": "2026-10",
+            "product_id": 1,
+            "sequence": 1,
+            "timestamp": "2026-11-10T21:28:00.317661+00:00",
+            "type": "FORECAST_ISSUED"
+          },
+          {
+            "id": "REV-fdb6401bea824b77b7400f5ed0347ff6",
+            "location_id": 5,
+            "month": "2026-10",
+            "observed": 23,
+            "product_id": 1,
+            "sequence": 2,
+            "timestamp": "2026-11-10T21:28:00.903625+00:00",
+            "type": "OBSERVED_REVEALED"
+          },
+          {
+            "forecast": {
+              "baseline": 22.0,
+              "features": [
+                22,
+                18,
+                26,
+                -1.0,
+                -0.0
+              ],
+              "issued_at": "2026-11-10T21:28:00.317661+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2026-10",
+              "prediction": 21.773409189130824,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-3582d1cdd4514cf0b47af8543ab5c15c",
+            "location_id": 5,
+            "month": "2026-10",
+            "observed": 23,
+            "observed_at": "2026-11-10T21:28:01.773031+00:00",
+            "product_id": 1,
+            "sequence": 3,
+            "timestamp": "2026-11-10T21:28:01.773031+00:00",
+            "type": "OBSERVATION_CLOSED"
+          },
+          {
+            "forecast": {
+              "baseline": 23.0,
+              "features": [
+                23,
+                22,
+                18,
+                -0.866025403784,
+                0.5
+              ],
+              "issued_at": "2026-11-10T21:28:02.842697+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2026-11",
+              "prediction": 24.469018571019795,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-2aaff8ae82044d9490056b1de20f3e5c",
+            "location_id": 5,
+            "month": "2026-11",
+            "product_id": 1,
+            "sequence": 4,
+            "timestamp": "2026-11-10T21:28:02.842697+00:00",
+            "type": "FORECAST_ISSUED"
+          },
+          {
+            "id": "REV-3d7693c00a57460c8bce64b1ec418fc5",
+            "location_id": 5,
+            "month": "2026-11",
+            "observed": 24,
+            "product_id": 1,
+            "sequence": 5,
+            "timestamp": "2026-11-10T21:28:03.460855+00:00",
+            "type": "OBSERVED_REVEALED"
+          },
+          {
+            "forecast": {
+              "baseline": 23.0,
+              "features": [
+                23,
+                22,
+                18,
+                -0.866025403784,
+                0.5
+              ],
+              "issued_at": "2026-11-10T21:28:02.842697+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2026-11",
+              "prediction": 24.469018571019795,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-f221995511804d9fb2a1a6c466be9b8a",
+            "location_id": 5,
+            "month": "2026-11",
+            "observed": 24,
+            "observed_at": "2026-11-10T21:28:04.310890+00:00",
+            "product_id": 1,
+            "sequence": 6,
+            "timestamp": "2026-11-10T21:28:04.310890+00:00",
+            "type": "OBSERVATION_CLOSED"
+          },
+          {
+            "forecast": {
+              "baseline": 24.0,
+              "features": [
+                24,
+                23,
+                22,
+                -0.5,
+                0.866025403784
+              ],
+              "issued_at": "2026-11-10T21:28:05.114823+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2026-12",
+              "prediction": 22.3591951755423,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-9107cb37c6714b5db7fa0bc19dbdd6c6",
+            "location_id": 5,
+            "month": "2026-12",
+            "product_id": 1,
+            "sequence": 7,
+            "timestamp": "2026-11-10T21:28:05.116191+00:00",
+            "type": "FORECAST_ISSUED"
+          },
+          {
+            "id": "REV-0f40a0d477194d6ba82c7f76d0193fc4",
+            "location_id": 5,
+            "month": "2026-12",
+            "observed": 25,
+            "product_id": 1,
+            "sequence": 8,
+            "timestamp": "2026-11-10T21:28:05.659427+00:00",
+            "type": "OBSERVED_REVEALED"
+          },
+          {
+            "forecast": {
+              "baseline": 24.0,
+              "features": [
+                24,
+                23,
+                22,
+                -0.5,
+                0.866025403784
+              ],
+              "issued_at": "2026-11-10T21:28:05.114823+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2026-12",
+              "prediction": 22.3591951755423,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-c2546ab6484b4e439790f336b0b2d885",
+            "location_id": 5,
+            "month": "2026-12",
+            "observed": 25,
+            "observed_at": "2026-11-10T21:28:06.547135+00:00",
+            "product_id": 1,
+            "sequence": 9,
+            "timestamp": "2026-11-10T21:28:06.547135+00:00",
+            "type": "OBSERVATION_CLOSED"
+          },
+          {
+            "forecast": {
+              "baseline": 25.0,
+              "features": [
+                25,
+                24,
+                23,
+                0.0,
+                1.0
+              ],
+              "issued_at": "2026-11-10T21:28:07.363189+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2027-01",
+              "prediction": 25.00361319443553,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-87c70d4d753a4b88a91d52ba44183447",
+            "location_id": 5,
+            "month": "2027-01",
+            "product_id": 1,
+            "sequence": 10,
+            "timestamp": "2026-11-10T21:28:07.363189+00:00",
+            "type": "FORECAST_ISSUED"
+          },
+          {
+            "id": "REV-05cdc0a92b324a729a8562cce51cc7ae",
+            "location_id": 5,
+            "month": "2027-01",
+            "observed": 26,
+            "product_id": 1,
+            "sequence": 11,
+            "timestamp": "2026-11-10T21:28:07.870181+00:00",
+            "type": "OBSERVED_REVEALED"
+          },
+          {
+            "forecast": {
+              "baseline": 25.0,
+              "features": [
+                25,
+                24,
+                23,
+                0.0,
+                1.0
+              ],
+              "issued_at": "2026-11-10T21:28:07.363189+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2027-01",
+              "prediction": 25.00361319443553,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-0ff4b51dbe7949b9affb9d66ea55affa",
+            "location_id": 5,
+            "month": "2027-01",
+            "observed": 26,
+            "observed_at": "2026-11-10T21:28:08.536483+00:00",
+            "product_id": 1,
+            "sequence": 12,
+            "timestamp": "2026-11-10T21:28:08.536483+00:00",
+            "type": "OBSERVATION_CLOSED"
+          },
+          {
+            "forecast": {
+              "baseline": 26.0,
+              "features": [
+                26,
+                25,
+                24,
+                0.5,
+                0.866025403784
+              ],
+              "issued_at": "2026-11-10T21:28:09.328030+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2027-02",
+              "prediction": 27.308638589172098,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-af01140c05dc4431a9a00d31739f2c7d",
+            "location_id": 5,
+            "month": "2027-02",
+            "product_id": 1,
+            "sequence": 13,
+            "timestamp": "2026-11-10T21:28:09.328030+00:00",
+            "type": "FORECAST_ISSUED"
+          },
+          {
+            "id": "REV-6a3a0b1f48b941458d40401e0ba8fafa",
+            "location_id": 5,
+            "month": "2027-02",
+            "observed": 27,
+            "product_id": 1,
+            "sequence": 14,
+            "timestamp": "2026-11-10T21:28:09.872218+00:00",
+            "type": "OBSERVED_REVEALED"
+          },
+          {
+            "forecast": {
+              "baseline": 26.0,
+              "features": [
+                26,
+                25,
+                24,
+                0.5,
+                0.866025403784
+              ],
+              "issued_at": "2026-11-10T21:28:09.328030+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2027-02",
+              "prediction": 27.308638589172098,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-2e468e66dda742e5b042803e72a782d2",
+            "location_id": 5,
+            "month": "2027-02",
+            "observed": 27,
+            "observed_at": "2026-11-10T21:28:10.650779+00:00",
+            "product_id": 1,
+            "sequence": 15,
+            "timestamp": "2026-11-10T21:28:10.651539+00:00",
+            "type": "OBSERVATION_CLOSED"
+          },
+          {
+            "forecast": {
+              "baseline": 27.0,
+              "features": [
+                27,
+                26,
+                25,
+                0.866025403784,
+                0.5
+              ],
+              "issued_at": "2026-11-10T21:28:11.519544+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2027-03",
+              "prediction": 26.552796209920185,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-79f01a8764d94d84b98424804d93bda0",
+            "location_id": 5,
+            "month": "2027-03",
+            "product_id": 1,
+            "sequence": 16,
+            "timestamp": "2026-11-10T21:28:11.519544+00:00",
+            "type": "FORECAST_ISSUED"
+          },
+          {
+            "id": "REV-7ed2099e29e04a98afb5f2e072fb87f8",
+            "location_id": 5,
+            "month": "2027-03",
+            "observed": 26,
+            "product_id": 1,
+            "sequence": 17,
+            "timestamp": "2026-11-10T21:28:12.107947+00:00",
+            "type": "OBSERVED_REVEALED"
+          },
+          {
+            "forecast": {
+              "baseline": 27.0,
+              "features": [
+                27,
+                26,
+                25,
+                0.866025403784,
+                0.5
+              ],
+              "issued_at": "2026-11-10T21:28:11.519544+00:00",
+              "location_id": 5,
+              "model": {
+                "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                "name": "RandomForestRegressor",
+                "trained_through": "2026-03",
+                "version": "V1"
+              },
+              "month": "2027-03",
+              "prediction": 26.552796209920185,
+              "product_id": 1,
+              "reason": "",
+              "scenario": "NORMAL"
+            },
+            "id": "REV-96a69fe3ee34472cbdc3ec42a14ab8d6",
+            "location_id": 5,
+            "month": "2027-03",
+            "observed": 26,
+            "observed_at": "2026-11-10T21:28:12.839129+00:00",
+            "product_id": 1,
+            "sequence": 18,
+            "timestamp": "2026-11-10T21:28:12.839129+00:00",
+            "type": "OBSERVATION_CLOSED"
+          }
+        ],
+        "session_id": "6600a4cfe00a46e7bcf31770910753d4",
+        "trace_started_at": "2026-11-10T21:26:46.848896+00:00"
+      },
+      "lifecycle": {
+        "events": [
+          {
+            "active_after": null,
+            "active_before": null,
+            "affects_active": false,
+            "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+            "data_sha256": null,
+            "event_sha256": "ec358fe14fe8ed1352c9e315314d7195e59fac439a3291b3470efac5a937ee2a",
+            "id": "EVT-c64f14c92a0d4d9e92c44b587b4f16fc",
+            "location_id": 5,
+            "model": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "name": "RandomForestRegressor",
+              "version": "V1"
+            },
+            "normalized_sha256": "3e3cf6d1ef75567a69ff6f604bcb2a93f629f6d0fa503bdf734f3c6118c03883",
+            "previous_reference": null,
+            "previous_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "product_id": 1,
+            "reason": "Referencia congelada verificada; no activa.",
+            "result": "VERIFIED",
+            "schema": "h4-model-lifecycle-1",
+            "sequence": 1,
+            "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+            "source": {
+              "id": "V1_SELECTION_MANIFEST",
+              "path": "E:\\NOVENO_SEMESTRE\\ProgramaciónAvanzada\\Inventario\\ml\\demand\\reports\\v1_selection_manifest.json",
+              "sha256": "41a10f4d196979cfff67410b21bf8ae527f6547aeca413e58811b4be920935f6"
+            },
+            "state_after": "AVAILABLE",
+            "state_before": "UNREGISTERED",
+            "timestamp": "2026-11-10T21:26:47.712983+00:00",
+            "type": "V1_AVAILABLE"
+          },
+          {
+            "active_after": null,
+            "active_before": null,
+            "affects_active": true,
+            "artifact_hash": null,
+            "data_sha256": null,
+            "event_sha256": "d8a7480341d2a84e11c078875309c78f023f82c1229c40501bbdf91d2bdc3eb2",
+            "id": "EVT-60bc9a6b2a404c0e8d90035e621aed81",
+            "location_id": 5,
+            "model": null,
+            "previous_reference": null,
+            "previous_sha256": "ec358fe14fe8ed1352c9e315314d7195e59fac439a3291b3470efac5a937ee2a",
+            "product_id": 1,
+            "reason": "Conexión local observada ahora; no reconstruye activaciones previas.",
+            "result": "CONNECTED",
+            "schema": "h4-model-lifecycle-1",
+            "sequence": 2,
+            "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+            "source": null,
+            "state_after": "INACTIVE",
+            "state_before": null,
+            "timestamp": "2026-11-10T21:26:47.724701+00:00",
+            "type": "RUNTIME_CONNECTED"
+          },
+          {
+            "active_after": null,
+            "active_before": null,
+            "affects_active": false,
+            "artifact_hash": "55c7f1e152b485fc75150b506da541897948e4920aaabe95248aa433ff9dcbb8",
+            "data_sha256": "23b89d07392973f861f6460860c1f1e1517f5a7db6d4ecdc03113eff0ba87644",
+            "event_sha256": "dab0e4a5aa02c219a93af19a73299d99dea5d4c8e534ec225e1a425e8ebd7744",
+            "id": "EVT-63e0b4515250465ebb35e8a63fb9abed",
+            "location_id": 5,
+            "model": {
+              "artifact_hash": "55c7f1e152b485fc75150b506da541897948e4920aaabe95248aa433ff9dcbb8",
+              "experiment_id": "EXP-LINEARREGRESSION-20261109T033229156232Z",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "LinearRegression",
+              "origin": "SIMULACION",
+              "promotable": false,
+              "role": "REFERENCE",
+              "trained_through": "2026-03",
+              "version": "LR-REFERENCE-EXP-LINEARREGRESSION-20261109T033229156232Z"
+            },
+            "previous_reference": null,
+            "previous_sha256": "d8a7480341d2a84e11c078875309c78f023f82c1229c40501bbdf91d2bdc3eb2",
+            "product_id": 1,
+            "reason": "Baseline/LR/V1 sobre una entrada puntual, sin cambios de ACTIVE o CANDIDATE.",
+            "reference_prediction_id": "REF-7c5c55cead65454fb8ef592e15847e17",
+            "result": "RECORDED",
+            "schema": "h4-model-lifecycle-1",
+            "sequence": 3,
+            "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+            "source": null,
+            "state_after": "REFERENCE",
+            "state_before": "REFERENCE",
+            "timestamp": "2026-11-10T21:27:07.278190+00:00",
+            "type": "REFERENCES_PREDICTED"
+          },
+          {
+            "active_after": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "active_before": null,
+            "affects_active": true,
+            "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+            "data_sha256": null,
+            "displaced_reference": null,
+            "event_sha256": "a48232369fbdff3d0dbf620f79b9e0b434d8596770aead881d9a36c3b65f475c",
+            "id": "EVT-c678b770127342e0a81103be48ca97bf",
+            "location_id": 5,
+            "model": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "previous_reference": null,
+            "previous_sha256": "dab0e4a5aa02c219a93af19a73299d99dea5d4c8e534ec225e1a425e8ebd7744",
+            "product_id": 1,
+            "reason": "Verificación de integración Ross 10-11-2026, solo local",
+            "result": "COMPLETED",
+            "schema": "h4-model-lifecycle-1",
+            "scope": "LOCAL_SIMULATION",
+            "sequence": 4,
+            "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+            "source": null,
+            "state_after": "ACTIVE",
+            "state_before": "INACTIVE",
+            "timestamp": "2026-11-10T21:27:26.714206+00:00",
+            "type": "ACTIVATE_V1"
+          },
+          {
+            "active_after": null,
+            "active_before": null,
+            "affects_active": false,
+            "artifact_hash": "55c7f1e152b485fc75150b506da541897948e4920aaabe95248aa433ff9dcbb8",
+            "data_sha256": "23b89d07392973f861f6460860c1f1e1517f5a7db6d4ecdc03113eff0ba87644",
+            "event_sha256": "a7d554ca1c64ba36d2b782172d2199a78d0b2bbe4f4e13aa29ee8add264ff005",
+            "id": "EVT-c1380c80c2dc4957b96bfddc20b15b62",
+            "location_id": 5,
+            "model": {
+              "artifact_hash": "55c7f1e152b485fc75150b506da541897948e4920aaabe95248aa433ff9dcbb8",
+              "experiment_id": "EXP-LINEARREGRESSION-20261109T033229156232Z",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "LinearRegression",
+              "origin": "SIMULACION",
+              "promotable": false,
+              "role": "REFERENCE",
+              "trained_through": "2026-03",
+              "version": "LR-REFERENCE-EXP-LINEARREGRESSION-20261109T033229156232Z"
+            },
+            "previous_reference": null,
+            "previous_sha256": "a48232369fbdff3d0dbf620f79b9e0b434d8596770aead881d9a36c3b65f475c",
+            "product_id": 1,
+            "reason": "Baseline/LR/V1 sobre una entrada puntual, sin cambios de ACTIVE o CANDIDATE.",
+            "reference_prediction_id": "REF-032cb9ca2c4040c7850fbe8047c85821",
+            "result": "RECORDED",
+            "schema": "h4-model-lifecycle-1",
+            "sequence": 5,
+            "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+            "source": null,
+            "state_after": "REFERENCE",
+            "state_before": "REFERENCE",
+            "timestamp": "2026-11-10T21:27:38.277914+00:00",
+            "type": "REFERENCES_PREDICTED"
+          },
+          {
+            "active_after": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "active_before": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "affects_active": false,
+            "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+            "data_sha256": "0dfd5fefb852e60f098745dd56bdc2f6848fd55ca957ee18a5ed18cc3acbc998",
+            "event_sha256": "0a66af666e5f7a89fc307a384a89605167e37f29a678f2cae94f4b42d35aa13c",
+            "id": "EVT-fe7d6adffc6045169f77496d518269e9",
+            "location_id": 5,
+            "model": {
+              "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "CANDIDATE",
+              "trained_through": "2027-06",
+              "version": "CAND-f3690f19436644959f2218cdc079110c"
+            },
+            "n_comparison": 3,
+            "period": [
+              "2027-07",
+              "2027-09"
+            ],
+            "previous_reference": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "previous_sha256": "a7d554ca1c64ba36d2b782172d2199a78d0b2bbe4f4e13aa29ee8add264ff005",
+            "product_id": 1,
+            "reason": "INSUFFICIENT_EVIDENCE: seis filas de entrenamiento de una serie y tres observaciones reservadas. Promoción real bloqueada: no existe un protocolo de elegibilidad previamente aprobado.",
+            "result": "COMPLETED",
+            "schema": "h4-model-lifecycle-1",
+            "sequence": 6,
+            "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+            "source": {
+              "id": "CMP-028f99dadfdc46f49ad4f4c9055d16f3",
+              "path": "E:\\NOVENO_SEMESTRE\\ProgramaciónAvanzada\\Inventario\\ml\\demand\\decisions\\31f4b162994f4df7bcf15cbe9e011414\\CMP-028f99dadfdc46f49ad4f4c9055d16f3.json",
+              "sha256": "eb7877336acd1dc98a0a260e4597211b007665c6aa4888390eacb477d095f82b"
+            },
+            "source_timestamp": "2026-11-10T21:29:02.145124+00:00",
+            "state_after": "CANDIDATE",
+            "state_before": "CANDIDATE",
+            "timestamp": "2026-11-10T21:29:02.162627+00:00",
+            "type": "MODELS_COMPARED"
+          },
+          {
+            "active_after": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "active_before": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "affects_active": false,
+            "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+            "data_sha256": "0dfd5fefb852e60f098745dd56bdc2f6848fd55ca957ee18a5ed18cc3acbc998",
+            "event_sha256": "5617da38abe34a5e3eb7cb467bf198daa1d6ed394e08ffb29553e6d1d74e704a",
+            "id": "EVT-f3cb266d29744357997a7eb6ff898343",
+            "location_id": 5,
+            "model": {
+              "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "CANDIDATE",
+              "trained_through": "2027-06",
+              "version": "CAND-f3690f19436644959f2218cdc079110c"
+            },
+            "n_comparison": 3,
+            "period": [
+              "2027-07",
+              "2027-09"
+            ],
+            "previous_reference": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "previous_sha256": "0a66af666e5f7a89fc307a384a89605167e37f29a678f2cae94f4b42d35aa13c",
+            "product_id": 1,
+            "reason": "INSUFFICIENT_EVIDENCE: seis filas de entrenamiento de una serie y tres observaciones reservadas. Promoción real bloqueada: no existe un protocolo de elegibilidad previamente aprobado.",
+            "result": "INSUFFICIENT_EVIDENCE",
+            "schema": "h4-model-lifecycle-1",
+            "sequence": 7,
+            "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+            "source": {
+              "id": "CMP-028f99dadfdc46f49ad4f4c9055d16f3",
+              "path": "E:\\NOVENO_SEMESTRE\\ProgramaciónAvanzada\\Inventario\\ml\\demand\\decisions\\31f4b162994f4df7bcf15cbe9e011414\\CMP-028f99dadfdc46f49ad4f4c9055d16f3.json",
+              "sha256": "eb7877336acd1dc98a0a260e4597211b007665c6aa4888390eacb477d095f82b"
+            },
+            "source_timestamp": "2026-11-10T21:29:02.145124+00:00",
+            "state_after": "CANDIDATE",
+            "state_before": "CANDIDATE",
+            "timestamp": "2026-11-10T21:29:02.176556+00:00",
+            "type": "INSUFFICIENT_EVIDENCE"
+          },
+          {
+            "active_after": null,
+            "active_before": null,
+            "active_snapshot_available": false,
+            "affects_active": false,
+            "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+            "data_sha256": "0dfd5fefb852e60f098745dd56bdc2f6848fd55ca957ee18a5ed18cc3acbc998",
+            "event_sha256": "7186a26ecc20d3f40986192c1405e97281be8c9d013bc273c1c948dc499f873f",
+            "id": "EVT-bfc3c70f75884c078348a404c816af3e",
+            "location_id": 5,
+            "model": {
+              "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "CANDIDATE",
+              "trained_through": "2027-06",
+              "version": "CAND-f3690f19436644959f2218cdc079110c"
+            },
+            "previous_reference": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "previous_sha256": "5617da38abe34a5e3eb7cb467bf198daa1d6ed394e08ffb29553e6d1d74e704a",
+            "product_id": 1,
+            "reason": "Revisión Ross: muestra insuficiente, conservar V1",
+            "result": "REJECTED_FOR_PROMOTION",
+            "schema": "h4-model-lifecycle-1",
+            "sequence": 8,
+            "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+            "source": {
+              "id": "DEC-a69bfde7c7d04f11a0c73fa2e3d52e9f",
+              "path": "E:\\NOVENO_SEMESTRE\\ProgramaciónAvanzada\\Inventario\\ml\\demand\\decisions\\31f4b162994f4df7bcf15cbe9e011414\\DEC-a69bfde7c7d04f11a0c73fa2e3d52e9f.json",
+              "sha256": "7706072b8a9f51460e99c73df8d99c225adbd022f3f083960de2749f7a2a1b38"
+            },
+            "source_timestamp": "2026-11-10T21:29:21.444116+00:00",
+            "state_after": "REJECTED",
+            "state_before": "CANDIDATE",
+            "timestamp": "2026-11-10T21:29:21.458427+00:00",
+            "type": "CANDIDATE_REJECTED"
+          }
+        ],
+        "head_sha256": "7186a26ecc20d3f40986192c1405e97281be8c9d013bc273c1c948dc499f873f",
+        "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+        "verification": "VERIFIED_CHAIN_AND_SOURCES_AT_EXPORT"
+      },
+      "limitations": [
+        "No model restoration or promotion from JSON",
+        "SHA256 is not an external signature",
+        "Latent demand omitted; simulation draws are not closed observations",
+        "Historical revisions before tracking are unknown"
+      ],
+      "model_contexts": [
+        {
+          "candidates": [],
+          "current_candidate_id": null,
+          "decisions": [
+            {
+              "record": {
+                "active": {
+                  "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                  "feature_names": [
+                    "ventas_mes_anterior",
+                    "ventas_hace_2_meses",
+                    "ventas_hace_3_meses",
+                    "mes_sin",
+                    "mes_cos"
+                  ],
+                  "name": "RandomForestRegressor",
+                  "origin": "SIMULACION",
+                  "role": "ACTIVE",
+                  "trained_through": "2026-03",
+                  "version": "V1"
+                },
+                "artifact_files": {
+                  "candidate.joblib": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+                  "incremental.json": "bbd5a485b3645a62111fa0f8fa5bab68221656e2d6a570458455794a25cd5639",
+                  "reserved.csv": "89817a1bd3d7c43df27ca437a57305f0c5ddc807379988eda6325df96e9a0453",
+                  "train.csv": "e0ead8c21ec90d003e435a67b2601ee2095f9242dfd955f0f4b7f3d6c6921d45"
+                },
+                "candidate": {
+                  "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+                  "feature_names": [
+                    "ventas_mes_anterior",
+                    "ventas_hace_2_meses",
+                    "ventas_hace_3_meses",
+                    "mes_sin",
+                    "mes_cos"
+                  ],
+                  "name": "RandomForestRegressor",
+                  "origin": "SIMULACION",
+                  "role": "CANDIDATE",
+                  "trained_through": "2027-06",
+                  "version": "CAND-f3690f19436644959f2218cdc079110c"
+                },
+                "common_metrics": {
+                  "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": {
+                    "MAE": 4.454166666666662,
+                    "R2": null,
+                    "R2_descriptive": -29.759401041666607,
+                    "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+                    "RMSE": 4.528384630429605,
+                    "coverage": 1.0,
+                    "n": 3,
+                    "observations": 3
+                  },
+                  "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": {
+                    "MAE": 0.9279069888581345,
+                    "R2": null,
+                    "R2_descriptive": -0.8823378407668028,
+                    "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+                    "RMSE": 1.1202195739427763,
+                    "coverage": 1.0,
+                    "n": 3,
+                    "observations": 3
+                  }
+                },
+                "common_n": 3,
+                "compared_data_sha256": "0dfd5fefb852e60f098745dd56bdc2f6848fd55ca957ee18a5ed18cc3acbc998",
+                "data_sha256": "bbd5a485b3645a62111fa0f8fa5bab68221656e2d6a570458455794a25cd5639",
+                "eligibility": "INSUFFICIENT_EVIDENCE",
+                "id": "CMP-028f99dadfdc46f49ad4f4c9055d16f3",
+                "metrics": {
+                  "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": {
+                    "MAE": 4.454166666666662,
+                    "R2": null,
+                    "R2_descriptive": -29.759401041666607,
+                    "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+                    "RMSE": 4.528384630429605,
+                    "coverage": 1.0,
+                    "n": 3,
+                    "observations": 3
+                  },
+                  "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": {
+                    "MAE": 0.9279069888581345,
+                    "R2": null,
+                    "R2_descriptive": -0.8823378407668028,
+                    "R2_reason": "Solo tres observaciones; R² aritmético descriptivo, sin conclusión estadística.",
+                    "RMSE": 1.1202195739427763,
+                    "coverage": 1.0,
+                    "n": 3,
+                    "observations": 3
+                  }
+                },
+                "n_comparison": 3,
+                "n_series": 1,
+                "n_train": 6,
+                "period": [
+                  "2027-07",
+                  "2027-09"
+                ],
+                "promotion_allowed": false,
+                "reason": "INSUFFICIENT_EVIDENCE: seis filas de entrenamiento de una serie y tres observaciones reservadas. Promoción real bloqueada: no existe un protocolo de elegibilidad previamente aprobado.",
+                "ross_report": {
+                  "decision": "RECHAZADO",
+                  "models": [
+                    {
+                      "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                      "feature_names": [
+                        "ventas_mes_anterior",
+                        "ventas_hace_2_meses",
+                        "ventas_hace_3_meses",
+                        "mes_sin",
+                        "mes_cos"
+                      ],
+                      "name": "RandomForestRegressor",
+                      "origin": "SIMULACION",
+                      "role": "ACTIVE",
+                      "trained_through": "2026-03",
+                      "version": "V1"
+                    },
+                    {
+                      "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+                      "feature_names": [
+                        "ventas_mes_anterior",
+                        "ventas_hace_2_meses",
+                        "ventas_hace_3_meses",
+                        "mes_sin",
+                        "mes_cos"
+                      ],
+                      "name": "RandomForestRegressor",
+                      "origin": "SIMULACION",
+                      "role": "CANDIDATE",
+                      "trained_through": "2027-06",
+                      "version": "CAND-f3690f19436644959f2218cdc079110c"
+                    }
+                  ],
+                  "origin": "SIMULACION",
+                  "purpose": "COMPARACION_LOCAL",
+                  "reason": "INSUFFICIENT_EVIDENCE: seis filas de entrenamiento de una serie y tres observaciones reservadas. Promoción real bloqueada: no existe un protocolo de elegibilidad previamente aprobado.",
+                  "rows": [
+                    {
+                      "features": {
+                        "mes_cos": -1.0,
+                        "mes_sin": 1.2246467991473532e-16,
+                        "ventas_hace_2_meses": 17,
+                        "ventas_hace_3_meses": 16,
+                        "ventas_mes_anterior": 18
+                      },
+                      "locationId": 5,
+                      "mes_objetivo": "2027-07",
+                      "observed": 19,
+                      "predictions": {
+                        "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338,
+                        "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 17.296876688478108
+                      },
+                      "productId": 1
+                    },
+                    {
+                      "features": {
+                        "mes_cos": -0.8660254037844388,
+                        "mes_sin": -0.4999999999999997,
+                        "ventas_hace_2_meses": 18,
+                        "ventas_hace_3_meses": 17,
+                        "ventas_mes_anterior": 19
+                      },
+                      "locationId": 5,
+                      "mes_objetivo": "2027-08",
+                      "observed": 20,
+                      "predictions": {
+                        "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338,
+                        "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 19.085401144934462
+                      },
+                      "productId": 1
+                    },
+                    {
+                      "features": {
+                        "mes_cos": -0.5000000000000004,
+                        "mes_sin": -0.8660254037844385,
+                        "ventas_hace_2_meses": 19,
+                        "ventas_hace_3_meses": 18,
+                        "ventas_mes_anterior": 20
+                      },
+                      "locationId": 5,
+                      "mes_objetivo": "2027-09",
+                      "observed": 21,
+                      "predictions": {
+                        "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338,
+                        "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 20.834001200013027
+                      },
+                      "productId": 1
+                    }
+                  ],
+                  "schema_version": "h4-comparison-1"
+                },
+                "rows": [
+                  {
+                    "features": {
+                      "mes_cos": -1.0,
+                      "mes_sin": 1.2246467991473532e-16,
+                      "ventas_hace_2_meses": 17,
+                      "ventas_hace_3_meses": 16,
+                      "ventas_mes_anterior": 18
+                    },
+                    "locationId": 5,
+                    "mes_objetivo": "2027-07",
+                    "observed": 19,
+                    "predictions": {
+                      "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338,
+                      "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 17.296876688478108
+                    },
+                    "productId": 1
+                  },
+                  {
+                    "features": {
+                      "mes_cos": -0.8660254037844388,
+                      "mes_sin": -0.4999999999999997,
+                      "ventas_hace_2_meses": 18,
+                      "ventas_hace_3_meses": 17,
+                      "ventas_mes_anterior": 19
+                    },
+                    "locationId": 5,
+                    "mes_objetivo": "2027-08",
+                    "observed": 20,
+                    "predictions": {
+                      "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338,
+                      "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 19.085401144934462
+                    },
+                    "productId": 1
+                  },
+                  {
+                    "features": {
+                      "mes_cos": -0.5000000000000004,
+                      "mes_sin": -0.8660254037844385,
+                      "ventas_hace_2_meses": 19,
+                      "ventas_hace_3_meses": 18,
+                      "ventas_mes_anterior": 20
+                    },
+                    "locationId": 5,
+                    "mes_objetivo": "2027-09",
+                    "observed": 21,
+                    "predictions": {
+                      "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712": 15.545833333333338,
+                      "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e": 20.834001200013027
+                    },
+                    "productId": 1
+                  }
+                ],
+                "run_id": "CAND-f3690f19436644959f2218cdc079110c",
+                "schema": "h4-local-comparison-decision-1",
+                "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+                "source_session_id": "9958a7bc0be3447e88c6b4a331b05ace",
+                "technical_comparison": "COMPLETED",
+                "timestamp": "2026-11-10T21:29:02.145124+00:00"
+              },
+              "source": {
+                "id": "CMP-028f99dadfdc46f49ad4f4c9055d16f3",
+                "path": "E:\\NOVENO_SEMESTRE\\ProgramaciónAvanzada\\Inventario\\ml\\demand\\decisions\\31f4b162994f4df7bcf15cbe9e011414\\CMP-028f99dadfdc46f49ad4f4c9055d16f3.json",
+                "sha256": "eb7877336acd1dc98a0a260e4597211b007665c6aa4888390eacb477d095f82b"
+              }
+            },
+            {
+              "record": {
+                "active": {
+                  "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                  "feature_names": [
+                    "ventas_mes_anterior",
+                    "ventas_hace_2_meses",
+                    "ventas_hace_3_meses",
+                    "mes_sin",
+                    "mes_cos"
+                  ],
+                  "name": "RandomForestRegressor",
+                  "origin": "SIMULACION",
+                  "role": "ACTIVE",
+                  "trained_through": "2026-03",
+                  "version": "V1"
+                },
+                "candidate": {
+                  "artifact_hash": "481b9195d8696afae729547b7f89f82c67693cade4c09bcc00ac683821484712",
+                  "feature_names": [
+                    "ventas_mes_anterior",
+                    "ventas_hace_2_meses",
+                    "ventas_hace_3_meses",
+                    "mes_sin",
+                    "mes_cos"
+                  ],
+                  "name": "RandomForestRegressor",
+                  "origin": "SIMULACION",
+                  "role": "CANDIDATE",
+                  "trained_through": "2027-06",
+                  "version": "CAND-f3690f19436644959f2218cdc079110c"
+                },
+                "compared_data_sha256": "0dfd5fefb852e60f098745dd56bdc2f6848fd55ca957ee18a5ed18cc3acbc998",
+                "comparison_id": "CMP-028f99dadfdc46f49ad4f4c9055d16f3",
+                "decision": "REJECTED_FOR_PROMOTION",
+                "id": "DEC-a69bfde7c7d04f11a0c73fa2e3d52e9f",
+                "reason": "Revisión Ross: muestra insuficiente, conservar V1",
+                "session_id": "31f4b162994f4df7bcf15cbe9e011414",
+                "timestamp": "2026-11-10T21:29:21.444116+00:00"
+              },
+              "source": {
+                "id": "DEC-a69bfde7c7d04f11a0c73fa2e3d52e9f",
+                "path": "E:\\NOVENO_SEMESTRE\\ProgramaciónAvanzada\\Inventario\\ml\\demand\\decisions\\31f4b162994f4df7bcf15cbe9e011414\\DEC-a69bfde7c7d04f11a0c73fa2e3d52e9f.json",
+                "sha256": "7706072b8a9f51460e99c73df8d99c225adbd022f3f083960de2749f7a2a1b38"
+              }
+            }
+          ],
+          "imported_comparison_is_authority": false,
+          "location_id": 5,
+          "product_id": 1,
+          "reference_predictions": [
+            {
+              "feature_order": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "features": {
+                "mes_cos": -0.0,
+                "mes_sin": -1.0,
+                "ventas_hace_2_meses": 18,
+                "ventas_hace_3_meses": 26,
+                "ventas_mes_anterior": 22
+              },
+              "features_sha256": "23b89d07392973f861f6460860c1f1e1517f5a7db6d4ecdc03113eff0ba87644",
+              "id": "REF-7c5c55cead65454fb8ef592e15847e17",
+              "issued_at": "2026-11-10T21:27:07.278190+00:00",
+              "location_id": 5,
+              "metrics": null,
+              "metrics_reason": "Emisión puntual; no es evaluación VALIDATION/TEST ni comparación de candidatos.",
+              "month": "2026-10",
+              "negative_policy": "ABSTAIN_KEEP_RAW_NO_CLIPPING",
+              "origin": "SIMULACION",
+              "predictions": [
+                {
+                  "id": "BASELINE_LAG1",
+                  "model": {
+                    "artifact_hash": null,
+                    "name": "Baseline lag1",
+                    "origin": "SIMULACION",
+                    "promotable": false,
+                    "role": "BASELINE",
+                    "rule_sha256": "d24967167cd54152be723f8ca5a4ac9046a86043a9e829e96a9efd79b1b6b76e",
+                    "version": "LAG1-1"
+                  },
+                  "prediction": 22.0,
+                  "raw_prediction": 22.0,
+                  "reason": ""
+                },
+                {
+                  "id": "LR_REFERENCE",
+                  "model": {
+                    "artifact_hash": "55c7f1e152b485fc75150b506da541897948e4920aaabe95248aa433ff9dcbb8",
+                    "experiment_id": "EXP-LINEARREGRESSION-20261109T033229156232Z",
+                    "feature_names": [
+                      "ventas_mes_anterior",
+                      "ventas_hace_2_meses",
+                      "ventas_hace_3_meses",
+                      "mes_sin",
+                      "mes_cos"
+                    ],
+                    "name": "LinearRegression",
+                    "origin": "SIMULACION",
+                    "promotable": false,
+                    "role": "REFERENCE",
+                    "trained_through": "2026-03",
+                    "version": "LR-REFERENCE-EXP-LINEARREGRESSION-20261109T033229156232Z"
+                  },
+                  "prediction": 19.192962908296767,
+                  "raw_prediction": 19.192962908296767,
+                  "reason": ""
+                },
+                {
+                  "id": "RF_V1",
+                  "model": null,
+                  "prediction": null,
+                  "raw_prediction": null,
+                  "reason": "V1_NO_ACTIVE"
+                }
+              ],
+              "product_id": 1,
+              "purpose": "POINT_IN_TIME_REFERENCE",
+              "scenario": "NORMAL",
+              "schema_version": "h4-reference-comparison-1",
+              "session_id": "31f4b162994f4df7bcf15cbe9e011414"
+            },
+            {
+              "feature_order": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "features": {
+                "mes_cos": -0.0,
+                "mes_sin": -1.0,
+                "ventas_hace_2_meses": 18,
+                "ventas_hace_3_meses": 26,
+                "ventas_mes_anterior": 22
+              },
+              "features_sha256": "23b89d07392973f861f6460860c1f1e1517f5a7db6d4ecdc03113eff0ba87644",
+              "id": "REF-032cb9ca2c4040c7850fbe8047c85821",
+              "issued_at": "2026-11-10T21:27:38.276334+00:00",
+              "location_id": 5,
+              "metrics": null,
+              "metrics_reason": "Emisión puntual; no es evaluación VALIDATION/TEST ni comparación de candidatos.",
+              "month": "2026-10",
+              "negative_policy": "ABSTAIN_KEEP_RAW_NO_CLIPPING",
+              "origin": "SIMULACION",
+              "predictions": [
+                {
+                  "id": "BASELINE_LAG1",
+                  "model": {
+                    "artifact_hash": null,
+                    "name": "Baseline lag1",
+                    "origin": "SIMULACION",
+                    "promotable": false,
+                    "role": "BASELINE",
+                    "rule_sha256": "d24967167cd54152be723f8ca5a4ac9046a86043a9e829e96a9efd79b1b6b76e",
+                    "version": "LAG1-1"
+                  },
+                  "prediction": 22.0,
+                  "raw_prediction": 22.0,
+                  "reason": ""
+                },
+                {
+                  "id": "LR_REFERENCE",
+                  "model": {
+                    "artifact_hash": "55c7f1e152b485fc75150b506da541897948e4920aaabe95248aa433ff9dcbb8",
+                    "experiment_id": "EXP-LINEARREGRESSION-20261109T033229156232Z",
+                    "feature_names": [
+                      "ventas_mes_anterior",
+                      "ventas_hace_2_meses",
+                      "ventas_hace_3_meses",
+                      "mes_sin",
+                      "mes_cos"
+                    ],
+                    "name": "LinearRegression",
+                    "origin": "SIMULACION",
+                    "promotable": false,
+                    "role": "REFERENCE",
+                    "trained_through": "2026-03",
+                    "version": "LR-REFERENCE-EXP-LINEARREGRESSION-20261109T033229156232Z"
+                  },
+                  "prediction": 19.192962908296767,
+                  "raw_prediction": 19.192962908296767,
+                  "reason": ""
+                },
+                {
+                  "id": "RF_V1",
+                  "model": {
+                    "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                    "feature_names": [
+                      "ventas_mes_anterior",
+                      "ventas_hace_2_meses",
+                      "ventas_hace_3_meses",
+                      "mes_sin",
+                      "mes_cos"
+                    ],
+                    "name": "RandomForestRegressor",
+                    "origin": "SIMULACION",
+                    "role": "ACTIVE",
+                    "trained_through": "2026-03",
+                    "version": "V1"
+                  },
+                  "prediction": 21.773409189130824,
+                  "raw_prediction": 21.773409189130824,
+                  "reason": ""
+                }
+              ],
+              "product_id": 1,
+              "purpose": "POINT_IN_TIME_REFERENCE",
+              "scenario": "NORMAL",
+              "schema_version": "h4-reference-comparison-1",
+              "session_id": "31f4b162994f4df7bcf15cbe9e011414"
+            }
+          ],
+          "references": {
+            "active": {
+              "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+              "feature_names": [
+                "ventas_mes_anterior",
+                "ventas_hace_2_meses",
+                "ventas_hace_3_meses",
+                "mes_sin",
+                "mes_cos"
+              ],
+              "name": "RandomForestRegressor",
+              "origin": "SIMULACION",
+              "role": "ACTIVE",
+              "trained_through": "2026-03",
+              "version": "V1"
+            },
+            "previous_references": [
+              null
+            ],
+            "runtime_events": [
+              {
+                "action": "ACTIVATE_V1",
+                "model": {
+                  "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+                  "feature_names": [
+                    "ventas_mes_anterior",
+                    "ventas_hace_2_meses",
+                    "ventas_hace_3_meses",
+                    "mes_sin",
+                    "mes_cos"
+                  ],
+                  "name": "RandomForestRegressor",
+                  "origin": "SIMULACION",
+                  "role": "ACTIVE",
+                  "trained_through": "2026-03",
+                  "version": "V1"
+                },
+                "reason": "Verificación de integración Ross 10-11-2026, solo local",
+                "timestamp": "2026-11-10T21:27:26.716248+00:00"
+              }
+            ],
+            "verification": "VERIFIED_LOCAL_REFERENCES"
+          }
+        }
+      ],
+      "observations": [
+        {
+          "consistency": "ENGINE_AND_JOURNAL",
+          "location_id": 5,
+          "month": "2026-10",
+          "observed": 23,
+          "observed_at": "2026-11-10T21:28:01.773031+00:00",
+          "product_id": 1,
+          "provenance_status": "KNOWN",
+          "source": "GENERATED"
+        },
+        {
+          "consistency": "ENGINE_AND_JOURNAL",
+          "location_id": 5,
+          "month": "2026-11",
+          "observed": 24,
+          "observed_at": "2026-11-10T21:28:04.310890+00:00",
+          "product_id": 1,
+          "provenance_status": "KNOWN",
+          "source": "GENERATED"
+        },
+        {
+          "consistency": "ENGINE_AND_JOURNAL",
+          "location_id": 5,
+          "month": "2026-12",
+          "observed": 25,
+          "observed_at": "2026-11-10T21:28:06.547135+00:00",
+          "product_id": 1,
+          "provenance_status": "KNOWN",
+          "source": "GENERATED"
+        },
+        {
+          "consistency": "ENGINE_AND_JOURNAL",
+          "location_id": 5,
+          "month": "2027-01",
+          "observed": 26,
+          "observed_at": "2026-11-10T21:28:08.536483+00:00",
+          "product_id": 1,
+          "provenance_status": "KNOWN",
+          "source": "GENERATED"
+        },
+        {
+          "consistency": "ENGINE_AND_JOURNAL",
+          "location_id": 5,
+          "month": "2027-02",
+          "observed": 27,
+          "observed_at": "2026-11-10T21:28:10.650779+00:00",
+          "product_id": 1,
+          "provenance_status": "KNOWN",
+          "source": "GENERATED"
+        },
+        {
+          "consistency": "ENGINE_AND_JOURNAL",
+          "location_id": 5,
+          "month": "2027-03",
+          "observed": 26,
+          "observed_at": "2026-11-10T21:28:12.839129+00:00",
+          "product_id": 1,
+          "provenance_status": "KNOWN",
+          "source": "GENERATED"
+        }
+      ],
+      "prior_lifecycle_only": [],
+      "prior_sessions": [],
+      "schema_version": "h4-traceability-1",
+      "simulation_context": {
+        "git_branch_at_export": "ross",
+        "id": "31f4b162994f4df7bcf15cbe9e011414",
+        "kind": "DEMAND_SESSION",
+        "parent_context_id": null,
+        "parent_context_status": "UNKNOWN_NOT_RECORDED"
+      },
+      "snapshot_phase": "CURRENT"
+    }
+  },
+  "generator_seed": null,
+  "origin": "SIMULACION",
+  "records": [
+    {
+      "forecast": {
+        "baseline": 22.0,
+        "features": [
+          22,
+          18,
+          26,
+          -1.0,
+          -0.0
+        ],
+        "issued_at": "2026-11-10T21:28:00.317661+00:00",
+        "location_id": 5,
+        "model": {
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "name": "RandomForestRegressor",
+          "trained_through": "2026-03",
+          "version": "V1"
+        },
+        "month": "2026-10",
+        "prediction": 21.773409189130824,
+        "product_id": 1,
+        "reason": "",
+        "scenario": "NORMAL"
+      },
+      "observed": 23,
+      "observed_at": "2026-11-10T21:28:01.773031+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "baseline": 23.0,
+        "features": [
+          23,
+          22,
+          18,
+          -0.866025403784,
+          0.5
+        ],
+        "issued_at": "2026-11-10T21:28:02.842697+00:00",
+        "location_id": 5,
+        "model": {
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "name": "RandomForestRegressor",
+          "trained_through": "2026-03",
+          "version": "V1"
+        },
+        "month": "2026-11",
+        "prediction": 24.469018571019795,
+        "product_id": 1,
+        "reason": "",
+        "scenario": "NORMAL"
+      },
+      "observed": 24,
+      "observed_at": "2026-11-10T21:28:04.310890+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "baseline": 24.0,
+        "features": [
+          24,
+          23,
+          22,
+          -0.5,
+          0.866025403784
+        ],
+        "issued_at": "2026-11-10T21:28:05.114823+00:00",
+        "location_id": 5,
+        "model": {
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "name": "RandomForestRegressor",
+          "trained_through": "2026-03",
+          "version": "V1"
+        },
+        "month": "2026-12",
+        "prediction": 22.3591951755423,
+        "product_id": 1,
+        "reason": "",
+        "scenario": "NORMAL"
+      },
+      "observed": 25,
+      "observed_at": "2026-11-10T21:28:06.547135+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "baseline": 25.0,
+        "features": [
+          25,
+          24,
+          23,
+          0.0,
+          1.0
+        ],
+        "issued_at": "2026-11-10T21:28:07.363189+00:00",
+        "location_id": 5,
+        "model": {
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "name": "RandomForestRegressor",
+          "trained_through": "2026-03",
+          "version": "V1"
+        },
+        "month": "2027-01",
+        "prediction": 25.00361319443553,
+        "product_id": 1,
+        "reason": "",
+        "scenario": "NORMAL"
+      },
+      "observed": 26,
+      "observed_at": "2026-11-10T21:28:08.536483+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "baseline": 26.0,
+        "features": [
+          26,
+          25,
+          24,
+          0.5,
+          0.866025403784
+        ],
+        "issued_at": "2026-11-10T21:28:09.328030+00:00",
+        "location_id": 5,
+        "model": {
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "name": "RandomForestRegressor",
+          "trained_through": "2026-03",
+          "version": "V1"
+        },
+        "month": "2027-02",
+        "prediction": 27.308638589172098,
+        "product_id": 1,
+        "reason": "",
+        "scenario": "NORMAL"
+      },
+      "observed": 27,
+      "observed_at": "2026-11-10T21:28:10.650779+00:00",
+      "rotation": "SIN DATO"
+    },
+    {
+      "forecast": {
+        "baseline": 27.0,
+        "features": [
+          27,
+          26,
+          25,
+          0.866025403784,
+          0.5
+        ],
+        "issued_at": "2026-11-10T21:28:11.519544+00:00",
+        "location_id": 5,
+        "model": {
+          "artifact_hash": "fb0d8d81ba2558101a232ff616bff14fe0b95d6a13dfa24d60a8dce4b4e81d3e",
+          "name": "RandomForestRegressor",
+          "trained_through": "2026-03",
+          "version": "V1"
+        },
+        "month": "2027-03",
+        "prediction": 26.552796209920185,
+        "product_id": 1,
+        "reason": "",
+        "scenario": "NORMAL"
+      },
+      "observed": 26,
+      "observed_at": "2026-11-10T21:28:12.839129+00:00",
+      "rotation": "SIN DATO"
+    }
+  ],
+  "schema_version": "h4-session-1",
+  "session_id": "6600a4cfe00a46e7bcf31770910753d4"
+}

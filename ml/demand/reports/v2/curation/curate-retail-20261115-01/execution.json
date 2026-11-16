@@ -1,0 +1,11 @@
+{
+  "run_id": "curate-retail-20261115-01",
+  "status": "WRITTEN_PENDING_INDEPENDENT_VALIDATION",
+  "sources": {
+    "m5_walmart": "sources/external_curated/m5_walmart/sha256-aa5d519ab121b284a7b07f4d/processing-1-curate-retail-20261115-01",
+    "corporacion_favorita": "sources/external_curated/corporacion_favorita/sha256-b69a1fa872a46632efa647d8/processing-1-curate-retail-20261115-01"
+  },
+  "calibrated": false,
+  "dataset_created": false,
+  "trained": false
+}

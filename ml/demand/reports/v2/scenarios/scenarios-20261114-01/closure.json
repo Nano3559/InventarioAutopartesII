@@ -1,0 +1,127 @@
+{
+  "stage": "V2-05",
+  "run_id": "scenarios-20261114-01",
+  "recorded_on": "2026-11-14",
+  "status": "DESIGN_COMPLETE_NOT_IMPLEMENTED",
+  "prerequisites": {
+    "scope": "APPROVED_ACADEMIC_SYNTHETIC_SCOPE",
+    "passed": [
+      "V2-01",
+      "V2-02",
+      "V2-03",
+      "V2-04",
+      "V2-04A",
+      "V2-04B",
+      "V2-04C",
+      "V2-04D",
+      "V2-09A"
+    ],
+    "external_references": [
+      "monash_car_parts",
+      "uci_online_retail_ii"
+    ],
+    "excluded_pending_sources": [
+      "automotive_spare_parts_demand",
+      "m5_walmart",
+      "corporacion_favorita"
+    ]
+  },
+  "coverage": {
+    "scenario_count": 57,
+    "classes": {
+      "NORMAL": 12,
+      "ADVERSO": 25,
+      "AMBIGUO": 20
+    },
+    "mandatory_combinations": 8,
+    "parameter_profiles": 18,
+    "limit": "Cobertura de las familias y combinaciones declaradas. No se afirma que una lista finita cubra toda situación posible de una tienda real."
+  },
+  "assumptions": {
+    "calibrated": false,
+    "weights_or_probabilities_fitted": false,
+    "numeric_levels": "HYPOTHETICAL_DESIGN_AND_STRESS_LEVELS",
+    "next_stage": "V2-05A",
+    "next_stage_executed": false
+  },
+  "contracts": {
+    "preparation": {
+      "path": "ml/demand/v2/contracts/preparation.v2.json",
+      "sha256": "6cbe8a4750c9cd55bfef7c3f99253aa0af8926f7e9a3301941e25a45999a2c45"
+    },
+    "dictionary": {
+      "path": "ml/demand/v2/contracts/dataset_columns.v2.json",
+      "sha256": "04db6b47bf071964ccae9ac6924f76b2c814bc011fad0f8548f388fac8e50c08",
+      "previous_sha256": "da76a5c9eac1742a71546c2ff4ceca432c5a80ed1dcf8f9e9d8332cd11fee8b1",
+      "previous_contract_reconstructed_and_verified": true,
+      "supervised_columns": 24,
+      "features": 17,
+      "base_monthly_columns": 25,
+      "audit_columns_before": 10,
+      "audit_columns_after": 14
+    },
+    "registry_sha256": "04376e4d0567dc22d71ddaccecb4d9782fd9c356119c455449374da53c77b67c"
+  },
+  "tests": {
+    "executed": 73,
+    "passed": 73,
+    "failed": 0,
+    "skipped": 0,
+    "log": "ml/demand/tmp/scenarios-20261114-01/tests-closed.txt",
+    "scope": "STRUCTURAL_AND_METADATA_CONTRACTS_ONLY_NOT_SIMULATOR_OR_MODEL_EXECUTION",
+    "modules": [
+      "test_v2_structure",
+      "test_v2_provenance",
+      "test_v2_profile",
+      "test_v2_preparation",
+      "test_v2_dictionary",
+      "test_v2_scenarios"
+    ]
+  },
+  "integrity": {
+    "protected": {
+      "files": 44,
+      "unchanged": true
+    },
+    "raw": {
+      "files": 136,
+      "unchanged": true
+    },
+    "previous_reports": {
+      "files": 40,
+      "unchanged": true
+    },
+    "source_manifests": {
+      "files": 5,
+      "unchanged": true
+    }
+  },
+  "assertions": {
+    "raw_inventory_unchanged": true,
+    "no_new_markdown_under_docs_h4": true,
+    "dataset_v2_exists": false,
+    "curated_empty": true,
+    "models_v2_empty": true,
+    "no_raw_processing": true,
+    "no_training": true,
+    "no_neon": true,
+    "no_git_commands": true,
+    "no_productive_backend_or_frontend_changes": true
+  },
+  "modified_files": [
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/v2/contracts/dataset_columns.v2.json",
+    "ml/demand/v2/structure.py",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "new_files": [
+    "ml/demand/tests/test_v2_scenarios.py",
+    "ml/demand/reports/v2/scenarios/scenarios-20261114-01/closure.json"
+  ],
+  "notes": [
+    "Historical compatibility reports retain their original dictionary hash. The new hash records only the declared auxiliary audit revision and phase status.",
+    "Valid adverse sales are retained. Invalid fixtures and unresolved cases are not automatically admitted to training.",
+    "All V2 implementation is not complete. This closure concerns scenario design only."
+  ]
+}

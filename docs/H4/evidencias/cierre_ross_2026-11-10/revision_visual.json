@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-10",
+  "mode": "AUTOMATED_BROWSER_REVIEW_REAL_APP",
+  "url": "http://127.0.0.1:8502",
+  "viewports": [
+    {
+      "width": 1366,
+      "height": 900
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "checks": {
+    "baseline_without_active": true,
+    "linear_regression_real": true,
+    "v1_explicit_activation": true,
+    "three_reference_outputs": true,
+    "six_generated_closed_months": true,
+    "months": "2026-10..2027-03",
+    "new_open_month": "2027-04",
+    "monitoring_and_coverage": true,
+    "candidate_archived_comparison": true,
+    "candidate_rejected_with_reason": true,
+    "promotion_disabled": true,
+    "real_json_download": true,
+    "rollback_preserves_closed_history": true,
+    "desktop_controls_readable": true,
+    "narrow_controls_stack": true,
+    "narrow_tables_scroll": true
+  },
+  "limits": [
+    "No aceptación académica humana inferida",
+    "No exposición de estudiantes observada",
+    "No reentrenamiento V1 ni TEST oficial repetido",
+    "Escenario NORMAL recorrido visualmente. Otros escenarios cubiertos por suites, no por estas capturas."
+  ]
+}

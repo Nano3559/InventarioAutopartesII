@@ -1,0 +1,117 @@
+{
+  "stage": "V2-09B",
+  "status": "COMPLETE_LOCAL_CONTRACT_VERIFICATION_API_HANDOFF_PENDING_V2_10",
+  "tests": {
+    "python": {
+      "run": 42,
+      "passed": 42,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "new_tests": 12
+    },
+    "backend_existing_v1": {
+      "run": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "initial_environment_error": "EACCES loopback HTTP inside sandbox. Same suite passed outside sandbox without database access."
+    },
+    "cli": {
+      "run": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "validation_rows_exact": 504,
+    "real_regressor_fit_calls": 0,
+    "test_partition_prediction_calls": 0
+  },
+  "integrity": {
+    "data": {
+      "files_checked": 59,
+      "unchanged": true
+    },
+    "models": {
+      "files_checked": 14,
+      "unchanged": true
+    },
+    "reports": {
+      "files_checked": 128,
+      "unchanged": true
+    },
+    "candidates": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "decisions": {
+      "files_checked": 4,
+      "unchanged": true
+    },
+    "lifecycle": {
+      "files_checked": 13,
+      "unchanged": true
+    },
+    "raw": {
+      "files_checked": 136,
+      "unchanged": true
+    },
+    "manifests": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "backend": {
+      "files_checked": 3,
+      "unchanged": true
+    },
+    "legacy_entrypoint": {
+      "files_checked": 1,
+      "unchanged": true
+    },
+    "protected": {
+      "files_checked": 44,
+      "unchanged": true
+    }
+  },
+  "selected_artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "test_final_event_counts_unchanged": {
+    "test_load_calls": 1,
+    "selected_model_predict_calls": 1,
+    "fit_calls": 0,
+    "rows": 504,
+    "window": [
+      "2026-07",
+      "2026-09"
+    ],
+    "status": "COMPLETED"
+  },
+  "no_new_markdown": true,
+  "neon_used": false,
+  "git_used": false,
+  "active_model_changed": false,
+  "files_new": [
+    "ml/demand/v2/inference.py",
+    "ml/demand/v2/contracts/inference.v2_1.json",
+    "ml/demand/tests/test_v2_inference.py"
+  ],
+  "files_modified": [
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/README.md",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "evidence_hashes": {
+    "backend-tests.txt": "872bf12a17f81827f4c855de0c9141a5930f9e544fad8108190122dbe66baa91",
+    "before.json": "5d3afcf2be720247775d699a4297d60aa7ae949f3dd3be94fba0a6fcf8b3fa6e",
+    "binding.json": "cdfee5974182044485095c44282a603a0663bb22fce4465728e7897c7eb0111d",
+    "cli-smoke.json": "aed75c3b5c88830b7c7f76b82e4eb1b75f7a62d7fc8d3b0d22958236d38d7c11",
+    "tests-final.txt": "6389ae2ddf9dd7d159833d7598c96ba90ab8a1b236ff36261db71e5c3bf3de54",
+    "tests-new.txt": "faa6a5c40d9a28286265d1a4173b5b60098d6d9547a75f04af9417c280364a3a"
+  },
+  "handoff_v2_10": [
+    "Connect API to V2 without relabeling V1 responses.",
+    "Server-side snapshot source and explicit provenance. This stage implements only local approved replay.",
+    "ADMIN authorization and HTTP error mapping must be verified for the actual new API. Existing HTTP permission tests cover V1.",
+    "No live forecast or automatic replenishment approval."
+  ],
+  "git_status_and_diff_stat": "Not run: session instruction forbids Git. Integrity verified with independent SHA-256 inventory."
+}

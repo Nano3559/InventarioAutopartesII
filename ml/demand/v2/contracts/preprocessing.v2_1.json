@@ -1,0 +1,64 @@
+{
+  "adapter_version": "preprocessing-2.1-1",
+  "dataset_version": "2.1.0",
+  "training_authorized": false,
+  "experiment_contract": "v2/contracts/experiments.v2_1.json",
+  "experiment_contract_sha256": "651ba7393487ea05d996dc285f36d995f36309073ca28f1cda4dd30e9d153abd",
+  "input_build": {
+    "relative_path": "data/repuestopro_v2/2.1.0/expanded-20261115-01",
+    "manifest_sha256": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+    "origin": "SYNTHETIC",
+    "scope": "EXPANDED_QUOTE_AGE_AND_PHYSICAL_WHOLESALE_ACADEMIC_VARIANT"
+  },
+  "csv_sha256": "382c9b0ff45e0d1b3130322a9638e2a046268c04d207806b5ffddf8534846a7d",
+  "schema_sha256": "b56642e8d7c0bc2b272a7e3688b2eeac8dfe87122b24db6d252f34d622c06ecc",
+  "raw_features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos",
+    "proporcion_por_mayor_mes_anterior",
+    "cobertura_modalidad_mes_anterior",
+    "precio_menor_cierre_anterior_bs",
+    "precio_mayor_cierre_anterior_bs",
+    "variacion_precio_menor_conocida",
+    "variacion_precio_mayor_conocida",
+    "tipo_cambio_bs_usd_conocido",
+    "variacion_tipo_cambio_ultimo_mes",
+    "antiguedad_tipo_cambio_dias",
+    "dias_sin_stock_mes_anterior",
+    "cobertura_stock_mes_anterior",
+    "categoryId"
+  ],
+  "context_column": "mes_objetivo",
+  "fit_windows": [
+    [
+      "2025-01",
+      "2026-03"
+    ],
+    [
+      "2025-01",
+      "2025-06"
+    ],
+    [
+      "2025-01",
+      "2025-09"
+    ],
+    [
+      "2025-01",
+      "2025-12"
+    ]
+  ],
+  "numeric_missing": "MEDIAN_TRAIN_FIXED_NULLABLE_INDICATORS",
+  "categorical_unknown": "RESERVED_UNKNOWN_BUCKET_TRAIN_VOCABULARY",
+  "linear_scaling": "STANDARD_NUMERIC_ONLY",
+  "forest_scaling": "NONE",
+  "all_missing_or_constant_selected_train": "REJECT_REVIEW_NO_SILENT_DROP",
+  "targets_ids_controls": "NOT_ACCEPTED_IN_FEATURE_FRAME",
+  "fit_evidence_current_task": "CONTROLLED_FIXTURES_ONLY_NOT_REAL_DATASET",
+  "repeated_fit": "REJECT_CREATE_NEW_INSTANCE_PER_FOLD",
+  "fit_window_selection": "AUTO_APPROVED_COMPLETE_TRAIN_PREFIX_WITHIN_CONFIGURED_MAXIMUM",
+  "row_alignment": "MultiIndex productId/locationId/mes_objetivo, metadata only, excluded from numeric matrix",
+  "real_frame_cohort": "Complete approved product-store cohort for each TRAIN month. Reject random row folds."
+}

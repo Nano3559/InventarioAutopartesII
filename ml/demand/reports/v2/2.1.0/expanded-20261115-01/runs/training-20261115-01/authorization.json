@@ -1,0 +1,9 @@
+{
+  "run_id": "training-20261115-01",
+  "dataset_version": "2.1.0",
+  "scope": "TRAIN_AND_VALIDATION_ONLY",
+  "user_authorized": true,
+  "test_authorized": false,
+  "authorized_at": "2026-11-15T05:37:37.060142+00:00",
+  "runner_contract_before_sha256": "3258e6bd10f2f1ac3f2e05edcc4880db39c814475432d5f1760fd54d1e9fe3f6"
+}

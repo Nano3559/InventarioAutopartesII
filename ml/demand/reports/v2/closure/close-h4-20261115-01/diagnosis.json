@@ -1,0 +1,1562 @@
+{
+  "real_neon": true,
+  "test_database": false,
+  "transaction_read_only": [
+    {
+      "transaction_read_only": "on"
+    }
+  ],
+  "columns": [
+    {
+      "table_name": "AuditLog",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"AuditLog_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "action",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "targetType",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "targetId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "oldValue",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "newValue",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "AuditLog",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Category",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Category_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Category",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Category",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Category",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Cost_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "supplierId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "invoiceUrl",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "exchangeRate",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "costPrice",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "percentage",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Cost",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Customer_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "nit",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "phone",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Customer",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Importer_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "phone",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "email",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "address",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "city",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "logo",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "description",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Importer",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Inventory_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "locationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "stock",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "Inventory",
+      "column_name": "minStock",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "1"
+    },
+    {
+      "table_name": "Location",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Location_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Location",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Location",
+      "column_name": "type",
+      "data_type": "USER-DEFINED",
+      "udt_name": "LocationType",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Location",
+      "column_name": "address",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Location",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Location",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Movement_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "fromLocationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "toLocationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "quantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "observation",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Movement",
+      "column_name": "requestId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Notification_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "title",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "message",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "type",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": "'info'::text"
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "read",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "linkUrl",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Notification",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Payment_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "saleId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "method",
+      "data_type": "USER-DEFINED",
+      "udt_name": "PaymentMethod",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "amount",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Payment",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Product",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Product_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Product",
+      "column_name": "itemCode",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "manufacturer",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "brand",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "model",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "year",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "detail",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "oemCode",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "factoryCode",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "image",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "price1",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "price2",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "wholesalePrice",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "cost",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "categoryId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Product",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "quality",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Product",
+      "column_name": "detalles",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductImporter",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"ProductImporter_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "ProductImporter",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductImporter",
+      "column_name": "importerId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"ProductRequest_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "quantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "requestedById",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "locationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "status",
+      "data_type": "USER-DEFINED",
+      "udt_name": "RequestStatus",
+      "is_nullable": "NO",
+      "column_default": "'PENDIENTE'::\"RequestStatus\""
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "note",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "ProductRequest",
+      "column_name": "expectedDate",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"RequestHistory_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "requestId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "previousStatus",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "newStatus",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "userRole",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RequestHistory",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Return_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Return",
+      "column_name": "saleId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "reason",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "quantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "amount",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "method",
+      "data_type": "USER-DEFINED",
+      "udt_name": "PaymentMethod",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Return",
+      "column_name": "date",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"RoleModel_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "permissions",
+      "data_type": "ARRAY",
+      "udt_name": "_text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "RoleModel",
+      "column_name": "columnConfig",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Sale_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "saleDate",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "total",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "type",
+      "data_type": "USER-DEFINED",
+      "udt_name": "SaleType",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "userId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "locationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "customerId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "seller",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "paraQuien",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "lugarEntrega",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "datosFactura",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Sale",
+      "column_name": "formaPago",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"SaleItem_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "saleId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "productId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "quantity",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "unitPrice",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "SaleItem",
+      "column_name": "subtotal",
+      "data_type": "numeric",
+      "udt_name": "numeric",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"Supplier_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "nit",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "phone",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "Supplier",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "id",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "nextval('\"User_id_seq\"'::regclass)"
+    },
+    {
+      "table_name": "User",
+      "column_name": "name",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "email",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "password",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "roleId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "locationId",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "createdAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": "CURRENT_TIMESTAMP"
+    },
+    {
+      "table_name": "User",
+      "column_name": "updatedAt",
+      "data_type": "timestamp without time zone",
+      "udt_name": "timestamp",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "User",
+      "column_name": "columnPrefs",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "id",
+      "data_type": "character varying",
+      "udt_name": "varchar",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "checksum",
+      "data_type": "character varying",
+      "udt_name": "varchar",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "finished_at",
+      "data_type": "timestamp with time zone",
+      "udt_name": "timestamptz",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "migration_name",
+      "data_type": "character varying",
+      "udt_name": "varchar",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "logs",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "rolled_back_at",
+      "data_type": "timestamp with time zone",
+      "udt_name": "timestamptz",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "started_at",
+      "data_type": "timestamp with time zone",
+      "udt_name": "timestamptz",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "_prisma_migrations",
+      "column_name": "applied_steps_count",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "is_nullable": "NO",
+      "column_default": "0"
+    }
+  ],
+  "applied_migrations": [
+    {
+      "migration_name": "20260819182416_init",
+      "finished_at": "2026-08-19T22:48:26.272Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20260820163545_add_quality_importers",
+      "finished_at": "2026-08-20T18:12:18.641Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20260902130000_add_unique_nit",
+      "finished_at": "2026-09-02T06:47:45.014Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 1
+    },
+    {
+      "migration_name": "20260902_add_movement_request_id",
+      "finished_at": null,
+      "rolled_back_at": "2026-09-02T15:03:03.620Z",
+      "applied_steps_count": 0
+    },
+    {
+      "migration_name": "20260902_add_movement_request_id",
+      "finished_at": "2026-09-02T15:03:03.877Z",
+      "rolled_back_at": null,
+      "applied_steps_count": 0
+    }
+  ],
+  "missing": [
+    {
+      "model": "Sale",
+      "table": "Sale",
+      "column": "status",
+      "required": true,
+      "type": "SaleStatus"
+    },
+    {
+      "model": "Sale",
+      "table": "Sale",
+      "column": "voidReason",
+      "required": false,
+      "type": "String"
+    },
+    {
+      "model": "Sale",
+      "table": "Sale",
+      "column": "voidedAt",
+      "required": false,
+      "type": "DateTime"
+    },
+    {
+      "model": "Sale",
+      "table": "Sale",
+      "column": "voidedById",
+      "required": false,
+      "type": "Int"
+    },
+    {
+      "model": "Payment",
+      "table": "Payment",
+      "column": "receivingAccountId",
+      "required": false,
+      "type": "Int"
+    },
+    {
+      "model": "Payment",
+      "table": "Payment",
+      "column": "bankReference",
+      "required": false,
+      "type": "String"
+    },
+    {
+      "model": "Payment",
+      "table": "Payment",
+      "column": "bankOperationDate",
+      "required": false,
+      "type": "String"
+    },
+    {
+      "model": "Payment",
+      "table": "Payment",
+      "column": "verifiedAt",
+      "required": false,
+      "type": "DateTime"
+    },
+    {
+      "model": "Payment",
+      "table": "Payment",
+      "column": "verifiedById",
+      "required": false,
+      "type": "Int"
+    },
+    {
+      "model": "ReceivingAccount",
+      "table": "ReceivingAccount",
+      "missing_table": true
+    },
+    {
+      "model": "PurchaseInvoice",
+      "table": "PurchaseInvoice",
+      "missing_table": true
+    },
+    {
+      "model": "Return",
+      "table": "Return",
+      "column": "disposition",
+      "required": true,
+      "type": "ReturnDisposition"
+    },
+    {
+      "model": "Return",
+      "table": "Return",
+      "column": "restockedQuantity",
+      "required": true,
+      "type": "Int"
+    },
+    {
+      "model": "Return",
+      "table": "Return",
+      "column": "discardedQuantity",
+      "required": true,
+      "type": "Int"
+    },
+    {
+      "model": "Return",
+      "table": "Return",
+      "column": "debtReduction",
+      "required": true,
+      "type": "Decimal"
+    },
+    {
+      "model": "Return",
+      "table": "Return",
+      "column": "refundAmount",
+      "required": true,
+      "type": "Decimal"
+    },
+    {
+      "model": "Return",
+      "table": "Return",
+      "column": "inspectedAt",
+      "required": false,
+      "type": "DateTime"
+    },
+    {
+      "model": "Movement",
+      "table": "Movement",
+      "column": "status",
+      "required": true,
+      "type": "MovementStatus"
+    },
+    {
+      "model": "Movement",
+      "table": "Movement",
+      "column": "receivedQuantity",
+      "required": true,
+      "type": "Int"
+    },
+    {
+      "model": "Movement",
+      "table": "Movement",
+      "column": "receivedAt",
+      "required": false,
+      "type": "DateTime"
+    },
+    {
+      "model": "Cost",
+      "table": "Cost",
+      "column": "purchaseInvoiceId",
+      "required": false,
+      "type": "Int"
+    }
+  ],
+  "counts": [
+    {
+      "products": 62,
+      "sales": 247,
+      "inventory": 414,
+      "movements": 41,
+      "returns": 12
+    }
+  ],
+  "dashboard": {
+    "httpStatus": 503,
+    "code": "DASHBOARD_SCHEMA_UNAVAILABLE",
+    "failures": [
+      {
+        "model": "sale",
+        "operation": "aggregate",
+        "code": "P2022",
+        "modelName": "Sale",
+        "column": "Sale.status"
+      }
+    ]
+  }
+}

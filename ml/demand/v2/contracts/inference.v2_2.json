@@ -1,0 +1,37 @@
+{
+  "contract_version": "v2-inference-2.2-1",
+  "selection": "v2/contracts/selection.v2_2.json",
+  "selection_sha256": "7d9f49856b44703021f57fc83f9d763d5d787c428b3d4dedcddac6955babff23",
+  "artifact": "models/v2/train-2.2-20261115-01/candidate-2.2-1202b43393aac05173a4f603.joblib",
+  "artifact_sha256": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+  "prediction_policy": {
+    "version": "NONNEGATIVE_CONTINUOUS_1",
+    "nonfinite": "REJECT_ALL_NO_SUBSET",
+    "negative": "CLIP_ZERO",
+    "rounding": "NONE"
+  },
+  "accepted_features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos"
+  ],
+  "mode": "ACADEMIC_REPLAY",
+  "origin": "SYNTHETIC",
+  "role": "ADMIN",
+  "allowed_months": [
+    "2026-04",
+    "2026-05",
+    "2026-06"
+  ],
+  "default_month": "2026-06",
+  "snapshot_provider": "Server-side approved frozen VALIDATION prefix only. No request-supplied features or model paths.",
+  "runtime": "v2/inference_v2_2.py",
+  "runtime_sha256": "fdd8221afe37480cdba9a52c7ca9c822726593e754d84792104b73cc667994e8",
+  "final_test_report": "reports/v2/2.2.0/calibrated-20261115-01/final_test/result.json",
+  "final_test_report_sha256": "3a5f4b87c158b49eb447bc37cbf4a541e7b046ef69559e73e3c3c9a42143e283",
+  "test_repeated_on_query": false,
+  "fit_on_query": false,
+  "automatic_replenishment": false
+}

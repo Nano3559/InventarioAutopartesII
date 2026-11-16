@@ -1,0 +1,2947 @@
+{
+  "contract_version": "v2-preparation-1",
+  "status": "V2_11_REPLAY_UI_COMPLETE_V2_15_GLOBAL_VALIDATION_PENDING",
+  "scope": "Preparación local. No crea un dataset, una API o un modelo V2.",
+  "owners": {
+    "backend": "Erika",
+    "frontend_and_dataset": "Ross"
+  },
+  "business_rules": {
+    "problem": "Predecir ventas brutas observadas de un producto en una tienda durante el siguiente mes completo.",
+    "key": [
+      "productId",
+      "locationId",
+      "mes_objetivo"
+    ],
+    "target": "target_ventas_mes",
+    "horizon_months": 1,
+    "timezone": "America/La_Paz",
+    "period_interval": "Inicio inclusivo y comienzo del mes siguiente exclusivo. Convertir el corte local a UTC antes de consultar.",
+    "quantity": "Entero no negativo para ventas agregadas. Las líneas de venta válidas tienen cantidad positiva. Cero solo cuando se confirma cobertura completa.",
+    "valid_sales": "Sale.status CONFIRMED, ubicación Location.type TIENDA y SaleItem relacionado válido. Verificar procedencia antes de llamar real al historial.",
+    "voids": "Sale.voidedAt sirve para identificar anulaciones posteriores. No reconstruir automáticamente un estado pasado con el estado actual. Versionar corte y revisión de etiquetas. Sin evidencia suficiente, no certificar un backtest real.",
+    "returns": "Return se analiza aparte por su fecha. No convertir ventas brutas en ventas netas. Solo restockedQuantity inspeccionada es recuperable, no toda quantity devuelta.",
+    "payments": "No multiplicar ventas por el número de pagos. Crédito no es otra venta y cobro no es demanda.",
+    "modality": "Product.price1 corresponde a POR_MENOR. Product.wholesalePrice corresponde a POR_MAYOR. Product.price2 es legacy. Sale.type NORMAL no demuestra modalidad por menor. No inferir modalidad por precio, tamaño del pedido o datos actuales.",
+    "prices": "SaleItem.unitPrice es precio vendido histórico en bolivianos. Product contiene precios actuales. Precio publicado o planificado exige vigencia y fecha de conocimiento. Mayor no puede superar menor. No modificar registros existentes.",
+    "currency": "Cost.exchangeRate pertenece a una compra, no equivale a cotización general del mercado. La importación calcula costPrice en Bs mediante precio USD por tipo de cambio y gastos. No convertir dos veces ni rellenar con 6.96.",
+    "stock": "Inventory.stock y minStock son actuales. No sustituyen historia. Tránsito e inspección no son stock vendible. Cero ventas no demuestra cero demanda.",
+    "lead_time": "Movement.date y receivedAt describen traslado interno. ProductRequest.expectedDate es una previsión. Ninguno prueba plazo internacional de proveedor.",
+    "duplicates": "Claves mensuales repetidas bloquean publicación. Líneas históricas repetidas exigen revisión, no eliminación automática. Resolver por separado solapamiento entre hojas de UCI.",
+    "missing": "Desconocido permanece null con control de disponibilidad. No equivale a cero. Sin tres meses completos, usar una ruta explícita validada o abstenerse.",
+    "new_entities": "No fabricar historia anterior al alta de producto o tienda. IDs son categorías. Categoría desconocida no se asigna por inferencia.",
+    "sources": "Monash y UCI solo como referencias autorizadas. No mapear productos externos a Product.id ni convertirlos en ventas de RepuestoPro.",
+    "simulation": "Registrar supuestos, seed, versión y origen sintético. No usar demanda latente, parámetros del generador o escenario como features.",
+    "split": "Bloques completos de meses. TRAIN aprende transformaciones. VALIDATION selecciona. TEST reservado se consulta al final. La reserva ya observada en V1 no es una prueba independiente para V2.",
+    "selection": "Baseline, LinearRegression y RandomForestRegressor. Elegir con VALIDATION. MAE principal, RMSE y R² complementarias. No garantizar exactitud total.",
+    "replenishment": "Fuera del dataset objetivo de ventas. H5 o ampliación aprobada. No sugerir compra automática sin posiciones, compromisos y tiempos definidos."
+  },
+  "initial_columns": [
+    {
+      "name": "mes_objetivo",
+      "role": "IDENTIFIER",
+      "type": "month",
+      "unit": null,
+      "nullable": false,
+      "source": "Calendario",
+      "available": "Antes del corte",
+      "use": "Agrupación. No magnitud numérica."
+    },
+    {
+      "name": "productId",
+      "role": "IDENTIFIER",
+      "type": "integer",
+      "unit": null,
+      "nullable": false,
+      "source": "Product.id del catálogo de referencia versionado",
+      "available": "Antes del corte",
+      "use": "Clave categórica. Su incorporación como feature requiere codificación entrenada solo en TRAIN."
+    },
+    {
+      "name": "locationId",
+      "role": "IDENTIFIER",
+      "type": "integer",
+      "unit": null,
+      "nullable": false,
+      "source": "Location.id de tipo TIENDA en referencia versionada",
+      "available": "Antes del corte",
+      "use": "Clave categórica. No número ordinal."
+    },
+    {
+      "name": "ventas_mes_anterior",
+      "role": "FEATURE",
+      "type": "integer",
+      "unit": "unidades",
+      "nullable": false,
+      "source": "Venta válida del mes objetivo menos uno, o simulación declarada",
+      "available": "Mes cerrado antes del corte",
+      "use": "No rellenar historia faltante con cero."
+    },
+    {
+      "name": "ventas_hace_2_meses",
+      "role": "FEATURE",
+      "type": "integer",
+      "unit": "unidades",
+      "nullable": false,
+      "source": "Venta válida del mes objetivo menos dos, o simulación declarada",
+      "available": "Mes cerrado antes del corte",
+      "use": "No rellenar historia faltante con cero."
+    },
+    {
+      "name": "ventas_hace_3_meses",
+      "role": "FEATURE",
+      "type": "integer",
+      "unit": "unidades",
+      "nullable": false,
+      "source": "Venta válida del mes objetivo menos tres, o simulación declarada",
+      "available": "Mes cerrado antes del corte",
+      "use": "No rellenar historia faltante con cero."
+    },
+    {
+      "name": "mes_sin",
+      "role": "FEATURE",
+      "type": "number",
+      "unit": null,
+      "nullable": false,
+      "source": "sin(2*pi*numero_mes_objetivo/12)",
+      "available": "Antes del corte",
+      "use": "Calendario cíclico con convención fija."
+    },
+    {
+      "name": "mes_cos",
+      "role": "FEATURE",
+      "type": "number",
+      "unit": null,
+      "nullable": false,
+      "source": "cos(2*pi*numero_mes_objetivo/12)",
+      "available": "Antes del corte",
+      "use": "Misma convención de mes que seno."
+    },
+    {
+      "name": "target_ventas_mes",
+      "role": "TARGET",
+      "type": "integer",
+      "unit": "unidades",
+      "nullable": false,
+      "source": "Ventas brutas del mes objetivo cerrado, o simulación declarada",
+      "available": "Después del mes objetivo",
+      "use": "Solo entrenamiento y evaluación. Nunca entrada de inferencia."
+    }
+  ],
+  "candidate_groups": [
+    {
+      "group": "precio",
+      "physical_fields": [
+        "SaleItem.unitPrice",
+        "Product.price1",
+        "Product.wholesalePrice"
+      ],
+      "historical_status": "PARTIAL",
+      "required_evidence": "Vigencia, modalidad y momento disponible. UCI ofrece precios GBP de otro dominio.",
+      "approved_for_training": false,
+      "design_status": "DEFINED_SYNTHETIC_ONLY",
+      "columns": [
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida"
+      ]
+    },
+    {
+      "group": "tipo_de_cambio",
+      "physical_fields": [
+        "Cost.exchangeRate",
+        "Cost.date",
+        "Cost.createdAt",
+        "Cost.updatedAt"
+      ],
+      "historical_status": "PURCHASE_ONLY_NOT_MARKET_SERIES",
+      "required_evidence": "Fuente Bs/USD, significado, fecha de observación y publicación. Historial de revisiones.",
+      "approved_for_training": false,
+      "design_status": "DEFINED_SYNTHETIC_ONLY",
+      "columns": [
+        "tipo_cambio_bs_usd_conocido",
+        "variacion_tipo_cambio_ultimo_mes",
+        "antiguedad_tipo_cambio_dias"
+      ]
+    },
+    {
+      "group": "modalidad",
+      "physical_fields": [
+        "Sale.type"
+      ],
+      "historical_status": "LINE_MODE_NOT_PERSISTED",
+      "required_evidence": "Modo por línea persistido o snapshot sintético explícito. No deducir por importe.",
+      "approved_for_training": false,
+      "design_status": "DEFINED_SYNTHETIC_ONLY",
+      "columns": [
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior"
+      ]
+    },
+    {
+      "group": "disponibilidad_historica",
+      "physical_fields": [
+        "Inventory.stock",
+        "Movement.status",
+        "Movement.receivedQuantity",
+        "Return.restockedQuantity"
+      ],
+      "historical_status": "COMPLETE_HISTORY_NOT_CERTIFIED",
+      "required_evidence": "Historial íntegro por producto y ubicación, cortes y ajustes.",
+      "approved_for_training": false,
+      "design_status": "DEFINED_SYNTHETIC_ONLY",
+      "columns": [
+        "dias_sin_stock_mes_anterior",
+        "cobertura_stock_mes_anterior"
+      ]
+    },
+    {
+      "group": "categoria",
+      "physical_fields": [
+        "Product.categoryId",
+        "Category.name",
+        "Product.brand",
+        "Product.model",
+        "Product.year"
+      ],
+      "historical_status": "CURRENT_REFERENCE_ONLY",
+      "required_evidence": "Snapshot al corte y revisión de faltantes. Product.year es texto.",
+      "approved_for_training": false,
+      "design_status": "DEFINED_FROZEN_CATALOG_REFERENCE",
+      "columns": [
+        "categoryId"
+      ]
+    },
+    {
+      "group": "tiempos_proveedor",
+      "physical_fields": [],
+      "historical_status": "SOURCE_MISSING",
+      "required_evidence": "Pedido, despacho y recepción del proveedor. No sustituir por traslados internos.",
+      "approved_for_training": false,
+      "design_status": "SEPARATE_REPLENISHMENT_SCOPE",
+      "columns": []
+    },
+    {
+      "group": "reposicion",
+      "physical_fields": [
+        "Inventory.stock",
+        "Inventory.minStock",
+        "ProductRequest.expectedDate"
+      ],
+      "historical_status": "SEPARATE_FUTURE_DECISION",
+      "required_evidence": "Posición de inventario, compromisos, plazo y política de seguridad acordados.",
+      "approved_for_training": false,
+      "design_status": "SEPARATE_REPLENISHMENT_SCOPE",
+      "columns": []
+    }
+  ],
+  "prohibited_features": [
+    "target_ventas_mes",
+    "Sale.total del mes objetivo",
+    "Product.price2",
+    "stock actual usado como histórico",
+    "cotización futura",
+    "devoluciones futuras",
+    "datos personales",
+    "promedio_3_meses sin justificación adicional",
+    "parámetros internos del generador"
+  ],
+  "inference_design": {
+    "status": "SPECIFICATION_ONLY_NOT_IMPLEMENTED",
+    "existing_v1_endpoints_unchanged": [
+      "GET /api/predictions/catalog",
+      "POST /api/predictions/demand"
+    ],
+    "authorization": "ADMIN en API. No confiar únicamente en RoleRoute.",
+    "server_responsibilities": "Derivar calendario y lags de un snapshot aprobado. Verificar producto, tienda, cobertura, unidades, corte, hash y versión compatibles. No aceptar target ni precios actuales como historia.",
+    "required_model_metadata": [
+      "contract_version",
+      "dataset_version",
+      "build_id",
+      "model_version",
+      "feature_names",
+      "feature_units",
+      "preprocessing_version",
+      "training_cutoff",
+      "origin",
+      "source_manifest_hashes"
+    ],
+    "success_fields": [
+      "status",
+      "contractVersion",
+      "productId",
+      "locationId",
+      "targetMonth",
+      "issuedAt",
+      "historyCutoff",
+      "horizonMonths",
+      "prediction",
+      "modelVersion",
+      "datasetVersion",
+      "buildId",
+      "historySnapshotId",
+      "origin",
+      "mode",
+      "warnings",
+      "evaluationContext"
+    ],
+    "errors": [
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INVALID_INPUT",
+      "UNKNOWN_ENTITY",
+      "INSUFFICIENT_HISTORY",
+      "UNAVAILABLE_REQUIRED_FEATURE",
+      "INCOMPATIBLE_ARTIFACT",
+      "MODEL_UNAVAILABLE"
+    ],
+    "rules": "Solo consulta. No entrenar, generar datos, recalcular pruebas finales o escribir inventario. Predicción finita no negativa con política de posprocesamiento versionada y evaluada. No redondear para métricas. Incertidumbre y métricas futuras no se inventan.",
+    "request_schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractVersion",
+        "productId",
+        "locationId",
+        "targetMonth",
+        "historySnapshotId"
+      ],
+      "properties": {
+        "contractVersion": {
+          "const": "v2-preparation-1"
+        },
+        "productId": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "locationId": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "targetMonth": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+        },
+        "historySnapshotId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
+        }
+      }
+    },
+    "response_schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "contractVersion",
+        "productId",
+        "locationId",
+        "targetMonth",
+        "issuedAt",
+        "historyCutoff",
+        "horizonMonths",
+        "prediction",
+        "modelVersion",
+        "datasetVersion",
+        "buildId",
+        "historySnapshotId",
+        "origin",
+        "mode",
+        "warnings",
+        "evaluationContext"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "OK",
+            "ABSTAINED"
+          ]
+        },
+        "contractVersion": {
+          "const": "v2-preparation-1"
+        },
+        "productId": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "locationId": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "targetMonth": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "historyCutoff": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "horizonMonths": {
+          "const": 1
+        },
+        "prediction": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "modelVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "datasetVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "buildId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "historySnapshotId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
+        },
+        "origin": {
+          "enum": [
+            "SYNTHETIC",
+            "REAL_AUDITED"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "ACADEMIC_REPLAY",
+            "LIVE_FORECAST"
+          ]
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "evaluationContext": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "origin",
+            "split",
+            "mae",
+            "rmse",
+            "r2"
+          ],
+          "properties": {
+            "origin": {
+              "enum": [
+                "SYNTHETIC",
+                "REAL_AUDITED"
+              ]
+            },
+            "split": {
+              "enum": [
+                "VALIDATION",
+                "TEST"
+              ]
+            },
+            "mae": {
+              "type": "number",
+              "minimum": 0
+            },
+            "rmse": {
+              "type": "number",
+              "minimum": 0
+            },
+            "r2": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        },
+        "reason": {
+          "enum": [
+            "UNKNOWN_ENTITY",
+            "INSUFFICIENT_HISTORY",
+            "UNAVAILABLE_REQUIRED_FEATURE",
+            "INCOMPATIBLE_ARTIFACT",
+            "MODEL_UNAVAILABLE"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "OK"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "prediction": {
+                "type": "number"
+              },
+              "modelVersion": {
+                "type": "string"
+              },
+              "datasetVersion": {
+                "type": "string"
+              },
+              "buildId": {
+                "type": "string"
+              }
+            },
+            "not": {
+              "required": [
+                "reason"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ABSTAINED"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "reason"
+            ],
+            "properties": {
+              "prediction": {
+                "type": "null"
+              },
+              "evaluationContext": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "SYNTHETIC"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "const": "ACADEMIC_REPLAY"
+              },
+              "warnings": {
+                "contains": {
+                  "const": "DATOS_SINTETICOS_NO_VALIDA_VENTAS_REALES"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "semantic_checks_required_before_api_implementation": [
+      "Serialización JSON estricta sin NaN ni infinito. JSON Schema no certifica finitud por sí solo en todos los lenguajes.",
+      "Corte corresponde al inicio del mes objetivo en America/La_Paz. Las tres observaciones previas son meses completos consecutivos.",
+      "Cada dato usado estaba disponible al corte. Validar también fecha de publicación, no solo fecha del hecho.",
+      "IDs, snapshot, versión y build de la respuesta coinciden con solicitud, catálogo aprobado y artefacto cargado.",
+      "Las métricas muestran el origen de su evaluación aunque difiera del origen de la consulta. No son error futuro conocido.",
+      "ACADEMIC_REPLAY declara el periodo simulado. LIVE_FORECAST exige datos reales auditados y un objetivo futuro compatible con issuedAt.",
+      "Errores de autenticación, permisos, formato y disponibilidad usan sus estados HTTP, sin exponer SQL, rutas o secretos. ABSTAINED no sustituye un 401, 403, 400 o 503.",
+      "Un esquema de respuesta válido no demuestra autorización ni integridad temporal. Esas comprobaciones se harán en backend cuando se implemente V2."
+    ],
+    "current_contract": "v2/contracts/inference.v2_1.json",
+    "historical_schema_note": "Initial v2-preparation-1 schemas retained. Current local implementation and version are in inference_verification. API connection remains V2-10."
+  },
+  "academic_acceptance_policy": {
+    "status": "APPROVED_BY_USER_BEFORE_EXPERIMENTS",
+    "primary_metric": "MAE",
+    "selection": "Comparar sobre las mismas filas VALIDATION. Un modelo más complejo solo es candidato si mejora MAE frente al baseline. Revisar además RMSE, cobertura y errores por grupos. Ante empate conservar la alternativa más simple.",
+    "if_no_improvement": "Conservar baseline y registrar que la ampliación no demostró mejora. No cambiar TEST, generador o población para fabricar una victoria.",
+    "groups": "Rotación definida solo con TRAIN, producto y tienda. Modalidad y disponibilidad solo si pueden certificarse. Informar tamaño de cada grupo y no sacar conclusiones fuertes de grupos pequeños.",
+    "coverage": "Contabilizar todas las solicitudes, abstenciones y motivos. No mejorar MAE ocultando la reducción de cobertura.",
+    "final_test": "Una reserva nueva de V2, definida antes de seleccionar modelos. No usar resultados del TEST ya inspeccionado de V1 para ajustar V2.",
+    "commercial_limit": "No fija un error comercial tolerable en unidades. Esa decisión requiere costos y consecuencias acordados por el negocio. Una demostración técnica no es aprobación de compras automáticas."
+  },
+  "acceptance": {
+    "scope_approval": {
+      "approved_by": "USER_IN_CHAT",
+      "approved_on": "2026-11-14",
+      "basis": "Tres respuestas explícitas del usuario durante el cierre de la revisión visual.",
+      "dataset_origin": "ACADEMIC_SYNTHETIC",
+      "new_variables_origin": "SIMULATED_WITH_DOCUMENTED_ASSUMPTIONS",
+      "initial_reference_sources": [
+        "monash_car_parts",
+        "uci_online_retail_ii"
+      ],
+      "excluded_from_initial_scope": [
+        "automotive_spare_parts_demand",
+        "m5_walmart",
+        "corporacion_favorita"
+      ],
+      "excluded_raw_preserved": true,
+      "model_selection_policy_approved": true,
+      "supplier_lead_time_scope": "SEPARATE_REPLENISHMENT_DESIGN",
+      "does_not_authorize": [
+        "Training now",
+        "Claiming commercial accuracy",
+        "Using sources with unresolved conditions",
+        "Presenting simulated observations as actual company sales"
+      ]
+    },
+    "joint_erika_ross_review_recorded": false,
+    "production_data_certified": false,
+    "new_features_sources_approved": false,
+    "new_features_sources_approved_meaning": "No se certificaron nuevas fuentes históricas reales. Sí está aprobado simular las variables con supuestos documentados.",
+    "simulated_feature_origin_approved": true,
+    "business_thresholds_required_for_academic_scope": false,
+    "business_error_thresholds": null,
+    "pending": [
+      "Cerrar validación global V2-15 y tareas compartidas, sin presentar fixtures como sesión comercial real.",
+      "Ampliación de fuentes no iniciada. Requiere autorización y resolver condiciones, perfilado y compatibilidad. No todas las fuentes son obligatorias.",
+      "No hay entrenamiento, datos reales certificados o reposición automática nuevos. TEST 2.1.0 consumido."
+    ]
+  },
+  "dataset_dictionary": "v2/contracts/dataset_columns.v2.json",
+  "initial_columns_purpose": "Nueve columnas de referencia inicial V1. No sustituyen el diccionario final V2 de 24 columnas.",
+  "compatibility_report": "reports/v2/compatibility/compatibility-20261114-01/source_compatibility_matrix.json",
+  "scenario_design": {
+    "version": "v2-scenarios-design-1",
+    "stage": "V2-05",
+    "status": "DESIGN_DEFINED_NOT_IMPLEMENTED",
+    "dataset_dictionary": "v2/contracts/dataset_columns.v2.json",
+    "origin": "SYNTHETIC",
+    "root_seed": 42,
+    "not_empirical_calibration": true,
+    "generator_implemented": false,
+    "dataset_generated": false,
+    "training_performed": false,
+    "coverage_limit": "Cobertura de las familias y combinaciones declaradas. No se afirma que una lista finita cubra toda situación posible de una tienda real.",
+    "assumptions": [
+      "El target es venta bruta observada válida, no demanda latente, cobros o ventas netas.",
+      "La simulación puede representar demanda latente solo como metadata. La venta atendida se limita por unidades vendibles.",
+      "No existe una regla universal de precio arriba implica ventas abajo. Se incluyen efectos nulos, compensación por tendencia, ruido e interacciones.",
+      "Cotización, costo convertido y precio son conceptos separados. No duplicar conversión o gastos.",
+      "Las etiquetas de escenario, grupo generativo, parámetros y demanda latente no son features.",
+      "Monash y UCI solo orientarán estudios de patrones permitidos. No se importan sus filas o IDs como ventas propias.",
+      "Los niveles numéricos son supuestos iniciales de diseño y estrés, no valores obtenidos por calibración ni cifras actuales del negocio.",
+      "Recepción, inspección y compromisos se consideran solo para coherencia o reposición. No se agregan features fuera del diccionario de 17.",
+      "Una condición adversa legítima no es una fila inválida. No excluir picos o errores de predicción para mejorar métricas."
+    ],
+    "clock_policy": {
+      "timezone": "America/La_Paz",
+      "interval": "Inicio inclusivo, comienzo del siguiente mes exclusivo",
+      "feature_rule": "Dato disponible antes o en feature_cutoff_at. La fecha del hecho no sustituye fecha de conocimiento.",
+      "unknown_future_shock": "Se conserva el resultado observado, sin reescribir entradas al conocer el futuro.",
+      "target_label_policy": "Congelar cada etiqueta al primer cierre completo del mes objetivo con estados conocidos en ese snapshot. Anulaciones posteriores son eventos de revisión. Solo un build nuevo puede revisar etiquetas, manteniendo los snapshots de entradas originales y versiones previas.",
+      "boundary_checks": [
+        "23:59 local",
+        "00:00 local",
+        "fin de mes",
+        "año nuevo",
+        "febrero bisiesto",
+        "UTC frente a UTC-4"
+      ]
+    },
+    "parameter_policy": {
+      "status": "DESIGN_LEVELS_NOT_EMPIRICALLY_CALIBRATED",
+      "parameters": {
+        "noise": {
+          "unit": "mecanismo",
+          "levels": [
+            "CONTEOS",
+            "SOBREDISPERSION",
+            "INTERMITENCIA"
+          ],
+          "meaning": "Familias de ruido propuestas. Intensidades y pesos se definirán en V2-05A, sin escogerlos por TEST."
+        },
+        "trend_annual": {
+          "unit": "variacion_anual",
+          "levels": [
+            -0.1,
+            0,
+            0.2
+          ],
+          "meaning": "Niveles hipotéticos de diseño para tendencia moderada. No son tasas observadas de la empresa."
+        },
+        "seasonality": {
+          "unit": "multiplicador",
+          "levels": [
+            0.8,
+            1,
+            1.2
+          ],
+          "meaning": "Intensidades ilustrativas. La forma y fase varían por producto, sin crear una festividad real no verificada."
+        },
+        "store_level": {
+          "unit": "multiplicador",
+          "levels": [
+            0.75,
+            1,
+            1.25
+          ],
+          "meaning": "Heterogeneidad ilustrativa. No se asigna por orden numérico de Location.id."
+        },
+        "price_change": {
+          "unit": "proporcion",
+          "levels": [
+            -0.1,
+            0,
+            0.1,
+            0.25,
+            0.5
+          ],
+          "meaning": "Reducciones y aumentos hipotéticos. Solo casos válidos respetan costo y relación mayor <= menor."
+        },
+        "fx_change": {
+          "unit": "proporcion",
+          "levels": [
+            -0.15,
+            0,
+            0.15,
+            0.3
+          ],
+          "meaning": "Cambios ficticios, no una serie real Bs/USD ni pronóstico monetario."
+        },
+        "fx_age": {
+          "unit": "dias",
+          "levels": [
+            0,
+            2,
+            7,
+            30
+          ],
+          "meaning": "Antigüedad para pruebas. No constituye umbral comercial de vigencia."
+        },
+        "pass_through": {
+          "unit": "proporcion",
+          "levels": [
+            0,
+            0.5,
+            1
+          ],
+          "meaning": "Transmisión hipotética del cambio de costo al precio. No elasticidad causal estimada."
+        },
+        "pass_through_delay": {
+          "unit": "meses",
+          "levels": [
+            0,
+            1,
+            2
+          ],
+          "meaning": "Retrasos hipotéticos. Una decisión futura de precio no se vuelve conocida antes de su publicación."
+        },
+        "bulk_size": {
+          "unit": "multiplicador_pedido_habitual",
+          "levels": [
+            2,
+            4,
+            8
+          ],
+          "meaning": "Tamaño de pedido hipotético, no múltiplo obligatorio del target mensual. Ventas atendidas no superan unidades vendibles."
+        },
+        "stockout": {
+          "unit": "dias",
+          "levels": [
+            0,
+            1,
+            7,
+            "MES_COMPLETO"
+          ],
+          "meaning": "MES_COMPLETO se resuelve con calendario. Un conteo observado mayor que días del mes es inválido, no se recorta para repararlo."
+        },
+        "stock_coverage": {
+          "unit": "cobertura",
+          "levels": [
+            "NINGUNA",
+            "PARCIAL",
+            "COMPLETA"
+          ],
+          "meaning": "Días observados enteros entre cero y días reales del mes. No se deriva de la cantidad vendida."
+        },
+        "receipt_fraction": {
+          "unit": "proporcion",
+          "levels": [
+            0.25,
+            0.5,
+            1
+          ],
+          "meaning": "Recepción parcial ilustrativa. Registrar unidades enteras y conservar total recibido más pendiente."
+        },
+        "supplier_lead_days": {
+          "unit": "dias",
+          "levels": [
+            0,
+            7,
+            30,
+            60
+          ],
+          "meaning": "Contexto hipotético para reposición. No calibrado ni feature inicial."
+        },
+        "regime_change": {
+          "unit": "multiplicador",
+          "levels": [
+            0.5,
+            0.75,
+            1.25,
+            1.5
+          ],
+          "meaning": "Cambios estructurales de prueba. El efecto observado depende también de disponibilidad y ruido."
+        },
+        "entity_age": {
+          "unit": "meses_completos",
+          "levels": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "meaning": "Menos de tres meses completos no habilita el modelo de tres lags."
+        },
+        "modality_coverage": {
+          "unit": "proporcion_objetivo",
+          "levels": [
+            0,
+            0.5,
+            1
+          ],
+          "meaning": "Objetivo ilustrativo de conocimiento. Los conteos son enteros y la proporción publicada se calcula a partir de ellos, sin fabricar medias unidades."
+        },
+        "boundary_clock": {
+          "unit": "posicion_relativa_al_corte",
+          "levels": [
+            "ANTES",
+            "EN_EL_CORTE",
+            "DESPUES"
+          ],
+          "meaning": "Corte mensual en America/La_Paz con fecha disponible explícita. Usar fechas válidas y considerar bisiestos y año nuevo."
+        }
+      },
+      "probabilities": null,
+      "rotation_shares": null,
+      "elasticity_coefficients": null,
+      "deferred_to": "Resuelto en V2-05A mediante configuración externa. Este bloque conserva los niveles hipotéticos del diseño V2-05.",
+      "categorical_allocations": "Toda asignación de unidades conserva enteros y totales. La cobertura publicada se deriva de conteos.",
+      "known_price_example": "Bs 120 a Bs 150 representa 0.25. Es ejemplo de una relación de variables, no una fila de dataset.",
+      "current_configuration": "v2/contracts/calibration.v2.json"
+    },
+    "selection_policy": {
+      "reject_priority": "REJECT domina una combinación con errores de integridad o fuga. No se repara silenciosamente.",
+      "review_priority": "REVIEW domina falta de lags, target abierto o ambigüedad de identidad. KEEP_WITH_NULL solo permite faltantes opcionales.",
+      "no_row_dropping_for_metric_gain": true,
+      "coverage_denominators": "Registrar universo activo de consultas, casos con historia suficiente, predicciones y abstenciones. La misma población comparable evalúa variantes. Los casos fuera de ruta se informan, no desaparecen del reporte.",
+      "weights_status": "COVERAGE_SUITE_HAS_NO_PREVALENCE_WEIGHTS_SEE_CALIBRATION_CONTRACT",
+      "heldout_scenarios": "Reservar mecanismos o combinaciones adicionales antes de seleccionar modelos. No inspeccionar targets de TEST para ajustar parámetros.",
+      "feature_set_rule": "Una variante debe admitir sus faltantes conforme a transformaciones aprendidas solo en TRAIN. Si no, usar una ruta menor identificada o abstenerse, sin cambiar columnas en silencio.",
+      "context_only": "Las acciones de casos CONTEXT_ONLY se aplican al registro de auditoría, no excluyen automáticamente las ventas mensuales asociadas si sus datos predictivos son válidos."
+    },
+    "scenarios": [
+      {
+        "scenario_id": "N01",
+        "case_class": "NORMAL",
+        "name": "Venta por menor estable",
+        "families": [
+          "retail",
+          "stock",
+          "prices"
+        ],
+        "feature_groups": [
+          "baseline",
+          "precio",
+          "disponibilidad_historica"
+        ],
+        "assumptions": "Mes completo, precio conocido, unidades enteras y stock suficiente. La venta observada puede variar por ruido.",
+        "expected_response": "Conservar observación válida sin exigir que repita exactamente el mes anterior.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "noise"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N02",
+        "case_class": "NORMAL",
+        "name": "Pedidos por mayor recurrentes",
+        "families": [
+          "wholesale",
+          "modality",
+          "orders"
+        ],
+        "feature_groups": [
+          "baseline",
+          "modalidad"
+        ],
+        "assumptions": "Modalidad explícita POR_MAYOR. Frecuencia y tamaño varían, con stock suficiente y precio mayor no superior al menor.",
+        "expected_response": "Conservar cantidades reales del escenario y evaluar por producto y tienda, sin inferir modalidad por importe.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "noise"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N03",
+        "case_class": "NORMAL",
+        "name": "Mezcla de modalidades conocida",
+        "families": [
+          "modality",
+          "retail",
+          "wholesale"
+        ],
+        "feature_groups": [
+          "modalidad"
+        ],
+        "assumptions": "Cada unidad se asigna a menor, mayor o desconocida. Los tres conteos suman ventas brutas.",
+        "expected_response": "Calcular proporción mayorista conocida y cobertura. No duplicar unidades.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "modality_coverage"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N04",
+        "case_class": "NORMAL",
+        "name": "Baja rotación con ceros válidos",
+        "families": [
+          "intermittency",
+          "zero",
+          "history"
+        ],
+        "feature_groups": [
+          "baseline"
+        ],
+        "assumptions": "Existen meses completos observados con cero ventas y meses con pequeñas cantidades. Cero no implica dato faltante.",
+        "expected_response": "Mantener ceros y no usar MAPE como métrica principal.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "noise"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N05",
+        "case_class": "NORMAL",
+        "name": "Rotación media y alta",
+        "families": [
+          "rotation",
+          "stock"
+        ],
+        "feature_groups": [
+          "baseline",
+          "disponibilidad_historica"
+        ],
+        "assumptions": "Cada producto tiene un nivel simulado propio. El grupo generativo oculto no entra al modelo.",
+        "expected_response": "Comparar errores por rotación calculada solo con TRAIN. No decidir el grupo mirando TEST.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "noise"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N06",
+        "case_class": "NORMAL",
+        "name": "Tendencia moderada",
+        "families": [
+          "trend"
+        ],
+        "feature_groups": [
+          "baseline"
+        ],
+        "assumptions": "El nivel puede crecer, mantenerse o disminuir de forma moderada. No se fija una pendiente universal.",
+        "expected_response": "Conservar ruido y comprobar extrapolación frente al baseline.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "trend_annual"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N07",
+        "case_class": "NORMAL",
+        "name": "Estacionalidad heterogénea",
+        "families": [
+          "calendar",
+          "seasonality"
+        ],
+        "feature_groups": [
+          "baseline",
+          "calendario"
+        ],
+        "assumptions": "El calendario es conocido. La intensidad y el mes de mayor actividad pueden diferir entre productos.",
+        "expected_response": "No imponer el mismo pico a todo el catálogo ni atribuirlo a una festividad real no verificada.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "seasonality"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N08",
+        "case_class": "NORMAL",
+        "name": "Diferencias entre tiendas",
+        "families": [
+          "store",
+          "heterogeneity"
+        ],
+        "feature_groups": [
+          "baseline"
+        ],
+        "assumptions": "Las tiendas de referencia tienen niveles distintos. El ID no determina por sí mismo cuál vende más.",
+        "expected_response": "Mantener producto y tienda como claves y evaluar errores por tienda.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "store_level"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N09",
+        "case_class": "NORMAL",
+        "name": "Aumento de precio conocido",
+        "families": [
+          "prices",
+          "planning"
+        ],
+        "feature_groups": [
+          "precio"
+        ],
+        "assumptions": "Un plan aprobado antes del corte eleva el precio de inicio. Bs 120 a Bs 150 es variación 0.25.",
+        "expected_response": "La venta puede bajar, no cambiar o subir por otros factores. No programar una caída fija obligatoria.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "price_change",
+          "noise"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N10",
+        "case_class": "NORMAL",
+        "name": "Descuento conocido con margen válido",
+        "families": [
+          "prices",
+          "economics",
+          "planning"
+        ],
+        "feature_groups": [
+          "precio"
+        ],
+        "assumptions": "La reducción respeta costo y orden menor/mayor. El plan estaba disponible al corte.",
+        "expected_response": "No garantizar aumento de ventas por descuento. Mantener trazabilidad y ruido.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "price_change"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N11",
+        "case_class": "NORMAL",
+        "name": "Cotización estable y conocida",
+        "families": [
+          "exchange",
+          "timing"
+        ],
+        "feature_groups": [
+          "tipo_de_cambio"
+        ],
+        "assumptions": "Una cotización ficticia con fuente y fechas es común a todos los productos y tiendas del mismo corte.",
+        "expected_response": "Variación cero solo cuando las dos cotizaciones conocidas son comparables y no cambian.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "fx_change",
+          "fx_age"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "N12",
+        "case_class": "NORMAL",
+        "name": "Disponibilidad completa y recepción oportuna",
+        "families": [
+          "stock",
+          "reception"
+        ],
+        "feature_groups": [
+          "disponibilidad_historica"
+        ],
+        "assumptions": "Las entradas simuladas habilitan stock solo cuando son recibidas. La disponibilidad se observa de manera independiente de las ventas.",
+        "expected_response": "Mantener cobertura completa y no convertir un traslado en tránsito en stock vendible.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "stock_coverage"
+        ],
+        "issue_code": "NONE",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A01",
+        "case_class": "ADVERSO",
+        "name": "Cambio de precio no anunciado",
+        "families": [
+          "prices",
+          "timing",
+          "shock"
+        ],
+        "feature_groups": [
+          "precio"
+        ],
+        "assumptions": "El precio cambia dentro del mes objetivo y nadie podía conocerlo al corte.",
+        "expected_response": "Conservar el target observado, congelar entradas previas y analizar error. No usar el precio futuro como feature.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "DURING_TARGET_UNKNOWN_AT_CUTOFF",
+        "parameter_ids": [
+          "price_change"
+        ],
+        "issue_code": "A01",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A02",
+        "case_class": "ADVERSO",
+        "name": "Subida fuerte del dólar antes del corte",
+        "families": [
+          "exchange",
+          "shock",
+          "economics"
+        ],
+        "feature_groups": [
+          "tipo_de_cambio",
+          "precio"
+        ],
+        "assumptions": "La subida es conocida. Su transmisión al costo y al precio puede ser parcial o demorada.",
+        "expected_response": "No imponer traslado inmediato del 100 % ni una caída automática de ventas.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "fx_change",
+          "pass_through",
+          "pass_through_delay"
+        ],
+        "issue_code": "A02",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A03",
+        "case_class": "ADVERSO",
+        "name": "Caída de cotización sin baja inmediata del precio",
+        "families": [
+          "exchange",
+          "prices",
+          "shock"
+        ],
+        "feature_groups": [
+          "tipo_de_cambio",
+          "precio"
+        ],
+        "assumptions": "La cotización cae, pero la empresa puede mantener precios por costos anteriores o decisión comercial simulada.",
+        "expected_response": "No forzar simetría entre subidas y bajadas ni convertir relaciones simuladas en causalidad real.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "fx_change",
+          "pass_through_delay"
+        ],
+        "issue_code": "A03",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A04",
+        "case_class": "ADVERSO",
+        "name": "Precios económicamente incoherentes",
+        "families": [
+          "prices",
+          "economics",
+          "invalid"
+        ],
+        "feature_groups": [
+          "precio"
+        ],
+        "assumptions": "Mayor supera menor o un precio queda debajo del costo sin excepción explícita y auditada.",
+        "expected_response": "Rechazar el caso inválido como entrada entrenable. No corregir importes silenciosamente.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "A04",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A05",
+        "case_class": "ADVERSO",
+        "name": "Precio o cotización inválidos",
+        "families": [
+          "prices",
+          "exchange",
+          "units",
+          "invalid"
+        ],
+        "feature_groups": [
+          "precio",
+          "tipo_de_cambio"
+        ],
+        "assumptions": "Precio o cotización no positivos, NaN, infinito o unidad conocida incorrecta.",
+        "expected_response": "Separar el caso de validación. Nunca entrenar con un importe inválido o una unidad invertida.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "A05",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A06",
+        "case_class": "ADVERSO",
+        "name": "Falta parcial de stock observada",
+        "families": [
+          "stock",
+          "zero",
+          "censoring"
+        ],
+        "feature_groups": [
+          "disponibilidad_historica",
+          "baseline"
+        ],
+        "assumptions": "Se conocen días sin stock. La venta observada está limitada por unidades vendibles, no por demanda latente.",
+        "expected_response": "Conservar ventas observadas y medir el error de ese grupo. No rellenar demanda perdida como target.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "stockout"
+        ],
+        "issue_code": "A06",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A07",
+        "case_class": "ADVERSO",
+        "name": "Sin stock todo el mes objetivo",
+        "families": [
+          "stock",
+          "zero",
+          "censoring"
+        ],
+        "feature_groups": [
+          "disponibilidad_historica",
+          "baseline"
+        ],
+        "assumptions": "El mes está completamente observado. No hubo unidades vendibles aunque pudo existir demanda.",
+        "expected_response": "Target observado puede ser cero. No etiquetar demanda total cero ni utilizar stock futuro como entrada.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "DURING_TARGET_UNKNOWN_AT_CUTOFF",
+        "parameter_ids": [
+          "stockout"
+        ],
+        "issue_code": "A07",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A08",
+        "case_class": "ADVERSO",
+        "name": "Recepción tardía o parcial",
+        "families": [
+          "stock",
+          "reception",
+          "transit"
+        ],
+        "feature_groups": [
+          "disponibilidad_historica"
+        ],
+        "assumptions": "Solo lo recibido habilita venta. Cantidad enviada, pendiente y recibida no se cuentan dos veces.",
+        "expected_response": "Reflejar disponibilidad observada. El traslado interno no se llama plazo internacional.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "receipt_fraction"
+        ],
+        "issue_code": "A08",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A09",
+        "case_class": "ADVERSO",
+        "name": "Plazo de proveedor mayor al horizonte",
+        "families": [
+          "supplier",
+          "horizon",
+          "replenishment"
+        ],
+        "feature_groups": [
+          "tiempos_proveedor",
+          "reposicion"
+        ],
+        "assumptions": "Un plazo hipotético puede superar un mes. No existe historia propia certificada para ajustarlo.",
+        "expected_response": "Registrar contexto de reposición. No multiplicar por dos una predicción mensual ni añadir plazo al modelo inicial.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "CONTEXT_ONLY",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "supplier_lead_days"
+        ],
+        "issue_code": "A09",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A10",
+        "case_class": "ADVERSO",
+        "name": "Pedido mayorista excepcional",
+        "families": [
+          "wholesale",
+          "orders",
+          "outlier"
+        ],
+        "feature_groups": [
+          "modalidad",
+          "baseline"
+        ],
+        "assumptions": "Pedido legítimo varias veces mayor al tamaño habitual simulado, limitado por stock disponible. No se asume repetición mensual.",
+        "expected_response": "Conservar el pico válido y evaluar MAE, RMSE y concentración. No eliminarlo solo por ser extremo.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "bulk_size"
+        ],
+        "issue_code": "A10",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A11",
+        "case_class": "ADVERSO",
+        "name": "Cambio brusco de tendencia",
+        "families": [
+          "trend",
+          "regime",
+          "shock"
+        ],
+        "feature_groups": [
+          "baseline"
+        ],
+        "assumptions": "El régimen cambia y no está completamente explicado por los tres lags. No se revela el parámetro generativo.",
+        "expected_response": "Conservar el caso difícil. Analizar retraso del modelo y no borrar meses para mejorar métricas.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "DURING_TARGET_UNKNOWN_AT_CUTOFF",
+        "parameter_ids": [
+          "regime_change"
+        ],
+        "issue_code": "A11",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A12",
+        "case_class": "ADVERSO",
+        "name": "Interrupción operativa no anunciada",
+        "families": [
+          "store",
+          "shock",
+          "zero"
+        ],
+        "feature_groups": [
+          "baseline"
+        ],
+        "assumptions": "La tienda deja de vender durante parte del objetivo, pero sus registros y el cierre del mes siguen completos.",
+        "expected_response": "Conservar ventas observadas, separar interrupción de ausencia de datos y no prometer anticiparla con variables inexistentes.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "DURING_TARGET_UNKNOWN_AT_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "A12",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A13",
+        "case_class": "ADVERSO",
+        "name": "Clave mensual duplicada",
+        "families": [
+          "duplicates",
+          "integrity",
+          "invalid"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Dos filas comparten producto, tienda y mes objetivo.",
+        "expected_response": "Bloquear publicación. No sumar ni conservar una al azar.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "AUDIT_VALIDATION",
+        "parameter_ids": [],
+        "issue_code": "A13",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A14",
+        "case_class": "ADVERSO",
+        "name": "Cantidad o target inválidos",
+        "families": [
+          "quantity",
+          "target",
+          "invalid"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Ventas brutas negativas, fraccionarias, no finitas o imposibles según unidades vendibles.",
+        "expected_response": "Rechazar como caso entrenable y conservar evidencia del fallo, sin convertirlo a cero.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "AUDIT_VALIDATION",
+        "parameter_ids": [],
+        "issue_code": "A14",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A15",
+        "case_class": "ADVERSO",
+        "name": "Entidad fuera del catálogo permitido",
+        "families": [
+          "catalog",
+          "store",
+          "integrity",
+          "invalid"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Producto o ubicación inexistentes en la referencia, o ALMACEN usado como tienda.",
+        "expected_response": "Rechazar la fila. No crear IDs ni reasignar productos externos.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "AUDIT_VALIDATION",
+        "parameter_ids": [],
+        "issue_code": "A15",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A16",
+        "case_class": "ADVERSO",
+        "name": "Información posterior usada como entrada",
+        "families": [
+          "leakage",
+          "timing",
+          "invalid"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Se introduce target, cotización futura, precio no conocido, stock posterior, escenario o parámetros internos como features.",
+        "expected_response": "Bloquear el experimento o publicación afectada. No basta con ocultar el nombre de la columna.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "AUDIT_VALIDATION",
+        "parameter_ids": [],
+        "issue_code": "A16",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A17",
+        "case_class": "ADVERSO",
+        "name": "Mezcla de ventas reales y externas con simulación",
+        "families": [
+          "source",
+          "provenance",
+          "invalid"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Filas externas se renombran con IDs propios o se mezclan sin separar origen y autorización.",
+        "expected_response": "Rechazar la mezcla. Monash y UCI solo son referencias y las otras tres fuentes siguen excluidas.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "AUDIT_VALIDATION",
+        "parameter_ids": [],
+        "issue_code": "A17",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A18",
+        "case_class": "ADVERSO",
+        "name": "Fecha inválida o mes mal asignado",
+        "families": [
+          "calendar",
+          "timing",
+          "invalid"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Fecha imposible, zona ausente o mes calculado en UTC en lugar del calendario local establecido para simulación.",
+        "expected_response": "Bloquear el caso mal fechado. Probar 23:59, 00:00, fin de mes, año nuevo y febrero bisiesto.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "AUDIT_VALIDATION",
+        "parameter_ids": [
+          "boundary_clock"
+        ],
+        "issue_code": "A18",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A19",
+        "case_class": "ADVERSO",
+        "name": "Precio, dólar y stock cambian juntos",
+        "families": [
+          "prices",
+          "exchange",
+          "stock",
+          "interaction"
+        ],
+        "feature_groups": [
+          "precio",
+          "tipo_de_cambio",
+          "disponibilidad_historica"
+        ],
+        "assumptions": "Los factores interactúan con distintos retrasos. Solo sus valores conocidos antes del corte entran al modelo.",
+        "expected_response": "No sumar efectos independientes a ciegas ni exigir respuesta monotónica. No atribuir causalidad comercial.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "price_change",
+          "fx_change",
+          "pass_through_delay",
+          "stockout"
+        ],
+        "issue_code": "A19",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A20",
+        "case_class": "ADVERSO",
+        "name": "Contaminación de TRAIN y TEST",
+        "families": [
+          "split",
+          "leakage",
+          "invalid"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Se separan filas del mismo mes, se reutiliza TEST de V1, se ajusta un scaler con todo o se elige con TEST.",
+        "expected_response": "Rechazar la evidencia del experimento. Rehacer separación o artefactos afectados antes de afirmar evaluación válida.",
+        "expected_action": "REJECT",
+        "training_eligibility": "INVALID_FIXTURE_ONLY",
+        "timing": "AUDIT_VALIDATION",
+        "parameter_ids": [],
+        "issue_code": "A20",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A21",
+        "case_class": "ADVERSO",
+        "name": "Devolución posterior y venta a crédito",
+        "families": [
+          "returns",
+          "finance",
+          "inspection"
+        ],
+        "feature_groups": [
+          "auditoria",
+          "reposicion"
+        ],
+        "assumptions": "La devolución reduce primero deuda y solo reintegra excedente cobrado. Stock vendible exige inspección. Ventas brutas no son cobros ni ventas netas.",
+        "expected_response": "Conservar separación de fechas y cantidades. No restar devolución futura al target bruto o a lags pasados.",
+        "expected_action": "KEEP",
+        "training_eligibility": "CONTEXT_ONLY",
+        "timing": "POST_TARGET_CLOSE",
+        "parameter_ids": [],
+        "issue_code": "A21",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A22",
+        "case_class": "ADVERSO",
+        "name": "Anulación posterior al cierre",
+        "families": [
+          "voids",
+          "finance",
+          "timing"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Una venta puede anularse después del corte con el que se congeló una etiqueta o una entrada.",
+        "expected_response": "Conservar snapshots previos. Una corrección exige revisión versionada de etiquetas y nuevo build, sin reescribir entradas pasadas con información futura.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "EXCLUDED_UNTIL_REVIEW",
+        "timing": "POST_TARGET_CLOSE",
+        "parameter_ids": [],
+        "issue_code": "A22",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A23",
+        "case_class": "ADVERSO",
+        "name": "Promoción sin reducción del precio",
+        "families": [
+          "promotion",
+          "shock",
+          "prices"
+        ],
+        "feature_groups": [
+          "precio",
+          "baseline"
+        ],
+        "assumptions": "Una campaña puede aumentar exposición sin modificar el precio. El diccionario inicial no incluye una feature de marketing.",
+        "expected_response": "Conservar ventas observadas y señalar la limitación. No inventar una feature de promoción ni prometer anticipar campañas no representadas.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "DURING_TARGET_UNKNOWN_AT_CUTOFF",
+        "parameter_ids": [
+          "regime_change",
+          "noise"
+        ],
+        "issue_code": "A23",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A24",
+        "case_class": "ADVERSO",
+        "name": "Anulación conocida antes del cierre",
+        "families": [
+          "voids",
+          "finance",
+          "target"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "La anulación ocurre y se conoce antes del snapshot que cierra el mes objetivo.",
+        "expected_response": "Excluir la operación anulada del agregado de ventas válidas del snapshot. No introducir unidades brutas negativas ni modificar snapshots anteriores.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "DURING_TARGET_UNKNOWN_AT_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "A24",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "A25",
+        "case_class": "ADVERSO",
+        "name": "Salida predictiva inválida sin política",
+        "families": [
+          "prediction_output",
+          "evaluation",
+          "invalid"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Una predicción futura es no finita o negativa y no existe una política de posprocesamiento previamente definida y evaluada.",
+        "expected_response": "Rechazar la respuesta inválida. Un eventual recorte de LinearRegression debe versionarse y evaluarse antes de TEST, sin cambiar targets o datos.",
+        "expected_action": "REJECT",
+        "training_eligibility": "CONTEXT_ONLY",
+        "timing": "AUDIT_VALIDATION",
+        "parameter_ids": [],
+        "issue_code": "A25",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G01",
+        "case_class": "AMBIGUO",
+        "name": "Producto nuevo sin tres meses completos",
+        "families": [
+          "cold_start",
+          "catalog",
+          "history"
+        ],
+        "feature_groups": [
+          "baseline",
+          "categoria"
+        ],
+        "assumptions": "El producto existe en la referencia pero empieza a operar dentro del mundo simulado. No hay ventas antes de su alta.",
+        "expected_response": "Abstenerse de la ruta de tres lags hasta disponer de tres meses completos. No fabricar ceros previos.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "EXCLUDED_UNTIL_REVIEW",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "entity_age"
+        ],
+        "issue_code": "G01",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G02",
+        "case_class": "AMBIGUO",
+        "name": "Tienda nueva sin historial suficiente",
+        "families": [
+          "cold_start",
+          "store",
+          "history"
+        ],
+        "feature_groups": [
+          "baseline"
+        ],
+        "assumptions": "Una tienda de referencia se activa tarde en la simulación. Sus meses anteriores no son observaciones con cero.",
+        "expected_response": "Revisar o abstenerse. Cualquier fallback futuro debe identificarse y validarse aparte.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "EXCLUDED_UNTIL_REVIEW",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "entity_age"
+        ],
+        "issue_code": "G02",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G03",
+        "case_class": "AMBIGUO",
+        "name": "Mes histórico faltante",
+        "families": [
+          "history",
+          "missingness"
+        ],
+        "feature_groups": [
+          "baseline"
+        ],
+        "assumptions": "Falta un mes de cualquiera de los tres lags, aunque existan otros registros.",
+        "expected_response": "Excluir la fila de entrenamiento válido y registrar cobertura perdida. No imputar el lag obligatorio como cero.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "EXCLUDED_UNTIL_REVIEW",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G03",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G04",
+        "case_class": "AMBIGUO",
+        "name": "Mes todavía abierto",
+        "families": [
+          "target",
+          "calendar",
+          "missingness"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "No existe target definitivo del mes objetivo abierto. Una consulta futura de inferencia no necesita target.",
+        "expected_response": "No publicar esa fila como ejemplo supervisado. No confundir esta restricción con prohibir una inferencia válida.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "EXCLUDED_UNTIL_REVIEW",
+        "timing": "DURING_TARGET_UNKNOWN_AT_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G04",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G05",
+        "case_class": "AMBIGUO",
+        "name": "Modalidad parcial o desconocida",
+        "families": [
+          "modality",
+          "missingness"
+        ],
+        "feature_groups": [
+          "modalidad"
+        ],
+        "assumptions": "Parte o todas las unidades no tienen modalidad certificada. NORMAL no equivale a minorista y precio no resuelve el modo.",
+        "expected_response": "Conservar conteos conocidos y cobertura. Con ventas cero, ambas proporciones son null.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "modality_coverage"
+        ],
+        "issue_code": "G05",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G06",
+        "case_class": "AMBIGUO",
+        "name": "Cero ventas con disponibilidad desconocida",
+        "families": [
+          "stock",
+          "zero",
+          "missingness"
+        ],
+        "feature_groups": [
+          "disponibilidad_historica"
+        ],
+        "assumptions": "El mes de ventas está observado, pero no toda la historia de stock. Cero puede ocultar demanda no atendida.",
+        "expected_response": "Conservar cero observado y cobertura. Si no hay días observados, dias_sin_stock es null y cobertura_stock cero.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "stock_coverage"
+        ],
+        "issue_code": "G06",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G07",
+        "case_class": "AMBIGUO",
+        "name": "Cotización conocida pero antigua",
+        "families": [
+          "exchange",
+          "timing",
+          "missingness"
+        ],
+        "feature_groups": [
+          "tipo_de_cambio"
+        ],
+        "assumptions": "Existe una cotización anterior con fuente y fecha válidas, sin garantía de vigencia actual.",
+        "expected_response": "Conservar valor y antigüedad, con advertencia. Los niveles de edad no son umbrales comerciales de rechazo.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "fx_age"
+        ],
+        "issue_code": "G07",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G08",
+        "case_class": "AMBIGUO",
+        "name": "Cotización faltante o no comparable",
+        "families": [
+          "exchange",
+          "units",
+          "missingness"
+        ],
+        "feature_groups": [
+          "tipo_de_cambio"
+        ],
+        "assumptions": "Falta la observación, su fuente, unidad o comparabilidad con el corte anterior. Cotización de compra no equivale a mercado.",
+        "expected_response": "Mantener features no demostradas como null. No usar 6.96, GBP, promedios futuros ni otra fuente como reemplazo silencioso.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "UNKNOWN_AVAILABILITY",
+        "parameter_ids": [],
+        "issue_code": "G08",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G09",
+        "case_class": "AMBIGUO",
+        "name": "Plan de precio publicado después del corte",
+        "families": [
+          "prices",
+          "planning",
+          "timing"
+        ],
+        "feature_groups": [
+          "precio"
+        ],
+        "assumptions": "El cambio puede haber sido aprobado, pero no era conocido en el corte utilizado.",
+        "expected_response": "No usarlo para esa fila. Variación conocida queda null si no existe otro plan válido. Si se inyecta como dato conocido, aplica A16.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "POST_CUTOFF_INFORMATION",
+        "parameter_ids": [],
+        "issue_code": "G09",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G10",
+        "case_class": "AMBIGUO",
+        "name": "Precio actual sin historia de lista",
+        "families": [
+          "prices",
+          "history",
+          "missingness"
+        ],
+        "feature_groups": [
+          "precio"
+        ],
+        "assumptions": "Solo existe Product actual o precio vendido. No demuestra lista vigente de meses anteriores ni precio sin ventas.",
+        "expected_response": "No reconstruir historia con el importe actual. Mantener null o resolver con evidencia autorizada.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "UNKNOWN_AVAILABILITY",
+        "parameter_ids": [],
+        "issue_code": "G10",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G11",
+        "case_class": "AMBIGUO",
+        "name": "Categoría faltante o nueva",
+        "families": [
+          "category",
+          "catalog",
+          "missingness"
+        ],
+        "feature_groups": [
+          "categoria"
+        ],
+        "assumptions": "La categoría no está informada o no apareció en TRAIN. El entero es una etiqueta, no una cantidad.",
+        "expected_response": "Usar tratamiento UNKNOWN y encoder ajustado con TRAIN. No inferir categoría por texto.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G11",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G12",
+        "case_class": "AMBIGUO",
+        "name": "Detalle repetido de procedencia dudosa",
+        "families": [
+          "duplicates",
+          "provenance",
+          "missingness"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Dos líneas históricas iguales pueden ser repetición técnica u operaciones legítimas. No existe identidad suficiente para decidir.",
+        "expected_response": "Separar para revisión sin sumar ni eliminar automáticamente. No utilizarlo para calibrar hasta resolverlo.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "EXCLUDED_UNTIL_REVIEW",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G12",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G13",
+        "case_class": "AMBIGUO",
+        "name": "Fecha sin zona o conocimiento incierto",
+        "families": [
+          "timing",
+          "calendar",
+          "missingness"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "No se sabe a qué zona pertenece una fecha o cuándo estuvo disponible. Las fechas UCI no traen zona certificada.",
+        "expected_response": "No suponer UTC o America/La_Paz para una fuente externa. Revisar antes de asignar mes o afirmar ausencia de fuga.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "EXCLUDED_UNTIL_REVIEW",
+        "timing": "UNKNOWN_AVAILABILITY",
+        "parameter_ids": [],
+        "issue_code": "G13",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G14",
+        "case_class": "AMBIGUO",
+        "name": "Precios menor y mayor iguales",
+        "families": [
+          "prices",
+          "modality"
+        ],
+        "feature_groups": [
+          "precio",
+          "modalidad"
+        ],
+        "assumptions": "Igualdad de precios es comercialmente posible. El importe por sí solo no identifica modalidad.",
+        "expected_response": "Conservar precios válidos y modalidad desconocida. No clasificar por coincidencia de importes.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G14",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G15",
+        "case_class": "AMBIGUO",
+        "name": "Precio sube y ventas también",
+        "families": [
+          "prices",
+          "trend",
+          "interaction"
+        ],
+        "feature_groups": [
+          "precio",
+          "baseline"
+        ],
+        "assumptions": "Tendencia, ruido, preferencia o pedidos pueden compensar el efecto supuesto del precio.",
+        "expected_response": "Conservar el caso válido y evitar interpretar correlación como causalidad. No corregir el target para que baje.",
+        "expected_action": "KEEP",
+        "training_eligibility": "TRAINABLE_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [
+          "price_change",
+          "regime_change",
+          "noise"
+        ],
+        "issue_code": "G15",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G16",
+        "case_class": "AMBIGUO",
+        "name": "Fuente disponible pero no autorizada o incompatible",
+        "families": [
+          "source",
+          "provenance"
+        ],
+        "feature_groups": [
+          "auditoria"
+        ],
+        "assumptions": "Descargar un archivo no aprueba su uso. Automotive, M5 y Favorita no forman parte del alcance inicial.",
+        "expected_response": "Mantener fuera de calibración y entrenamiento. No alterar RAW ni convertir su contenido en ventas propias.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "CONTEXT_ONLY",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G16",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G17",
+        "case_class": "AMBIGUO",
+        "name": "Fecha prevista confundida con llegada real",
+        "families": [
+          "supplier",
+          "reception",
+          "horizon"
+        ],
+        "feature_groups": [
+          "tiempos_proveedor",
+          "reposicion"
+        ],
+        "assumptions": "ProductRequest.expectedDate es una previsión y Movement.receivedAt describe traslado interno, no importación de proveedor.",
+        "expected_response": "Registrar incertidumbre para reposición. No fabricar plazo de proveedor ni incorporarlo a las 17 features.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "CONTEXT_ONLY",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G17",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G18",
+        "case_class": "AMBIGUO",
+        "name": "Catálogo congelado aplicado a años simulados",
+        "families": [
+          "catalog",
+          "provenance",
+          "history"
+        ],
+        "feature_groups": [
+          "categoria",
+          "auditoria"
+        ],
+        "assumptions": "La referencia fue observada en 2026. Su uso en 2024–2026 es una suposición del mundo sintético, no historia real certificada.",
+        "expected_response": "Conservar hash, fecha e IDs autorizados. No presentar categorías, precios o altas históricas como hechos de la empresa.",
+        "expected_action": "KEEP_WITH_NULL",
+        "training_eligibility": "TRAINABLE_WITH_OPTIONAL_NULLS_IF_VALIDATED",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G18",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G19",
+        "case_class": "AMBIGUO",
+        "name": "Producto descontinuado sin estado certificado",
+        "families": [
+          "discontinued",
+          "catalog",
+          "provenance"
+        ],
+        "feature_groups": [
+          "auditoria",
+          "reposicion"
+        ],
+        "assumptions": "El catálogo congelado no contiene una marca de descontinuación. No se deduce una baja a partir de ceros o faltantes.",
+        "expected_response": "Registrar revisión y suspender cualquier recomendación de compra automática. Una baja simulada debe declararse en configuración, sin borrar Product ni inventar historia.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "CONTEXT_ONLY",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G19",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      },
+      {
+        "scenario_id": "G20",
+        "case_class": "AMBIGUO",
+        "name": "Cierre de tienda planificado sin variable propia",
+        "families": [
+          "closed_store",
+          "calendar",
+          "planning"
+        ],
+        "feature_groups": [
+          "auditoria",
+          "reposicion"
+        ],
+        "assumptions": "Se conoce un cierre o interrupción planificada, pero no existe una feature de calendario operativo en las 17 entradas aprobadas.",
+        "expected_response": "Registrar control operativo o abstención identificada si corresponde. No usar scenario_id para revelar el cierre al modelo ni confundirlo con datos ausentes.",
+        "expected_action": "REVIEW",
+        "training_eligibility": "CONTEXT_ONLY",
+        "timing": "PRE_CUTOFF",
+        "parameter_ids": [],
+        "issue_code": "G20",
+        "future_evidence": "Instancia versionada, reloj, parámetros, snapshot y resultado de validación. No basta una métrica global."
+      }
+    ],
+    "mandatory_combinations": [
+      {
+        "id": "C01",
+        "members": [
+          "N09",
+          "A02",
+          "A06"
+        ],
+        "expected_action": "KEEP",
+        "rule": "Precio, cotización y disponibilidad pueden interactuar. No sumar efectos fijos ni usar información no conocida."
+      },
+      {
+        "id": "C02",
+        "members": [
+          "N04",
+          "A10",
+          "A08"
+        ],
+        "expected_action": "KEEP",
+        "rule": "Pedido grande en producto intermitente con recepción parcial. Conservar pico legítimo, sin sobreventa o repetición mensual forzada."
+      },
+      {
+        "id": "C03",
+        "members": [
+          "G01",
+          "G11",
+          "G03"
+        ],
+        "expected_action": "REVIEW",
+        "rule": "La falta de lags obligatorios domina aunque una categoría admita UNKNOWN. No entrenar ni inventar historia."
+      },
+      {
+        "id": "C04",
+        "members": [
+          "G07",
+          "G10",
+          "G06"
+        ],
+        "expected_action": "KEEP_WITH_NULL",
+        "rule": "Solo si los tres lags son válidos. Features opcionales desconocidas no se convierten en cero y la ruta del modelo debe admitirlas."
+      },
+      {
+        "id": "C05",
+        "members": [
+          "G09",
+          "A16",
+          "A18"
+        ],
+        "expected_action": "REJECT",
+        "rule": "Un valor futuro inyectado como conocido o un mes mal fechado bloquean el caso, incluso si otros valores son válidos."
+      },
+      {
+        "id": "C06",
+        "members": [
+          "A21",
+          "A08",
+          "G17"
+        ],
+        "expected_action": "REVIEW",
+        "rule": "Contexto operativo de pagos, inspección y recepción. No crear variables nuevas ni contaminar ventas brutas con caja o stock pendiente.",
+        "context_only": true
+      },
+      {
+        "id": "C07",
+        "members": [
+          "A13",
+          "A17"
+        ],
+        "expected_action": "REJECT",
+        "rule": "Duplicados de clave y mezcla de procedencia impiden publicar un build válido."
+      },
+      {
+        "id": "C08",
+        "members": [
+          "N06",
+          "N07",
+          "G15"
+        ],
+        "expected_action": "KEEP",
+        "rule": "Conservar respuestas distintas al mismo cambio de precio. Ninguna dirección de ventas es obligatoria por sí sola."
+      }
+    ],
+    "future_acceptance": [
+      "Implementar cada escenario con reloj y params reproducibles.",
+      "Comprobar reglas económicas, integridad, conservación de unidades y stock.",
+      "Demostrar ausencia de información futura y separación de datos inválidos.",
+      "Publicar conteos por clase, escenario, producto, tienda y split, más cobertura y exclusiones.",
+      "No usar TEST o escenario oculto para fabricar una mejora del modelo.",
+      "Las pruebas actuales del catálogo son de metadata. La ejecución del simulador se probará cuando exista."
+    ],
+    "required_families": [
+      "calendar",
+      "catalog",
+      "category",
+      "censoring",
+      "closed_store",
+      "cold_start",
+      "discontinued",
+      "duplicates",
+      "economics",
+      "evaluation",
+      "exchange",
+      "finance",
+      "heterogeneity",
+      "history",
+      "horizon",
+      "inspection",
+      "integrity",
+      "interaction",
+      "intermittency",
+      "invalid",
+      "leakage",
+      "missingness",
+      "modality",
+      "orders",
+      "outlier",
+      "planning",
+      "prediction_output",
+      "prices",
+      "promotion",
+      "provenance",
+      "quantity",
+      "reception",
+      "regime",
+      "replenishment",
+      "retail",
+      "returns",
+      "rotation",
+      "seasonality",
+      "shock",
+      "source",
+      "split",
+      "stock",
+      "store",
+      "supplier",
+      "target",
+      "timing",
+      "transit",
+      "trend",
+      "units",
+      "voids",
+      "wholesale",
+      "zero"
+    ],
+    "timing_meaning": "Clasifica el conocimiento del factor o el momento del control. No supone que un evento futuro conocido al corte ya haya ocurrido. event_at y available_at se registran por separado.",
+    "evaluation_risks": [
+      {
+        "risk": "MEMORIZAR_FORMULA_SINTETICA",
+        "response": "Reservar mecanismos o combinaciones no empleados para ajustes. Comparar varias familias de ruido y configuración, sin revelar parámetros como features ni inspeccionar TEST."
+      },
+      {
+        "risk": "BUEN_PROMEDIO_MAL_GRUPO",
+        "response": "Revisar errores y cobertura por producto, tienda y rotación definida con TRAIN. Informar grupos pequeños y abstenciones, sin ocultarlos con el promedio."
+      },
+      {
+        "risk": "SOBREAJUSTE",
+        "response": "Comparar TRAIN y VALIDATION con bloques mensuales, complejidad y baseline. No decidir con TEST ni prometer que Random Forest gana."
+      }
+    ]
+  },
+  "calibration": {
+    "stage": "V2-05A",
+    "status": "ACADEMIC_PARAMETERS_JUSTIFIED_NOT_GENERATED",
+    "configuration": "ml/demand/v2/contracts/calibration.v2.json",
+    "sha256": "0c26ad5e3f2d52287b86d56ac27959d15b5e40210142439d82e40500c20c4c63",
+    "scope": "ACADEMIC_REFERENCE_AND_EXPLICIT_ASSUMPTIONS",
+    "supersedes": "scenario_design.parameter_policy deferred calibration, not the historical V2-05 design levels",
+    "commercial_calibration_certified": false
+  },
+  "dataset_build": {
+    "path": "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03",
+    "build_id": "academic-20261114-03",
+    "manifest_sha256": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+    "status": "BUILT_PENDING_V2_07_NOT_FOR_TRAINING",
+    "training_authorized": false,
+    "all_scenarios_validated": false,
+    "supersedes_metadata_revision": "academic-20261114-02; retained unchanged, identical CSV bytes"
+  },
+  "dataset_validation": {
+    "stage": "V2-07",
+    "status": "PASSED_FOR_DATA_INTEGRITY_AND_OFFLINE_POLICY",
+    "scope": "INTEGRITY_OF_INITIAL_ACADEMIC_VARIANT_AND_OFFLINE_POLICY_ONLY",
+    "report": "ml/demand/reports/v2/2.0.0/academic-20261114-03/validation-20261114-02/closure.json",
+    "report_sha256": "ff42c3b8d8bc6daf83d824765d901c1e410d807817422947336f70541952a810",
+    "manifest_sha256": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+    "scenario_policy_fixtures_passed": 65,
+    "all_dynamic_scenarios_or_backend_verified": false,
+    "training_authorized": false
+  },
+  "experiments_preparation": {
+    "stage": "V2-08_PREPARATION",
+    "status": "PREPARED_NOT_TRAINED",
+    "contract": "ml/demand/v2/contracts/experiments.v2.json",
+    "contract_sha256": "c0ffed3682b75119461d1cef299aec3c4921552b656d65564c74a6ea580facb8",
+    "preflight": "ml/demand/reports/v2/experiments_preparation/experiments-preparation-20261114-02/preflight.json",
+    "preflight_sha256": "2df819cadec796e86fd6a70dbd28439e6afdbeae11dea3d805d1ee8f8cd61ff2",
+    "effective_full_feature_count": 16,
+    "original_full_feature_count": 17,
+    "future_expanded_dataset_created": false,
+    "actual_fit_count": 0,
+    "training_authorized": false
+  },
+  "active_dataset_version": "2.2.0",
+  "dataset_registry": {
+    "2.0.0": {
+      "path": "ml/demand/data/repuestopro_v2/2.0.0/academic-20261114-03",
+      "build_id": "academic-20261114-03",
+      "manifest_sha256": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+      "status": "BUILT_PENDING_V2_07_NOT_FOR_TRAINING",
+      "training_authorized": false,
+      "all_scenarios_validated": false,
+      "supersedes_metadata_revision": "academic-20261114-02; retained unchanged, identical CSV bytes"
+    },
+    "2.1.0": {
+      "path": "ml/demand/data/repuestopro_v2/2.1.0/expanded-20261115-01",
+      "build_id": "expanded-20261115-01",
+      "manifest_sha256": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+      "status": "PASSED_EXPANDED_DATA_GATE",
+      "validation_report": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/validation-20261115-01/calidad.json",
+      "validation_sha256": "d6437a766b63a2a1620fc2a41be7cf3e534c45b15b33a7f070319f70c8407c4c",
+      "training_authorized": false
+    },
+    "2.2.0": {
+      "path": "ml/demand/data/repuestopro_v2/2.2.0/calibrated-20261115-01",
+      "build_id": "calibrated-20261115-01",
+      "manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+      "status": "FROZEN_ADMIN_REPLAY_TEST_CONSUMED",
+      "active_for_admin": true,
+      "test_status": "CONSUMED_SAVED"
+    },
+    "3.0.0": {
+      "path": "ml/demand/data/repuestopro_v2/3.0.0/scenarios-20261115-02",
+      "build_id": "scenarios-20261115-02",
+      "manifest_sha256": "4f653afe8a35d38b78cd5cea682aad6e76da0144a61c6cfdeeaabd85a3d4ed49",
+      "status": "STRUCTURALLY_VALIDATED_PENDING_ERIKA_ADAPTER_AND_JOINT_ACCEPTANCE",
+      "active_for_admin": false,
+      "test_status": "NEW_SEALED_NOT_SCORED"
+    }
+  },
+  "dataset_build_reference_semantics": "dataset_build and dataset_validation retain 2.0.0 bindings for its frozen tooling. dataset_registry and active_dataset_version identify the current experiment dataset.",
+  "expanded_experiments_preparation": {
+    "contract": "ml/demand/v2/contracts/experiments.v2_1.json",
+    "contract_sha256": "651ba7393487ea05d996dc285f36d995f36309073ca28f1cda4dd30e9d153abd",
+    "preflight": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/validation-20261115-01/preflight-final.json",
+    "preflight_sha256": "7f60f9dca8f80325076e3d627b76e884dd09b1331ba730a97ac1ae8b64d125d0",
+    "status": "PREPARED_NOT_TRAINED",
+    "full_feature_count": 17,
+    "training_authorized": false
+  },
+  "preprocessing_adapter": {
+    "version": "preprocessing-2.1-1",
+    "status": "IMPLEMENTED_TESTED_FIXTURE_FITS_ONLY_NO_MODEL_TRAINING",
+    "implementation": "ml/demand/v2/preprocessing.py",
+    "implementation_sha256": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+    "contract": "ml/demand/v2/contracts/preprocessing.v2_1.json",
+    "contract_sha256": "36eed4f2b505487bf92985f4c06ad6dabaea0aee6735bf463e7c04eb2369b2b9",
+    "validation_report": "ml/demand/reports/v2/preprocessing/preprocessing-20261115-01/validation.json",
+    "validation_sha256": "e16ea39368c6d94b7002b37bd6f7af59ce87587267e94dffb6a8b04ff4b5d028",
+    "model_training_authorized": false,
+    "fitted_on_published_dataset": false
+  },
+  "completed_since_experiment_plan": [
+    "V2.1 preprocessing adapter implemented and tested on controlled fixtures. Original experiment plan retains its planning-time TODO, current implementation state is recorded in preprocessing_adapter.",
+    "V2.1 experiment routine integrated with aligned targets. Dry run validates eight slices, no model fits. Planning-time TODOs remain historical, current status is recorded in experiment_runner."
+  ],
+  "experiment_runner": {
+    "version": "experiments-2.1-1",
+    "status": "INTEGRATED_DRY_RUN_VALIDATED_NOT_TRAINED",
+    "implementation": "ml/demand/v2/experiments.py",
+    "implementation_sha256": "abe20673fab4d9cc8fb7ec4d4052a8fa8e1c448384e0fba998fa5571b3211e0c",
+    "contract": "ml/demand/v2/contracts/runner.v2_1.json",
+    "contract_sha256": "3258e6bd10f2f1ac3f2e05edcc4880db39c814475432d5f1760fd54d1e9fe3f6",
+    "validation_report": "ml/demand/reports/v2/experiment_runner/runner-20261115-01/validation.json",
+    "validation_sha256": "fb83293f834fff97c8b3f5297839a92f11d2b06e55ad7061eafa3f39f98dd892",
+    "tests_passed": 222,
+    "actual_model_fit_count": 0,
+    "fitted_on_published_dataset": false,
+    "model_training_authorized": false,
+    "test_targets_loaded": false
+  },
+  "training_run": {
+    "run_id": "training-20261115-01",
+    "dataset_version": "2.1.0",
+    "build_id": "expanded-20261115-01",
+    "status": "REVIEW_REQUIRED",
+    "user_authorized": true,
+    "authorization_scope": "ONE_RUN_TRAIN_AND_VALIDATION_ONLY",
+    "future_training_authorized": false,
+    "test_evaluation_authorized": false,
+    "test_loaded": false,
+    "actual_model_fit_count": 102,
+    "successful_model_fit_count": 102,
+    "comparison_report": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/training-20261115-01/comparison.json",
+    "comparison_sha256": "6941f7277704fbe2f33c98de419406fde090cfcbc7e21eb1465505245e464115",
+    "tracking_log": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/experiments.csv",
+    "tracking_sha256": "01813b35436a75e35ad615f198fa1521898536fcacf5fb9358d735d54db46d83",
+    "artifact": "ml/demand/models/v2/training-20261115-01/candidate.joblib",
+    "artifact_sha256": "6d53fc03f40621f9847ff2ebdcd53944ec99c4356c0a34333a50a16fcd0bf277",
+    "feature_set_id": "expanded_with_exchange",
+    "selection": {
+      "candidate_id": "candidate-c95266c5c2c2ee15ffaba590",
+      "model": "random_forest",
+      "status": "REVIEW_REQUIRED",
+      "review_reasons": [
+        "GROUP_TRADEOFF:product:10",
+        "GROUP_TRADEOFF:product:12",
+        "GROUP_TRADEOFF:product:15",
+        "GROUP_TRADEOFF:product:17",
+        "GROUP_TRADEOFF:product:19",
+        "GROUP_TRADEOFF:product:20",
+        "GROUP_TRADEOFF:product:21",
+        "GROUP_TRADEOFF:product:29",
+        "GROUP_TRADEOFF:product:3",
+        "GROUP_TRADEOFF:product:32",
+        "GROUP_TRADEOFF:product:4",
+        "GROUP_TRADEOFF:product:41",
+        "GROUP_TRADEOFF:product:43",
+        "GROUP_TRADEOFF:product:44",
+        "GROUP_TRADEOFF:product:45",
+        "GROUP_TRADEOFF:product:47",
+        "GROUP_TRADEOFF:product:5",
+        "GROUP_TRADEOFF:product_store:1/5",
+        "GROUP_TRADEOFF:product_store:10/5",
+        "GROUP_TRADEOFF:product_store:10/6",
+        "GROUP_TRADEOFF:product_store:12/5",
+        "GROUP_TRADEOFF:product_store:12/7",
+        "GROUP_TRADEOFF:product_store:13/7",
+        "GROUP_TRADEOFF:product_store:14/7",
+        "GROUP_TRADEOFF:product_store:15/5",
+        "GROUP_TRADEOFF:product_store:15/6",
+        "GROUP_TRADEOFF:product_store:15/7",
+        "GROUP_TRADEOFF:product_store:16/5",
+        "GROUP_TRADEOFF:product_store:17/6",
+        "GROUP_TRADEOFF:product_store:17/7",
+        "GROUP_TRADEOFF:product_store:18/5",
+        "GROUP_TRADEOFF:product_store:18/6",
+        "GROUP_TRADEOFF:product_store:19/5",
+        "GROUP_TRADEOFF:product_store:19/7",
+        "GROUP_TRADEOFF:product_store:2/6",
+        "GROUP_TRADEOFF:product_store:20/5",
+        "GROUP_TRADEOFF:product_store:20/7",
+        "GROUP_TRADEOFF:product_store:21/5",
+        "GROUP_TRADEOFF:product_store:21/6",
+        "GROUP_TRADEOFF:product_store:23/6",
+        "GROUP_TRADEOFF:product_store:24/5",
+        "GROUP_TRADEOFF:product_store:25/6",
+        "GROUP_TRADEOFF:product_store:26/5",
+        "GROUP_TRADEOFF:product_store:26/7",
+        "GROUP_TRADEOFF:product_store:27/5",
+        "GROUP_TRADEOFF:product_store:28/5",
+        "GROUP_TRADEOFF:product_store:28/6",
+        "GROUP_TRADEOFF:product_store:29/6",
+        "GROUP_TRADEOFF:product_store:29/7",
+        "GROUP_TRADEOFF:product_store:3/5",
+        "GROUP_TRADEOFF:product_store:3/6",
+        "GROUP_TRADEOFF:product_store:3/7",
+        "GROUP_TRADEOFF:product_store:31/5",
+        "GROUP_TRADEOFF:product_store:31/6",
+        "GROUP_TRADEOFF:product_store:32/5",
+        "GROUP_TRADEOFF:product_store:32/7",
+        "GROUP_TRADEOFF:product_store:33/5",
+        "GROUP_TRADEOFF:product_store:33/6",
+        "GROUP_TRADEOFF:product_store:34/5",
+        "GROUP_TRADEOFF:product_store:35/6",
+        "GROUP_TRADEOFF:product_store:35/7",
+        "GROUP_TRADEOFF:product_store:38/5",
+        "GROUP_TRADEOFF:product_store:38/6",
+        "GROUP_TRADEOFF:product_store:4/5",
+        "GROUP_TRADEOFF:product_store:4/6",
+        "GROUP_TRADEOFF:product_store:4/7",
+        "GROUP_TRADEOFF:product_store:41/5",
+        "GROUP_TRADEOFF:product_store:41/6",
+        "GROUP_TRADEOFF:product_store:41/7",
+        "GROUP_TRADEOFF:product_store:42/6",
+        "GROUP_TRADEOFF:product_store:43/5",
+        "GROUP_TRADEOFF:product_store:43/6",
+        "GROUP_TRADEOFF:product_store:44/5",
+        "GROUP_TRADEOFF:product_store:44/7",
+        "GROUP_TRADEOFF:product_store:45/5",
+        "GROUP_TRADEOFF:product_store:47/7",
+        "GROUP_TRADEOFF:product_store:49/5",
+        "GROUP_TRADEOFF:product_store:49/6",
+        "GROUP_TRADEOFF:product_store:5/5",
+        "GROUP_TRADEOFF:product_store:50/5",
+        "GROUP_TRADEOFF:product_store:50/7",
+        "GROUP_TRADEOFF:product_store:52/5",
+        "GROUP_TRADEOFF:product_store:54/6",
+        "GROUP_TRADEOFF:product_store:55/5",
+        "GROUP_TRADEOFF:product_store:56/7",
+        "GROUP_TRADEOFF:product_store:6/5",
+        "GROUP_TRADEOFF:product_store:6/7",
+        "GROUP_TRADEOFF:product_store:7/7",
+        "GROUP_TRADEOFF:product_store:8/7",
+        "GROUP_TRADEOFF:product_store:9/5",
+        "GROUP_TRADEOFF:product_store:9/6",
+        "GROUP_TRADEOFF:rotation_train:LOW",
+        "GROUP_TRADEOFF:rotation_train:ZERO",
+        "GROUP_TRADEOFF:historical_mode:UNKNOWN_OR_PARTIAL"
+      ],
+      "test_status": "RESERVED_NOT_LOADED",
+      "active_model_changed": false
+    },
+    "validation_metrics": {
+      "rows_requested": 504,
+      "rows_scored": 504,
+      "abstentions": 0,
+      "negative_raw_predictions": 0,
+      "mae": 8.537882393997549,
+      "rmse": 14.662933444746447,
+      "r2": 0.6822530532335891,
+      "r2_status": "DEFINED",
+      "raw_metrics": {
+        "mae": 8.537882393997549,
+        "rmse": 14.662933444746447,
+        "r2": 0.6822530532335891,
+        "r2_status": "DEFINED"
+      },
+      "status": "OK"
+    },
+    "commercial_accuracy_certified": false,
+    "closure_report": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/training-20261115-01/closure.json",
+    "closure_sha256": "151262640cfea33e7d62f6c854ffef2a70dc45213551707a0c8481e5b37664e0",
+    "artifact_reload_verified_on_validation": true,
+    "unresolved_test_failures": 0
+  },
+  "diagnostic_review": {
+    "status": "DIAGNOSIS_COMPLETE_SELECTION_REVIEW_PENDING",
+    "report": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/training-20261115-01/diagnosis-20261115-01/error_diagnosis.json",
+    "report_sha256": "6439967ffc517669ef991d8b2a6b3be6aa3da9b281c0106830a916d67088c6b1",
+    "closure": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/training-20261115-01/diagnosis-20261115-01/closure.json",
+    "closure_sha256": "ef4d6b80ffe91b0e7b12cef2c072282686a88a605cae95a0a9219b8674f076c9",
+    "recommendations": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/training-20261115-01/diagnosis-20261115-01/recommendations.json",
+    "fit_count": 0,
+    "test_evaluated": false,
+    "selection_changed": false,
+    "decision_required": true
+  },
+  "alternatives_run": {
+    "run_id": "alternatives-20261115-01",
+    "status": "EXPLORATORY_COMPARISON_COMPLETE_SELECTION_PENDING",
+    "comparison_report": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/alternatives-20261115-01/comparison.json",
+    "comparison_sha256": "9ef68e854f37941d788e7970adec4f2a4a675473e3bbfd9dcff90381c5b92e52",
+    "closure_report": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/alternatives-20261115-01/closure.json",
+    "closure_sha256": "d495de1b996120a20d144f5b838994e04fb28a9294b2db8cc2241dd07e679446",
+    "actual_forest_fits": 25,
+    "best_mae_option": "absolute_forest-d4",
+    "balanced_alternative": "low_median_routing",
+    "test_evaluated": false,
+    "active_model_changed": false,
+    "future_training_authorized": false,
+    "validation_reused": true
+  },
+  "candidate_recommendation": {
+    "status": "ACADEMIC_RECOMMENDATION_ONLY_NOT_PROMOTED",
+    "recommended": "absolute_forest-d4",
+    "artifact": "ml/demand/models/v2/alternatives-20261115-01/absolute_forest-d4.joblib",
+    "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+    "report": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/alternatives-20261115-01/candidate-review-20261115-01/recommendation.json",
+    "report_sha256": "cccc969a50f739a20dccaf6d1d50fb2de52f43e59835ff02ea6dfa1ffb9a83f6",
+    "closure": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/runs/alternatives-20261115-01/candidate-review-20261115-01/closure.json",
+    "closure_sha256": "925480165370aa55a59df232a269dc2c6d538c495e07c3dcdbe3e6d1104293b4",
+    "selection_closed": false,
+    "test_evaluated": false,
+    "active_model_changed": false,
+    "basis": "PREDECLARED_PRIMARY_MAE_FOR_SYNTHETIC_ACADEMIC_H4",
+    "commercial_use_approved": false
+  },
+  "final_selection": {
+    "selection_id": "accepted-absolute-2.1-20261115-01",
+    "user_accepted": true,
+    "selected_candidate": "absolute_forest-d4",
+    "selection_closed": true,
+    "artifact": "models/v2/alternatives-20261115-01/absolute_forest-d4.joblib",
+    "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+    "policy": {
+      "version": "NONNEGATIVE_V1",
+      "nonfinite": "REJECT_ALL_NO_SUBSET",
+      "negative": "CLIP_ZERO",
+      "rounding": "NONE"
+    },
+    "selection_contract": "ml/demand/v2/contracts/selection.v2_1.json",
+    "selection_sha256": "e4881d38ec32a087904d499fc122e14953cc23946b0c4123e6ce15630ee9f3e0",
+    "test_evaluated": true,
+    "test_consumed": true,
+    "test_result": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/final_test/result.json",
+    "test_result_sha256": "c7672cecd1fa0a589294478f9dda8c5936ec5ee45c371bd53510b191053bcabd",
+    "closure": "ml/demand/reports/v2/2.1.0/expanded-20261115-01/final_test/closure.json",
+    "closure_sha256": "27d16b1b0f107e63492038ed5636dd143852027a72b3ecfeb4969db53ebe7e25",
+    "model_fit_calls": 0,
+    "test_model_predict_calls": 1,
+    "test_metrics": {
+      "rows_requested": 504,
+      "rows_scored": 504,
+      "abstentions": 0,
+      "negative_raw_predictions": 0,
+      "mae": 7.632738095238095,
+      "rmse": 15.425266214001542,
+      "r2": 0.6428720792171163,
+      "r2_status": "DEFINED",
+      "raw_metrics": {
+        "mae": 7.632738095238095,
+        "rmse": 15.425266214001542,
+        "r2": 0.6428720792171163,
+        "r2_status": "DEFINED"
+      },
+      "status": "OK"
+    },
+    "future_training_authorized": false,
+    "future_test_evaluation_authorized": false,
+    "active_model_changed": false,
+    "commercial_use_approved": false
+  },
+  "inference_verification": {
+    "stage": "V2-09B",
+    "status": "LOCAL_ARTIFACT_INFERENCE_CONTRACT_VERIFIED",
+    "contract": "ml/demand/v2/contracts/inference.v2_1.json",
+    "contract_sha256": "002a9ce65e8e40e3a1358b954ee2906455659a7ba5a0e9a19a19ca9743ff9207",
+    "implementation": "ml/demand/v2/inference.py",
+    "implementation_sha256": "2b12970a283981f0288c302c865272ed7b584f722bc83ee6b7b8f6abe3d5c9ff",
+    "binding": "ml/demand/reports/v2/inference/inference-20261115-01/binding.json",
+    "binding_sha256": "cdfee5974182044485095c44282a603a0663bb22fce4465728e7897c7eb0111d",
+    "closure": "ml/demand/reports/v2/inference/inference-20261115-01/closure.json",
+    "closure_sha256": "53a8f4f21d0fe03d28761945190aa0489997b912bd7f433b139034b9642a07aa",
+    "exact_validation_parity_rows": 504,
+    "fit_calls": 0,
+    "test_repeated": false,
+    "api_v2_integrated": false,
+    "api_v1_unchanged": true
+  },
+  "admin_api_integration": {
+    "stage": "V2-10",
+    "status": "ADMIN_API_CONNECTED_TO_FROZEN_V2_ACADEMIC_REPLAY",
+    "contract": "ml/demand/v2/contracts/admin_api.v2_1.json",
+    "contract_sha256": "0dcf6f5cbb7ac79cf4937fad1351339dcb8a8e875ae38d8f0235b79bb0670c02",
+    "bridge": "ml/demand/admin_prediction_v2.py",
+    "bridge_sha256": "d18a2f274d8405c9108bfc7b7b80337c6b194ea5d5057994f14c4abc82497db1",
+    "binding": "ml/demand/reports/v2/api/api-v2-20261115-01/binding.json",
+    "binding_sha256": "ff68ccbecc13f3bc6a8f05fe21032898fdd9fc18a4fa1a1e65aaad0a60c00b17",
+    "closure": "ml/demand/reports/v2/api/api-v2-20261115-01/closure.json",
+    "closure_sha256": "d02d72b1f2696dabdf3ef29df0a1c8cd568b7fb59bb9f1565937da2e923b7018",
+    "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+    "default_month": "2026-06",
+    "tests_passed": 52,
+    "fit_calls": 0,
+    "test_repeated": false,
+    "api_v2_integrated": true,
+    "v1_fallback": false,
+    "live_forecast_enabled": false
+  },
+  "admin_ui_delivery": {
+    "stage": "V2-11",
+    "status": "COMPLETE_ACADEMIC_REPLAY_UI",
+    "implementation": "frontend/src/pages/PredictionsPage.tsx",
+    "guard": "frontend/src/services/demandView.ts",
+    "source_hashes": {
+      "frontend/src/pages/PredictionsPage.tsx": "6b97aa9223d9012a5ff10e7efe55a8d835287ed514127dc1b2c226af2ff02745",
+      "frontend/src/services/demandView.ts": "d1d34e49b9df358a0749e881bc2f6b1ac06656c32e18d3e2695c4582e8ec718e",
+      "frontend/src/pages/__tests__/PredictionsPage.test.tsx": "55cc8875d8c8e70babde07e094a61e61b98ad8d123164e2240b577d38109291a"
+    },
+    "review": "ml/demand/reports/v2/ui/ui-v2-20261115-01/review.json",
+    "review_sha256": "28eb49ce1afb1209661c847c48b73fb3b162414956a08625edbe44694aea758b",
+    "closure": "ml/demand/reports/v2/ui/ui-v2-20261115-01/closure.json",
+    "closure_sha256": "ceefa07f359544205e2fcaa1f08bf205717487c9ee56224092f0888244cd1a00",
+    "frontend_tests_passed": 12,
+    "contract_checks_passed": 2,
+    "visual_fixture_review": true,
+    "fit_calls": 0,
+    "test_repeated": false
+  },
+  "source_expansion_proposal": {
+    "status": "ACCEPTED_2_2_FINAL_TEST_ONCE_ADMIN_CONNECTED",
+    "current_dataset": "2.2.0 local private academic synthetic build calibrated-20261115-01",
+    "current_references": [
+      "monash_car_parts",
+      "uci_online_retail_ii",
+      "m5_walmart",
+      "corporacion_favorita"
+    ],
+    "pending_source_review": [
+      "automotive_spare_parts_demand"
+    ],
+    "all_sources_mandatory": false,
+    "new_dataset_version_assigned": true,
+    "start_order": "Selección 2.2.0 aceptada antes de TEST. TEST evaluado una sola vez. API e interfaz conectadas al artefacto fijado. No repetir TEST o ajustar según sus resultados.",
+    "no_reuse_of_consumed_test_as_independent": true,
+    "additional_reference_eligible_for_future_academic_profiling": [
+      "m5_walmart",
+      "corporacion_favorita"
+    ],
+    "source_access_review": "reports/v2/source_reviews/source-access-20261115-03/review.json",
+    "profiling_report": "reports/v2/profiling/profile-retail-20261115-01",
+    "compatibility_report": "reports/v2/compatibility/profile-retail-20261115-01/source_compatibility_matrix.json",
+    "transformation_rules": "v2/contracts/retail_transformations.v2.json",
+    "curation_execution": "reports/v2/curation/curate-retail-20261115-01/execution.json",
+    "curation_validation": "reports/v2/curation/curate-retail-20261115-01/validation.json",
+    "curated_sources": {
+      "m5_walmart": "sources/external_curated/m5_walmart/sha256-aa5d519ab121b284a7b07f4d/processing-1-curate-retail-20261115-01",
+      "corporacion_favorita": "sources/external_curated/corporacion_favorita/sha256-b69a1fa872a46632efa647d8/processing-1-curate-retail-20261115-01"
+    },
+    "calibration_run": "calibration-retail-20261115-03",
+    "calibration_configuration": "reports/v2/calibration/calibration-retail-20261115-03/calibration.json",
+    "calibration_configuration_sha256": "9433d9c51d26a2cc9d561f441279f0e5bfef4eadcdf51ebbd846205dc43a1e1d",
+    "calibration_reference_sources": [
+      "m5_walmart",
+      "corporacion_favorita"
+    ],
+    "generator_version": "retail-reference-generator-1.1.0",
+    "generator_recipe": "v2/contracts/generator.retail_extension.v1_1.json",
+    "generator_recipe_sha256": "be5d78c720df4751d81cf381c52e52205cb28609bd58dd25d2a7ab07a18ee19a",
+    "generator_verification": "reports/v2/generator/generator-retail-20261115-01/validation.json",
+    "dataset_version": "2.2.0",
+    "published_build": "data/repuestopro_v2/2.2.0/calibrated-20261115-01",
+    "published_manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+    "active_api_model_dataset": "2.2.0",
+    "frozen_previous_dataset": "2.1.0 expanded-20261115-01 UNCHANGED",
+    "experiment_contract": "v2/contracts/experiments.v2_2.json",
+    "preprocessing_contract": "v2/contracts/preprocessing.v2_2.json",
+    "runner_contract": "v2/contracts/runner.v2_2.json",
+    "experiment_preparation_report": "reports/v2/2.2.0/calibrated-20261115-01/preparation/prepare-2.2-20261115-01/run_plan.json",
+    "training_run": "reports/v2/2.2.0/calibrated-20261115-01/runs/train-2.2-20261115-01",
+    "training_authorization": "v2/contracts/training.v2_2.json",
+    "validation_candidate_id": "candidate-2.2-1202b43393aac05173a4f603",
+    "selection_status": "USER_ACCEPTED_BEFORE_FINAL_TEST",
+    "test_loaded": true,
+    "active_api_artifact_changed": true,
+    "ross_task_status_2_2": {
+      "scope": "Frozen reference delivery preserved. Interactive teacher scope reopened, see audio review.",
+      "closed_reference_is_not_all_h4": true,
+      "interactive_requirements_remaining": true
+    },
+    "selection_contract": "v2/contracts/selection.v2_2.json",
+    "inference_contract": "v2/contracts/inference.v2_2.json",
+    "integration_report": "reports/v2/integration/admin-2.2-20261115-01/binding.json",
+    "test_evaluation_events": 1
+  },
+  "admin_integration_2_2": {
+    "status": "LOCAL_H4_ADMIN_2_2_CONNECTED",
+    "selection_id": "accepted-absolute-2.2-20261115-01",
+    "artifact_sha256": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+    "selection_sha256": "7d9f49856b44703021f57fc83f9d763d5d787c428b3d4dedcddac6955babff23",
+    "final_report_sha256": "3a5f4b87c158b49eb447bc37cbf4a541e7b046ef69559e73e3c3c9a42143e283",
+    "runtime_sha256": "fdd8221afe37480cdba9a52c7ca9c822726593e754d84792104b73cc667994e8",
+    "bridge_sha256": "ac7f819ffea0f0e83205ee92d28064f8f361bd16f127e7bd481d58632f0ddc02",
+    "api_contract_sha256": "049263b84413fdf5d15f9a71d59cd9d5622981d212a233ccf2e9e35f646207be",
+    "api_service_sha256": "96330e9b188c112c9ef115f6694213ec93b3d994baa67c2ce058664f0b8a0377",
+    "frontend_guard_sha256": "19c15f8b0b32584bf6797115e405d1ce3ff1c5fdea5b8b02ed780b7dfc89d6cc",
+    "ui_sha256": "2885eced52986f0b08b820ef09c9feaf9bf9ab1b05f2b0b49893d0684c4e7c83",
+    "api_version": "V2.2.0",
+    "previous_version": "2.1.0 preserved, no automatic fallback",
+    "metrics": {
+      "rows_requested": 504,
+      "rows_scored": 504,
+      "abstentions": 0,
+      "negative_raw_predictions": 0,
+      "mae": 9.204618055555557,
+      "rmse": 16.90851955066845,
+      "r2": 0.6465904325570372,
+      "r2_status": "DEFINED",
+      "raw_metrics": {
+        "mae": 9.204618055555557,
+        "rmse": 16.90851955066845,
+        "r2": 0.6465904325570372,
+        "r2_status": "DEFINED"
+      },
+      "status": "OK"
+    },
+    "role_matrix": [
+      {
+        "role": "ADMIN",
+        "read_catalog": 200,
+        "predict": 200
+      },
+      {
+        "role": "TIENDA",
+        "read_catalog": 403,
+        "predict": 403
+      },
+      {
+        "role": "INVENTARIO",
+        "read_catalog": 403,
+        "predict": 403
+      },
+      {
+        "role": "UNKNOWN",
+        "read_catalog": 403,
+        "predict": 403
+      },
+      {
+        "role": "ANONYMOUS_OR_INVALID_OR_REVOKED",
+        "read_catalog": 401,
+        "predict": 401
+      }
+    ],
+    "tests": {
+      "python": 84,
+      "backend": 173,
+      "frontend": 248,
+      "total_distinct_across_suites": 505,
+      "failed": 0
+    },
+    "typecheck_backend": "PASSED",
+    "typecheck_frontend_build": "PASSED",
+    "visual": {
+      "status": "PASSED_ISOLATED_SESSION_REAL_INFERENCE",
+      "desktop_width": 1280,
+      "mobile_width": 390,
+      "horizontal_overflow": false,
+      "session": "FICTITIOUS_LOCAL_ONLY",
+      "api": "REAL_NODE_PYTHON_ARTIFACT",
+      "production_session_verified": false
+    },
+    "test_evaluation_events": 1,
+    "fit_calls": 0,
+    "neon_used": false,
+    "commercial_accuracy_certified": false,
+    "limitations": [
+      "Synthetic academic replay, not a current-month production forecast",
+      "13 products and 36 product-store groups worsened on VALIDATION, accepted before TEST",
+      "Historical stock does not reveal lost demand",
+      "No automatic purchasing or stock mutation",
+      "Operational dashboard and database health not certified without permitted DB access"
+    ]
+  },
+  "interactive_teacher_scope_review": {
+    "status": "INCOMPLETE_REPLAY_IS_NOT_INTERACTIVE_SCENARIOS",
+    "report": "reports/v2/closure/close-h4-20261115-01/audio_scope_review.json",
+    "reference_2_2_preserved": true,
+    "no_new_dataset_built": true,
+    "no_retraining": true,
+    "no_test_repeated": true,
+    "next_stage": "REVIEW_SCENARIO_CONTRACT_AND_DATA_MECHANISMS_BEFORE_AUTHORIZING_NEW_BUILD"
+  },
+  "explicit_release_recovery": {
+    "status": "PASSED_LOCAL_2_2_TO_2_1_TO_2_2",
+    "environment_variable": "DEMAND_RELEASE",
+    "default": "2.2.0",
+    "allowed": [
+      "2.2.0",
+      "2.1.0"
+    ],
+    "automatic_fallback": false,
+    "report": "reports/v2/closure/close-h4-20261115-01/recovery-smoke.json"
+  },
+  "interactive_scenario_contract": {
+    "status": "DESIGN_READY_IMPLEMENTATION_PENDING",
+    "contract": "v2/contracts/scenarios.v1.json",
+    "version": "demand-scenarios-1.0.0",
+    "plan_annex": 47,
+    "backend_owner": "Erika",
+    "frontend_and_dataset_owner": "Ross",
+    "backend_tasks": 9,
+    "frontend_dataset_tasks": 10,
+    "domain_rules": 21,
+    "new_endpoints_implemented": false,
+    "new_dataset_built": false,
+    "training_authorized_by_this_task": false,
+    "neon_used": false,
+    "next_parallel_work": [
+      "H4-R01 dataset dictionary",
+      "H4-E01 API contract/capabilities",
+      "H4-E02 semantic validators"
+    ]
+  },
+  "interactive_scenario_dictionary": {
+    "work_item": "H4-R01",
+    "owner": "Ross",
+    "status": "DESIGN_COMPLETE_NEW_BUILD_AND_FEATURE_SELECTION_PENDING",
+    "dictionary": "v2/contracts/dataset_dictionary.scenarios.v1.json",
+    "plan_annex": 48,
+    "request_fields": 48,
+    "tables": 14,
+    "reference_supervised_columns": 24,
+    "new_candidate_features": 16,
+    "proposed_supervised_columns": 43,
+    "new_dataset_built": false,
+    "neon_used": false,
+    "next_ross": [
+      "H4-R02",
+      "H4-R03"
+    ],
+    "parallel_erika": [
+      "H4-E01",
+      "H4-E02"
+    ]
+  },
+  "interactive_ross_delivery": {
+    "report": "reports/v2/contracts/ross-scenarios-20261115-01/handoff.json",
+    "status": "DATASET_AND_UI_DELIVERED_REAL_BACKEND_INTEGRATION_PENDING",
+    "dataset_version": "3.0.0",
+    "build_id": "scenarios-20261115-02",
+    "admin_release_unchanged": "2.2.0",
+    "work_plan_annex": 49,
+    "no_training": true,
+    "no_neon": true
+  }
+}

@@ -1,10 +1,62 @@
 # H4. Implementación del modelo predictivo de RepuestoPro
 
-Documento oficial vigente. Interfaz, integración, métricas y monitoreo de Ross: 4 de noviembre de 2026, America/La_Paz.
+## Estado vigente. Calendario unificado 4.0.0
+
+Actualizado el 16 de noviembre de 2026. Esta sección reemplaza las indicaciones activas de 2.2.0 y 3.0.0 que aparecen debajo. Esos apartados se conservan como registro histórico. La interfaz, los datos mostrados y el pronóstico de Escenarios usan ahora el mismo build 4.0.0.
+
+El dataset sintético abarca noviembre de 2024 a octubre de 2026. Sus tres meses iniciales forman los primeros lags. TRAIN comprende febrero de 2025 a abril de 2026, VALIDATION mayo a julio de 2026, TEST agosto a octubre de 2026. Son 15, 3 y 3 meses completos. Las variantes de una misma familia permanecen juntas y comparten un peso total de uno.
+
+Existe una realización DEMO independiente, excluida del ajuste, la selección y las métricas. Sus observaciones BASE de enero a octubre de 2026 alimentan tanto Explorar ventas como la gráfica de Escenarios. Los tres lags de noviembre son agosto, septiembre y octubre de esa misma realización. Noviembre no tiene ventas generadas ni un target conocido. Su punto en la gráfica procede exclusivamente de la inferencia.
+
+El build contiene 14.112 filas supervisadas. De ellas, 5.040 corresponden a TRAIN, 1.008 a VALIDATION, 1.008 a TEST y 7.056 a DEMO. Hay 56 productos del catálogo congelado, tres tiendas y 168 combinaciones. No se agregaron almacenes como tiendas de venta. Las ventas siguen siendo simuladas, no historia comercial certificada.
+
+Se compararon baseline, LinearRegression y dos bosques. El bosque con criterio de error absoluto obtuvo MAE 11,5168 en VALIDATION frente a 19,4067 del baseline. Se fijó antes de abrir TEST. Su configuración utiliza 100 árboles, profundidad máxima 14, mínimo de cuatro muestras por hoja, fracción de variables 0,9 y seed 42. El adaptador conserva las 19 entradas aprobadas, los controles de disponibilidad temporal y el escalado ajustado solo con TRAIN para el modelo lineal. El bosque no necesita escalado numérico.
+
+TEST se evaluó una sola vez para esta nueva versión. El bosque obtuvo MAE 10,2010 unidades, RMSE 18,4046 y R² 0,6201. El baseline obtuvo MAE 17,3581. Esa mejora técnica con datos sintéticos no certifica tolerancia comercial. No se volvió a evaluar el TEST de las versiones anteriores. Tres comprobaciones temporales adicionales se limitaron a TRAIN, sin cambiar la selección fijada.
+
+La consulta de noviembre conserva el stock al cierre de octubre. Precios, costos y cotización se arrastran desde la información conocida de octubre. Una recepción de 50 unidades prevista para el 10 de noviembre es un supuesto sintético explícito, no una recepción real. Los estados de stock del generador son escenarios mensuales independientes, no un libro continuo de inventario certificado. Los campos de logística sirven también para la reposición explicativa, sin crear compras o movimientos.
+
+La revisión de inferencia cubrió las 168 combinaciones. En 136 se obtiene una cifra y en 32 el modelo se abstiene porque el stock supera las 150 unidades observadas como máximo en TRAIN. No se recorta ese stock, no se sustituye una abstención por cero ni se amplían los límites después de TEST. La interfaz avisa del motivo. El historial puede explorarse para todas las combinaciones.
+
+La pantalla mantiene producto y tienda al cambiar de vista. Explorar ventas muestra enero a octubre de 2026. Predecir y comparar ofrece noviembre de 2026, con los controles de cantidades previas, precios, cotización, costo, stock, reservas y entregas. Los cambios son hipótesis, no ediciones de la base operativa. La serie decorativa anterior ya no se usa en estas vistas. La consulta histórica 2.2.0 queda en Versiones anteriores. Los archivos 3.0.0 se conservan sin cambios.
+
+Dataset: `ml/demand/data/repuestopro_v2/4.0.0/calendar-20261116-01/`. Modelo: `ml/demand/models/v2/calendar-model-20261116-01/model.joblib`. Evidencias: `ml/demand/reports/v2/4.0.0/calendar-model-20261116-01/`. El release conserva hashes del modelo y los snapshots. La evaluación final está separada en `test-evaluation.json`, protegida por un registro de intento único. La carga de métricas no vuelve a puntuar TEST.
+
+Se comprobaron 294 pruebas frontend, 184 backend y 29 Python e integridad. En total, 507 pruebas aprobadas. El cierre está registrado en `integration-review.json`. Pasaron la compilación backend y el build frontend. La revisión visual local utilizó una sesión ADMIN ficticia con el router, la API y el artefacto reales. Se observó noviembre de 2026 y una comparación de 87,17 unidades para Tensador de Correa en Tienda 2, sin cambios. Esta evidencia no equivale a una nueva validación de la sesión productiva. Los permisos ADMIN permanecen protegidos en la API.
+
+La integridad de 518 archivos anteriores quedó verificada por SHA-256. No hubo cambios en Neon, Prisma, RAW o versiones previas. No se crearon documentos Markdown nuevos. Automotive continúa excluido por licencia pendiente. El simulador Streamlit sigue separado.
+
+> Estado vigente: la integración local de escenarios 3.0.0 está completada. Consultar la sección final de este documento y el anexo 51 del Plan V2. Las entregas anteriores se conservan como registro del proceso.
+**Estado vigente: referencia 2.2.0 validada e integrada. H4 interactivo sigue incompleto.** Los anexos 46 y 47 del Plan V2 corrigen el alcance anterior y definen el contrato y las tareas vigentes. Replay histórico no equivale a edición de precios, cotización, cantidades y planes logísticos.
+
+El administrador consulta /panel/prediccion. La API y la pantalla identifican V2.2.0, el artefacto aceptado y la política NONNEGATIVE_CONTINUOUS_1. El simulador Streamlit permanece separado. El modelo predice ventas observadas de un producto en una tienda a un mes. Sus cinco entradas son los tres lags y dos variables del calendario. El dataset conserva otras variables evaluadas, pero no utilizadas por la configuración elegida.
+
+TEST se evaluó una sola vez después de fijar la selección, sin reentrenar. MAE 9,2046 frente a 12,8690 del baseline, RMSE 16,9085 y R² 0,6466. La mejora del MAE es 28,47 %. Persiste subestimación agregada aproximada del 20,05 %. No se garantiza precisión comercial ni se borran los errores desfavorables de VALIDATION.
+
+Pasaron 84 pruebas Python, 173 backend y 248 frontend, además de tipos backend, build frontend y el control de contrato real Node/Python/frontend. Se revisó la pantalla a 1280 y 390 px con sesión ficticia y la inferencia real. ADMIN tiene acceso. TIENDA e INVENTARIO no pueden consultar esta sección. Se comprobaron sesiones inválidas, revocadas y cambios de rol mediante lecturas de sesión simuladas, sin Neon.
+
+La consulta es ACADEMIC_REPLAY de abril a junio de 2026 con datos sintéticos. No es un pronóstico en vivo del mes actual. Lee métricas finales guardadas y no vuelve a evaluar TEST. No crea compras, calcula reposición o cambia stock. La operación productiva con Neon y el ensayo conjunto no se certifican en esta revisión.
+
+El bloque siguiente conserva la introducción histórica previa al cierre 2.2.0. Sus versiones, métricas y pendientes corresponden a ese momento.
+
+Documento oficial vigente. Integración y revisión de cierre de Ross: 10 de noviembre de 2026, America/La_Paz. La ampliación administrativa vigente está en la sección 22. Las secciones 20 y 21 conservan la revisión previa y su guion. Los apartados anteriores conservan el diseño y las revisiones fechadas.
+
+La ampliación se organiza en el [Plan de trabajo V2](PLAN_DE_TRABAJO_V2.md). V2-11 está cerrado para la pantalla administrativa de reproducción académica, según el anexo 29. Se seleccionan producto, tienda y un mes aprobado de abril a junio de 2026. El horizonte permanece en un mes. El gráfico distingue historia simulada, predicción y baseline, con una tabla accesible. Se muestran métricas guardadas, origen sintético, límites, versión, política y trazabilidad del snapshot.
+
+La pantalla valida las respuestas antes de mostrarlas. Cambiar la selección o actualizar referencias limpia resultados anteriores. Cancela solicitudes del cliente e ignora respuestas o errores tardíos. Los errores de permisos, snapshot, ausencia de historia e integridad se explican sin inventar predicciones. Se mantiene la política fijada y no se presentan métricas TEST como error conocido de esa consulta.
+
+Pasaron 12 pruebas de interfaz, dos controles con catálogo y respuesta reales del adaptador V2, tipos y build frontend. El componente y su gráfico se revisaron con fixtures en escritorio y a 390 píxeles, sin desbordamiento horizontal. No se utilizó una sesión real de Neon o el TEST consumido. La validación global de V2-15 y la aceptación conjunta siguen pendientes. No se afirma revisión de Expo o deploy.
+
+El dataset 2.1.0 ya existe y está completo para el alcance académico inicial aprobado, con ventas sintéticas y referencias de Monash y UCI. No es una unión de los cinco datasets externos. El anexo 30 establece que una ampliación puede abrirse después de este cierre, antes de otro entrenamiento, sin esperar obligatoriamente a H5. Automotive, M5 y Favorita requieren resolver las condiciones pendientes y comprobar compatibilidad. No se garantiza que deban incorporarse todas las fuentes. La ampliación tendrá otra versión, otro protocolo de evaluación y no reutilizará TEST de 2.1.0 como prueba independiente.
+
+El bosque aceptado sigue fijado. Su TEST guardado conserva MAE 7,6327, RMSE 15,4253 y R² 0,6429, con subestimación de la suma observada del 15,46 %. No se reentrenó, repitió TEST, modificó un dataset o conectó Neon en esta tarea. No existe aprobación de compra automática o precisión comercial.
+
+Para estudiar la exposición, utilizar la [sección 21. Presentación al docente](#21-presentación-de-h4-al-docente). El reporte técnico y sus resultados están en la [sección 20](#20-reporte-de-integración-y-cierre-técnico-de-ross). El guion prepara una demostración, no registra una defensa ya realizada.
 
 Esta guía reúne las decisiones para estudiar, presentar e implementar H4. La indicación del docente resumida por el equipo en la solicitud de consolidación define la entrega. El código y los archivos locales respaldan el estado técnico. Las auditorías conservan observaciones fechadas. Si una propuesta anterior difiere de esta guía, se utiliza esta versión.
 
-**Estado comprobado al 4 de noviembre:** existen el dataset sintético local 1.1 y las capas de Ross de las tres semanas. Streamlit incluye edición, adaptador de inferencia, registro de observados, métricas, errores por grupos, monitoreo demostrativo y comparación visual. La integración se prueba con dobles exclusivos de unittest. No existen todavía modelos reales entrenados, artefacto V1 ni resultados experimentales. PREDECIR se habilita solo si el runtime de Erika entrega un ACTIVE compatible. Generación dinámica, reloj, entrenamiento, versiones, candidato y rollback pertenecen a Erika y siguen pendientes. Esta entrega no completa la demo conjunta ni acredita el 70 % funcional.
+**Estado comprobado al 10 de noviembre:** los cambios de Erika ya están integrados. Existen motor, baseline, LinearRegression, RandomForest V1, resultados congelados, inferencia, reentrenamiento local, comparación, rollback y trazabilidad. Ross conectó las tres referencias a la aplicación normal y completó el análisis por escenario. La revisión ejecutó 473 pruebas sin fallos, cargó los artefactos reales y verificó escritorio, pantalla estrecha y descarga de sesión. Los 29 archivos protegidos permanecen intactos. No se reentrenó V1 ni se repitió su TEST oficial. La promoción de candidatos reales sigue bloqueada por evidencia insuficiente y no se declara aceptación académica del equipo ni validación comercial.
+
 
 ## 1. Base del modelo predictivo
 
@@ -286,7 +338,7 @@ La revisión del 3 de noviembre distingue lo instalado de lo propuesto. Se consu
 | Node.js | EXISTENTE, v24.16.0 consultado | Runtime del backend. No hace falta integrar inferencia a Express para demostrar el experimento H4 |
 | Express y TypeScript de backend | EXISTENTES, 4.22.3 y 5.9.3 instalados | API operativa actual. Adaptador predictivo completo previsto para H5 |
 | React, Vite y TypeScript de frontend | EXISTENTES, 18.3.1, 5.4.21 y 5.9.3 instalados | Interfaz web actual. La administración completa del ciclo de modelos queda para H5 |
-| Recharts | EXISTENTE, 2.15.4 instalado en frontend | Opción de integración H5. H4 utiliza una interfaz Python aislada, sin modificar la SPA |
+| Recharts | EXISTENTE, 2.15.4 instalado en frontend | Utilizado en la consulta administrativa sintética de H4. La ampliación autorizada está en la sección 22. Streamlit continúa separado |
 | Git y GitHub | EXISTENTES. Git 2.54.0.windows.1 y remoto GitHub configurado localmente | Historia del proyecto y revisión del equipo. No se ejecutan commit, push o cambios de historia en esta tarea |
 | Markdown, hashes y log de prompts | EXISTENTES | Documentación y trazabilidad. experiments.csv y los modelos guardados siguen PROPUESTOS y pendientes |
 
@@ -296,7 +348,7 @@ ia-service/requirements.txt pertenece a visión H3. Declara FastAPI, Uvicorn, Nu
 
 Si se utiliza joblib se guardará el modelo con sus transformaciones y versiones verificadas. La [documentación de persistencia](https://scikit-learn.org/stable/model_persistence.html) advierte que la compatibilidad entre versiones no debe suponerse y que solo se carguen artefactos de procedencia confiable. Conservar un archivo sin sus dependencias no basta para garantizar rollback.
 
-Se eligió **Streamlit para la interfaz local H4** y se comprobó esta primera entrega en el entorno aislado. No se modifica el stack de la aplicación. Se ejecuta solo en 127.0.0.1, sin credenciales de Neon, conexión a ventas ni despliegue. El contrato de entradas se mantiene separado de los controles visuales. El futuro motor y la inferencia se integrarán sin convertir esta interfaz en un generador o entrenador implícito.
+Se eligió **Streamlit para la primera interfaz local H4** y se comprobó esa entrega en el entorno aislado. No se modifica el stack de la aplicación. El simulador se ejecuta localmente, sin credenciales de Neon, conexión a ventas ni despliegue. La ampliación autorizada en la sección 22 agrega una consulta administrativa en React, manteniendo separado el simulador. Consultar una predicción no genera datos ni entrena.
 
 | Criterio | Streamlit aislado | React existente + servicio Python local |
 |---|---|---|
@@ -711,3 +763,452 @@ La indicación posterior del simulador reemplaza el mínimo de script estático 
 | ¿Qué queda para H5? | Administración integrada, jobs, permisos, Neon, registro y rollback productivos, ranking, reposiciones, alertas automáticas y reentrenamiento comercial |
 
 El 70 % requiere simulador interactivo, modelos comparados, V1, métricas, monitoreo, candidato, rollback y evidencia reproducible. Un CSV estático no basta. Una buena métrica sintética no certifica ventas reales ni reemplaza decisiones humanas.
+
+## 20. Reporte de integración y cierre técnico de Ross
+
+Revisión del 10 de noviembre de 2026, America/La_Paz. Se revisó el código integrado en 632bbf5, que incorpora el trabajo de Erika d07fcdd mediante el PR 52. El estado inicial del checkout estaba limpio. No se ejecutaron fetch, merge, commit, push o deploy durante esta revisión. Las consultas Git fueron de lectura. No se conectó con Neon.
+
+La evidencia actual está en [cierre_ross_2026-11-10](evidencias/cierre_ross_2026-11-10/). Los informes T10–T21 se conservan como antecedentes, sin sustituir sus resultados por esta revisión. Las cifras de noviembre 4 describen una entrega anterior a los modelos de Erika y no deben utilizarse como estado actual.
+
+| Componente | Implementación actual y comprobación |
+|---|---|
+| Dataset | 1.1 sintético, seed 42, 56 productos, tiendas 5/6/7, 24 meses, 4.032 filas base y 3.528 supervisadas. No se regeneró |
+| Contrato | Tres lags y seno/coseno del mes. IDs seleccionan la serie. Escenario, latente y observado del mes no entran al modelo |
+| Motor | Ocho escenarios, precargas, edición, seed y azar por par, resultado manual o generado, cierre único y avance de lags |
+| Situaciones ambiguas | Producto nuevo e historia insuficiente producen abstención. STOCKOUT distingue disponibilidad, observado y latente |
+| Preparación ML | Split temporal 15/3/3. Transformaciones de LinearRegression ajustadas en TRAIN. Sin split aleatorio |
+| Modelos y experimentos | Baseline, LinearRegression y RandomForest ya entrenados o evaluados por Erika. Tres registros en experiments.csv |
+| V1 | RandomForest seleccionado por validation, con configuración y artefacto congelados. Comienza disponible, sin ACTIVE |
+| TEST | Reporte oficial existente con 504 observaciones. Se leyó el resultado, sin ejecutar nuevamente su evaluación |
+| Inferencia | Carga local con hashes y contrato comprobados. Activación V1 explícita por par. Editar y predecir no entrenan |
+| Referencias de Ross | Botón COMPARAR TRES REFERENCIAS conectado a la aplicación normal. Baseline y LR REFERENCE funcionan sin ACTIVE. RF exige V1 activa |
+| Presentación de referencias | Tabla y gráfico con salidas o abstenciones, versión y corte. Una edición marca la comparación anterior como desactualizada, sin sobrescribirla |
+| Observados | Emisión congelada antes de revelar el resultado, cierre confirmado y coherencia entre diario y motor |
+| Errores y monitoreo | MAE, RMSE, R², cobertura y casos comunes con baseline. Desgloses por tienda, producto, mes, rotación y escenario |
+| Drift | Criterio demostrativo con dos ventanas de tres meses. No inicia entrenamiento y no confunde fallos técnicos con cambios del negocio |
+| Reentrenamiento | Ensayo independiente con nuevos cierres. Tres meses iniciales, seis filas de ajuste y tres reservadas. Los fixtures prueban esta ruta sin reemplazar V1 |
+| Candidato y decisión | Comparación local con ACTIVE, rechazo con motivo e identificación de evidencia insuficiente. JSON no otorga autoridad de promoción |
+| Rollback | Referencia local anterior verificada. Se conservaron los seis cierres visuales después de retornar al estado sin ACTIVE |
+| Contextos | Runtime, candidatos, decisiones y referencias por producto-tienda, aislados entre sesiones. Reset no activa modelos automáticamente |
+| Exportación | Descarga real h4-session-1 con h4-traceability-1. El archivo contiene seis cierres y su verificador devuelve True |
+| Evidencia | Prompts, configuraciones, hashes, versiones, registros de ciclo, reportes originales y capturas separadas de archivos oficiales |
+
+**Resultados existentes de Erika.** La siguiente tabla procede del registro congelado de validation, abril a junio de 2026. No contiene entrenamientos de esta revisión.
+
+| Modelo | MAE validation | RMSE validation | R² validation |
+|---|---:|---:|---:|
+| Baseline lag1 | 6,1587 | 10,9727 | -0,1042 |
+| LinearRegression | 5,4732 | 8,7926 | 0,2910 |
+| RandomForest V1 | 5,1587 | 8,4416 | 0,3465 |
+
+El TEST oficial de V1, julio a septiembre de 2026, registra MAE 4,8142, RMSE 8,1829, R² 0,4230 y cobertura 100 % sobre 504 filas. Son resultados académicos del dataset sintético. No se presentan como porcentaje de precisión ni desempeño comercial certificado. La validación tiene errores importantes por rotación y algunos R² negativos por grupo. Eso limita su uso, aunque RandomForest tenga el mejor promedio global de las alternativas registradas. No se ajustaron modelos después de leer TEST.
+
+**Problemas encontrados y resueltos.** La ruta absoluta del candidato archivado apuntaba al equipo de Erika. El código ahora localiza únicamente ese paquete de identidad fija dentro del checkout, después de validar el hash independiente del manifiesto. Conserva intacta su ruta original en el archivo histórico y vuelve a verificar los cuatro archivos del conjunto antes de cargar el modelo. Un upload no puede elegir otra carpeta ni sustituir hashes.
+
+La interfaz tenía un adaptador funcional de tres referencias que no se invocaba en la aplicación normal. Se conectó mediante una acción explícita, con valores, motivos de abstención, roles y gráficos. No convierte LR REFERENCE en un modelo activable ni mezcla estas emisiones puntuales con métricas de validation, TEST o promoción de candidatos.
+
+Faltaba el desglose por escenario. Ahora informa cantidad de casos, predicciones, cobertura, MAE y RMSE, manteniendo abstenciones en el denominador. Los reportes pueden aportar scenario como metadato validado. Si falta se conserva NO REGISTRADO. No se infiere a partir del producto ni se añade una feature.
+
+Una prueba comparaba rutas temporales cortas de Windows con sus equivalentes largos. La comprobación se corrigió para comparar ambas rutas resueltas y mantener la misma exigencia de aislamiento. No se eliminaron pruebas ni se modificaron expectativas de negocio para ocultar fallos.
+
+**Pruebas y entorno.** La colección previa contenía 464 pruebas. La primera ejecución completa, tras preparar dependencias, terminó con dos errores de ruta archivada y una aserción de ruta temporal. Se ejecutaron 454 casos porque el error de preparación de una clase impidió iniciar sus casos. Tras las correcciones y nueve regresiones nuevas, la suite final ejecutó **473/473 sin fallos ni omisiones**. Los fixtures ajustan modelos temporales como parte de sus propias pruebas. Ningún entrenamiento reemplazó V1 ni escribió sobre los reportes oficiales.
+
+El entorno local utiliza Python 3.11.9, Streamlit 1.66.1, pandas 3.1.0, NumPy 2.4.6, scikit-learn 1.9.1, SciPy 1.17.1 y joblib 1.6.0. Al comenzar faltaban las dependencias de inferencia. Se instalaron las versiones ya declaradas por Erika en requirements-training.txt, sin cambiar locks, Python general o visión.
+
+**Revisión visual.** Se utilizó la aplicación real en 127.0.0.1:8502, con eventos separados mediante app_verificacion.py. No hubo modelos falsos. En 1366 × 900 se observaron controles, activación V1, las tres referencias reales, seis predicciones de octubre de 2026 a marzo de 2027, generación, cierre y avance a abril. El monitoreo mostró seis cierres, seis predicciones y cobertura 100 %. Su MAE de sesión fue 1,032, distinto del MAE de TEST. El baseline de esa misma sesión tuvo MAE 1,000. Una demo puntual favorable o desfavorable no reemplaza la evaluación congelada.
+
+Se comparó el candidato archivado, se observó INSUFFICIENT_EVIDENCE, se registró rechazo con motivo y se comprobó que PROMOVER CANDIDATE siguiera deshabilitado. La descarga real se conservó como sesion_visual.json y pasó verify_session_export. El rollback preservó cierres y emisiones previas. En 390 × 844 los selectores y métricas se apilan, los textos son legibles y las tablas usan desplazamiento horizontal. La resolución del navegador se restauró al terminar. Las capturas y revision_visual.json describen exactamente el recorrido NORMAL. Los demás escenarios se verifican mediante la suite, sin atribuirles capturas inexistentes.
+
+**Estado final y pendientes.** La integración técnica de Ross con los componentes disponibles de Erika quedó operativa y verificada. No necesita duplicar su motor o entrenar modelos nuevos. La promoción de candidatos reales permanece pendiente de un protocolo aprobado, porque seis filas de ajuste y tres observaciones de comparación no acreditan elegibilidad. No se retiró esa protección para declarar completo el proyecto.
+
+Quedan la aceptación del equipo sobre la demo y el consumo de la exportación, el ensayo de exposición, la recuperación de prompts originales no disponibles y la decisión de promoción. Esta revisión automatizada con navegador no certifica que Erika o Ross ya hayan realizado una defensa o firmado aceptación. La integración comercial, datos reales certificados, monitoreo productivo y reposiciones permanecen en H5. Los conteos de la matriz son cumplimiento documental y técnico, no una medida exacta del 70 % académico ni de precisión predictiva.
+
+## 21. Presentación de H4 al docente
+
+Material preparado el 10 de noviembre de 2026. Este apartado reúne el guion, responsables, evidencias y respuestas dentro de la misma documentación oficial. No sustituye el ensayo conjunto. El recorrido principal dura aproximadamente quince minutos, más preguntas. Si el docente dispone de menos tiempo, priorizar problema, datos, predicción interactiva, evaluación y límites.
+
+### 21.1. Preparación antes de la exposición
+
+Trabajar desde la raíz del repositorio con el entorno H4 preparado. No utilizar la ruta antigua del equipo de Erika. En PowerShell:
+
+```powershell
+$h4Python = Join-Path (Get-Location).Path 'ml/demand/.venv/Scripts/python.exe'
+& $h4Python --version
+& $h4Python -m pip check
+& $h4Python -B -m streamlit run ml/demand/streamlit_app.py --server.address 127.0.0.1 --server.port 8501 --server.headless true --browser.gatherUsageStats false
+```
+
+Abrir la URL que muestre ese proceso. Si 8501 está ocupado, cambiar el puerto explícitamente, por ejemplo a 8503, y abrir la nueva URL. No usar una instancia antigua sin comprobar qué versión muestra. Mantener abierta la consola propia. No detener procesos ajenos. La instalación del entorno se explica en el [README técnico](../../ml/demand/README.md) y se prepara antes de la clase, no durante la exposición.
+
+Abrir esta sección, el simulador, el registro de experimentos y el reporte TEST. Tener disponibles las capturas y el JSON de respaldo. La aplicación usa archivos locales y puede demostrarse sin Neon o Internet una vez instalado el entorno. No ejecutar generadores, seeds, entrenadores ni evaluate_v1 para preparar una pantalla. Los artefactos congelados ya existen.
+
+Si el código cambió después de la última validación, ejecutar con anticipación `& $h4Python -B ml/demand/run_tests.py`. La evidencia disponible del 10 de noviembre acredita 473 pruebas aprobadas. Mostrar ese log con su fecha, sin presentarlo como una ejecución nueva. La preparación de este guion no volvió a entrenar ni repetir TEST.
+
+### 21.2. Qué explica cada integrante
+
+| Responsable | Explicación principal | Evidencia que presenta |
+|---|---|---|
+| Ross | Problema de la tienda, interacción, edición, validaciones y diferencia entre observado y predicción | Interfaz, cinco features y estados bloqueados |
+| Erika | Dataset sintético, motor, escenarios, lags, split temporal, preprocesamiento y algoritmos | CSV, manifiesto, artefactos y experimentos |
+| Erika | Por qué se eligió RandomForest V1 y cómo se protegió TEST | Comparación de validation y reporte final congelado |
+| Ross | Errores por grupos, cobertura, monitoreo y comparación visual | Seis meses de sesión, tablas, gráficos y desgloses |
+| Erika | Diferencia entre inferencia y reentrenamiento, candidato y versiones | Activación local, comparación y restricción de promoción |
+| Ross | Trazabilidad, exportación y límites de la demostración | JSON descargado, capturas y matriz |
+| Ambos | Decisiones, riesgos, trabajo compartido y alcance H5 | Respuestas de defensa y aceptación del ensayo |
+
+Ross puede abrir con: «Queremos estimar cuántas unidades de un producto podrían venderse el siguiente mes en una tienda. Esto puede ayudar a estudiar la rotación y preparar decisiones de reposición. En H4 demostramos el proceso con datos sintéticos, todavía no una predicción comercial certificada».
+
+Erika continúa: «Usamos una tabla mensual por producto y tienda. Cada ejemplo contiene tres ventas anteriores y dos variables del calendario. Conocemos el resultado posterior para entrenar, pero ese resultado nunca se entrega como entrada de la predicción del mismo mes».
+
+Ambos deben comprender el trabajo completo. El reparto indica quién conduce cada parte, no quién puede responder las preguntas de esa parte.
+
+### 21.3. Guion de la demostración principal
+
+| Tiempo orientativo | Responsable y acción | Qué explicar y comprobar |
+|---|---|---|
+| 0–2 min | Ross presenta problema. Erika muestra origen y estructura del dataset | 56 productos, tres tiendas, 24 meses, seed 42, 4.032 filas mensuales y 3.528 supervisadas. Los IDs son reales del catálogo de referencia, las ventas son simuladas |
+| 2–4 min | Erika muestra columnas y split. Ross abre el simulador | TRAIN enero 2025–marzo 2026, validation abril–junio 2026, TEST julio–septiembre 2026. Octubre–diciembre 2024 aportan los primeros lags. Al iniciar no hay ACTIVE |
+| 4–5 min | Ross selecciona producto 1, Tienda 1, mes octubre 2026 y pulsa COMPARAR TRES REFERENCIAS | Baseline y LR REFERENCE emiten sin ACTIVE. RF indica V1_NO_ACTIVE. La comparación puntual no entrena ni selecciona un ganador |
+| 5–6 min | Erika escribe un motivo, por ejemplo «Demostración académica H4», y pulsa ACTIVAR V1 CONGELADA. Ross compara otra vez | Leer nombre, versión y origen. Ahora aparecen las tres salidas reales. Activar V1 disponible no equivale a entrenar o promover un candidato nuevo |
+| 6–8 min | Ross anota los tres lags iniciales, modifica uno, valida y pulsa PREDECIR | Mostrar las features realmente utilizadas. La predicción no usa el observado. No prometer que un árbol cambiará su salida ante cualquier cambio pequeño. Volver a los valores iniciales y predecir antes de revelar el resultado |
+| 8–10 min | Ross ejecuta PREDECIR → GENERAR SIGUIENTE MES → AVANZAR MES durante seis meses del mismo par | GENERAR revela el observado del mes abierto. AVANZAR cierra y mueve el reloj. Repetir de octubre 2026 a marzo 2027 sin reset, conservando V1. El mes abierto final debe ser abril 2027 |
+| 10–11 min | Ross abre Errores y monitoreo. Erika muestra los resultados congelados del experimento | Leer casos, cobertura, MAE, RMSE y baseline de la sesión. Distinguirlos de validation y TEST. Mostrar desgloses por producto, tienda, mes, rotación y escenario |
+| 11–13 min | Erika explica el candidato archivado. Ross pulsa COMPARAR CANDIDATE y muestra su resultado | Sin candidato nuevo de la sesión, producto 1/Tienda 1 permite comparar el archivo verificado. Es otra ejecución, con seis filas de ajuste y tres reservadas en julio–septiembre 2027. No fingir que procede de los seis meses recorridos en vivo |
+| 13–14 min | Ross escribe un motivo, por ejemplo «Muestra insuficiente para promoción», y pulsa RECHAZAR CANDIDATE. Descarga la sesión | Mostrar INSUFFICIENT_EVIDENCE, rechazo y PROMOVER CANDIDATE deshabilitado. El JSON conserva evidencia, no autoriza activación. Guardar el archivo antes de resetear |
+| 14–15 min | Erika aplica ROLLBACK LOCAL con motivo. Ross muestra que el historial permanece. Ambos cierran | En este recorrido se vuelve de V1 a SIN ACTIVE, su referencia anterior. No afirmar que se ejecutó V2 → V1. Separar entrega técnica H4, aceptación del equipo e integración comercial H5 |
+
+Los resultados en vivo se leen de la pantalla. No se modifican datos o escenarios para obtener un MAE más atractivo. En la revisión guardada, seis meses NORMAL produjeron MAE de sesión 1,032 frente a 1,000 del baseline. Otra secuencia de edición puede dar otros errores. Ese MAE de sesión no reemplaza el MAE TEST de V1, 4,8142 sobre 504 filas.
+
+**Ensayo opcional de reentrenamiento.** Solo si hay tiempo y se acordó demostrarlo, continuar el mismo par hasta completar doce cierres nuevos de octubre 2026 a septiembre 2027. ENSAYAR REENTRENAMIENTO crea un candidato independiente. Octubre–diciembre aportan historia, enero–junio ofrecen seis targets de ajuste y julio–septiembre quedan reservados. Mostrar carpeta y versión nuevas, comparación y conservación de ACTIVE. No sobrescribir V1 ni ejecutar los entrenadores oficiales. El candidato puede rechazarse y no se garantiza mejora. El recorrido principal puede usar el candidato archivado para evitar convertir el entrenamiento en una dependencia de la exposición.
+
+**Casos adicionales para preguntas.** Realizarlos después de guardar la sesión principal, porque cambiar de escenario tras cerrar meses exige RESTABLECER EDICIÓN. Cada reset deja V1 disponible pero sin ACTIVE. Si el caso necesita RF, activar de nuevo con motivo.
+
+| Caso | Recorrido corto | Respuesta esperada |
+|---|---|---|
+| STOCKOUT | Reset, elegir STOCKOUT, emitir o registrar abstención y generar el observado | Mostrar demanda latente interna, disponibilidad y venta observada. La venta no supera disponibilidad. La latente no es feature ni verdad comercial |
+| PRODUCTO NUEVO | Reset, elegir PRODUCTO NUEVO, validar y comparar referencias | HISTORIAL INSUFICIENTE y abstenciones. No llenar meses inexistentes con ceros para forzar una salida |
+| Historia incompleta | Desmarcar «Los tres meses anteriores están completos» antes de emitir | DATOS INCOMPLETOS. Se bloquea la predicción válida, no se fabrica un target |
+| Cierre manual incompleto | Emitir, ingresar observado manual y dejar sin marcar «El mes objetivo está cerrado y completo» | No registrar ni avanzar hasta confirmar. El observado revelado ya bloquea la entrada y la predicción de ese mes |
+| Cambio persistente | Reset, elegir CAMBIO PERSISTENTE antes de generar y recorrer meses suficientes | Revisar error y baseline, sin prometer que siempre se encenderá una alarma o mejorará otro modelo |
+
+**Si algo falla en clase.** Detener la acción y leer el estado. Modelo no disponible puede significar falta de activación, dependencias o integridad. No reinstalar versiones al azar, editar hashes, reentrenar V1 o usar db push. Conservar el error y mostrar las evidencias fechadas de respaldo. Si el candidato archivado no está disponible, reconocerlo y explicar su comparación desde el informe. No anunciar que una captura es una ejecución en vivo. Si el docente exige una promoción positiva de un candidato, declarar ese requisito pendiente y acordar primero un protocolo de elegibilidad. No desbloquear el botón durante la defensa.
+
+### 21.4. Evidencias que deben estar abiertas o localizables
+
+| Qué demostrar | Archivo o evidencia | Explicación breve |
+|---|---|---|
+| Dataset y ejemplos | [base mensual](../../ml/demand/data/escenarios_v1_1/base_mensual.csv), [tabla supervisada](../../ml/demand/data/escenarios_v1_1/dataset_supervisado.csv) y [validación](../../ml/demand/data/escenarios_v1_1/validacion.json) | Mostrar pocas filas, tipos y distribución. No confundir estadísticas del target con métricas de modelo |
+| Procedencia y reproducción | [catálogo de referencia](../../ml/demand/catalog_reference.json) y [manifiesto](../../ml/demand/data/escenarios_v1_1/manifest.json) | Referencia fechada, seed, periodo y hashes. No presentarlo como una consulta actual de Neon |
+| Comparación de algoritmos | [experiments.csv](../../ml/demand/reports/experiments.csv) | Tres registros, parámetros, versiones y métricas de validation. Baseline 6,1587, LR 5,4732 y RF 5,1587 de MAE |
+| Selección V1 | [manifiesto de selección](../../ml/demand/reports/v1_selection_manifest.json) | Elección por validation y configuración congelada. Los artefactos permanecen en ml/demand/models |
+| Evaluación final | [v1_test_evaluation.json](../../ml/demand/reports/v1_test_evaluation.json) | 504 filas, MAE 4,8142, RMSE 8,1829, R² 0,4230, cobertura 100 %. No repetir TEST para producir otra cifra |
+| Funcionamiento visual | [referencias en escritorio](evidencias/cierre_ross_2026-11-10/escritorio_referencias.png), [monitoreo](evidencias/cierre_ross_2026-11-10/escritorio_monitoreo.png) y [vista estrecha](evidencias/cierre_ross_2026-11-10/estrecha_controles.png) | Capturas reales de una revisión del 10 de noviembre, no sustitutos ocultos de la demo |
+| Sesión y trazabilidad | [sesion_visual.json](evidencias/cierre_ross_2026-11-10/sesion_visual.json) | Respaldo descargado con seis cierres y extensión h4-traceability-1. Compararlo con la nueva descarga sin sobrescribirlo |
+| Pruebas e integridad | [log de 473 pruebas](evidencias/cierre_ross_2026-11-10/pruebas_finales.txt) y [verificación final](evidencias/cierre_ross_2026-11-10/verificacion_final.json) | Fecha, alcance, 29 archivos protegidos intactos y límites. No afirmar que cero fallos elimina todo riesgo |
+| Alcance y pendientes | [matriz vigente](H4_MATRIZ_CUMPLIMIENTO_FINAL.md), [checklist de aceptación](H4_CHECKLIST_VALIDACION_ROSS.md) y [prompts](PROMPTS_MODELO_PREDICTIVO_H4.md) | Distinguir implementación, verificación, aceptación humana y registros originales faltantes |
+
+Para mostrar ejemplos y los resultados sin ejecutar entrenamiento, desde la raíz:
+
+```powershell
+Import-Csv -LiteralPath 'ml/demand/data/escenarios_v1_1/dataset_supervisado.csv' | Select-Object -First 5
+Import-Csv -LiteralPath 'ml/demand/reports/experiments.csv' | Select-Object model, mae_val, rmse_val, r2_val
+$h4Test = Get-Content -LiteralPath 'ml/demand/reports/v1_test_evaluation.json' -Raw | ConvertFrom-Json
+$h4Test.metrics
+Get-Content -LiteralPath 'docs/H4/evidencias/cierre_ross_2026-11-10/pruebas_finales.txt' -Tail 5
+```
+
+No es necesario abrir todo el código. Si preguntan por responsabilidades técnicas, Erika señala demand_engine.py, ml_pipeline.py y demand_runtime.py. Ross señala streamlit_app.py, ui_panels.py y ui_analysis.py. Los dos explican la conexión, las pruebas y la separación entre datos simulados y comerciales.
+
+### 21.5. Preguntas probables del docente
+
+| Pregunta | Respuesta para defender |
+|---|---|
+| ¿Qué predicen exactamente? | Unidades brutas observadas de un producto en una tienda durante el siguiente mes. Es regresión supervisada temporal de un paso |
+| ¿Por qué no clasifican alta, media o baja demanda? | Necesitamos una cantidad numérica para estudiar ventas y una reposición futura. La clasificación respondería otra pregunta |
+| ¿Por qué datos sintéticos? | La historia disponible no permite certificar todavía un pronóstico comercial. La simulación permite demostrar el proceso técnico con origen explícito |
+| ¿Tabular, temporal y supervisado significan lo mismo? | No. Tabular describe columnas, temporal indica orden cronológico, sintético identifica el origen y supervisado significa que tenemos entradas y resultados conocidos al aprender |
+| ¿Cuáles son las entradas? | Tres lags de ventas y seno/coseno del mes objetivo. El target es target_ventas_mes. promedio_3_meses queda fuera porque se deriva de esos lags |
+| ¿Cómo distinguen productos y tiendas si no usan los IDs como features? | Los IDs seleccionan su historia. Las diferencias llegan mediante los lags. Con las mismas cinco entradas un mismo modelo puede dar la misma salida, aunque cambien los IDs |
+| ¿Por qué seno y coseno? | Representan el mes como un ciclo. Diciembre y enero quedan próximos, sin usar información futura |
+| ¿Por qué 70/15/15? | Training aprende, validation selecciona y test evalúa una configuración ya congelada. Se usan meses completos: 15/3/3 sobre 21 meses supervisados |
+| ¿Por qué no dividir al azar? | Porque usar meses futuros para aprender y evaluar meses pasados produciría una evaluación engañosa. Todas las filas de un mes permanecen juntas |
+| ¿Hay fuga al usar julio para predecir agosto del TEST? | No si julio ya cerró al emitir agosto y no se ajustan parámetros con el error de TEST. Es evaluación mensual de un paso, no tres meses pronosticados desde un único corte |
+| ¿Qué sería data leakage aquí? | Entregar el observado del mes objetivo como entrada, ajustar el scaler con todo el dataset o usar información que todavía no se conocía al emitir |
+| ¿Qué normalizan? | El preprocesador del modelo lineal usa estadísticas aprendidas solo en TRAIN y se conserva con el artefacto. RandomForest no requiere escalado numérico |
+| ¿Por qué compararon varios algoritmos? | Para comprobar si más complejidad aporta una mejora frente al baseline. No elegimos un modelo solo por ser más complejo |
+| ¿Por qué RandomForest V1? | Tuvo el menor MAE de validation entre las alternativas registradas. Después se evaluó en TEST sin cambiar su configuración. Eso no demuestra que siempre sea el mejor modelo posible |
+| ¿Por qué no una red neuronal? | Se consideró una MLP, pero añade escalado, ajustes y riesgo de sobreajuste. Era opcional y no se entrenó. No atribuimos resultados a una red inexistente |
+| ¿MAE 4,8142 significa 4,8 % de error? | No. Significa unas 4,8 unidades de desviación absoluta media por fila producto-tienda-mes del TEST sintético |
+| ¿R² 0,423 significa 42,3 % de precisión? | No. Compara el error con una referencia basada en la media. Puede ser negativo y no es Accuracy |
+| ¿Por qué también RMSE y por qué no MAPE? | RMSE da más peso a errores grandes. MAPE presenta problemas cuando las ventas observadas son cero, por eso no es principal |
+| ¿Un mejor error en la demo prueba que el modelo mejoró? | No. La demo contiene pocos meses de una serie. Debe distinguirse de validation y de las 504 filas del TEST congelado |
+| ¿Cómo tratan ventas cero o falta de stock? | Un cero observado válido se conserva. Un mes faltante no se rellena con cero. STOCKOUT demuestra que ventas observadas no equivalen a toda la demanda |
+| ¿El modelo recibe la demanda latente del simulador? | No. Se usa únicamente como metadato explicativo. Tampoco recibe escenario, ruido o parámetros internos del generador |
+| ¿Editar o predecir vuelve a entrenar? | No. PREDECIR utiliza ACTIVE. ENSAYAR REENTRENAMIENTO es otra acción, con datos nuevos y un candidato separado |
+| ¿Cómo detectan que conviene revisar el modelo? | Comparan dos ventanas de tres meses cerrados, error, baseline y cobertura. El criterio es demostrativo. Una señal no prueba drift ni inicia fit automáticamente |
+| ¿Por qué el candidato no se promueve? | La comparación disponible tiene seis filas de ajuste y tres reservadas de una sola serie. Falta evidencia y un protocolo aprobado. Un mejor promedio no basta para habilitarlo |
+| ¿Qué rollback demostraron? | El retorno local de V1 a la referencia anterior sin ACTIVE, conservando el historial. No fingimos una promoción real de V2 seguida de retorno a V1 |
+| ¿Qué pasa con una predicción negativa? | Se registra la salida original y se aplica la política declarada de cada ruta. La comparación de referencias muestra abstención con motivo y conserva el valor original, sin ocultarlo con un cero inventado |
+| ¿Puede aprender la fórmula sintética? | Es un riesgo. Excluimos parámetros internos, evaluamos temporalmente y reconocemos que buenas métricas sintéticas no certifican ventas reales |
+| ¿Con 3.528 filas ya tienen muchos años de evidencia? | No. Son 168 series durante 21 meses objetivo, con dependencias temporales. No son 3.528 meses independientes ni historia comercial certificada |
+| ¿El sistema compra o repone automáticamente? | No. En H4 no se alteran ventas, inventario o Neon. La reposición comercial necesita políticas de stock, tránsito, plazos y supervisión, previstas para H5 |
+| ¿Qué prueban los 473 tests? | Verifican contratos, flujos y regresiones del alcance ejecutado. La revisión visual añade otra evidencia. Ninguna equivale a demostrar que no existen más errores o a aceptar la entrega por los estudiantes |
+| ¿Cómo registraron el proceso y la IA utilizada? | Conservamos experimentos, versiones, hashes, configuraciones, evidencia y log de prompts. Los originales no recuperados se declaran faltantes, sin reconstruir citas o fechas |
+| ¿Qué representa el 70 % de H4? | Un experimento funcional con dataset, modelos, evaluación, simulador y evidencia. No es porcentaje de líneas ni de precisión. La aceptación académica corresponde al docente |
+
+### 21.6. Cierre y ensayo del equipo
+
+Antes de presentar, Erika y Ross deben recorrer la demo completa una vez, intercambiar preguntas y comprobar que las evidencias abren en el equipo que llevarán. Registrar la fecha del ensayo y cualquier incidente cuando realmente ocurra. Esta sección preparada no modifica las casillas de aceptación humana ni declara realizada la defensa.
+
+- [ ] Ambos explican problema, dataset, features, target y split sin depender de leer código.
+- [ ] La demo funciona desde una sesión inicial y se distingue predicción, observado, generación y entrenamiento.
+- [ ] Las evidencias, métricas congeladas, capturas y respaldo JSON están disponibles localmente.
+- [ ] Se explica el bloqueo de promoción y se confirma antes de la clase si el docente exige una ruta positiva adicional.
+- [ ] Ambos revisan la distribución de la exposición y aceptan el consumo de la exportación.
+
+Ross puede cerrar con: «Tenemos una implementación local que permite editar entradas, observar predicciones y medir errores sin modificar la operación comercial. Sus límites están registrados y podemos seguir cada resultado hasta sus datos y versión».
+
+Erika completa: «V1 fue elegida con validation y evaluada en un TEST separado. El siguiente paso es trabajar con datos comerciales certificados y completar la integración H5. Un candidato nuevo necesita evaluación y aprobación, no activación automática».
+
+## 22. Consulta predictiva dentro del administrador
+
+Ampliación autorizada el 10 de noviembre de 2026. La consulta de predicciones está disponible en **Panel → Predicción de ventas**, en `/panel/prediccion`. Es una pantalla React de RepuestoPro, no una ventana de Streamlit insertada. El simulador editable conserva su ejecución independiente. Esta ampliación reemplaza la decisión inicial de dejar toda integración web para H5. La integración con historia comercial certificada, las reposiciones y el monitoreo productivo continúan pendientes.
+
+La pantalla permite seleccionar un producto del catálogo de referencia, una tienda, consultar V1 y ver un gráfico del historial frente a la predicción. Presenta unidades previstas, baseline, versión, MAE, RMSE y R² del TEST sintético ya guardado. No vuelve a evaluar TEST. Tampoco calcula el error de una venta futura todavía desconocida.
+
+El historial utilizado termina en septiembre de 2026. Por tanto, esta demostración pronostica octubre de 2026, aunque el calendario del equipo marque otro mes. No se desplaza ese historial ni se fabrican ventas recientes. Producto 1 y Tienda 1, con locationId 5, producen aproximadamente 22,07 unidades con la referencia congelada. El valor es una estimación numérica, no una orden de compra.
+
+### 22.1. Conexión, permisos y límites
+
+React consulta `GET /api/predictions/catalog` y `POST /api/predictions/demand`. El backend exige una sesión válida y rol ADMIN en ambas rutas. No basta con ocultar el enlace del menú. Los IDs se validan antes de ejecutar Python. Una selección inexistente devuelve 400. Un modelo o entorno no disponible devuelve 503, sin exponer rutas internas o credenciales.
+
+El backend ejecuta `ml/demand/admin_prediction.py` con un proceso Python limitado por tiempo y tamaño de respuesta. No ejecuta comandos construidos con los valores recibidos. Se utiliza el entorno `ml/demand/.venv` o la ruta de intérprete definida por `DEMAND_PYTHON` en el proceso. No es necesario modificar archivos de secretos para la ejecución local actual.
+
+El adaptador comprueba las huellas del catálogo, la base sintética, el reporte TEST y los controles existentes del artefacto V1. Acepta diferencias de finales de línea LF/CRLF en archivos de texto, sin aceptar contenido distinto. Construye los tres lags desde meses completos consecutivos. Conserva ventas cero, rechaza cantidades negativas, meses faltantes y duplicados. Solo utiliza los cinco campos ya definidos para el modelo.
+
+Cada consulta utiliza una instancia aislada de V1 para inferencia. No comparte ACTIVE con Streamlit, no promueve candidatos ni altera sus sesiones. La autenticación normal del sistema sigue utilizando su base configurada. El cálculo predictivo utiliza archivos locales y no escribe información comercial. Durante las pruebas de esta ampliación se sustituyó la conexión de base por una dirección local inválida y las sesiones de las aplicaciones de prueba por fixtures. No se consultó Neon ni se debilitó la autenticación de la aplicación normal.
+
+### 22.2. Dashboard y diagnóstico local
+
+Se identificaron dos aplicaciones distintas utilizando los puertos 3000 y 5173 en direcciones de red diferentes. RepuestoPro atiende en localhost y la otra aplicación usa IPv4. No se detuvieron procesos ajenos. No se debe cambiar a 127.0.0.1 sin comprobar qué aplicación responderá.
+
+El dashboard leía todas las columnas de ventas recientes, detalles y movimientos aunque solo mostraba algunos campos. Se reemplazaron esas lecturas por selecciones explícitas de los campos necesarios. Se mantiene el filtro CONFIRMED, los permisos y el alcance por tienda. No se eliminan controles para hacer funcionar un esquema incompatible.
+
+El mensaje de error anterior ocultaba la diferencia entre una API inaccesible, falta de permiso, conexión de base no disponible o estructura incompatible. Ahora se distinguen esos casos. Los errores Prisma P2021/P2022 producen un 503 con código DASHBOARD_SCHEMA_UNAVAILABLE, sin inventar estadísticas ni mostrar SQL. ADMIN conserva un enlace a la consulta predictiva incluso si el dashboard falla.
+
+La causa concreta de la captura original no quedó certificada. No se ejecutó una consulta autenticada del dashboard contra Neon, porque esta tarea prohíbe tocar esa base. Las pruebas locales comprueban la respuesta correcta con datos controlados y el fallo explícito ante una columna ausente. No equivalen a afirmar que el dashboard comercial real ya respondió correctamente. Si persiste una incompatibilidad física, su reconciliación requiere una tarea posterior autorizada. No se aplicaron migraciones ni cambios de datos para ocultarla.
+
+### 22.3. Cómo presentar la nueva pantalla
+
+En la sesión ADMIN, abrir `http://localhost:5173/panel/prediccion`. Si el servidor local fue reiniciado, iniciar sesión mediante el acceso habitual. El backend y el frontend deben estar ejecutándose. No hace falta iniciar Streamlit para consultar esta pantalla. No desplegar la aplicación para esta demostración local.
+
+Ross puede decir: «Esta es la consulta predictiva dentro del administrador. Seleccionamos producto y tienda. El backend obtiene su historial sintético guardado y consulta el modelo V1. La pantalla muestra la estimación del siguiente mes después del cierre disponible. El gráfico permite comparar ese valor con el historial. Las métricas corresponden al TEST sintético, no al error conocido de esta predicción futura».
+
+Consultar producto 1, Tienda 1. Mostrar octubre de 2026, las unidades previstas, baseline y gráfico. Explicar el aviso de datos sintéticos. Cambiar el producto para comprobar que se limpia el resultado anterior. Después abrir Streamlit para demostrar edición, escenarios, reloj y monitoreo. Reservar unos tres minutos para la pantalla administrativa, luego continuar con las partes principales de la sección 21. Si falta tiempo, reducir los casos opcionales.
+
+Erika puede explicar: «La pantalla reutiliza el modelo elegido, no vuelve a entrenarlo al pulsar el botón. Los tres meses anteriores y el calendario forman las entradas. Los datos comerciales reales todavía necesitan una validación separada».
+
+### 22.4. Verificación y evidencia
+
+La suite backend utiliza una URL local inválida para impedir conexiones accidentales a Neon. Incluye permisos, IDs inválidos, catálogo, fallos y el recorrido HTTP → Node → Python → V1 con el artefacto real. Las pruebas de dashboard utilizan un cliente de datos controlado. Las pruebas frontend comprueban selección, consulta, métricas, limpieza de resultados, errores y acceso administrativo desde el dashboard.
+
+Las ejecuciones de esta ampliación se guardan en [backend_integracion_admin.txt](evidencias/cierre_ross_2026-11-10/backend_integracion_admin.txt), [frontend_integracion_admin.txt](evidencias/cierre_ross_2026-11-10/frontend_integracion_admin.txt), [frontend_build_admin.txt](evidencias/cierre_ross_2026-11-10/frontend_build_admin.txt) y [pruebas_integracion_admin.txt](evidencias/cierre_ross_2026-11-10/pruebas_integracion_admin.txt). El intento de regresión detenido por restricciones locales de AppTest se conserva aparte. Los archivos muestran el resultado efectivo de cada ejecución. No representan una revisión visual manual nueva ni aceptación del docente.
+
+Resultado final: 168 pruebas backend, 233 frontend y 479 H4 aprobadas, 880 en total, sin fallos finales. Typecheck backend y build frontend aprobados. La [verificación de integración](evidencias/cierre_ross_2026-11-10/verificacion_integracion_admin.json) registra resultados, rutas HTTP y límites. Continúan los avisos de entorno de pruebas sobre Canvas, navegación de jsdom, actualizaciones fuera de act y ScriptRunContext. No se instalaron dependencias para ocultarlos. El [estado Git](evidencias/cierre_ross_2026-11-10/git_status_admin.txt) y el [resumen de diferencias](evidencias/cierre_ross_2026-11-10/git_diff_stat_admin.txt) incluyen también el trabajo previo que ya existía en el checkout.
+
+No se regeneró el dataset, no se reentrenó V1, no se repitió su evaluación TEST, no se modificó Prisma ni se aplicaron migraciones. Los ajustes de modelos que realizan los fixtures de la suite H4 permanecen en archivos temporales de prueba. El funcionamiento comercial completo no se declara al 100 % a partir de estas comprobaciones locales.
+
+## Ampliación V2: reglas para las referencias externas
+
+El diseño vigente para aprovechar M5 y Favorita está en el [anexo 35 del Plan V2](PLAN_DE_TRABAJO_V2.md) y en el [contrato de transformación](../../ml/demand/v2/contracts/retail_transformations.v2.json). Se utilizarán patrones por fuente, sin trasladar ventas a los IDs propios. Los negativos, fracciones, promociones desconocidas y días ausentes conservarán su significado. M5 aportará referencias de ventas y precio semanal. Favorita aportará cantidades positivas registradas y cobertura de promociones. Ninguna fuente acredita cotización Bs/USD, stock, modalidades comerciales o tiempos de proveedor.
+
+Esta especificación no cambia el dataset 2.1.0, las features del modelo fijado o su TEST cerrado. Las ventanas externas definidas no sustituyen el split del futuro experimento ni son pruebas ciegas. Al definir esa especificación todavía no se habían ejecutado transformaciones. El estado posterior de external_curated se describe a continuación. Al cierre de esa etapa, la calibración ampliada y la construcción de otro build seguían pendientes. Automotive permanece pendiente de licencia. Las condiciones de publicación de derivados permanecen como revisión previa a distribuirlos.
+
+## Referencias externas procesadas para la ampliación V2
+
+M5 y Favorita tienen salidas privadas transformadas y validadas en external_curated. El [anexo 36 del Plan V2](PLAN_DE_TRABAJO_V2.md) conserva rutas, resultados y límites. Se separaron signos, fracciones, promociones desconocidas, meses parciales y cohortes de referencia sin convertir ventas externas en historia propia. La validación no significa que exista otro dataset RepuestoPro o que se haya calibrado o entrenado un modelo nuevo. El dataset 2.1.0, el modelo fijado y su TEST permanecen intactos. Automotive sigue pendiente de licencia.
+
+## Decisiones vigentes para ampliar las referencias
+
+El [anexo 37 del Plan V2](PLAN_DE_TRABAJO_V2.md) reúne las decisiones de los cinco riesgos principales sin cambiar el contrato utilizado por las transformaciones privadas ya registradas.
+
+| Punto | Tratamiento definitivo para la siguiente etapa |
+| --- | --- |
+| M5 repetido | Solo sales_train_evaluation.csv aporta ventas. No concatenar el histórico de validación o la plantilla. |
+| Ausencias de Favorita | Permanecen desconocidas. No rellenar con ceros ni inferir intermitencia o falta de stock. |
+| Devoluciones y fracciones | Conservar signos y decimales por separado. No convertirlos directamente en el target bruto entero de RepuestoPro. |
+| Variables faltantes | Cotización, disponibilidad y modalidades serán supuestos académicos explícitos o requerirán evidencia propia. No se fabricará respaldo externo. |
+| Dominios distintos | Referencias de patrones por fuente, sin sustituir IDs o presentar ventas ajenas como propias. |
+
+M5 aportará referencias de ceros observados, volumen, diferencias entre tiendas, cambios relativos de precio y calendario. Favorita aportará variabilidad de cantidades positivas registradas, colas por cohorte de unidades y cobertura de promociones conocidas. Sus eventos se mantendrán como diagnóstico. No se trasladarán feriados extranjeros, precios nominales, elasticidades o etiquetas mayoristas inventadas al simulador.
+
+La definición de reglas ya está disponible. Existen referencias privadas procesadas de una etapa anterior, pero al cierre de esa revisión aún no había otro dataset final ni calibración ampliada. Aquella revisión fue documental. No cambia código, contratos fijados, datos, modelos o resultados. Los valores numéricos nuevos se decidirán al autorizar la calibración, manteniendo su origen, corte temporal y límites.
+
+## Calibración ampliada de referencias, sin dataset nuevo
+
+El [anexo 38 del Plan V2](PLAN_DE_TRABAJO_V2.md) registra la calibración de M5 y Favorita. Su [configuración](../../ml/demand/reports/v2/calibration/calibration-retail-20261115-03/calibration.json) conserva el código, las versiones de entrada y parámetros derivados solo de la ventana de referencia. Las comparaciones posteriores son descriptivas y no cambian esos parámetros.
+
+M5 aporta una frecuencia media entre series de cambios de precio de 1.20 % por semana elegible y una magnitud típica de 8.59 %. Son referencias académicas para escenarios, sin elasticidad identificada. Favorita aporta una razón típica p95/mediana de cantidades positivas de 2.80 en su cohorte de unidades enteras. No significa que esos registros sean ventas mayoristas.
+
+Se utilizaron cuantiles exactos por serie, separando cohortes y ventanas. Las promociones permanecen como diagnóstico condicionado a registros conocidos. Monash y UCI conservan su papel inicial. Cotización, stock, modalidades y plazos no adquieren respaldo real por esta ampliación. Automotive sigue fuera por licencia pendiente.
+
+La calibración está calculada, pero aún no fue incorporada al generador y no existe un nuevo build por esta tarea. El dataset 2.1.0, sus modelos y el TEST cerrado permanecen intactos. La siguiente etapa requiere autorizar el consumo de esta configuración, su implementación y la construcción posterior del dataset.
+
+## Generador ampliado preparado, sin build nuevo
+
+La calibración ampliada ya está incorporada en retail-reference-generator-1.0.0. El [anexo 39 del Plan V2](PLAN_DE_TRABAJO_V2.md) registra la receta, el código separado y sus comprobaciones. Los generadores anteriores, el dataset 2.1.0 y el modelo fijado permanecen intactos.
+
+La nueva versión aplica referencias de cambios de precio, factores de tienda, calendario positivo y picos de cantidades minoristas. Conserva intermitencia automotriz, tránsito, recepción física, stock vendible y ventas atendidas como target. Las promociones no se convierten en features futuras ni se atribuye una elasticidad comercial al precio. Los mecanismos de simulación y sus frecuencias supuestas están identificados.
+
+Pasaron 74 pruebas, incluidas 16 nuevas. Solo se ejecutaron fixtures reducidos en memoria. No existe un nuevo build por esta tarea y su publicación está bloqueada. La siguiente etapa requiere autorizar la versión del dataset y la ejecución completa, con validación independiente de precios, cantidades, tiempos, cobertura y trazabilidad antes de publicarlo. Automotive continúa pendiente de licencia.
+
+## Dataset ampliado 2.2.0 publicado localmente
+
+El [anexo 40 del Plan V2](PLAN_DE_TRABAJO_V2.md) registra el build [calibrated-20261115-01](../../ml/demand/data/repuestopro_v2/2.2.0/calibrated-20261115-01/manifest.json). Contiene 4.032 filas mensuales y 3.528 supervisadas para 56 productos, tres tiendas y 24 meses. El split cronológico conserva 2.520 filas de TRAIN, 504 de VALIDATION y 504 de TEST.
+
+El generador 1.1.0 conserva la calibración ampliada y añade una revisión administrativa sintética auditada cuando una propuesta de precio viola el costo. Hubo seis intervenciones. No se cambiaron costos o precios reales. Se conservaron los generadores anteriores y el dataset 2.1.0.
+
+El build pasó validación física y temporal independiente, reproducción completa, relectura de archivos y checksums antes de publicarse en la carpeta local privada. Pasaron 83 pruebas del alcance. No se entrenó un modelo ni se evaluó predictivamente TEST. El administrador continúa usando el artefacto 2.1.0. Automotive permanece pendiente de licencia y no forma parte del dataset.
+
+La ampliación sigue siendo académica y sintética. La preparación y el entrenamiento de un experimento 2.2.0 requieren autorización posterior. No equivale a una validación comercial de la demanda real de la empresa.
+
+## Experimento 2.2.0 preparado, sin modelos entrenados
+
+El [anexo 41 del Plan V2](PLAN_DE_TRABAJO_V2.md) registra la adaptación separada del preprocesamiento y la preparación experimental. Se verificaron TRAIN, VALIDATION, los targets, los tres lags y tres folds internos de meses completos. El cargador rechaza TEST y no interpreta sus filas. Solo se utilizan sus metadatos de separación y hashes de integridad.
+
+El plan contempla el baseline, LinearRegression y ambos criterios de RandomForest, con seis grupos de features. Hay 54 candidatos y hasta 174 ajustes futuros. Hoy se ejecutaron cero ajustes reales o métricas predictivas. El escalado solo se comprobó con fixtures artificiales. Pasaron 35 pruebas y no se crearon artefactos o experimentos ficticios.
+
+Al cierre de la preparación, V2-08 seguía pendiente de entrenamiento para el nuevo dataset. La ejecución posterior figura en la sección siguiente. La construcción de 2.2.0 está terminada, pero aún falta autorizar y ejecutar su entrenamiento, revisar los resultados de VALIDATION y seleccionar una configuración antes de la evaluación final. El administrador conserva el modelo 2.1.0. Automotive continúa pendiente de licencia.
+
+## Comparación entrenada 2.2.0, selección todavía abierta
+
+El 15 de noviembre de 2026 se autorizó y ejecutó el entrenamiento del build calibrated-20261115-01 con TRAIN. Se compararon baseline, LinearRegression y RandomForest en VALIDATION. El [anexo 42 del Plan V2](PLAN_DE_TRABAJO_V2.md) registra el procedimiento, evidencia y pendientes. Las secciones anteriores conservan el estado histórico de publicación y preparación.
+
+Se completaron 174 ajustes sin fallos: 162 en tres ventanas internas de TRAIN y doce finalistas entrenados con las 2.520 filas de TRAIN. Las métricas externas utilizan las mismas 504 filas de VALIDATION. TEST permanece reservado, sin cargar sus features o targets. Cada pipeline ajustó su preprocesamiento exclusivamente sobre TRAIN.
+
+| Mejor opción por familia | MAE VALIDATION | RMSE VALIDATION | R² VALIDATION |
+| --- | --- | --- | --- |
+| Baseline del último mes | 12,7480 | 23,4697 | 0,3310 |
+| LinearRegression con 14 features | 10,7059 | 17,3132 | 0,6359 |
+| RandomForest absoluto con tres lags y calendario | 9,7604 | 17,1857 | 0,6413 |
+
+La candidata de menor MAE tiene 200 árboles, profundidad 4, mínimo de cinco filas por hoja y seed 42. Mejora el MAE del baseline un 23,44 %. Añadir las 17 features no mejoró ese MAE en esta realización sintética. No significa que las variables económicas sean irrelevantes en datos reales. Las predicciones se limitan a cero por una política explícita, sin redondeo para las métricas.
+
+La candidata queda en REVIEW_REQUIRED. Trece productos y 36 combinaciones producto-tienda empeoran frente al baseline, aunque mejoran las medias por tienda y rotación. Son grupos solapados. Falta revisar esos errores antes de aceptar un modelo definitivo. No se selecciona usando TEST ni se modifica el modelo del administrador, que conserva 2.1.0.
+
+Se guardaron doce pipelines con hashes y estados. Su recarga reprodujo las predicciones de VALIDATION con tolerancia absoluta de 1e-12. El [registro 2.2.0](../../ml/demand/reports/v2/2.2.0/calibrated-20261115-01/experiments.csv) contiene 175 entradas, incluido el baseline. Pasaron 40 pruebas del alcance, cinco nuevas. No se alteraron datasets, RAW, curated, modelos anteriores o Neon.
+
+De las trece tareas exclusivas de Ross, diez están completas en el alcance académico aprobado, dos siguen en progreso para 2.2.0 y una corresponde a reposición en H5. Falta adaptar la pantalla al modelo nuevo una vez aceptado y cerrar la validación global. Entrenamiento, aceptación final y defensa son tareas compartidas. Automotive continúa pendiente de licencia, fuera del dataset.
+
+## Diagnóstico completado de los grupos desfavorables 2.2.0
+
+El [anexo 43 del Plan V2](PLAN_DE_TRABAJO_V2.md) registra los trece productos y las 36 combinaciones que empeoran frente al baseline. Se revisaron todas sus observaciones de VALIDATION, las alternativas guardadas y cuatro casos a nivel de árboles. No hubo entrenamiento o acceso a TEST.
+
+El deterioro se concentra en niveles persistentes que el bosque global suaviza, algunas series intermitentes y ventas mayoristas de volumen estable. Hay 70 meses de las 108 observaciones de las combinaciones desfavorables donde las ventas quedan a cinco unidades o menos del último mes. En ese contexto el baseline tiene una ventaja clara. También hay saltos mayoristas que ambos métodos fallan casi por igual. Se comprobaron asociaciones con stock observado, sin convertir datos posteriores al corte en features o atribuir causas comerciales que no están demostradas.
+
+Las alternativas con más variables mejoran algunos productos, pero no solucionan el problema global. El bosque principal mantiene el menor MAE global. Se recomienda conservarlo como candidata, con baseline visible y límites explícitos. Si se autoriza otra comparación antes de fijar, debe probarse una corrección del baseline o una combinación simple definida con los folds de TRAIN. No se debe seleccionar un modelo distinto por producto después de consultar estos errores.
+
+El dataset 2.2.0 ya está construido y validado. No hace falta regenerarlo para cerrar este diagnóstico. Sigue pendiente aceptar y fijar la política, evaluar TEST una sola vez y adaptar la integración administrativa al nuevo artefacto. El administrador conserva 2.1.0. Presentar resultados académicos no equivale a garantizar precisión comercial o afirmar que toda la integración está terminada.
+
+## Cierre vigente 2.2.0 para la presentación H4
+
+El [anexo 44 del Plan V2](PLAN_DE_TRABAJO_V2.md) registra la selección fijada antes de TEST y su evaluación única de 504 filas. El modelo mantiene el mismo artefacto entrenado exclusivamente con TRAIN. No se reajustó con VALIDATION o TEST. El [contrato de inferencia](../../ml/demand/v2/contracts/inference.v2_2.json) conserva versión, features, política y métricas finales vinculadas por hash.
+
+La predicción está conectada al administrador. Permite producto, tienda, mes aprobado y horizonte fijo de un mes. Presenta histórico, baseline, unidades previstas, métricas guardadas, límites y trazabilidad. Rechaza respuestas de versiones anteriores, snapshots incorrectos y solicitudes con features o targets enviados por el cliente. Los permisos se comprueban tanto en API como en menú y ruta. El simulador permanece separado.
+
+Para explicar la demo: “Utilizamos un dataset sintético 2.2.0 construido y validado. Comparamos una regla sencilla, regresión lineal y Random Forest con orden temporal. Aceptamos el bosque antes de evaluar TEST. Su error medio final es aproximadamente 9,20 unidades frente a 12,87 del baseline. La pantalla consulta el modelo guardado, no lo entrena. El resultado apoya una revisión, no garantiza ventas ni autoriza compras. Algunos productos empeoran y los pedidos grandes siguen siendo difíciles”.
+
+Mostrar la sección administrativa, elegir producto y tienda, consultar abril, mayo o junio de 2026, explicar el gráfico y abrir los datos de modelo y snapshot. Aclarar que esas fechas son una reproducción académica. Las métricas pertenecen a la evaluación final guardada, no al error conocido de esa fila. TEST de julio a septiembre no se ofrece como opción del administrador.
+
+El alcance local solicitado está comprobado. La [evidencia técnica](../../ml/demand/reports/v2/integration/admin-2.2-20261115-01/binding.json) contiene 505 pruebas aprobadas de las suites ejecutadas y revisión visual aislada. No equivale a certificar toda la plataforma productiva o cada sesión real sin consultar la base. Reposición y operación comercial definitiva corresponden a H5 o a una ampliación autorizada.
+
+## Corrección de alcance por el audio del docente
+
+La revisión completa del audio confirma que deben probarse cambios de precio con valor actual y nuevo, ver su efecto en la predicción y considerar costo, cotización de compra y tiempos de llegada/reposición. Los mensajes del usuario añaden cantidades, fechas y los controles acordados. El [anexo 46 del Plan V2](PLAN_DE_TRABAJO_V2.md) distingue qué existe y qué falta.
+
+La referencia 2.2.0 sigue conservada y su evaluación es válida para su alcance. Sin embargo, el bosque activo solo usa tres lags y calendario. El generador incluye cambios de precios sin una elasticidad de ventas identificada. Poner más campos en el formulario no arregla esas limitaciones. Deben revisarse primero contrato de escenarios, mecanismos y disponibilidad de cada variable, después diseñar otra realización versionada y validar su uso. No se cambian el dataset, el artefacto o TEST consumido para aparentar cumplimiento.
+
+Se necesitan dos recorridos claramente identificados: consultar un snapshot histórico y comparar un escenario base con cambios hipotéticos. Cada escenario debe registrar precio/costo/cotización con unidad y fecha, cantidades con significado, plazos, disponibilidad y supuestos. El target no se edita como entrada. Las fechas reales futuras no se utilizan en un corte anterior. El modelo no debe prometer un efecto causal que los datos no permiten estimar.
+
+La recuperación local entre 2.2.0 y 2.1.0 ya está implementada y comprobada mediante configuración explícita del servidor, con contratos y snapshots por versión. El README técnico está actualizado. El dashboard funcionó en el fixture local después de aplicar allí las migraciones existentes, sin modificar Neon. Esto cierra esos pendientes técnicos locales, pero no los requisitos interactivos del docente ni la reconciliación productiva.
+
+## Contrato de escenarios y tareas de implementación
+
+El [anexo 47 del Plan V2](PLAN_DE_TRABAJO_V2.md) es la guía vigente de la ampliación interactiva. El [contrato scenarios.v1.json](../../ml/demand/v2/contracts/scenarios.v1.json) define entradas, respuestas, 21 reglas y trazabilidad de lo solicitado. Está documentado y comprobado estructuralmente, pero la nueva API y el motor todavía no están implementados.
+
+Ross tiene a su cargo frontend y dataset: diccionario, fuentes, supuestos, calibración, generador, features, split, validación y publicación, además de controles, gráficos, comparación, reposición visual y pruebas de pantalla. Erika tiene backend y servicio del modelo: validación semántica, snapshots, reglas económicas, motor de escenarios, cálculo de reposición, API, preprocesamiento de entrenamiento, experimentos, inferencia, permisos y recuperación. El plan asigna nueve tareas backend y diez tareas frontend/dataset, con dependencias y entregas. Las revisiones conjuntas no cambian esa propiedad.
+
+La pantalla deberá comparar precio base y nuevo, cotización, costo, cantidades con significado, fechas, plazos y disponibilidad. El servidor resolverá los valores base. Cada cambio indicará si actúa como feature, derivación, validación o reposición. Si un modelo no admite el cambio, debe responder que no lo soporta. Un input editable por sí solo no demuestra que el modelo utilice esa información.
+
+La reposición explicativa entra en H4: requerimiento mensual, stock, reservas, tránsito, compromisos, seguridad, mínimo y múltiplos, con llegada y límites del horizonte. No es una compra ni cambia inventario. Las operaciones automáticas y validación comercial siguen para H5. No se promete cubrir tiempos superiores al horizonte mensual o stockouts diarios con una fórmula mensual.
+
+La referencia 2.2.0 y su TEST quedan intactos. El diseño del dataset siguiente y sus mecanismos económicos deben revisarse antes de autorizar construcción o entrenamiento. Once pruebas del contrato comprueban estructura, sin entrenar o abrir datos. Las reglas semánticas y pruebas funcionales de API y pantalla siguen pendientes de implementación.
+
+## Diccionario ampliado H4-R01
+
+Ross completó el diseño del [diccionario de escenarios](../../ml/demand/v2/contracts/dataset_dictionary.scenarios.v1.json). El [anexo 48 del Plan V2](PLAN_DE_TRABAJO_V2.md) explica sus tipos, unidades, fuentes y disponibilidad. Cubre los 48 campos de entrada, 14 tablas propuestas y una proyección supervisada de 43 campos. Las 16 variables ampliadas son candidatas, no una selección final del modelo.
+
+Se conservan los 24 campos de referencia y el target de ventas brutas observadas. Se separan historia, planes conocidos al corte, resultados posteriores y salidas del modelo. Cantidades, stock, pedidos y reposición no son intercambiables. Los planes de precios usan intervalos temporales, nunca ventas futuras como ponderación. El costo ya puesto no se convierte o recarga otra vez. Los datos reales sin procedencia o fechas certificadas permanecen desconocidos, sin inventar 6.96, 1 o cero.
+
+R01 cierra el diccionario de diseño. R02 y R03 continúan con fuentes y mecanismos. Erika implementará la validación semántica y el pipeline después. No hay otro dataset construido, modelo entrenado o API de escenarios implementada por esta tarea. La referencia 2.2.0 permanece intacta.
+
+## Entrega de Ross para los escenarios ampliados
+
+La entrega vigente se detalla en el [anexo 49 del Plan V2](PLAN_DE_TRABAJO_V2.md). R02 queda cerrado para el alcance sintético académico. El registro de fuentes distingue las aprobaciones posteriores de M5 y Favorita de su bloqueo histórico. Automotive sigue pendiente. Monash aporta una referencia de intermitencia, M5 una referencia de frecuencia de cambios de precio. UCI y Favorita respaldan decisiones de interpretación, pero no se afirma que el generador nuevo haya estimado coeficientes con ellas. La sensibilidad al precio, cotización, costos, stock y plazos son supuestos explícitos, no historia comercial certificada.
+
+Se construyó el dataset 3.0.0, build `scenarios-20261115-02`, con 7.056 filas y 3.528 familias base/hipótesis. Sus 43 campos incluyen 33 candidatas, un target de ventas brutas enteras y controles fuera del modelo. Las cantidades latentes y resultados futuros quedan separados. El calendario simulado nuevo va de octubre de 2026 a septiembre de 2028. TRAIN cubre enero de 2027 a marzo de 2028. VALIDATION cubre abril a junio de 2028. TEST queda reservado de julio a septiembre de 2028, sin evaluación de modelos. El primer build se conserva como respaldo no aprobado por sus marcas de auditoría. 2.2.0 no cambió.
+
+El generador permite comparar cambios de precio sin cambiar el ruido del caso base. Un precio mayor no obliga a una caída en perfiles inelásticos. Una cotización o un costo distinto no fuerza un cambio de ventas sin otro mecanismo. El stock limita ventas atendidas, las reservas posteriores no se venden y solo una recepción dentro del mes incorpora unidades. Los pedidos grandes conservan unidades solicitadas y atendidas por separado. La validación estructural aprobada no acredita respuesta comercial ni sustituye la selección de variables de Erika.
+
+La pantalla administrativa incorpora **Escenarios**, con precios, cotización, costos, cantidades, fechas y reposición. Ya existen controles, validaciones, comparación, tabla, exportación y manejo de nulos. Las pruebas visuales usaron fixtures claramente identificados. La API de capacidades y comparación aún pertenece al trabajo pendiente de Erika. Sin ella no se envían escenarios ni se muestra una predicción inventada. El bosque 2.2.0 mantiene su función de reproducción histórica con cinco variables.
+
+El entrenamiento ampliado no se ejecutó en esta entrega. Corresponde a E04, después del adaptador y la revisión conjunta de reglas. La autorización condicional del usuario permite avanzar cuando esas condiciones estén resueltas. La presentación del avance puede mostrar fuentes, diccionario, nuevo dataset validado y pantalla probada con fixtures. No debe presentarse como una comparación ampliada funcional de extremo a extremo. La evidencia y el estado de cada tarea están en el [traspaso de Ross](../../ml/demand/reports/v2/contracts/ross-scenarios-20261115-01/handoff.json).
+
+La revisión de TRAIN detectó cuatro candidatas constantes, detalladas en el anexo 49. Deben excluirse del ajuste del modelo. Los controles de reposición no necesitan entrar todos al predictor. Los retrasos simulados son planes conocidos, no una estimación de retrasos imprevistos. Los casos ambiguos requieren comprobar las respuestas reales del backend antes de declarar la integración completa.
+
+## Actualización de la interfaz administrativa
+
+El [anexo 50 del Plan V2](PLAN_DE_TRABAJO_V2.md) registra la reparación de disponibilidad del dashboard y la simplificación visual de predicciones. Consulta histórica y escenarios aparecen separados. El origen sintético sigue visible, mientras que ayudas, límites y trazabilidad quedan desplegables. Los formularios de escenarios se ocultan cuando su servicio no está habilitado. Esto no implementa la API ampliada ni convierte el modelo 2.2.0 en un modelo de precios.
+
+La reconciliación de Neon terminó el 15 de noviembre de 2026, después del ensayo aislado, la aprobación de conservar quality como LEGACY, el respaldo persistente y la revalidación productiva. Las diez migraciones están aplicadas. El dashboard devuelve ventas disponibles para los tres roles. Pasaron 58 comprobaciones en ensayo y 46 lecturas posteriores en producción. Se conservan dos diferencias LEGACY conocidas, sin ejecutar el SQL de limpieza del diff. La evidencia está en el [reporte de reconciliación](../../ml/demand/reports/v2/closure/neon-reconcile-20261115-01/review.json). La revisión visual anterior fue con fixtures. La API y el modelo de escenarios ampliados siguen pendientes, por lo que este cierre no acredita todo H4 al 100 %.
+
+## Estado vigente: escenarios funcionales con dataset 3.0.0
+
+La continuación autorizada completó el backend necesario y conectó la pantalla de Ross con el modelo ampliado. El [anexo 51 del Plan V2](PLAN_DE_TRABAJO_V2.md) reúne tareas, comparación de modelos, evaluación final, pruebas y límites. Sus resultados reemplazan el estado pendiente de la entrega inicial de escenarios, conservada en las secciones anteriores como historia.
+
+El dataset sintético 3.0.0 se conservó sin modificaciones. Se entrenó exclusivamente con TRAIN, se eligió el bosque con error absoluto mediante VALIDATION y se fijó antes de evaluar TEST una sola vez. Su MAE final fue 10,16 unidades frente a 15,57 del baseline. R² fue 0,4507, no un porcentaje de precisión. Se abstuvo en seis de las 1.008 filas por estar fuera del rango de entrenamiento. Las métricas no certifican ventas futuras reales de la empresa.
+
+La pestaña Escenarios utiliza el modelo 3.0.0. Consulta histórica conserva 2.2.0, con su TEST anterior intacto. El simulador Streamlit continúa separado. Escenarios permite precios con fecha de vigencia, cantidades por modalidad, cotización, costos, stock vendible, reservas, pedidos, entregas y reposición. Los precios y la historia base llegan del servidor. El backend valida cada cambio, calcula las entradas derivadas y explica su papel. No todo campo debe entrar directamente al modelo. Cotización y costo se usan para compras hipotéticas y coherencia económica. El plazo de proveedor participa en reposición.
+
+Para demostrarlo, iniciar backend y frontend con los comandos normales del proyecto. Entrar como ADMIN y actualizar la página. Abrir Predicción de ventas, elegir Escenarios y comprobar la etiqueta V3.0.0. Se puede usar Farola Delantera Derecha, Tienda 1, abril de 2028. Activar Precios, cambiar por menor de 120 a 150, por mayor de 102 a 127,5, utilizando punto decimal al escribir. Mantener vigencia al primero de abril. Comparar muestra 22,52 unidades base frente a 22,405 con cambios. Es un ejemplo ilustrativo tomado de entradas de VALIDATION, no una prueba de exactitud comercial. Activar reposición con seguridad cinco muestra sus componentes. No es necesario entrenar para abrir la pantalla.
+
+El dashboard permite consultar meses con actividad sin introducir datos nuevos. Septiembre de 2026 permite mostrar historia existente. El filtro de ubicación respeta permisos, mientras que el inventario se identifica como actual. Los totales se contrastaron con Neon exclusivamente en READ ONLY.
+
+Pasaron 526 pruebas y las dos compilaciones. La revisión visual integrada utilizó la API y el modelo reales con una sesión local de prueba, en escritorio y celular. No equivale a un ensayo personal del equipo. El [reporte de cierre](../../ml/demand/reports/v2/closure/scenario-integration-20261115-01/review.json) conserva capturas y verificaciones. Las tareas técnicas de este alcance están completadas localmente. Antes de exponer corresponde que ambos integrantes recorran la demo en su sesión. H5 mantiene las operaciones comerciales y el seguimiento con datos reales. No se presenta la plataforma completa o su precisión como garantizada al 100 %.
+
+
+## Verificación en la sesión ADMIN de Ross, 16 de noviembre de 2026
+
+Se completó el recorrido en Brave con la sesión real del usuario, sin sustituirla por una sesión de prueba. La recarga del navegador conservó ADMIN y recuperó el dashboard. La consulta histórica 2.2.0 respondió. Escenarios cargó las capacidades y referencias 3.0.0. Se verificaron cambios de producto y tienda, cantidades por modalidad, precios con vigencia, cotización con fecha, costo, stock, un pedido por mayor de diez unidades con dos reservadas, entregas y reposición.
+
+El ejemplo de Depósito de Expansión, Tienda 3, abril de 2028, produjo 27,57 unidades tanto en la base como en la hipótesis. La pantalla explicó que el modelo puede mantener su estimación pese a cambios válidos. Al reducir el plazo del proveedor de 35 a siete días, con dos días internos, la reposición pasó de fuera del horizonte a estimación mensual. Mostró 33 unidades requeridas, 175 de posición disponible y cero sugeridas. Las 150 unidades previstas en tránsito se distinguieron del stock físico. La llegada calculada del nuevo pedido fue el 10 de abril, en America/La_Paz. Son hipótesis sintéticas, no cambios comerciales ni una nueva evaluación del modelo.
+
+El precio por mayor de 800 frente a 750 por menor fue rechazado. El resultado anterior se retiró. Tras restaurar 637,5, la comparación volvió a responder. Se corrigió un aviso inicial prematuro de indisponibilidad para mostrar carga mientras se reciben las capacidades. Una prueba nueva cubre esa transición.
+
+Pasaron las 278 pruebas frontend y su compilación con TypeScript. Las 184 pruebas backend y 68 de Python del cierre anterior siguen como evidencia previa, no como suites repetidas en esta revisión. Los 199 archivos protegidos conservaron sus hashes. No se modificó Neon, datasets, RAW o modelos. No se entrenó ni se repitió TEST.
+
+Exportar abrió el diálogo de guardado JSON de Brave. La herramienta no consiguió dirigir entradas a ese diálogo nativo, por lo que se canceló. Se comprobó la generación del Blob en las pruebas automatizadas, pero no se afirma haber guardado esa descarga en el recorrido manual. Las capturas y el registro están en `ml/demand/reports/v2/closure/scenario-integration-20261115-01/actual-admin-walkthrough-20261116.json`, desde la raíz del proyecto. Esta revisión sustituye únicamente el pendiente de comprobación en la sesión personal. El ensayo conjunto del equipo y la aceptación del docente conservan su función propia.
+
+
+La ampliación visual del 16 de noviembre de 2026 incorpora una serie de demostración de enero a octubre de 2026, calculada en memoria mediante `frontend/src/services/demonstrationHistory.ts`, versión `display-history-2026-v1`, semilla 42. Usa las referencias de producto y tienda seleccionadas para obtener ejemplos reproducibles de rotación, tendencia moderada, estacionalidad, ruido y meses con cero. Sus importes no representan historia comercial ni pronósticos del artefacto. No se extraen del dataset entrenado ni se envían a inferencia, ordenamiento por ventas o reposición. El botón «Historial del modelo» conserva por separado los tres meses del snapshot de 2028 y el pronóstico autorizado de un mes. La demostración no altera el periodo aprobado del modelo ni amplía su horizonte.
+
+Pasaron 288 pruebas frontend y la compilación. Se comprobó visualmente la curva de diez meses con el arnés local de prueba. No se afirma una nueva revisión de la sesión personal ADMIN. Los 203 archivos protegidos comparados, incluidos datasets, modelos y reportes de la versión fijada, conservaron sus hashes. No se utilizó Neon, entrenamiento o una nueva evaluación de TEST. La evidencia de esta ampliación está en `ml/demand/tmp/demo-october-2026-check.json` y su captura en `ml/demand/tmp/demo-october-2026-visual.png`.
+
+
+La revisión de coherencia del 16 de noviembre de 2026 reemplaza el selector interno que mezclaba la demostración de 2026 con la inferencia de 2028. El acceso normal abre «Explorar ventas», donde producto, tienda y mes corresponden exclusivamente a los ejemplos de enero a octubre de 2026. Cambiar el mes limita la curva a ese periodo, actualiza las unidades del mes y el acumulado. La búsqueda y el orden por ventas usan esa misma tienda y mes. No se llama a inferencia desde este recorrido.
+
+«Predecir y comparar» conserva el modelo 3.0.0 con sus meses aprobados de abril a junio de 2028. Muestra solo su historia de entrada y los pronósticos del modelo. Los datos ilustrativos de 2026 no entran en sus controles, cálculos, gráfica o peticiones. La consulta 2.2.0 permanece en «Versiones anteriores». Incorporar octubre de 2026 como mes predictivo requeriría otras entradas aprobadas. No se simula ese soporte cambiando fechas del experimento.
+
+Se comprobaron las 168 combinaciones aprobadas de 56 productos por tres tiendas, con diez meses, enteros no negativos, reproducibilidad y suma de modalidades. Los 1.680 puntos son ilustraciones calculadas en memoria, no filas añadidas al dataset publicado. Pasaron 292 pruebas frontend y la compilación. La tabla de cambios se oculta cuando está vacía y sus detalles se despliegan a pedido. El contenedor administrativo limita el desplazamiento a su área de contenido. La revisión visual local con fixtures confirmó el fin de la página sin el espacio desplazable excesivo. No equivale a una nueva prueba de la sesión personal del usuario.
+
+Los 203 archivos protegidos comparados conservaron sus hashes. No hubo entrenamiento, evaluación de TEST, cambios de dataset, modelos, RAW, Prisma o Neon. No se crearon Markdown. El registro de esta revisión está en `ml/demand/tmp/ux-coherence-review.json`.

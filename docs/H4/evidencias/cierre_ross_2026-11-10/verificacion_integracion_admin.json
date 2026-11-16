@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-10 America/La_Paz",
+  "admin_url": "http://localhost:5173/panel/prediccion",
+  "backend_tests": 168,
+  "frontend_tests": 233,
+  "h4_tests": 479,
+  "total_tests": 880,
+  "failures_final": 0,
+  "backend_typecheck": "PASS",
+  "frontend_build": "PASS",
+  "protected_files_checked": 29,
+  "changed_protected_files": [],
+  "neon_queried": false,
+  "neon_modified": false,
+  "v1_retrained": false,
+  "official_test_repeated": false,
+  "dashboard_original_cause_confirmed": false,
+  "manual_visual_review_this_round": false,
+  "http_checks": {
+    "localhost:3000/api/health": 200,
+    "localhost:3000/api/predictions/catalog_without_token": 401,
+    "localhost:5173/src/pages/PredictionsPage.tsx": 200
+  },
+  "known_limits": [
+    "La causa original del dashboard no se certificó contra la base real",
+    "La autenticación de la aplicación normal conserva su base configurada",
+    "Consulta sintética a octubre 2026, no al mes actual",
+    "Warnings de entorno de pruebas: Canvas, navegación jsdom, act y ScriptRunContext",
+    "Sin nueva revisión visual manual"
+  ]
+}

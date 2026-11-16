@@ -1,0 +1,1508 @@
+[
+  {
+    "candidate_id": "candidate-2.2-588352d4eb4a6e4b83d348d2",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "linear_regression",
+    "parameters": {
+      "fit_intercept": true
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-894e08896b3c05384c7d81ad",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-229c51ff8d54164bb86237ba",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-0bce7866de51691fe460d462",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-e9aefad869cbf4f255bc7c19",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-67dbb0e96aaf16a872654317",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-1202b43393aac05173a4f603",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-09281946094598b67524a26a",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-7effb0df8cc51ebd0f66a043",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-5acd71e24044879662a58f48",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "linear_regression",
+    "parameters": {
+      "fit_intercept": true
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-c38cf46c68fd1b184fe8cfcc",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-eaebbf3170e3c3346dcaaf88",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-bd87ed9e84961e4278e176fc",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-d886542f03dfec8294c4bfef",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-a62ef0599758193dcb94d111",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-dc30bc5fe47861d1137ba3a3",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-718ec90f41d8ee95590d0c8b",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-58b7d10504f75073ee8bc096",
+    "feature_set_id": "expanded_with_modality",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-c50f3bd8d903d974d143fa57",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "linear_regression",
+    "parameters": {
+      "fit_intercept": true
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-4ea663987dc1a0ba90944604",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-76eaef0e957317a29d34b568",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-c498c1dd5b23313410f458be",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-4afba9f7572a916cb439d1e3",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-87d2147cc7f8d74e81ebba16",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-7101a269a97209b721a81239",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-56b761b0ef77db57198efca2",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-18d9b919b55c3cb77b08fdd6",
+    "feature_set_id": "expanded_with_prices",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-fbac157dd5b77f35025c11c6",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "linear_regression",
+    "parameters": {
+      "fit_intercept": true
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-3d7df8a89ee585099c338383",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-2ae19cf4764d935bf130551e",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-32ef8498a2da76623e0dff1e",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-210dfe8d3d80bdaef4a886c0",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-ddb9c0496316f70b25064d7e",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-e6f3452c5792dbf69797f3a3",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-3b0771fbda800802fe926dbb",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-3e043ea256b79f0266c9e7ef",
+    "feature_set_id": "expanded_with_exchange",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-9af220192295e88884c2a068",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "linear_regression",
+    "parameters": {
+      "fit_intercept": true
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-493c372ea75c8fd69ba3df18",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-08097a8ffc45a7b1ec01ae06",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-ad7ebf957ae5c49e3088050f",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-72d9bf61a08302eaa7473132",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-8fbb20eb230c50590e5aa3d8",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-ddf108e46568513e93c312cb",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-51e107404e47b97d99c89341",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-e78c8e464709eb60f85469a1",
+    "feature_set_id": "expanded_with_availability",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-b905d6ec72108b536afbc2fc",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "linear_regression",
+    "parameters": {
+      "fit_intercept": true
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-8324666b508eb5fecf109f79",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-00c9e6a19a60a2ad8b7dd45b",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-9b21f6e5db19c328d406a178",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-7e69beddfa0f2f1029b2fed7",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "squared_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-74f4a3e2a658c3ca50a772d1",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-0bee7acfa377d13de60c701a",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 4,
+      "min_samples_leaf": 5
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-0e65bf0fab9e1f3ff5e1d987",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 2
+    }
+  },
+  {
+    "candidate_id": "candidate-2.2-c8c2c1e000f9d507c806fb94",
+    "feature_set_id": "expanded_v2_full",
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "model": "random_forest",
+    "parameters": {
+      "n_estimators": 200,
+      "max_features": 1.0,
+      "random_state": 42,
+      "n_jobs": 1,
+      "bootstrap": true,
+      "criterion": "absolute_error",
+      "max_depth": 8,
+      "min_samples_leaf": 5
+    }
+  }
+]

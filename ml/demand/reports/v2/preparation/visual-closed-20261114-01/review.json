@@ -1,0 +1,707 @@
+{
+  "recorded_at": "2026-11-14T21:32:31.428236+00:00",
+  "status": "READY_FOR_V2_04D_APPROVED_ACADEMIC_SCOPE",
+  "ready_for_v2_04d": true,
+  "ready_for_final_dataset_build": false,
+  "ready_for_training": false,
+  "all_v2_complete": false,
+  "advanced_to_v2_04d": false,
+  "visual_review": {
+    "status": "COMPLETED_SCOPED_LOCAL_UI_REVIEW",
+    "views": 14,
+    "administrative_views": 13,
+    "login_included": true,
+    "screenshots": [
+      {
+        "view": "dashboard",
+        "label": "dashboard-desktop-final",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/dashboard-desktop-final.png",
+        "sha256": "ba15b2f9dc186a8436ececcfff8041adc81a55f9d07f733399708118c125fd5d",
+        "observation": {
+          "label": "dashboard-desktop-final",
+          "url": "http://127.0.0.1:5186/panel",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Dashboard"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "dashboard",
+        "label": "dashboard-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/dashboard-mobile.png",
+        "sha256": "1ce243149da49dadadd45248cf819c03b7ba20d46fd008f1298e3abf7d3896e5",
+        "observation": {
+          "label": "dashboard-mobile",
+          "url": "http://127.0.0.1:5186/panel",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Dashboard"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "prediction",
+        "label": "prediction-desktop-final",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/prediction-desktop-final.png",
+        "sha256": "1301d929d9f3596a162c30da2af12de0aaf33eedc9673dc015384707bbe2692e",
+        "observation": {
+          "label": "prediction-desktop-final",
+          "url": "http://127.0.0.1:5186/panel/prediccion",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Predicción de ventas",
+            "Mes objetivo: 2026-10"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "prediction",
+        "label": "prediction-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/prediction-mobile.png",
+        "sha256": "336fd1111090da8704469401671ba09d8c47a0f567fffd2f7bd80d154c55a508",
+        "observation": {
+          "label": "prediction-mobile",
+          "url": "http://127.0.0.1:5186/panel/prediccion",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Predicción de ventas",
+            "Mes objetivo: 2026-10"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "inventory",
+        "label": "inventory-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/inventory-desktop.png",
+        "sha256": "3eef03efa328579aa3c26291b65dcddb60261479279ba03c5a4cfadf15adda21",
+        "observation": {
+          "label": "inventory-desktop",
+          "url": "http://127.0.0.1:5186/panel/inventario",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Mercadería en tránsito",
+            "Devoluciones pendientes de inspección",
+            "Inventario"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "inventory",
+        "label": "inventory-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/inventory-mobile.png",
+        "sha256": "59788f66e7a959df87030a2bbf0570d5dfab842e4c8b60c6f6d090d805c8bd6a",
+        "observation": {
+          "label": "inventory-mobile",
+          "url": "http://127.0.0.1:5186/panel/inventario",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Mercadería en tránsito",
+            "Devoluciones pendientes de inspección",
+            "Inventario"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "product",
+        "label": "product-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/product-desktop.png",
+        "sha256": "6253cfe7e9bc774109ade37bc11adddb232c9e7fcb8f5fe7e5f11fd36fe2ca1a",
+        "observation": {
+          "label": "product-desktop",
+          "url": "http://127.0.0.1:5186/panel/inventario/1",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Filtro de aceite de prueba con descripción extensa para revisar presentación"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "product",
+        "label": "product-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/product-mobile.png",
+        "sha256": "07e5878019175d9a343f27180d8dc7df195aa753208bc9379dcd7afe7b445a7a",
+        "observation": {
+          "label": "product-mobile",
+          "url": "http://127.0.0.1:5186/panel/inventario/1",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Filtro de aceite de prueba con descripción extensa para revisar presentación"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "sales",
+        "label": "sales-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/sales-desktop.png",
+        "sha256": "c251ce67fba7fc397839e92136f620916955a6cada7a5c35951c9c694c17cc7c",
+        "observation": {
+          "label": "sales-desktop",
+          "url": "http://127.0.0.1:5186/panel/ventas",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Ventas",
+            " Carrito de Venta"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "sales",
+        "label": "sales-mobile-cart",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/sales-mobile-cart.png",
+        "sha256": "dc79512b93514f0512cc9e8ceb1e1fb09cbbd7dbc59680ad4faff3d7ef1e3833",
+        "observation": {
+          "label": "sales-mobile-cart",
+          "url": "http://127.0.0.1:5186/panel/ventas",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Ventas",
+            " Carrito de Venta"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "wholesale",
+        "label": "wholesale-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/wholesale-desktop.png",
+        "sha256": "25a6d11164963e6ba8fad71173211bc1d6a2f341c1707925d2979fb058429b26",
+        "observation": {
+          "label": "wholesale-desktop",
+          "url": "http://127.0.0.1:5186/panel/ventas-mayor",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Ventas por Mayor"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "wholesale",
+        "label": "wholesale-mobile-form",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/wholesale-mobile-form.png",
+        "sha256": "065d60c6d43e386000374d18aa6606f96de55cb780550e223c7cdc9921f05724",
+        "observation": {
+          "label": "wholesale-mobile-form",
+          "url": "http://127.0.0.1:5186/panel/ventas-mayor",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Ventas por Mayor"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "returns",
+        "label": "returns-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/returns-desktop.png",
+        "sha256": "3dc32b14a5f614d10dc45a05429bc32b3dc8cbd801743ab8ab4181990752a88e",
+        "observation": {
+          "label": "returns-desktop",
+          "url": "http://127.0.0.1:5186/panel/devoluciones",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Devoluciones pendientes de inspección",
+            "Devoluciones"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "returns",
+        "label": "returns-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/returns-mobile.png",
+        "sha256": "73716374e43a5be621b54f835ce6d4606861600d41f4f6fc699c93a451b8c128",
+        "observation": {
+          "label": "returns-mobile",
+          "url": "http://127.0.0.1:5186/panel/devoluciones",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Devoluciones pendientes de inspección",
+            "Devoluciones"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "requests",
+        "label": "requests-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/requests-desktop.png",
+        "sha256": "23fc28db6cefb0d29196c096d9aa1daa3421a655fe051be5c3c8638921f0cd36",
+        "observation": {
+          "label": "requests-desktop",
+          "url": "http://127.0.0.1:5186/panel/solicitudes",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Solicitudes"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "requests",
+        "label": "requests-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/requests-mobile.png",
+        "sha256": "a0c1053b0bf00de759115a3608d3403a1a8bbfd18c775776f90c524745cd333b",
+        "observation": {
+          "label": "requests-mobile",
+          "url": "http://127.0.0.1:5186/panel/solicitudes",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Solicitudes"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "movements",
+        "label": "movements-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/movements-desktop.png",
+        "sha256": "52d1c6df01f7a670d1496a6ecadeee560e3f0d16c19eae495447d76bf198dea7",
+        "observation": {
+          "label": "movements-desktop",
+          "url": "http://127.0.0.1:5186/panel/movimientos",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Mercadería en tránsito",
+            "Movimientos"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "movements",
+        "label": "movements-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/movements-mobile.png",
+        "sha256": "d8a52d702d5f0c48f912b222f4e9bbfe1a14927eceb5ef887a129f7bbae52f46",
+        "observation": {
+          "label": "movements-mobile",
+          "url": "http://127.0.0.1:5186/panel/movimientos",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Mercadería en tránsito",
+            "Movimientos"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "costs",
+        "label": "costs-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/costs-desktop.png",
+        "sha256": "9ddf28a319902e8dd2ecfe965dfbd4a2aaaf738ad84a8817125bc1215d1f0e6b",
+        "observation": {
+          "label": "costs-desktop",
+          "url": "http://127.0.0.1:5186/panel/costos",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Costos"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "costs",
+        "label": "costs-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/costs-mobile.png",
+        "sha256": "7033dfa1a4334bbe795ecd269682d90b06a576aa854f8fadb964f336b921ea2b",
+        "observation": {
+          "label": "costs-mobile",
+          "url": "http://127.0.0.1:5186/panel/costos",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Costos"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "prices",
+        "label": "prices-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/prices-desktop.png",
+        "sha256": "06fa80de45a7a74b5025941f045c9812a110d70df9a213ef079a54ad5a3c3007",
+        "observation": {
+          "label": "prices-desktop",
+          "url": "http://127.0.0.1:5186/panel/precios",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Precios"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "prices",
+        "label": "prices-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/prices-mobile.png",
+        "sha256": "cc3a9de888e5791ae0d7ec8a707af9e82a61cc69c8f840ed5e20b8b216b258a3",
+        "observation": {
+          "label": "prices-mobile",
+          "url": "http://127.0.0.1:5186/panel/precios",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Precios"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "reports",
+        "label": "reports-desktop-fixed",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/reports-desktop-fixed.png",
+        "sha256": "c38f45b6b2bbd864c93e4a60955574bb1062b07e6f8b3d434014d3b91073d782",
+        "observation": {
+          "label": "reports-desktop-fixed",
+          "url": "http://127.0.0.1:5186/panel/reportes",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Reportes"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "reports",
+        "label": "reports-mobile-fixed",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/reports-mobile-fixed.png",
+        "sha256": "4c82206d538c0d9e2c4061ba95c4b0019827aed8c09ccf0d846e5b8e4d26160f",
+        "observation": {
+          "label": "reports-mobile-fixed",
+          "url": "http://127.0.0.1:5186/panel/reportes",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Reportes"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "settings",
+        "label": "settings-desktop-fixed",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/settings-desktop-fixed.png",
+        "sha256": "1476e22b269ff984e08d37b5a3485525982ded86d04d71709c2b7fd6ca50a421",
+        "observation": {
+          "label": "settings-desktop-fixed",
+          "url": "http://127.0.0.1:5186/panel/configuracion",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [
+            "Configuración"
+          ],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "settings",
+        "label": "settings-mobile-fixed",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/settings-mobile-fixed.png",
+        "sha256": "f43d2a8e200023ca32a0f69bf8650db6f290a58aeae3ae5ade00dd7b7ca9f85a",
+        "observation": {
+          "label": "settings-mobile-fixed",
+          "url": "http://127.0.0.1:5186/panel/configuracion",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [
+            "Configuración"
+          ],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      },
+      {
+        "view": "login",
+        "label": "login-desktop",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/login-desktop.png",
+        "sha256": "b49aa5846f94c27ef3d06aa4184e63cdf290334a35a445e058c6f23b1f407f32",
+        "observation": {
+          "label": "login-desktop",
+          "url": "http://127.0.0.1:5186/login",
+          "alerts": [],
+          "documentWidth": 1280,
+          "headings": [],
+          "height": 720,
+          "legacyLabels": false,
+          "width": 1280
+        }
+      },
+      {
+        "view": "login",
+        "label": "login-mobile",
+        "path": "ml/demand/reports/v2/preparation/visual-closed-20261114-01/screenshots/login-mobile.png",
+        "sha256": "e21d3bb8c1bd194f28bd5e953e77fbbaeb042f7434e96d7491b2954f1b7d8906",
+        "observation": {
+          "label": "login-mobile",
+          "url": "http://127.0.0.1:5186/login",
+          "alerts": [],
+          "documentWidth": 390,
+          "headings": [],
+          "height": 844,
+          "legacyLabels": false,
+          "width": 390
+        }
+      }
+    ],
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "fixture_only": true,
+    "server_http_status": 200,
+    "operational_backend_used": false,
+    "server_stopped": true,
+    "browser_override_reset": true,
+    "resolved_environment_issues": [
+      "Servidor de revisión accesible con permisos de localhost y pestaña nueva",
+      "Tailwind resuelve configuración desde frontend al corregir cwd temporal"
+    ],
+    "not_certified": [
+      "Operaciones comerciales persistidas",
+      "Calidad o esquema físico de Neon",
+      "Cada modal y cada combinación de permisos",
+      "Aplicación Expo",
+      "Pipeline OCR con fotografías reales",
+      "Modelo o API V2 implementados"
+    ],
+    "fixture_corrections": [
+      "Pendientes físicos con rutas y objetos de respuesta reales",
+      "stockByLocation y categoría del detalle según contrato actual"
+    ],
+    "recovery_checks": {
+      "stalePredictionCleared": true,
+      "retailPriceFixture": 150,
+      "wholesalePriceFixture": 120,
+      "cartAfterWholesaleSelection": 120,
+      "reportMonthlyButtonAfterFix": {
+        "left": 153.75,
+        "right": 344.53125,
+        "viewport": 390
+      },
+      "settingsAuditButtonAfterFix": {
+        "left": 21,
+        "right": 139.625,
+        "viewport": 390
+      }
+    },
+    "role_guard": {
+      "role": "TIENDA",
+      "redirectedTo": "/panel",
+      "predictionLinkAbsent": true
+    }
+  },
+  "fixes": [
+    {
+      "file": "frontend/src/pages/ReportsPage.tsx",
+      "problem": "Pestaña Mensual por Tienda fuera de pantalla a 390 px",
+      "before": {
+        "left": 377.796875,
+        "right": 492.671875
+      },
+      "after": {
+        "left": 153.75,
+        "right": 344.53125
+      },
+      "change": "Pestañas en varias filas, etiquetas sin saltos internos"
+    },
+    {
+      "file": "frontend/src/pages/SettingsPage.tsx",
+      "problem": "Pestaña de auditoría y desbordamiento en pantalla estrecha",
+      "after": {
+        "left": 21,
+        "right": 139.625
+      },
+      "change": "Pestañas en varias filas. Apertura de Auditoría comprobada"
+    }
+  ],
+  "approvals": {
+    "approved_by": "USER_IN_CHAT",
+    "approved_on": "2026-11-14",
+    "basis": "Tres respuestas explícitas del usuario durante el cierre de la revisión visual.",
+    "dataset_origin": "ACADEMIC_SYNTHETIC",
+    "new_variables_origin": "SIMULATED_WITH_DOCUMENTED_ASSUMPTIONS",
+    "initial_reference_sources": [
+      "monash_car_parts",
+      "uci_online_retail_ii"
+    ],
+    "excluded_from_initial_scope": [
+      "automotive_spare_parts_demand",
+      "m5_walmart",
+      "corporacion_favorita"
+    ],
+    "excluded_raw_preserved": true,
+    "model_selection_policy_approved": true,
+    "supplier_lead_time_scope": "SEPARATE_REPLENISHMENT_DESIGN",
+    "does_not_authorize": [
+      "Training now",
+      "Claiming commercial accuracy",
+      "Using sources with unresolved conditions",
+      "Presenting simulated observations as actual company sales"
+    ]
+  },
+  "individual_erika_review_recorded": false,
+  "closed_scope": [
+    "V2-01 auditoría local de fuentes",
+    "V2-02 auditoría local de pantallas",
+    "V2-03 decisiones del alcance académico",
+    "V2-09A diseño inicial",
+    "V2-04A registro técnico",
+    "V2-04B revisión documental de las cinco fuentes",
+    "V2-04C perfilado de las dos fuentes aprobadas"
+  ],
+  "pending_next_stages": [
+    "V2-04D compatibilidad Monash/UCI",
+    "V2-04 diccionario final después de compatibilidad",
+    "V2-05 escenarios y supuestos",
+    "V2-05A calibración autorizada futura",
+    "V2-06 dataset V2",
+    "V2-07 validación",
+    "V2-08 experimentos futuros y TEST nuevo",
+    "V2-09B consistencia con modelo real",
+    "Integración y aceptación posterior"
+  ],
+  "tests": {
+    "python": {
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "log": "ml/demand/tmp/visual-20261114-01/contract-tests-after-approval.txt"
+    },
+    "frontend": {
+      "passed": 28,
+      "failed": 0,
+      "log": "ml/demand/tmp/visual-20261114-01/frontend-regression.txt"
+    },
+    "current_total_passed": 71,
+    "frontend_build": "PASS (tsc -b + vite build)",
+    "frontend_build_log": "ml/demand/tmp/visual-20261114-01/frontend-build.txt",
+    "backend_tests_rerun": false
+  },
+  "integrity": {
+    "protected": {
+      "checked": 44,
+      "unchanged": true
+    },
+    "raw": {
+      "checked": 136,
+      "unchanged": true
+    },
+    "previous_reports": {
+      "checked": 6,
+      "unchanged": true
+    }
+  },
+  "raw_inventory_unchanged": true,
+  "reserved_directories_empty": {
+    "sources/external_curated": true,
+    "data/repuestopro_v2": true,
+    "models/v2": true
+  },
+  "operational_files_changed": [
+    "frontend/src/pages/ReportsPage.tsx",
+    "frontend/src/pages/SettingsPage.tsx"
+  ],
+  "files_modified": [
+    "frontend/src/pages/ReportsPage.tsx",
+    "frontend/src/pages/SettingsPage.tsx",
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md"
+  ],
+  "constraints": {
+    "neon_used": false,
+    "trained": false,
+    "dataset_created": false,
+    "raw_transformed": false,
+    "new_markdown": false,
+    "git_commands": false,
+    "migrations": false
+  }
+}

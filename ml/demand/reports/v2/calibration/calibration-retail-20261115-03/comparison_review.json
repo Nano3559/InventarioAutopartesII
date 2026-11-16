@@ -1,0 +1,18 @@
+{
+  "reference_only_policy": true,
+  "not_an_independent_test": true,
+  "m5_price_change_probability": {
+    "reference": 0.012048473339260742,
+    "comparison": 0.008996559700416427
+  },
+  "m5_calendar_comparison": "INSUFFICIENT_REFERENCE: fewer than two years for each of the twelve months.",
+  "favorita_integer_p95_over_median": {
+    "reference": 2.8,
+    "comparison": 3.0
+  },
+  "favorita_integer_promotion_coverage": {
+    "reference": 0.7762716559497772,
+    "comparison": 1.0
+  },
+  "warning": "Source populations and missingness change across windows. No causal or commercial stability claim, no retuning from comparison."
+}

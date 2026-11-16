@@ -1,0 +1,16 @@
+{
+  "target": "br-cool-cake-ay7cr6sc",
+  "action": "resolve",
+  "recorded_at": "2026-11-16T01:06:09.350Z",
+  "command": [
+    "prisma",
+    "migrate",
+    "resolve",
+    "--applied",
+    "20260909_close_schema_drift",
+    "--schema",
+    "prisma/schema.prisma"
+  ],
+  "exit_code": 0,
+  "output": "Environment variables loaded from .env\nPrisma schema loaded from prisma\\schema.prisma\nDatasource \"db\": PostgreSQL database \"inventario_db\", schema \"public\" at \"ep-proud-hall-ay0tq2yk.c-5.us-east-2.aws.neon.tech\"\n\nMigration 20260909_close_schema_drift marked as applied.\n\n\n"
+}

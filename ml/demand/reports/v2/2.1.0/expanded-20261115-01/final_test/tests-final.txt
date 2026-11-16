@@ -1,0 +1,20 @@
+test_changed_pinned_input_rejected (test_v2_final_evaluation.FinalEvaluationGuardTests.test_changed_pinned_input_rejected) ... ok
+test_existing_guard_rejects_before_model_or_labels (test_v2_final_evaluation.FinalEvaluationGuardTests.test_existing_guard_rejects_before_model_or_labels) ... ok
+test_failure_remains_consumed_and_cannot_retry (test_v2_final_evaluation.FinalEvaluationGuardTests.test_failure_remains_consumed_and_cannot_retry) ... ok
+test_missing_authorization_rejected (test_v2_final_evaluation.FinalEvaluationGuardTests.test_missing_authorization_rejected) ... ok
+test_policy_change_rejected_before_any_loader (test_v2_final_evaluation.FinalEvaluationGuardTests.test_policy_change_rejected_before_any_loader) ... ok
+test_reservation_is_shared_for_entire_build (test_v2_final_evaluation.FinalEvaluationGuardTests.test_reservation_is_shared_for_entire_build) ... ok
+test_success_cannot_invoke_operation_twice (test_v2_final_evaluation.FinalEvaluationGuardTests.test_success_cannot_invoke_operation_twice) ... ok
+test_actual_final_guard_prevents_second_access_before_any_load (test_v2_final_results.FinalSavedEvidenceTests.test_actual_final_guard_prevents_second_access_before_any_load) ... ok
+test_groups_and_months_have_same_full_coverage (test_v2_final_results.FinalSavedEvidenceTests.test_groups_and_months_have_same_full_coverage) ... ok
+test_one_loader_one_predict_zero_fits (test_v2_final_results.FinalSavedEvidenceTests.test_one_loader_one_predict_zero_fits) ... ok
+test_prediction_policy_and_tail_counts_reconcile (test_v2_final_results.FinalSavedEvidenceTests.test_prediction_policy_and_tail_counts_reconcile) ... ok
+test_saved_metrics_reconcile_without_model_or_test_loader (test_v2_final_results.FinalSavedEvidenceTests.test_saved_metrics_reconcile_without_model_or_test_loader) ... ok
+test_saved_rows_are_complete_unique_test_months (test_v2_final_results.FinalSavedEvidenceTests.test_saved_rows_are_complete_unique_test_months) ... ok
+test_selection_hash_and_artifact_match_frozen_evidence (test_v2_final_results.FinalSavedEvidenceTests.test_selection_hash_and_artifact_match_frozen_evidence) ... ok
+test_selection_precedes_started_event_and_test_completion (test_v2_final_results.FinalSavedEvidenceTests.test_selection_precedes_started_event_and_test_completion) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.348s
+
+OK

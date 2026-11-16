@@ -1,0 +1,19 @@
+{
+  "validator_version": "scenario-validator-1.0.0",
+  "valid": true,
+  "errors": [],
+  "families": 7056,
+  "supervised_rows": 14112,
+  "partition_counts": {
+    "TRAIN": 5040,
+    "VALIDATION": 1008,
+    "TEST": 1008,
+    "DEMO": 7056
+  },
+  "scope": "STRUCTURAL_ONLY_NO_MODEL_METRICS",
+  "test_scored": false,
+  "limitations": [
+    "Not empirical commercial validation or backend API certification.",
+    "Ambiguous and invalid cases are specifications, not invented labeled observations."
+  ]
+}

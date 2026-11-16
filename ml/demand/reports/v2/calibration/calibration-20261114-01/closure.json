@@ -1,0 +1,204 @@
+{
+  "report_version": "v2-calibration-closure-1",
+  "run_id": "calibration-20261114-01",
+  "recorded_on": "2026-11-14",
+  "stage": "V2-05A",
+  "status": "COMPLETED_FOR_ACADEMIC_JUSTIFICATION_ONLY",
+  "prerequisites": {
+    "scenario_closure_status": "DESIGN_COMPLETE_NOT_IMPLEMENTED",
+    "scenario_count": 57,
+    "dictionary_preserved_except_completed_future_work": true,
+    "approved_sources": [
+      "monash_car_parts",
+      "uci_online_retail_ii"
+    ],
+    "profiles_and_manifests_match": true
+  },
+  "method": "Deterministic descriptive calculations from frozen profiles, reference-informed mechanisms and explicit academic assumptions. No predictive model fit or observation generation.",
+  "configuration": {
+    "path": "ml/demand/v2/contracts/calibration.v2.json",
+    "sha256": "0c26ad5e3f2d52287b86d56ac27959d15b5e40210142439d82e40500c20c4c63",
+    "implementation": "ml/demand/v2/calibration.py",
+    "implementation_sha256": "6e67d1d9e722b38b011051fa391f62420c12124f21a298572105f22776d5f60a",
+    "parameter_count": 18,
+    "columns": 24,
+    "features": 17
+  },
+  "reference_statistics": {
+    "monash": {
+      "all_observed": {
+        "n": 130252,
+        "positive": 32854,
+        "zero_probability": 0.7477658692380923,
+        "occurrence_probability": 0.2522341307619077,
+        "positive_mean": 2.0147927193035855,
+        "positive_mean_formula": "observed_values.mean * valid / (valid - zero)"
+      },
+      "complete_series": {
+        "n": 2509,
+        "excluded_incomplete": 165,
+        "occurrence_probability": 0.2509241241335115,
+        "rotation_groups": [
+          {
+            "label": "BAJA",
+            "count": 1792,
+            "weight": 0.7142287764049422,
+            "occurrence_probability": 0.15753019957983194,
+            "interval": {
+              "lower_exclusive": 0,
+              "upper_inclusive": 0.3333333333333333
+            }
+          },
+          {
+            "label": "MEDIA",
+            "count": 690,
+            "weight": 0.2750099641291351,
+            "occurrence_probability": 0.4754475703324808,
+            "interval": {
+              "lower_exclusive": 0.3333333333333333,
+              "upper_inclusive": 0.6666666666666666
+            }
+          },
+          {
+            "label": "ALTA",
+            "count": 27,
+            "weight": 0.010761259465922678,
+            "occurrence_probability": 0.7116920842411039,
+            "interval": {
+              "lower_exclusive": 0.6666666666666666,
+              "upper_inclusive": 1
+            }
+          }
+        ],
+        "zero_run_quantiles": {
+          "0.5": 16.0,
+          "0.9": 28.0,
+          "0.95": 31.0
+        },
+        "warning": "Rotación significa frecuencia de meses positivos, no importancia comercial. No se eliminan trayectorias iguales sin prueba de duplicación."
+      },
+      "missing_probability_descriptive_only": 0.04489125493129189,
+      "missing_policy": "No imputar cero. No usar esta tasa como averías aleatorias: los faltantes son finales de serie.",
+      "transfer_limit": "Empresa y época distintas. Media de positivos global y grupos de series completas tienen poblaciones diferentes. No se afirma reproducir exactamente la distribución conjunta."
+    },
+    "uci": {
+      "rows": 1067371,
+      "positive_quantity_quantiles": {
+        "valid": 1044421,
+        "missing": 0,
+        "invalid": 0,
+        "minimum": 1.0,
+        "maximum": 80995.0,
+        "mean": 11.176115761747418,
+        "median": 3.0,
+        "p95": 30.0,
+        "p99": 108.0,
+        "zero": 0,
+        "negative": 0,
+        "fractional": 0
+      },
+      "p95_over_median": 10.0,
+      "p99_over_median": 36.0,
+      "negative_quantity_line_fraction": 0.021501427338760374,
+      "exact_repeat_occurrence_fraction": 0.032167821685243465,
+      "cross_sheet_repeat_occurrences": 22523,
+      "use": "Referencias descriptivas de cola y problemas de calidad, nunca tasas de devoluciones, mayoristas o precios para RepuestoPro.",
+      "excluded_transfer": [
+        "GBP a Bs",
+        "precios nominales",
+        "etiqueta mayorista inferida por cantidad",
+        "tasa causal de cancelación",
+        "elasticidad precio",
+        "identificadores"
+      ]
+    }
+  },
+  "tests": {
+    "executed": 86,
+    "passed": 86,
+    "failed": 0,
+    "skipped": 0,
+    "new_tests": 13,
+    "log": "ml/demand/tmp/calibration-20261114-01/tests.txt",
+    "scope": "V2 structure, provenance, profiling, preparation, dictionary, scenarios and calibration metadata. Not V2 generator execution or training."
+  },
+  "integrity": {
+    "protected": {
+      "files": 44,
+      "unchanged": true
+    },
+    "raw": {
+      "files": 136,
+      "unchanged": true
+    },
+    "previous_reports": {
+      "files": 44,
+      "unchanged": true
+    },
+    "models": {
+      "files": 2,
+      "unchanged": true
+    },
+    "manifests": {
+      "files": 5,
+      "unchanged": true
+    }
+  },
+  "assertions": {
+    "raw_inventory_unchanged": true,
+    "new_markdown_files": 0,
+    "raw_transformed": false,
+    "dataset_v2_generated": false,
+    "curated_created": false,
+    "training_performed": false,
+    "neon_used": false,
+    "git_commands_executed": false,
+    "historical_evidence_modified": false
+  },
+  "pending": [
+    {
+      "stage": "V2-06",
+      "work": "Implement generator and publish versioned build after authorization",
+      "blocks_current_stage": false
+    },
+    {
+      "stage": "V2-07",
+      "work": "Validate actual rows, accounting, temporal clocks and distributions after generation",
+      "blocks_current_stage": false
+    },
+    {
+      "stage": "V2-08",
+      "work": "Freeze independent unseen synthetic TEST and experiment manifests before model selection",
+      "blocks_current_stage": false
+    },
+    {
+      "stage": "V2-09B",
+      "work": "Technical review of backend contract with Erika, not recorded as already performed",
+      "blocks_current_stage": false
+    },
+    {
+      "stage": "COMMERCIAL_VALIDATION",
+      "work": "Collect certified history for price response, FX, supply and stock effects. Academic assumptions do not replace it.",
+      "blocks_current_stage": false
+    }
+  ],
+  "modified_files": [
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/v2/contracts/dataset_columns.v2.json",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "created_files": [
+    "ml/demand/v2/calibration.py",
+    "ml/demand/v2/contracts/calibration.v2.json",
+    "ml/demand/tests/test_v2_calibration.py",
+    "ml/demand/reports/v2/calibration/calibration-20261114-01/closure.json"
+  ],
+  "next_step": "V2-06, only after user authorization. Stop here.",
+  "limitations": [
+    "No elasticidad causal, demanda perdida, cotización real ni plazo comercial certificados.",
+    "UCI tiene repetidos y cancelaciones sin limpiar. Sus cuantiles son descriptivos de líneas positivas con esas limitaciones, no distribución de pedidos depurada.",
+    "El mecanismo de conteos, independencia temporal y efectos económicos son hipótesis. Un modelo puede aprender la fórmula sintética.",
+    "La configuración especifica diseño implementable, no acredita funcionamiento del generador aún inexistente."
+  ]
+}

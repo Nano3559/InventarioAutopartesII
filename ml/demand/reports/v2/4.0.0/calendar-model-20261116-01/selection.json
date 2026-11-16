@@ -1,0 +1,7 @@
+{
+  "releaseSha256": "949c55733a6818bb93e97261c28f385ee3d2e3b0fcde6c42daa8dbe7d7dde00e",
+  "artifactSha256": "8d73bbfb769e432461f2a202e37842b47820a76627e46be3e4ba412e64562e1e",
+  "selectedUsing": "VALIDATION_MAE_RMSE_SIMPLICITY",
+  "fixedBeforeTest": true,
+  "forecastOutcomeAbsent": true
+}

@@ -1,0 +1,22 @@
+{
+  "oil.csv.7z": {
+    "valid": 1175,
+    "quantiles_exact": {
+      "p50": 53.19,
+      "p95": 105.19500000000001,
+      "p99": 107.9578
+    },
+    "method": "Exact quantiles on all finite values of the small table. Prefer these over systematic-sample estimates in the main profile.",
+    "calibration_performed": false
+  },
+  "transactions.csv.7z": {
+    "valid": 83488,
+    "quantiles_exact": {
+      "p50": 1393.0,
+      "p95": 3712.0,
+      "p99": 4862.0
+    },
+    "method": "Exact quantiles on all finite values of the small table. Prefer these over systematic-sample estimates in the main profile.",
+    "calibration_performed": false
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "evaluation_version": "final-test-2.2-1",
+  "selection_id": "accepted-absolute-2.2-20261115-01",
+  "user_accepted": true,
+  "accepted_candidate": "candidate-2.2-1202b43393aac05173a4f603",
+  "acceptance_evidence": "User accepts current forest for H4, authorizes one TEST evaluation and administrator integration.",
+  "accepted_scope": "SYNTHETIC_ACADEMIC_H4_ONLY",
+  "accepted_known_tradeoffs": {
+    "products_worse_validation": 13,
+    "product_store_worse_validation": 36
+  },
+  "frozen_at": "2026-11-15T20:05:42.251993+00:00",
+  "dataset_version": "2.2.0",
+  "build_id": "calibrated-20261115-01",
+  "artifact": "models/v2/train-2.2-20261115-01/candidate-2.2-1202b43393aac05173a4f603.joblib",
+  "artifact_sha256": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+  "preprocessing_state_sha256": "ae7a6fdd4054fa19469001138f98c5740e6abc272535191b9766642b90e95acb",
+  "features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos"
+  ],
+  "regressor_parameters": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "criterion": "absolute_error",
+    "max_depth": 4,
+    "max_features": 1.0,
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 5,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 200,
+    "n_jobs": 1,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "input_hashes": {
+    "models/v2/train-2.2-20261115-01/candidate-2.2-1202b43393aac05173a4f603.joblib": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+    "models/v2/train-2.2-20261115-01/candidate-2.2-1202b43393aac05173a4f603.preprocessing.json": "be23dcad34bda8280a23ea21a4a45272ea5754db2b7595d5567266cef70df138",
+    "reports/v2/2.2.0/calibrated-20261115-01/runs/train-2.2-20261115-01/comparison.json": "f146c445a0a5262f4ff6541117f1586a310b62630ccef1bdb5d7da84cf6911e6",
+    "v2/final_evaluation_v2_2.py": "73e27ab4e0159fe342408809b8af7efbd76917095aa38bf2d2f8ffb5193c3f78",
+    "v2/preprocessing_train_v2_2.py": "d0004f209515577d16e528f51ac563e361535bc79663a12225c1a9c42cae891f",
+    "v2/preprocessing.py": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+    "v2/data_v2_2.py": "fe3db7bfcc9c9d5251019808f84f96e222491cabb9bdec85f6353fb1b0680d3c",
+    "v2/experiments.py": "abe20673fab4d9cc8fb7ec4d4052a8fa8e1c448384e0fba998fa5571b3211e0c",
+    "v2/contracts/training.v2_2.json": "2d37853eb1eb978d034aa6339ca33c69cdf2877023a85fbd6f068f0eaad78b6b",
+    "v2/contracts/preprocessing.v2_2.json": "d89c87370ac5ed2731148ea4358e25dca5f929e71d990b0c47e202843d23f3c1",
+    "v2/contracts/experiments.v2_2.json": "14b52717e8f8cf71a5b7bd3afce3fb1d1fbd950db5de6b4dd082a3ed57672138",
+    "data/repuestopro_v2/2.2.0/calibrated-20261115-01/manifest.json": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+    "data/repuestopro_v2/2.2.0/calibrated-20261115-01/schema.json": "b48425a12dd49e892b9bf775b3016cc5f0ff0d381280b90dd9e998b1eda2f266",
+    "data/repuestopro_v2/2.2.0/calibrated-20261115-01/split_manifest.json": "c02afe7189991e905af902b110dc52273adec710d608e8030f8a80a9e586520e",
+    "data/repuestopro_v2/2.2.0/calibrated-20261115-01/dataset_supervisado.csv": "7df7e95800e6b4d07f1ce532123c690e14b8c40ba309743277135c7889d9ba8f",
+    "data/repuestopro_v2/2.2.0/calibrated-20261115-01/base_mensual.csv": "2f58c1133f7d0ad4e766faeb9ce12877d3b945fa60ec8796711d61dbd6526f6d",
+    "data/repuestopro_v2/2.2.0/calibrated-20261115-01/catalog_reference.json": "3cb0c9c1f733d565dcacb33f7a33f9911ed0931b19e1740034289c38a5368404",
+    "data/repuestopro_v2/2.2.0/calibrated-20261115-01/validation.json": "fedaeb4cafb7999b555fdb99420507f31fe893c76690640d26f154603fc8c160"
+  },
+  "environment": {
+    "scikit-learn": "1.9.1",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "joblib": "1.6.0"
+  },
+  "prediction_policy": {
+    "version": "NONNEGATIVE_CONTINUOUS_1",
+    "nonfinite": "REJECT_ALL_NO_SUBSET",
+    "negative": "CLIP_ZERO",
+    "rounding": "NONE"
+  },
+  "test_authorization": "ONE_FINAL_EVALUATION_NO_RETRAINING",
+  "training_window": [
+    "2025-01",
+    "2026-03"
+  ],
+  "training_rows": 2520,
+  "horizon": "ONE_MONTH_ROLLING_CLOSED_HISTORY_NO_REFIT",
+  "automatic_replenishment": false
+}

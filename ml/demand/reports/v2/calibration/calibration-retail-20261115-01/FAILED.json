@@ -1,0 +1,6 @@
+{
+  "status": "FAILED_NO_CALIBRATION_PUBLISHED",
+  "reason": "Profiler expected COMPARISON but curated label is DESCRIPTIVE_COMPARISON. New calibration reader corrected. No source, dataset or model modified.",
+  "phase": "M5 statistics",
+  "recovery": "Use a new run_id, retain this failed attempt."
+}

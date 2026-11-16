@@ -214,21 +214,21 @@ export default function SettingsPage() {
         <p className="text-gray-400 text-sm mt-1">Gestión de usuarios, roles y permisos</p>
       </div>
 
-      <div className="flex gap-2 bg-dark-800/50 border border-dark-700/50 rounded-xl p-1">
+      <div className="flex flex-wrap gap-2 bg-dark-800/50 border border-dark-700/50 rounded-xl p-1">
         <button onClick={() => setActiveTab("users")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeTab === "users" ? "bg-primary-600/20 text-primary-400 border border-primary-600/30" : "text-gray-400 hover:text-gray-200 border border-transparent"
           }`}>
           <Users size={16} /> Usuarios
         </button>
         <button onClick={() => setActiveTab("roles")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeTab === "roles" ? "bg-primary-600/20 text-primary-400 border border-primary-600/30" : "text-gray-400 hover:text-gray-200 border border-transparent"
           }`}>
           <Shield size={16} /> Roles y Permisos
         </button>
         <button onClick={() => { setActiveTab("audit"); fetchAuditLogs(); }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`flex shrink-0 items-center gap-2 whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeTab === "audit" ? "bg-primary-600/20 text-primary-400 border border-primary-600/30" : "text-gray-400 hover:text-gray-200 border border-transparent"
           }`}>
           <History size={16} /> Auditoría

@@ -1,0 +1,58 @@
+{
+  "fit_partition": "TRAIN only",
+  "train_rows": 5040,
+  "validation_rows": 1008,
+  "family_weighting": "Each pair total weight 1",
+  "validation": "Same temporal month blocks, independent realization worlds. No random split.",
+  "normalization": "StandardScaler TRAIN only for LinearRegression. No numeric scaling for forests.",
+  "category": "OneHotEncoder, unknown categories ignored. Product/location IDs never treated as amounts.",
+  "missing": "Median imputation TRAIN only, missing indicators. No target-derived values.",
+  "candidates": {
+    "baseline": "ventas_mes_anterior",
+    "linear": "OLS",
+    "forest_squared": {
+      "trees": 100,
+      "criterion": "squared_error",
+      "max_depth": 14,
+      "min_samples_leaf": 4,
+      "max_features": 0.9,
+      "random_state": 42
+    },
+    "forest_absolute": {
+      "trees": 100,
+      "criterion": "absolute_error",
+      "max_depth": 14,
+      "min_samples_leaf": 4,
+      "max_features": 0.9,
+      "random_state": 42
+    }
+  },
+  "features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos",
+    "proporcion_por_mayor_mes_anterior",
+    "precio_menor_base_corte_bs",
+    "precio_mayor_base_corte_bs",
+    "variacion_precio_menor_plan_ponderada",
+    "variacion_precio_mayor_plan_ponderada",
+    "dias_vigencia_nuevo_precio_plan",
+    "dias_sin_stock_mes_anterior",
+    "stock_vendible_al_corte_unidades",
+    "reservas_posteriores_unidades",
+    "compromisos_por_menor_horizonte_unidades",
+    "compromisos_por_mayor_horizonte_unidades",
+    "entradas_plan_horizonte_unidades",
+    "dias_hasta_primera_entrada_plan",
+    "categoryId"
+  ],
+  "no_refit_on_validation_or_test": true,
+  "code_hashes": {
+    "v2/scenario_data.py": "056ba0ad3475de3a19ac2dc1e6e2ef3382ac1dc10bb717cbfd12d46c5a6f5858",
+    "v2/train_scenarios.py": "ec42ed159934fdc1942aee96b43139e766c6c2db7db4ca6b978fed3acff09ade",
+    "v2/evaluate_scenarios_once.py": "338b7c090d7d42c32ecf55acc10229205fce1830fab0e55fd3b74ede39bc813a"
+  },
+  "human_review": "Technical completion delegated by user. Does not claim personal review or rehearsal by Erika and Ross."
+}

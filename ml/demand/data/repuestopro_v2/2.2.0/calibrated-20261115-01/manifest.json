@@ -1,0 +1,276 @@
+{
+  "dataset_version": "2.2.0",
+  "build_id": "calibrated-20261115-01",
+  "origin": "SYNTHETIC",
+  "root_seed": 42,
+  "generator_version": "retail-reference-generator-1.1.0",
+  "generator_sha256": "bc61ee561481c07294229744287eb7c32ad7b93fa5b9f47addc397435104bb9b",
+  "config_id": "generator.retail_extension.v1_1",
+  "config_sha256": "be5d78c720df4751d81cf381c52e52205cb28609bd58dd25d2a7ab07a18ee19a",
+  "catalog_reference_sha256": "2536595f211f05ade3c85238f11326b27af48d2f29b53db6f404429773b9094f",
+  "catalog_observed_at": "2026-10-28T01:08:41.263Z",
+  "selected_product_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56
+  ],
+  "selected_store_ids": [
+    5,
+    6,
+    7
+  ],
+  "reference_source_ids": [
+    "monash_car_parts",
+    "uci_online_retail_ii",
+    "m5_walmart",
+    "corporacion_favorita"
+  ],
+  "reference_snapshot_ids": {
+    "monash_car_parts": "sha256-d69d3412b9c45248f1c9c441",
+    "uci_online_retail_ii": "sha256-4dc26799b20addb7559df7e2",
+    "m5_walmart": "sha256-aa5d519ab121b284a7b07f4d",
+    "corporacion_favorita": "sha256-b69a1fa872a46632efa647d8"
+  },
+  "reference_raw_sha256": {
+    "monash_car_parts": "818470cd0a65679b38b48a20e4d916d11fbd2ccbf7f5f9d8d97093dd6c784600",
+    "uci_online_retail_ii": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+    "m5_walmart": "aa5d519ab121b284a7b07f4da781082c491dfba802491ae55497a30fd178c35a",
+    "corporacion_favorita": "b69a1fa872a46632efa647d8c5592a5963c64cc2c2a26df7d01ef3c36c1bb938"
+  },
+  "compatibility_report_sha256": "dcebb1c65dd58c2173ef52cb0d563e55447bb6f3e307360400b21f85e6261791",
+  "processing_versions_if_any": {
+    "m5_walmart": "processing-1-curate-retail-20261115-01",
+    "corporacion_favorita": "processing-1-curate-retail-20261115-01"
+  },
+  "assumptions": {
+    "price": "Independent weekly Bernoulli events. Magnitude and sign mix are representative academic decompositions, not an estimated joint law. Monthly billing uses only events available at month opening.",
+    "store": "Cycle p10,p50,p90 across own store IDs, normalize mean to one. Scenario assignment, not identified local store factors.",
+    "calendar": "beta=log1p(reference amplitude p50), positive exp(beta*sin(month phase)), normalized across twelve months. Assumed link, not a fitted seasonality law.",
+    "burst": "Forced coverage cycle NONE,NONE,P95,NONE,P99,NONE. Multiplier applies to synthetic retail requested counts only. Not a natural frequency or wholesale label.",
+    "price_demand_effect": "No causal price response applied. Elasticity not identified.",
+    "stock_fx_cost_wholesale": "Inherited academic 2.1 physical and commercial assumptions, not estimated from M5/Favorita."
+  },
+  "economic_review": {
+    "basis": "EXPLICIT_ACADEMIC_ADMINISTRATIVE_POLICY_NOT_ESTIMATED_FROM_M5",
+    "retail_cost_multiplier": 1.5,
+    "wholesale_cost_multiplier": 1.35,
+    "reason": "Preserve initial synthetic markups only when a reference proposal violates the cost constraint. Keep cost unchanged, audit proposal and applied prices, reset next monthly proposal from applied prices."
+  },
+  "created_at": "2026-11-15T18:03:32.325317+00:00",
+  "feature_sets": {
+    "baseline_v1_features": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "with_modality": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior"
+    ],
+    "with_prices": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida"
+    ],
+    "with_exchange": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "with_availability": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior"
+    ],
+    "v2_full": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ]
+  },
+  "split_design": {
+    "origin": "SYNTHETIC",
+    "root_seed": 42,
+    "new_v2_streams": true,
+    "random_split": false,
+    "training_authorized": false,
+    "test_access_status": "GENERATED_AND_INTEGRITY_CHECKED_NOT_USED_FOR_SELECTION",
+    "sets": {
+      "TRAIN": {
+        "start": "2025-01",
+        "end": "2026-03",
+        "rows": 2520,
+        "row_content_sha256": "772ea1c9c2a277e01b7ac1e619d19ee4259af78f9cb0b5f661a3744d25f573ce"
+      },
+      "VALIDATION": {
+        "start": "2026-04",
+        "end": "2026-06",
+        "rows": 504,
+        "row_content_sha256": "ed0919d5d251599977b91953a8d4b48f13653bd1f7ec8ad1424ea2bd979cde25"
+      },
+      "TEST": {
+        "start": "2026-07",
+        "end": "2026-09",
+        "rows": 504,
+        "row_content_sha256": "cfd3c57ce742d13ed70ccfff6c822f69ae9dc3da999715971419c67b33c582d4"
+      }
+    }
+  },
+  "test_access_status": "GENERATED_AND_INTEGRITY_CHECKED_NOT_USED_FOR_SELECTION",
+  "environment_versions": {
+    "python": "3.11.9"
+  },
+  "training_authorized": false,
+  "automotive_status": "BLOCKED_LICENSE_EXCLUDED",
+  "model_2_2_exists": false,
+  "existing_api_artifact_changed": false,
+  "source_conditions": {
+    "monash_car_parts": {
+      "snapshot_id": "sha256-d69d3412b9c45248f1c9c441",
+      "raw_sha256": "818470cd0a65679b38b48a20e4d916d11fbd2ccbf7f5f9d8d97093dd6c784600",
+      "license": "CC BY 4.0",
+      "manifest_sha256": "7ff81c699c254fb3f895dda31ecffe58702ee0dc5daabeba9c3841946e39aba2"
+    },
+    "uci_online_retail_ii": {
+      "snapshot_id": "sha256-4dc26799b20addb7559df7e2",
+      "raw_sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+      "license": "CC BY 4.0",
+      "manifest_sha256": "d60f34627301fa58daa4fc1406c550c74b7d3458605a77cd32b19113d40f5e00"
+    },
+    "m5_walmart": {
+      "snapshot_id": "sha256-aa5d519ab121b284a7b07f4d",
+      "raw_sha256": "aa5d519ab121b284a7b07f4da781082c491dfba802491ae55497a30fd178c35a",
+      "license": "M5 Forecasting Accuracy Competition Rules, versión aportada actualizada el 24 de marzo de 2020. Uso académico y no comercial, con restricciones de datos.",
+      "manifest_sha256": "29acc6dd2309d1a8597a63d8108197546df5da4c54eb75db7134eb3215d4451f"
+    },
+    "corporacion_favorita": {
+      "snapshot_id": "sha256-b69a1fa872a46632efa647d8",
+      "raw_sha256": "b69a1fa872a46632efa647d8c5592a5963c64cc2c2a26df7d01ef3c36c1bb938",
+      "license": "Reglas específicas de Corporación Favorita Grocery Sales Forecasting, sección 7. No licencia CC verificada",
+      "manifest_sha256": "a137720994f2f6e14b32af310e1a4d8a620f10866829b6d11c08ec77969b11a4"
+    }
+  },
+  "publication_scope": "LOCAL_PRIVATE_ACADEMIC_NOT_PUBLIC_REDISTRIBUTION",
+  "generation_report": "PASSED_CALIBRATED_2_2_GATE",
+  "counts": {
+    "base": 4032,
+    "supervised": 3528,
+    "audit": 8755,
+    "ledger": 4032,
+    "daily": 122640,
+    "orders": 3118,
+    "shipments": 1944,
+    "receipts": 1958,
+    "plans": 4032,
+    "quotes": 25,
+    "calibration_audit": 4032,
+    "price_events": 207,
+    "pricing_audit": 4200
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "schema_version": "source-manifest-1",
+  "source_id": "m5_walmart",
+  "name": "m5_walmart",
+  "domain": "GENERAL_RETAIL_NOT_AUTOPARTS",
+  "source_url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy",
+  "provider": "Walmart / organizadores de M5 / Kaggle",
+  "obtained_at": null,
+  "registered_at": "2026-11-11T13:55:33.984345+00:00",
+  "snapshot_id": "sha256-aa5d519ab121b284a7b07f4d",
+  "license": "M5 Forecasting Accuracy Competition Rules, versión aportada actualizada el 24 de marzo de 2020. Uso académico y no comercial, con restricciones de datos.",
+  "license_url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy/rules",
+  "commercial_use_allowed": false,
+  "original_filename": null,
+  "original_format": "DIRECTORY",
+  "sha256": "aa5d519ab121b284a7b07f4da781082c491dfba802491ae55497a30fd178c35a",
+  "hash_scope": "FILE_INVENTORY_SHA256",
+  "inventory_sha256": "aa5d519ab121b284a7b07f4da781082c491dfba802491ae55497a30fd178c35a",
+  "file_size_bytes": 450472284,
+  "file_count": 5,
+  "files": [
+    {
+      "relative_path": "calendar.csv",
+      "original_format": "CSV",
+      "file_size_bytes": 103469,
+      "sha256": "d12b5914ef03e66649adf5dd9e996e6602251c22b7a6af8f1f7e3aa12f8860f5"
+    },
+    {
+      "relative_path": "sales_train_evaluation.csv",
+      "original_format": "CSV",
+      "file_size_bytes": 121736518,
+      "sha256": "4b4a47c44c38380d2a9168216fea8c9ff2f31b1ddb772f8a0995952a038b8aa0"
+    },
+    {
+      "relative_path": "sales_train_validation.csv",
+      "original_format": "CSV",
+      "file_size_bytes": 120007726,
+      "sha256": "f368e66ed1dbecb48b2cc8fc589bf68b3deddbbb36bf5c88b4d6d0a09b9b6724"
+    },
+    {
+      "relative_path": "sample_submission.csv",
+      "original_format": "CSV",
+      "file_size_bytes": 5228786,
+      "sha256": "eb7597afbec367475ef25dc6dbbc009b8faa47fa2107252c72a029e3cdf72343"
+    },
+    {
+      "relative_path": "sell_prices.csv",
+      "original_format": "CSV",
+      "file_size_bytes": 203395785,
+      "sha256": "9da3ad1f8b8ccacdbdc70612191dd375ec24a4ac6625c24b75b3bc60b0bed2ef"
+    }
+  ],
+  "raw_root": "sources/external_raw/m5_walmart",
+  "temporal_coverage": {
+    "start": "2011-01-29",
+    "end": "2016-05-22",
+    "precision": "DAY",
+    "basis": "OFFICIAL_DOCUMENTATION"
+  },
+  "geographic_scope": "Estados Unidos: California, Texas y Wisconsin",
+  "currency": "USD",
+  "units": "Unidades vendidas por día y precio unitario semanal en USD",
+  "description": "M5 Forecasting - Accuracy. 3049 productos en 10 tiendas, 30490 series inferiores. Ventas diarias y precios semanales por producto y tienda.",
+  "intended_use": "Roles conceptuales: PRICE_PATTERN_REFERENCE, STORE_PATTERN_REFERENCE, CALENDAR_REFERENCE, DEMAND_PATTERN_REFERENCE. Decisión de acceso: BLOCKED_LICENSE. Sin transformación o mezcla autorizada en esta revisión.",
+  "limitations": [
+    "No representa autopartes ni ventas en Bolivia. No convertir directamente sus IDs a Product.id.",
+    "Los cinco nombres de archivo y los extremos d_1913/d_1941 concuerdan con la página oficial y las cabeceras locales.",
+    "d_1941 corresponde al 22 de mayo de 2016 desde el inicio declarado. La guía también menciona 19 de junio de 2016, que incluye el horizonte posterior. No confundir calendario con etiquetas disponibles.",
+    "La página oficial identifica datos de ventas diarias de Walmart, calendario y precios por producto y tienda.",
+    "La página Data enumera cinco CSV y declara Subject to Competition Rules. No declara una licencia Creative Commons.",
+    "University of Nicosia organiza la competición. Los datos no representan autopartes ni ventas bolivianas.",
+    "No publicar RAW, extractos o tablas derivadas que redistribuyan los datos sin permiso aplicable.",
+    "No habilitar uso comercial del modelo o aplicación basándose solo en el permiso académico.",
+    "La publicación de modelos, parámetros y un nuevo dataset sintético derivado necesita revisión de su alcance. No se presume automáticamente permitida ni prohibida.",
+    "La fecha de descarga permanece desconocida. No se afirma aceptación de Erika ni del docente.",
+    "La lectura web automatizada de Rules sigue sin texto, pero Ross aportó el texto e identificó su origen oficial. No se presenta como verificación independiente del sitio o de su cuenta."
+  ],
+  "processing_status": "APPROVED_FOR_PROFILING",
+  "completeness": "UNKNOWN",
+  "contains_archives": false,
+  "documentation_files": [],
+  "evidence": [
+    {
+      "path": "reports/v2/source_reviews/source-access-20261115-02/review.json",
+      "scope": "USER_ATTESTATION_AND_SUPPLIED_OFFICIAL_RULES",
+      "finding": "Ross confirma origen, aceptación y adquisición. B.7.A permite uso académico no comercial y B.7.B restringe redistribución. Fecha real de adquisición e identidad frente al proveedor no certificadas."
+    }
+  ],
+  "visible_structure": [],
+  "archive_inspection": [],
+  "notes": [
+    "null significa desconocido, no permiso denegado ni valor cero.",
+    "registered_at es el registro actual, no la fecha de adquisición.",
+    "sha256 en directorios es hash del inventario canónico. Cada files[].sha256 corresponde a bytes originales.",
+    "Las licencias de software incluidas no se atribuyen automáticamente a los datos."
+  ],
+  "official_name": "M5 Forecasting - Accuracy",
+  "authors": [
+    "Spyros Makridakis",
+    "Evangelos Spiliotis",
+    "Vassilios Assimakopoulos"
+  ],
+  "data_type": "DAILY_PRODUCT_STORE_SERIES",
+  "real_or_synthetic": "REAL",
+  "granularity": "3049 productos en 10 tiendas, 30490 series inferiores. Ventas diarias y precios semanales por producto y tienda.",
+  "variables": [
+    "item_id",
+    "store_id",
+    "state_id",
+    "d_1..d_1941",
+    "wm_yr_wk",
+    "sell_price",
+    "date",
+    "event_name/type",
+    "snap_CA/TX/WI"
+  ],
+  "license_status": "VERIFIED",
+  "academic_use_status": "VERIFIED",
+  "commercial_use_status": "RESTRICTED",
+  "redistribution_status": "RESTRICTED",
+  "intended_role_v2": [
+    "PRICE_PATTERN_REFERENCE",
+    "STORE_PATTERN_REFERENCE",
+    "CALENDAR_REFERENCE",
+    "DEMAND_PATTERN_REFERENCE"
+  ],
+  "profiling_decision": "APPROVED_ACADEMIC_ONLY",
+  "citation": "Walmart y M5 (2020), M5 Forecasting - Accuracy, Kaggle. Publicación asociada: Makridakis, Spiliotis y Assimakopoulos (2022), DOI 10.1016/j.ijforecast.2021.11.013.",
+  "citation_required": null,
+  "doi": null,
+  "evidence_urls": [
+    "https://www.kaggle.com/c/m5-forecasting-accuracy/data",
+    "https://www.kaggle.com/competitions/m5-forecasting-accuracy/rules",
+    "https://storage.googleapis.com/kaggle-forum-message-attachments/772349/15032/M5-Competitors-Guide-Final-10-March-2020.pdf",
+    "https://github.com/Mcompetitions/M5-methods",
+    "https://doi.org/10.1016/j.ijforecast.2021.11.013"
+  ],
+  "verification_status": "PARTIALLY_VERIFIED",
+  "verified_at": "2026-11-15T16:11:41.186929+00:00",
+  "obtained_from_url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy/data",
+  "acquisition_verification_status": "PARTIALLY_VERIFIED",
+  "review_notes": [
+    "Confirmación expresa de Ross registrada el 15 de noviembre de 2026: reglas copiadas de la página oficial, aceptadas y archivos descargados desde su cuenta.",
+    "Evidencia declarada por el usuario. No se consultó su cuenta ni se descargó una copia del proveedor.",
+    "obtained_at sigue null porque no se conoce la fecha real de descarga. obtained_from_url es la página de adquisición declarada, no una URL individual de archivo.",
+    "Habilitación documental para un futuro perfilado académico por Ross. Esta tarea no autoriza ejecutarlo ni incorporar datos al build.",
+    "No se afirma aceptación por Erika u otras personas. No se habilita redistribución o uso comercial.",
+    "Revisión vigente: reports/v2/source_reviews/source-access-20261115-02/review.json. Las revisiones anteriores se conservan como evidencia histórica.",
+    "Perfilado descriptivo autorizado por Ross y completado el 15 de noviembre de 2026: reports/v2/profiling/profile-retail-20261115-01/m5_walmart_profile.json. Sin curated, dataset nuevo o entrenamiento. Las notas de tareas anteriores reflejan su autorización en aquel momento.",
+    "Transformación privada y validación independiente completadas el 15 de noviembre de 2026. Salidas: sources/external_curated/m5_walmart/sha256-aa5d519ab121b284a7b07f4d/processing-1-curate-retail-20261115-01. Evidencia: reports/v2/curation/curate-retail-20261115-01/validation.json. No calibración o dataset final. El estado de registro RAW conserva su habilitación de acceso."
+  ],
+  "hash_semantics": {
+    "snapshot_rule": "sha256- + first 24 hexadecimal characters of inventory_sha256",
+    "inventory_rule": "SHA256 of sorted relative_path, sha256 and file_size_bytes entries encoded as canonical JSON with ensure_ascii=True, sort_keys=True, separators=(',', ':')",
+    "sha256_scope": "FILE_INVENTORY_SHA256",
+    "file_hash_rule": "SHA256 of each original file's exact bytes, no EOL normalization",
+    "interpretation": "Para una fuente de archivo único, sha256 e inventory_sha256 son hashes de objetos distintos. No tienen que coincidir."
+  },
+  "related_publications": [
+    {
+      "title": "M5 accuracy competition: Results, findings, and conclusions",
+      "year": 2022,
+      "doi": "10.1016/j.ijforecast.2021.11.013",
+      "url": "https://doi.org/10.1016/j.ijforecast.2021.11.013",
+      "scope": "Artículo de resultados, no DOI del dataset ni licencia."
+    }
+  ],
+  "paper_review_note": "Se registran publicaciones comprobadas, sin atribuir al dataset la licencia del artículo."
+}

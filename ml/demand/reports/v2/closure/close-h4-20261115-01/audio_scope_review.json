@@ -1,0 +1,85 @@
+{
+  "status": "INTERACTIVE_H4_INCOMPLETE_REFERENCE_2_2_PRESERVED",
+  "audio_sha256": "84008e5659520674321a042c0a420d9324cb37a52fac194a5c6e227160c9142d",
+  "audio_duration_seconds": 221.6335,
+  "transcription": "Two local ASR passes small/medium. Some phrases ambiguous. No speaker diarization. Timestamps approximate, not a certified verbatim transcript.",
+  "requirements": [
+    {
+      "id": "H4-I01",
+      "requirement": "Interruptor de cambio de precio, precio actual y nuevo, comparación base/escenario",
+      "evidence": "Audio 00:00-00:17, 00:34-01:11",
+      "current": "Precio en dataset, sin efecto causal identificado. Bosque activo no lo utiliza. Replay no editable.",
+      "missing": "Contrato de escenario y comparación sensible a precios con supuestos explícitos."
+    },
+    {
+      "id": "H4-I02",
+      "requirement": "Cotización de compra Bs/USD, costo y transmisión al precio",
+      "evidence": "Audio 01:24-02:04",
+      "current": "Supuestos y columnas económicas en 2.2.0, excluidas del bosque activo.",
+      "missing": "Procedencia y disponibilidad, regla económica y escenarios coherentes, sin representar hipótesis como datos reales."
+    },
+    {
+      "id": "H4-I03",
+      "requirement": "Tiempo de llegada y reposición",
+      "evidence": "Audio 01:33-01:41",
+      "current": "Tablas de envíos/recepciones de simulación. Sin control interactivo administrativo o salida de reposición.",
+      "missing": "Fechas prevista/real, tránsito y recepción parcial. Separar ventas previstas, disponibilidad y reposición."
+    },
+    {
+      "id": "H4-I04",
+      "requirement": "Precio unitario, precio de venta y modalidad mayorista",
+      "evidence": "Audio 02:18-02:49, términos parcialmente ambiguos. Usuario acordó POR MENOR/POR MAYOR.",
+      "current": "Dos precios canónicos del dominio. Dataset simula modalidades. Bosque activo las excluye.",
+      "missing": "Preservar costo distinto de precio. No inventar tercer precio comercial por una frase ambigua. Definir cantidades minoristas/mayoristas conocidas antes del corte."
+    },
+    {
+      "id": "H4-I05",
+      "requirement": "Editar cantidades de escenario y fechas con reloj coherente",
+      "evidence": "Mensajes del usuario y plan previo, no atribuir todos los detalles al audio.",
+      "current": "Streamlit tiene editor de lags/reloj V1. Admin solo snapshots abril-junio 2026.",
+      "missing": "Adaptador V2 de escenarios. Distinguir ventas históricas simuladas, stock, pedidos y target no editable. Meses cerrados consecutivos y corte America/La_Paz."
+    },
+    {
+      "id": "H4-I06",
+      "requirement": "Crecimiento, caída, pico mayorista, stockout, producto nuevo y cambio persistente",
+      "evidence": "Audio 00:18-00:33 y matriz previa de escenarios.",
+      "current": "Diseño/fixtures previos, no todos los mecanismos interactivos ampliados probados.",
+      "missing": "Casos normales, adversos y ambiguos de variables económicas y logística, con pruebas combinadas."
+    },
+    {
+      "id": "H4-I07",
+      "requirement": "Gráfico y comparación antes/después, supuestos visibles",
+      "evidence": "Audio 00:00-00:17 y 00:53-01:11",
+      "current": "Gráfico de historia/predicción/baseline de un snapshot.",
+      "missing": "Dos escenarios identificados, diferencias de entradas y unidades, advertencia fuera de rango. Exportación como evidencia propuesta, no frase exacta certificada del docente."
+    },
+    {
+      "id": "H4-I08",
+      "requirement": "Justificación de datos y utilidad en tienda real",
+      "evidence": "Audio 01:11-01:53 y 02:39-03:24",
+      "current": "Validación técnica sintética y buen MAE global. No acredita efecto económico o comercial.",
+      "missing": "Revisar contrato/generador antes de nueva versión. Evaluar cumplimiento funcional además de MAE. No reutilizar TEST consumido para elegir otra candidata."
+    }
+  ],
+  "decision": "Do not misrepresent approved replay as all interactive teacher requirements completed. No new dataset or model is generated in this task.",
+  "current_constraints": {
+    "no_neon_further_access": true,
+    "no_retraining": true,
+    "no_test_repeated": true,
+    "no_new_markdown": true
+  },
+  "technical_closure": {
+    "recovery": "PASSED_EXPLICIT_2_2_TO_2_1_TO_2_2",
+    "dashboard": "LOCAL_REPRODUCTION_AND_FIX_PASSED_PRODUCTION_UNCHANGED",
+    "readme": "UPDATED",
+    "teacher_scope": "REOPENED"
+  },
+  "next_order": [
+    "Acordar contrato funcional de escenarios con entradas, unidades y fecha de disponibilidad",
+    "Definir mecanismos de precio, cotización y logística con evidencia o supuestos declarados",
+    "Diseñar una versión nueva sin sobrescribir 2.2.0 o reutilizar su TEST como independiente",
+    "Autorizar por separado construcción y entrenamiento cuando el diseño esté revisado",
+    "Integrar escenarios en backend y frontend y verificar que las variables admitidas tienen un uso comprobable",
+    "Evaluar con protocolo temporal nuevo, registrar límites y ensayar defensa"
+  ]
+}

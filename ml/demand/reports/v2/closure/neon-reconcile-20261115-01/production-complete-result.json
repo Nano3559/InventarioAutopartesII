@@ -1,0 +1,17 @@
+{
+  "target": "br-curly-butterfly-ayczan0b",
+  "backup": "br-withered-rain-aylwpqtb",
+  "recorded_at": "2026-11-16T01:11:53.559Z",
+  "action": "complete",
+  "command": [
+    "prisma",
+    "db",
+    "execute",
+    "--file",
+    "E:\\NOVENO_SEMESTRE\\ProgramaciónAvanzada\\Inventario\\ml\\demand\\tmp\\neon-reconcile-20261115-01\\complete-legacy-baseline.sql",
+    "--schema",
+    "prisma/schema.prisma"
+  ],
+  "exit_code": 0,
+  "output": "Script executed successfully.\n\n"
+}

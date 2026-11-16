@@ -1,0 +1,130 @@
+{
+  "stage": "V2-10",
+  "status": "ADMIN_API_CONNECTED_TO_FROZEN_V2_ACADEMIC_REPLAY",
+  "tests": {
+    "python": {
+      "run": 40,
+      "passed": 40,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "new_adapter_tests": 7
+    },
+    "backend_http": {
+      "run": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    "frontend": {
+      "run": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "backend_typecheck": "PASSED",
+    "frontend_typecheck": "PASSED",
+    "frontend_build": "PASSED",
+    "total_final_tests_passed": 52,
+    "real_model_fits": 0,
+    "test_partition_repeated": false,
+    "initial_preparation_note": "One schema test initially ran before the API contract file was created and failed with missing file. Contract created, complete 40-test suite rerun passed. Original logs preserved."
+  },
+  "warnings": [
+    {
+      "type": "EXPECTED_NON_BLOCKING",
+      "detail": "Vite outDir is deliberately under ml/demand/tmp outside frontend root; it is not emptied. No deployment."
+    }
+  ],
+  "integrity": {
+    "data": {
+      "files_checked": 59,
+      "unchanged": true
+    },
+    "models": {
+      "files_checked": 14,
+      "unchanged": true
+    },
+    "reports": {
+      "files_checked": 135,
+      "unchanged": true
+    },
+    "candidates": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "decisions": {
+      "files_checked": 4,
+      "unchanged": true
+    },
+    "lifecycle": {
+      "files_checked": 13,
+      "unchanged": true
+    },
+    "raw": {
+      "files_checked": 136,
+      "unchanged": true
+    },
+    "manifests": {
+      "files_checked": 5,
+      "unchanged": true
+    },
+    "legacy": {
+      "files_checked": 4,
+      "unchanged": true
+    },
+    "protected": {
+      "files_checked": 44,
+      "unchanged": true
+    }
+  },
+  "final_test_counts_unchanged": {
+    "test_load_calls": 1,
+    "selected_model_predict_calls": 1,
+    "fit_calls": 0,
+    "rows": 504,
+    "window": [
+      "2026-07",
+      "2026-09"
+    ],
+    "status": "COMPLETED"
+  },
+  "new_markdown_created": false,
+  "neon_used": false,
+  "git_used": false,
+  "prisma_schema_or_migrations_changed": false,
+  "files_new": [
+    "ml/demand/admin_prediction_v2.py",
+    "ml/demand/v2/contracts/admin_api.v2_1.json",
+    "ml/demand/tests/test_admin_prediction_v2.py"
+  ],
+  "files_modified": [
+    "backend/src/modules/predictions/predictions.routes.ts",
+    "backend/src/modules/predictions/predictions.service.ts",
+    "backend/src/modules/predictions/predictions.test.ts",
+    "frontend/src/pages/PredictionsPage.tsx",
+    "frontend/src/pages/__tests__/PredictionsPage.test.tsx",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/README.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "evidence_hashes": {
+    "backend-tests-final.txt": "81e1c705cb106dfc6e5433bb219befe48ae0c2b04928ad79abd4642796c7d4ef",
+    "backend-tests.txt": "f43d69bd0dea71b53492d20ff9a5e9fd78695da7047bd2e5b68415db1215a4d8",
+    "backend-typecheck-final.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend-typecheck.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.json": "70d83b2aeadb0387fb9565270ec6adcb6c5dcaa56b3147b82876bacca9453224",
+    "binding.json": "ff68ccbecc13f3bc6a8f05fe21032898fdd9fc18a4fa1a1e65aaad0a60c00b17",
+    "frontend-build.txt": "62472e977fe7268ff2a4e47a23d70f2c3c6c1eb5e5703ca9aecb9d25bc753621",
+    "frontend-tests.txt": "7f8ee0103e022c11704ed2eef8004509349dc9a87948562a3f371a7fa86417dd",
+    "frontend-typecheck.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "python-tests-final.txt": "63d977c0217372737fdbdf7e9f7a809089f065b88f9aac87b7f636bfb696d095",
+    "python-tests-recheck.txt": "418ed5c0512b27d2494a1f1290dd79dfb74b9214fb5e6dd4c792fcf1172c75ab",
+    "python-tests.txt": "ae88e4b1cd18e0f409673e81cf2990df0a938568af2debf035e47fb05ffa4865"
+  },
+  "pending": [
+    "Complete V2-11 interface scope and V2-15 visual/responsive checks.",
+    "No live source, real-business accuracy or automatic replenishment approved.",
+    "No dashboard-wide or mobile-wide validation claimed by this task."
+  ]
+}

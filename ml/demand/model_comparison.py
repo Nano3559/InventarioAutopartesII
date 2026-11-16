@@ -29,9 +29,12 @@ def archived_run():
     if hashlib.sha256(raw).hexdigest() != ARCHIVE_MANIFEST_SHA256:
         raise InputError("Manifiesto archivado no verificado.")
     run = json.loads(raw)
-    # El manifiesto conserva la ruta auditada; no aceptar otra ubicación.
-    if Path(run["folder"]).resolve() != path.parent.resolve():
-        raise InputError("Ubicación archivada incompatible.")
+    # La ruta absoluta es procedencia histórica, no una ubicación ejecutable.
+    # Solo este paquete fijado por código admite reubicación dentro del checkout.
+    # No se edita el manifiesto ni se acepta una carpeta indicada desde un upload.
+    if run.get("session_id") != ARCHIVE_SESSION or run.get("run_id") != ARCHIVE_RUN:
+        raise InputError("Identidad archivada incompatible.")
+    run["folder"] = str(path.parent.resolve())
     return run
 
 

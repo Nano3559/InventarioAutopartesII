@@ -1,0 +1,448 @@
+{
+  "state": {
+    "adapter_version": "preprocessing-2.2-training-1",
+    "feature_set_id": "expanded_baseline_v1_features",
+    "model_kind": "linear_regression",
+    "raw_features": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "cobertura_modalidad_mes_anterior",
+      "precio_menor_cierre_anterior_bs",
+      "precio_mayor_cierre_anterior_bs",
+      "variacion_precio_menor_conocida",
+      "variacion_precio_mayor_conocida",
+      "tipo_cambio_bs_usd_conocido",
+      "variacion_tipo_cambio_ultimo_mes",
+      "antiguedad_tipo_cambio_dias",
+      "dias_sin_stock_mes_anterior",
+      "cobertura_stock_mes_anterior",
+      "categoryId"
+    ],
+    "columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "numeric_columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "indicator_columns": [],
+    "categories": [],
+    "medians": [
+      1.0,
+      1.0,
+      1.0,
+      0.49999999999999994,
+      6.123233995736766e-17
+    ],
+    "means": [
+      18.518650793650792,
+      18.439285714285713,
+      18.35238095238095,
+      0.15773502691896255,
+      0.09106836025229582
+    ],
+    "scales": [
+      27.78639557646913,
+      27.65598410168499,
+      27.62177285405314,
+      0.7130588998225935,
+      0.6770326583168826
+    ],
+    "output_columns": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos"
+    ],
+    "field_specs": [
+      {
+        "name": "ventas_mes_anterior",
+        "type": "integer",
+        "role": "FEATURE",
+        "unit": "unidades",
+        "nullable": false,
+        "description": "Ventas brutas observadas del mes objetivo menos 1.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Faltante bloquea la fila entrenable.",
+        "derivation": "unidades_vendidas_brutas en mes_objetivo - 1, misma clave producto y tienda.",
+        "bounds": {
+          "minimum": 0
+        },
+        "example": 17
+      },
+      {
+        "name": "ventas_hace_2_meses",
+        "type": "integer",
+        "role": "FEATURE",
+        "unit": "unidades",
+        "nullable": false,
+        "description": "Ventas brutas observadas del mes objetivo menos 2.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Faltante bloquea la fila entrenable.",
+        "derivation": "unidades_vendidas_brutas en mes_objetivo - 2, misma clave producto y tienda.",
+        "bounds": {
+          "minimum": 0
+        },
+        "example": 12
+      },
+      {
+        "name": "ventas_hace_3_meses",
+        "type": "integer",
+        "role": "FEATURE",
+        "unit": "unidades",
+        "nullable": false,
+        "description": "Ventas brutas observadas del mes objetivo menos 3.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Faltante bloquea la fila entrenable.",
+        "derivation": "unidades_vendidas_brutas en mes_objetivo - 3, misma clave producto y tienda.",
+        "bounds": {
+          "minimum": 0
+        },
+        "example": 15
+      },
+      {
+        "name": "mes_sin",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "adimensional",
+        "nullable": false,
+        "description": "Representación cíclica del mes, con enero=1 y diciembre=12.",
+        "source": "Calendario",
+        "source_kind": "CALENDAR",
+        "availability_time": "Calendario conocido antes de emitir la predicción.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Faltante bloquea la fila entrenable.",
+        "derivation": "sin(2*pi*numero_mes_objetivo/12)",
+        "bounds": {
+          "minimum": -1,
+          "maximum": 1
+        },
+        "example": 0.8660254037844386
+      },
+      {
+        "name": "mes_cos",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "adimensional",
+        "nullable": false,
+        "description": "Representación cíclica del mes, con enero=1 y diciembre=12.",
+        "source": "Calendario",
+        "source_kind": "CALENDAR",
+        "availability_time": "Calendario conocido antes de emitir la predicción.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Faltante bloquea la fila entrenable.",
+        "derivation": "cos(2*pi*numero_mes_objetivo/12)",
+        "bounds": {
+          "minimum": -1,
+          "maximum": 1
+        },
+        "example": -0.5
+      },
+      {
+        "name": "proporcion_por_mayor_mes_anterior",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "proporcion",
+        "nullable": true,
+        "description": "Fracción de unidades brutas del mes anterior explícitamente etiquetadas POR_MAYOR. Con modalidad desconocida es una fracción conocida, no la proporción mayorista verdadera.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "derivation": "unidades_por_mayor / unidades_vendidas_brutas del mes anterior. Si el total es cero, null.",
+        "bounds": {
+          "minimum": 0,
+          "maximum": 1
+        },
+        "example": 0.4
+      },
+      {
+        "name": "cobertura_modalidad_mes_anterior",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "proporcion",
+        "nullable": true,
+        "description": "Fracción de unidades con modalidad explícita. Cero significa ninguna etiquetada, no cero ventas.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "derivation": "(unidades_por_menor + unidades_por_mayor) / unidades_vendidas_brutas. Si no hay ventas, null.",
+        "bounds": {
+          "minimum": 0,
+          "maximum": 1
+        },
+        "example": 0.8
+      },
+      {
+        "name": "precio_menor_cierre_anterior_bs",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "Bs/unidad",
+        "nullable": true,
+        "description": "Precio de lista POR_MENOR vigente inmediatamente antes del corte, no promedio vendido ni Product actual usado como historia.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "bounds": {
+          "exclusiveMinimum": 0
+        },
+        "example": 120
+      },
+      {
+        "name": "precio_mayor_cierre_anterior_bs",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "Bs/unidad",
+        "nullable": true,
+        "description": "Precio de lista POR_MAYOR vigente inmediatamente antes del corte, no promedio vendido ni Product actual usado como historia.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "bounds": {
+          "exclusiveMinimum": 0
+        },
+        "example": 100
+      },
+      {
+        "name": "variacion_precio_menor_conocida",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "proporcion",
+        "nullable": true,
+        "description": "Cambio del precio de inicio del mes objetivo aprobado y conocido al corte. Bs 120 a Bs 150 representa 0.25, no 25.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "derivation": "precio_menor_inicio_siguiente_conocido_bs / precio_menor_cierre_bs - 1. Sin plan o base comprobados, null. Cero solo si se confirma mismo precio.",
+        "bounds": {
+          "exclusiveMinimum": -1
+        },
+        "example": 0.25
+      },
+      {
+        "name": "variacion_precio_mayor_conocida",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "proporcion",
+        "nullable": true,
+        "description": "Cambio del precio de inicio del mes objetivo aprobado y conocido al corte. Bs 120 a Bs 150 representa 0.25, no 25.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "derivation": "precio_mayor_inicio_siguiente_conocido_bs / precio_mayor_cierre_bs - 1. Sin plan o base comprobados, null. Cero solo si se confirma mismo precio.",
+        "bounds": {
+          "exclusiveMinimum": -1
+        },
+        "example": 0.2
+      },
+      {
+        "name": "tipo_cambio_bs_usd_conocido",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "Bs/USD",
+        "nullable": true,
+        "description": "Última cotización simulada disponible al corte, con fuente y fechas. No es GBP ni valor futuro del mes.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "bounds": {
+          "exclusiveMinimum": 0
+        },
+        "example": 10
+      },
+      {
+        "name": "variacion_tipo_cambio_ultimo_mes",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "proporcion",
+        "nullable": true,
+        "description": "Cambio entre cotizaciones conocidas en los dos cortes consecutivos, de la misma fuente y significado.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "derivation": "cotizacion_conocida_corte_actual / cotizacion_conocida_corte_previo - 1. Sin ambas observaciones comparables, null.",
+        "bounds": {
+          "exclusiveMinimum": -1
+        },
+        "example": 0.05
+      },
+      {
+        "name": "antiguedad_tipo_cambio_dias",
+        "type": "integer",
+        "role": "FEATURE",
+        "unit": "dias",
+        "nullable": true,
+        "description": "Días naturales entre fecha de observación de la cotización conocida y corte local. Distingue dato vigente de cotización antigua.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "bounds": {
+          "minimum": 0
+        },
+        "example": 2
+      },
+      {
+        "name": "dias_sin_stock_mes_anterior",
+        "type": "integer",
+        "role": "FEATURE",
+        "unit": "dias",
+        "nullable": true,
+        "description": "Días observados con stock vendible cero. Con cobertura parcial es un mínimo observado, no el total certificado del mes.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Mantener null. Nunca sustituir por cero. Preparar tratamiento solo con TRAIN.",
+        "derivation": "Conteo desde disponibilidad simulada independiente. Sin días observados, null. No derivar de ventas cero.",
+        "bounds": {
+          "minimum": 0,
+          "maximum": 31
+        },
+        "example": 3
+      },
+      {
+        "name": "cobertura_stock_mes_anterior",
+        "type": "number",
+        "role": "FEATURE",
+        "unit": "proporcion",
+        "nullable": false,
+        "description": "Fracción de días del mes anterior con disponibilidad válida. Cero es ausencia de cobertura, no disponibilidad suficiente.",
+        "source": "Base mensual del futuro simulador V2, sin ventas externas trasplantadas.",
+        "source_kind": "SIMULATED",
+        "availability_time": "Antes o en el corte del mes objetivo. Solo meses anteriores completos.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "NONE",
+        "missing_policy": "Faltante bloquea la fila entrenable.",
+        "derivation": "dias_observados_stock / dias_calendario_mes_anterior",
+        "bounds": {
+          "minimum": 0,
+          "maximum": 1
+        },
+        "example": 1
+      },
+      {
+        "name": "categoryId",
+        "type": "integer",
+        "role": "FEATURE",
+        "unit": null,
+        "nullable": true,
+        "description": "Categoría congelada del producto, utilizada como etiqueta categórica. No representa una cantidad o una jerarquía numérica.",
+        "source": "catalog_reference.json: Product.categoryId",
+        "source_kind": "FROZEN_REFERENCE_IN_SYNTHETIC_WORLD",
+        "availability_time": "Referencia fija del mundo simulado. No certifica categoría histórica real de 2024.",
+        "availability_class": "PRE_CUTOFF",
+        "approval_status": "APPROVED_V2",
+        "encoding": "CATEGORICAL",
+        "missing_policy": "Categoría desconocida permanece null. Codificar UNKNOWN y categorías nuevas con política explícita ajustada solo en TRAIN. No inferir categoría.",
+        "bounds": {
+          "minimum": 1
+        },
+        "example": 1
+      }
+    ],
+    "train_window": [
+      "2025-01",
+      "2026-03"
+    ],
+    "configured_window": [
+      "2025-01",
+      "2026-03"
+    ],
+    "fit_rows": 2520,
+    "month_counts": {
+      "2025-01": 168,
+      "2025-02": 168,
+      "2025-03": 168,
+      "2025-04": 168,
+      "2025-05": 168,
+      "2025-06": 168,
+      "2025-07": 168,
+      "2025-08": 168,
+      "2025-09": 168,
+      "2025-10": 168,
+      "2025-11": 168,
+      "2025-12": 168,
+      "2026-01": 168,
+      "2026-02": 168,
+      "2026-03": 168
+    },
+    "y_used": false,
+    "contract_sha256": "d89c87370ac5ed2731148ea4358e25dca5f929e71d990b0c47e202843d23f3c1",
+    "experiment_contract_sha256": "14b52717e8f8cf71a5b7bd3afce3fb1d1fbd950db5de6b4dd082a3ed57672138",
+    "schema_binding_build_manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+    "fit_frame_sha256": "f79a580010cc7efb71fd311101601566fbb6c32211f7fad4f48482a5a1b8e444",
+    "fit_row_keys_sha256": "4ace13456b3b8b44fd3cadca556539e983ec2f786bb1b7c6d52b22e19fbb7a08",
+    "fit_frame_origin": "AUTHORIZED_TRAIN_COHORT_ONLY",
+    "training_authorization_sha256": "2d37853eb1eb978d034aa6339ca33c69cdf2877023a85fbd6f068f0eaad78b6b"
+  },
+  "sha256": "60cb9fb02c7a23923b6b7846106dc601e1f5c4b86accb796cfb1c65735137855"
+}

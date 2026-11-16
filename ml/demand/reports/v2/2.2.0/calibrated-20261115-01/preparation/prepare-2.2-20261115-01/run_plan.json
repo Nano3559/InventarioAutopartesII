@@ -1,0 +1,184 @@
+{
+  "status": "PREPARED_READY_NOT_TRAINED",
+  "runner_version": "experiments-2.2-1",
+  "dataset_version": "2.2.0",
+  "build_id": "calibrated-20261115-01",
+  "manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+  "candidate_count": 54,
+  "baseline": "ventas_mes_anterior, no evaluado en esta tarea",
+  "future_fit_count": 174,
+  "actual_model_fits": 0,
+  "actual_real_preprocessing_fits": 0,
+  "predictions_computed": false,
+  "predictive_metrics_computed": false,
+  "test_rows_loaded": false,
+  "test_status": "RESERVED_METADATA_ONLY",
+  "whole_file_hash_note": "Byte hashes cover frozen files. No TEST rows, features or targets are parsed or evaluated.",
+  "slices": [
+    {
+      "partition": "TRAIN",
+      "fold_id": null,
+      "rows": 2520,
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "prefix_rows_parsed": 2520,
+      "row_keys_sha256": "4ace13456b3b8b44fd3cadca556539e983ec2f786bb1b7c6d52b22e19fbb7a08",
+      "aligned_targets_sha256": "b7a3e9ceecdecfbaf1ca3892b2061c73e362f9aa9ee5533eea23a4248c2af333",
+      "index_equal": true,
+      "target_alignment_evidence": {
+        "rows_checked": 2520,
+        "base_prefix_rows_parsed": 3024,
+        "latest_month_parsed": "2026-03",
+        "test_rows_loaded": false
+      },
+      "test_rows_loaded": false
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": null,
+      "rows": 504,
+      "window": [
+        "2026-04",
+        "2026-06"
+      ],
+      "prefix_rows_parsed": 3024,
+      "row_keys_sha256": "1876ccfca90bd43735f868440b4f2251dae9f7c493f9dad5b386ce80884c6539",
+      "aligned_targets_sha256": "34df35d492c7efabff169299a255eea704a2dbd80ae3b8d396a1c9fececc9cfe",
+      "index_equal": true,
+      "target_alignment_evidence": {
+        "rows_checked": 504,
+        "base_prefix_rows_parsed": 3528,
+        "latest_month_parsed": "2026-06",
+        "test_rows_loaded": false
+      },
+      "test_rows_loaded": false
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": "F1",
+      "rows": 1008,
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "prefix_rows_parsed": 1008,
+      "row_keys_sha256": "aef31a81adc43b70f6893629f3ef215b4079203103a8b40b04202145ca3d8c27",
+      "aligned_targets_sha256": "52a2e4a09b271c86b8e045cf5dca0c8999815978b5bb1c7b2eae671cc8d7f2e1",
+      "index_equal": true,
+      "target_alignment_evidence": {
+        "rows_checked": 1008,
+        "base_prefix_rows_parsed": 1512,
+        "latest_month_parsed": "2025-06",
+        "test_rows_loaded": false
+      },
+      "test_rows_loaded": false
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F1",
+      "rows": 504,
+      "window": [
+        "2025-07",
+        "2025-09"
+      ],
+      "prefix_rows_parsed": 1512,
+      "row_keys_sha256": "5bf2f59e94f23e70902dbe7ab99adac568f8e70f5a68c6492822a091e7ee3e35",
+      "aligned_targets_sha256": "abd7e152c72cd349480b8f5b86f315b80908c70adac95a561de0a7b761e96c27",
+      "index_equal": true,
+      "target_alignment_evidence": {
+        "rows_checked": 504,
+        "base_prefix_rows_parsed": 2016,
+        "latest_month_parsed": "2025-09",
+        "test_rows_loaded": false
+      },
+      "test_rows_loaded": false
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": "F2",
+      "rows": 1512,
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "prefix_rows_parsed": 1512,
+      "row_keys_sha256": "66ffe6aaeb8cd0edf325e28b4de111575f0c3fb19bc7f18c6e5dde261a8d3c7f",
+      "aligned_targets_sha256": "eb7bd5e9889cded12f115ee0dd2aef3f1f83acee7868ed8520369b3c613f8817",
+      "index_equal": true,
+      "target_alignment_evidence": {
+        "rows_checked": 1512,
+        "base_prefix_rows_parsed": 2016,
+        "latest_month_parsed": "2025-09",
+        "test_rows_loaded": false
+      },
+      "test_rows_loaded": false
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F2",
+      "rows": 504,
+      "window": [
+        "2025-10",
+        "2025-12"
+      ],
+      "prefix_rows_parsed": 2016,
+      "row_keys_sha256": "306da1e7d05bfc538c56d2e9e52e20758254c1e39336e57c4517345a09bc64fb",
+      "aligned_targets_sha256": "4d0b3f6824567955e07f7d37986d6447b2b767e9bf4fbb795d997541791f56e7",
+      "index_equal": true,
+      "target_alignment_evidence": {
+        "rows_checked": 504,
+        "base_prefix_rows_parsed": 2520,
+        "latest_month_parsed": "2025-12",
+        "test_rows_loaded": false
+      },
+      "test_rows_loaded": false
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": "F3",
+      "rows": 2016,
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "prefix_rows_parsed": 2016,
+      "row_keys_sha256": "43bc3f573909bf1a2a8d0c39a1e4256c28b89fc9d4b01741b20df2037454b50f",
+      "aligned_targets_sha256": "13079ae6538cbb59347717133f6e708d355f8491b85b4ba55e6fee558c6f7eb9",
+      "index_equal": true,
+      "target_alignment_evidence": {
+        "rows_checked": 2016,
+        "base_prefix_rows_parsed": 2520,
+        "latest_month_parsed": "2025-12",
+        "test_rows_loaded": false
+      },
+      "test_rows_loaded": false
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F3",
+      "rows": 504,
+      "window": [
+        "2026-01",
+        "2026-03"
+      ],
+      "prefix_rows_parsed": 2520,
+      "row_keys_sha256": "d9be6d62891cdfdb8a0de25d50af4ad6fda7cbca30825009f9bea2903c4ad3ec",
+      "aligned_targets_sha256": "5327a03ec81c527a2ce6e4fea800ce86d9675fcb79689cb7773c29ec5ce728f4",
+      "index_equal": true,
+      "target_alignment_evidence": {
+        "rows_checked": 504,
+        "base_prefix_rows_parsed": 3024,
+        "latest_month_parsed": "2026-03",
+        "test_rows_loaded": false
+      },
+      "test_rows_loaded": false
+    }
+  ],
+  "preprocessing_contract_sha256": "d89c87370ac5ed2731148ea4358e25dca5f929e71d990b0c47e202843d23f3c1",
+  "experiment_contract_sha256": "14b52717e8f8cf71a5b7bd3afce3fb1d1fbd950db5de6b4dd082a3ed57672138",
+  "fitted_artifacts_created": false,
+  "experiments_log_appended": false,
+  "active_api_artifact_changed": false
+}

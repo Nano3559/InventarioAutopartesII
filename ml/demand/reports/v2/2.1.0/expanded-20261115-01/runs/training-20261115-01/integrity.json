@@ -1,0 +1,47 @@
+{
+  "data": {
+    "previous_files_checked": 59,
+    "unchanged": true
+  },
+  "raw": {
+    "previous_files_checked": 136,
+    "unchanged": true
+  },
+  "reports": {
+    "previous_files_checked": 71,
+    "unchanged": true
+  },
+  "models": {
+    "previous_files_checked": 2,
+    "unchanged": true
+  },
+  "manifests": {
+    "previous_files_checked": 5,
+    "unchanged": true
+  },
+  "candidates": {
+    "previous_files_checked": 5,
+    "unchanged": true
+  },
+  "decisions": {
+    "previous_files_checked": 4,
+    "unchanged": true
+  },
+  "lifecycle": {
+    "previous_files_checked": 13,
+    "unchanged": true
+  },
+  "protected": {
+    "previous_files_checked": 44,
+    "unchanged": true
+  },
+  "model_changes": {
+    "old_models_unchanged": true,
+    "new_candidate_only": [
+      "ml/demand/models/v2/training-20261115-01/candidate.joblib",
+      "ml/demand/models/v2/training-20261115-01/manifest.json",
+      "ml/demand/models/v2/training-20261115-01/preprocessing.json"
+    ]
+  },
+  "no_new_markdown": true
+}

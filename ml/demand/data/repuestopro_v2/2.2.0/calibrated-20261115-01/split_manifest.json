@@ -1,0 +1,28 @@
+{
+  "origin": "SYNTHETIC",
+  "root_seed": 42,
+  "new_v2_streams": true,
+  "random_split": false,
+  "training_authorized": false,
+  "test_access_status": "GENERATED_AND_INTEGRITY_CHECKED_NOT_USED_FOR_SELECTION",
+  "sets": {
+    "TRAIN": {
+      "start": "2025-01",
+      "end": "2026-03",
+      "rows": 2520,
+      "row_content_sha256": "772ea1c9c2a277e01b7ac1e619d19ee4259af78f9cb0b5f661a3744d25f573ce"
+    },
+    "VALIDATION": {
+      "start": "2026-04",
+      "end": "2026-06",
+      "rows": 504,
+      "row_content_sha256": "ed0919d5d251599977b91953a8d4b48f13653bd1f7ec8ad1424ea2bd979cde25"
+    },
+    "TEST": {
+      "start": "2026-07",
+      "end": "2026-09",
+      "rows": 504,
+      "row_content_sha256": "cfd3c57ce742d13ed70ccfff6c822f69ae9dc3da999715971419c67b33c582d4"
+    }
+  }
+}

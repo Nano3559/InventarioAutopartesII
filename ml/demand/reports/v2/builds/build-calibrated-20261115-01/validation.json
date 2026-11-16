@@ -1,0 +1,69 @@
+{
+  "status": "PUBLISHED_LOCALLY_AFTER_INDEPENDENT_VALIDATION",
+  "dataset_version": "2.2.0",
+  "build_id": "calibrated-20261115-01",
+  "manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+  "tests_passed": 83,
+  "tests_failed_final": 0,
+  "new_tests": 9,
+  "previous_files_checked": 487,
+  "immutable_files_unchanged": 486,
+  "approved_metadata_change": [
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "unchanged_counts": {
+    "sources/external_raw": 136,
+    "sources/external_curated": 16,
+    "data": 59,
+    "models": 14,
+    "reports": 189
+  },
+  "counts": {
+    "base": 4032,
+    "supervised": 3528,
+    "audit": 8755,
+    "ledger": 4032,
+    "daily": 122640,
+    "orders": 3118,
+    "shipments": 1944,
+    "receipts": 1958,
+    "plans": 4032,
+    "quotes": 25,
+    "calibration_audit": 4032,
+    "price_events": 207,
+    "pricing_audit": 4200
+  },
+  "split_rows": {
+    "TRAIN": 2520,
+    "VALIDATION": 504,
+    "TEST": 504
+  },
+  "checksummed_files": 29,
+  "economic_reviews": 6,
+  "initial_attempt": "Generator 1.0.0 stopped on PRICE_RULE, no failed build published. Generator 1.1.0 adds explicitly audited academic cost review, without changing calibration or physical random streams.",
+  "dataset_reproduced_twice": true,
+  "files_revalidated_before_and_after_publication": true,
+  "raw_modified": false,
+  "curated_modified": false,
+  "neon_used": false,
+  "trained": false,
+  "old_test_reevaluated": false,
+  "old_api_artifact_changed": false,
+  "automotive_included": false,
+  "new_markdown_files": 0,
+  "git_used": false,
+  "new_code_files": [
+    "ml/demand/v2/generate_calibrated_v1_1.py",
+    "ml/demand/v2/contracts/generator.retail_extension.v1_1.json",
+    "ml/demand/v2/validate_calibrated.py",
+    "ml/demand/v2/build_calibrated.py",
+    "ml/demand/tests/test_v2_build_calibrated.py"
+  ],
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "publication_scope": "LOCAL_PRIVATE_ACADEMIC",
+  "build_path": "ml\\demand\\data\\repuestopro_v2\\2.2.0\\calibrated-20261115-01"
+}

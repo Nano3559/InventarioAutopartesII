@@ -1,0 +1,22 @@
+test_all_actual_fits_used_only_approved_train_windows (test_v2_training_results.FrozenTrainingResultsTests.test_all_actual_fits_used_only_approved_train_windows) ... ok
+test_baseline_metrics_independently_recomputed_on_validation (test_v2_training_results.FrozenTrainingResultsTests.test_baseline_metrics_independently_recomputed_on_validation) ... ok
+test_complete_comparison_and_no_omitted_failures (test_v2_training_results.FrozenTrainingResultsTests.test_complete_comparison_and_no_omitted_failures) ... ok
+test_execution_permission_was_scoped_and_restored (test_v2_training_results.FrozenTrainingResultsTests.test_execution_permission_was_scoped_and_restored) ... ok
+test_restored_preprocessing_matches_frozen_pipeline (test_v2_training_results.FrozenTrainingResultsTests.test_restored_preprocessing_matches_frozen_pipeline) ... ok
+test_selected_artifact_reproduces_validation_metrics_without_fit (test_v2_training_results.FrozenTrainingResultsTests.test_selected_artifact_reproduces_validation_metrics_without_fit) ... ok
+test_tracking_records_same_run_and_model_hash (test_v2_training_results.FrozenTrainingResultsTests.test_tracking_records_same_run_and_model_hash) ... ok
+test_winner_selected_from_validation_and_review_not_bypassed (test_v2_training_results.FrozenTrainingResultsTests.test_winner_selected_from_validation_and_review_not_bypassed) ... ok
+test_42_internal_and_9_outer_evaluations_have_complete_coverage (test_v2_alternative_results.AlternativeResultsTests.test_42_internal_and_9_outer_evaluations_have_complete_coverage) ... ok
+test_all_metrics_reproduce_from_frozen_row_predictions (test_v2_alternative_results.AlternativeResultsTests.test_all_metrics_reproduce_from_frozen_row_predictions) ... ok
+test_all_saved_models_reload_without_any_fit (test_v2_alternative_results.AlternativeResultsTests.test_all_saved_models_reload_without_any_fit) ... ok
+test_configuration_selection_used_internal_train_scores (test_v2_alternative_results.AlternativeResultsTests.test_configuration_selection_used_internal_train_scores) ... ok
+test_frozen_plan_and_input_hashes_have_not_changed (test_v2_alternative_results.AlternativeResultsTests.test_frozen_plan_and_input_hashes_have_not_changed) ... ok
+test_original_reference_scores_remain_unchanged (test_v2_alternative_results.AlternativeResultsTests.test_original_reference_scores_remain_unchanged) ... ok
+test_prediction_keys_and_labels_match_validation_exactly (test_v2_alternative_results.AlternativeResultsTests.test_prediction_keys_and_labels_match_validation_exactly) ... ok
+test_routing_uses_only_frozen_train_rotation (test_v2_alternative_results.AlternativeResultsTests.test_routing_uses_only_frozen_train_rotation) ... ok
+test_same_run_cannot_overwrite_or_start_additional_fits (test_v2_alternative_results.AlternativeResultsTests.test_same_run_cannot_overwrite_or_start_additional_fits) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 1.786s
+
+OK

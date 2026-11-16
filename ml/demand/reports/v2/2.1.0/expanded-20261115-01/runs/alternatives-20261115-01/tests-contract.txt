@@ -1,0 +1,42 @@
+test_derived_columns_use_only_three_known_lags (test_v2_alternatives.AlternativeContractTests.test_derived_columns_use_only_three_known_lags) ... ok
+test_fixed_small_search_and_no_test_option (test_v2_alternatives.AlternativeContractTests.test_fixed_small_search_and_no_test_option) ... ok
+test_no_prediction_in_fit_months (test_v2_alternatives.AlternativeContractTests.test_no_prediction_in_fit_months) ... ok
+test_simple_rules_have_exact_expected_outputs (test_v2_alternatives.AlternativeContractTests.test_simple_rules_have_exact_expected_outputs) ... FAIL
+test_tsb_future_rows_cannot_change_first_month_prediction (test_v2_alternatives.AlternativeContractTests.test_tsb_future_rows_cannot_change_first_month_prediction) ... ok
+test_tsb_predict_does_not_mutate_history (test_v2_alternatives.AlternativeContractTests.test_tsb_predict_does_not_mutate_history) ... ok
+test_tsb_zero_and_probability_decay (test_v2_alternatives.AlternativeContractTests.test_tsb_zero_and_probability_decay) ... ok
+test_validation_fit_rejected_before_any_forest (test_v2_alternatives.AlternativeContractTests.test_validation_fit_rejected_before_any_forest) ... ok
+
+======================================================================
+FAIL: test_simple_rules_have_exact_expected_outputs (test_v2_alternatives.AlternativeContractTests.test_simple_rules_have_exact_expected_outputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\ml\demand\tests\test_v2_alternatives.py", line 68, in test_simple_rules_have_exact_expected_outputs
+    np.testing.assert_array_equal(model.predict(self.V), expected)
+  File "E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\ml\demand\.venv\Lib\site-packages\numpy\testing\_private\utils.py", line 1121, in assert_array_equal
+    assert_array_compare(operator.__eq__, actual, desired, err_msg=err_msg,
+  File "E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\ml\demand\.venv\Lib\site-packages\numpy\testing\_private\utils.py", line 983, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 40 / 504 (7.94%)
+First 5 mismatches are at indices:
+ [7]: 76.9 (ACTUAL), 76.89999999999999 (DESIRED)
+ [21]: 43.400000000000006 (ACTUAL), 43.4 (DESIRED)
+ [23]: 0.9000000000000001 (ACTUAL), 0.9 (DESIRED)
+ [57]: 59.300000000000004 (ACTUAL), 59.3 (DESIRED)
+ [63]: 62.7 (ACTUAL), 62.699999999999996 (DESIRED)
+Max absolute difference among violations: 1.42108547e-14
+Max relative difference among violations: 2.17957894e-16
+ ACTUAL: array([ 0.3, 64.3,  0.5, 28. ,  0. , 76.9,  2. , 76.9, 50. ,  0.9,  0. ,
+        0.3,  0. ,  5.4,  0.7,  1.2, 25.8,  0. ,  2.4,  7.2, 58. , 43.4,
+        1.8,  0.9,  0.6,  0. ,  0.1,  1. ,  2.4,  0.6, 10.3,  1.5,  0. ,...
+ DESIRED: array([ 0.3, 64.3,  0.5, 28. ,  0. , 76.9,  2. , 76.9, 50. ,  0.9,  0. ,
+        0.3,  0. ,  5.4,  0.7,  1.2, 25.8,  0. ,  2.4,  7.2, 58. , 43.4,
+        1.8,  0.9,  0.6,  0. ,  0.1,  1. ,  2.4,  0.6, 10.3,  1.5,  0. ,...
+
+----------------------------------------------------------------------
+Ran 8 tests in 3.017s
+
+FAILED (failures=1)

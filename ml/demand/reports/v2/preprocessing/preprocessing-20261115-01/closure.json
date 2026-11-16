@@ -1,0 +1,12 @@
+{
+  "status": "IMPLEMENTED_TESTED_FIXTURE_FITS_ONLY_NO_MODEL_TRAINING",
+  "validation_report": "ml/demand/reports/v2/preprocessing/preprocessing-20261115-01/validation.json",
+  "validation_sha256": "e16ea39368c6d94b7002b37bd6f7af59ce87587267e94dffb6a8b04ff4b5d028",
+  "tests_passed": 201,
+  "contract_sha256": "36eed4f2b505487bf92985f4c06ad6dabaea0aee6735bf463e7c04eb2369b2b9",
+  "implementation_sha256": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+  "preparation_registry_sha256": "58d3906b89e44b17b17b0fc3c93041b0f9bd518dc1cf7c73945f920d57272038",
+  "dataset_mutations": 0,
+  "model_fit_count": 0,
+  "new_markdown_files": 0
+}

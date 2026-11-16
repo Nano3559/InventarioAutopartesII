@@ -1,0 +1,11 @@
+{
+  "approved_at": "2026-11-15T21:01:11.999511-04:00",
+  "time_zone": "America/La_Paz",
+  "user_answer": "Sí, conservar LEGACY y aceptar la equivalencia verificada",
+  "approved_legacy_quality_retention": true,
+  "approved_logical_baseline_for": "20260909_close_schema_drift",
+  "audit_file": "legacy-effects-audit-types.json",
+  "audit_sha256": "3dc82b92ca5f898bdf781f774c65db1b659f9495ba93bd2ff7b321cb70646974",
+  "scope": "Test branch first. Production only after successful rehearsal, recovery branch and fresh preconditions.",
+  "no_physical_rename_claim": true
+}

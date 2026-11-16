@@ -1,0 +1,53 @@
+{
+  "status": "EXPERIMENT_PREPARATION_READY_NOT_TRAINED",
+  "tests_passed": 35,
+  "tests_failed": 0,
+  "new_tests": 13,
+  "previous_files_checked": 522,
+  "immutable_files_unchanged": 521,
+  "approved_metadata_change": [
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "unchanged_counts": {
+    "sources/external_raw": 136,
+    "sources/external_curated": 16,
+    "data": 89,
+    "models": 14,
+    "reports": 190
+  },
+  "train_rows_loaded": 2520,
+  "validation_rows_loaded": 504,
+  "test_rows_features_targets_parsed": 0,
+  "test_metadata_checked": true,
+  "whole_file_byte_hashes_checked": true,
+  "regressor_fits": 0,
+  "real_preprocessor_fits": 0,
+  "fixture_preprocessor_fits": "CONTROLLED_ARTIFICIAL_FIXTURES_ONLY",
+  "predictive_metrics_computed": false,
+  "fitted_artifacts_saved": false,
+  "experiments_csv_appended": false,
+  "dataset_changed": false,
+  "raw_changed": false,
+  "neon_used": false,
+  "new_markdown_files": 0,
+  "git_used": false,
+  "new_files": [
+    "ml/demand/v2/data_v2_2.py",
+    "ml/demand/v2/preprocessing_v2_2.py",
+    "ml/demand/v2/experiments_v2_2.py",
+    "ml/demand/v2/contracts/experiments.v2_2.json",
+    "ml/demand/v2/contracts/preprocessing.v2_2.json",
+    "ml/demand/v2/contracts/runner.v2_2.json",
+    "ml/demand/tests/test_v2_preparation_2_2.py"
+  ],
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md",
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "actual_preparation_guard": "LinearRegression.fit, RandomForestRegressor.fit, DemandPreprocessor22.fit and StandardScaler.fit were patched to raise during actual prepare_run. No patch fired.",
+  "future_fit_budget": 174,
+  "candidate_count": 54,
+  "old_api_model": "2.1.0 unchanged",
+  "automotive": "BLOCKED_LICENSE"
+}

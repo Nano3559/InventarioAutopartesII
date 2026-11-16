@@ -1,0 +1,54 @@
+{
+  "tests_passed": 32,
+  "tests_failed": 0,
+  "protected_files_checked": 402,
+  "protected_files_changed": [],
+  "raw_files_unchanged": 136,
+  "data_files_unchanged": 59,
+  "model_files_unchanged": 14,
+  "historical_reports_unchanged": 168,
+  "new_md": 0,
+  "neon_used": false,
+  "trained": false,
+  "repuestopro_test_used": false,
+  "new_dataset_built": false,
+  "curated_created": false,
+  "persistent_extraction": false,
+  "automotive_profiled": false,
+  "full_scan": {
+    "m5_csv_files": 5,
+    "favorita_archives": 8,
+    "favorita_train_rows": 125497040
+  },
+  "checks": [
+    "Manifest hashes match RAW before and after full profiling",
+    "Promotion counts reconcile with all train rows",
+    "Favorita complete sorted-key duplicate checks",
+    "No Favorita orphan item/store keys",
+    "M5 shared prefix compared cell by cell",
+    "Compatibility covers all 24 dictionary columns"
+  ],
+  "code_sha256": "0b94b652b65a8c26eea18c5380c124f345aaba9f5b73b479147d0ace7c8411cb",
+  "new_code": [
+    "ml/demand/v2/profile_retail.py",
+    "ml/demand/tests/test_v2_profile_retail.py"
+  ],
+  "modified_files": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/sources/manifests/m5_walmart/sha256-aa5d519ab121b284a7b07f4d.json",
+    "ml/demand/sources/manifests/corporacion_favorita/sha256-b69a1fa872a46632efa647d8.json"
+  ],
+  "new_evidence_files": [
+    "ml/demand/reports/v2/profiling/profile-retail-20261115-01/corporacion_favorita_profile.json",
+    "ml/demand/reports/v2/profiling/profile-retail-20261115-01/favorita_small_table_statistics.json",
+    "ml/demand/reports/v2/profiling/profile-retail-20261115-01/m5_price_changes.json",
+    "ml/demand/reports/v2/profiling/profile-retail-20261115-01/m5_walmart_profile.json",
+    "ml/demand/reports/v2/compatibility/profile-retail-20261115-01/source_compatibility_matrix.json"
+  ],
+  "warnings": [
+    "Pandas DtypeWarning: onpromotion combina valores booleanos y faltantes. El perfil normaliza únicamente la lectura a string nullable para contar True, False y ausentes, sin escribir datos transformados. Las cuentas cubren todas las filas.",
+    "Pandas4Warning: uso de sort_values(inplace=True) en la inspección auxiliar de precios. No alteró archivos o resultados.",
+    "Percentiles de tablas pequeñas en el perfil principal proceden de muestra sistemática insuficiente. El suplemento calcula percentiles exactos para oil y transactions, que deben preferirse."
+  ]
+}

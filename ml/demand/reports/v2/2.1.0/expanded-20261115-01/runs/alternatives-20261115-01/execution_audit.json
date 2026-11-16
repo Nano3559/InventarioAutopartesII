@@ -1,0 +1,522 @@
+{
+  "events": [
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008,
+      "criterion": "absolute_error",
+      "status": "PASSED",
+      "seconds": 2.457633599988185
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512,
+      "criterion": "absolute_error",
+      "status": "PASSED",
+      "seconds": 3.627077699988149
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016,
+      "criterion": "absolute_error",
+      "status": "PASSED",
+      "seconds": 4.74839660001453
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008,
+      "criterion": "absolute_error",
+      "status": "PASSED",
+      "seconds": 4.197452399996109
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512,
+      "criterion": "absolute_error",
+      "status": "PASSED",
+      "seconds": 6.44108410004992
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016,
+      "criterion": "absolute_error",
+      "status": "PASSED",
+      "seconds": 8.8010118000675
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.5520919000264257
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.7095121999736875
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.8358307000016794
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.7480582999996841
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 1.0775238999631256
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 1.3406790000153705
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.4679972999729216
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.6059961999999359
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.6823784000007436
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.5971976000582799
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.8335386000107974
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 1.062753799953498
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-06"
+      ],
+      "rows": 1008,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.4339257999090478
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-09"
+      ],
+      "rows": 1512,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.5168121999595314
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2025-12"
+      ],
+      "rows": 2016,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.6782393000321463
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "rows": 2520
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "rows": 2520,
+      "criterion": "absolute_error",
+      "status": "PASSED",
+      "seconds": 6.039754599914886
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "rows": 2520
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "rows": 2520,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.960513399913907
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "rows": 2520
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "rows": 2520,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.835021200007759
+    },
+    {
+      "class_name": "preprocessing",
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "rows": 2520
+    },
+    {
+      "class_name": "RandomForestRegressor",
+      "window": [
+        "2025-01",
+        "2026-03"
+      ],
+      "rows": 2520,
+      "criterion": "squared_error",
+      "status": "PASSED",
+      "seconds": 0.842525799991563
+    }
+  ],
+  "loads": [
+    {
+      "partition": "TRAIN",
+      "fold_id": "F1",
+      "rows": 1008
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F1",
+      "rows": 504
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": "F2",
+      "rows": 1512
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F2",
+      "rows": 504
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": "F3",
+      "rows": 2016
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": "F3",
+      "rows": 504
+    },
+    {
+      "partition": "TRAIN",
+      "fold_id": null,
+      "rows": 2520
+    },
+    {
+      "partition": "VALIDATION",
+      "fold_id": null,
+      "rows": 504
+    }
+  ],
+  "test_loaded": false
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "productId": 39,
+    "locationId": 6,
+    "month": "2026-06",
+    "observed": 82,
+    "absolute_forest": 3.6975,
+    "previous_forest": 11.03390186610651,
+    "extra_squared_error": 1095.0944219005978
+  },
+  {
+    "productId": 38,
+    "locationId": 7,
+    "month": "2026-04",
+    "observed": 87,
+    "absolute_forest": 41.585,
+    "previous_forest": 50.37632660989371,
+    "extra_squared_error": 721.22877241482
+  },
+  {
+    "productId": 23,
+    "locationId": 7,
+    "month": "2026-04",
+    "observed": 84,
+    "absolute_forest": 41.2125,
+    "previous_forest": 50.40527745583254,
+    "extra_squared_error": 702.1647734304067
+  },
+  {
+    "productId": 52,
+    "locationId": 7,
+    "month": "2026-06",
+    "observed": 83,
+    "absolute_forest": 41.475,
+    "previous_forest": 50.7855792385272,
+    "extra_squared_error": 686.5567200027901
+  },
+  {
+    "productId": 40,
+    "locationId": 6,
+    "month": "2026-06",
+    "observed": 89,
+    "absolute_forest": 41.575,
+    "previous_forest": 49.44503050874115,
+    "extra_squared_error": 684.5350135455813
+  },
+  {
+    "productId": 22,
+    "locationId": 6,
+    "month": "2026-04",
+    "observed": 89,
+    "absolute_forest": 41.275,
+    "previous_forest": 48.489651525108485,
+    "extra_squared_error": 636.5872914428551
+  },
+  {
+    "productId": 51,
+    "locationId": 5,
+    "month": "2026-04",
+    "observed": 69,
+    "absolute_forest": 14.29,
+    "previous_forest": 20.384763283047246,
+    "extra_squared_error": 629.7428589546489
+  },
+  {
+    "productId": 22,
+    "locationId": 5,
+    "month": "2026-06",
+    "observed": 81,
+    "absolute_forest": 39.9725,
+    "previous_forest": 48.50503027926714,
+    "extra_squared_error": 627.3326990986548
+  }
+]

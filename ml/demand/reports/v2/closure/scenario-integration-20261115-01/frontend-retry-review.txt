@@ -1,0 +1,214 @@
+
+> inventario-frontend@1.0.0 test
+> vitest run --reporter=dot
+
+
+ RUN  v2.1.9 E:/NOVENO_SEMESTRE/ProgramaciónAvanzada/Inventario/frontend
+
+ ✓ src/services/__tests__/visionApi.test.ts (10 tests) 18ms
+ ✓ src/services/scenarioView.test.ts (15 tests) 19ms
+ ✓ src/services/__tests__/multiView.test.ts (10 tests) 10ms
+ ✓ src/stores/__tests__/authStore.test.ts (18 tests) 17ms
+stderr | src/services/__tests__/api.test.ts > api interceptors > response interceptor > en 401 limpia token de localStorage
+Not implemented: navigation to another Document
+
+ ✓ src/services/__tests__/visionApi.multipart.test.ts (5 tests) 25ms
+ ✓ src/services/__tests__/api.test.ts (8 tests) 24ms
+ ✓ src/services/__tests__/explicabilidad.test.ts (9 tests) 8ms
+ ✓ src/services/__tests__/imageQuality.test.ts (8 tests) 19ms
+stderr | src/pages/__tests__/PublicProductsPage.test.tsx > PublicProductsPage > muestra estado de carga inicialmente
+Warning: An update to PublicProductsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PublicProductsPage (E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\frontend\src\pages\PublicProductsPage.tsx:64:57)
+    at Router (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7139:13)
+    at MemoryRouter (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7049:3)
+Warning: An update to PublicProductsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PublicProductsPage (E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\frontend\src\pages\PublicProductsPage.tsx:64:57)
+    at Router (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7139:13)
+    at MemoryRouter (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7049:3)
+Warning: An update to PublicProductsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PublicProductsPage (E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\frontend\src\pages\PublicProductsPage.tsx:64:57)
+    at Router (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7139:13)
+    at MemoryRouter (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7049:3)
+Warning: An update to PublicProductsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PublicProductsPage (E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\frontend\src\pages\PublicProductsPage.tsx:64:57)
+    at Router (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7139:13)
+    at MemoryRouter (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7049:3)
+Warning: An update to PublicProductsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PublicProductsPage (E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\frontend\src\pages\PublicProductsPage.tsx:64:57)
+    at Router (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7139:13)
+    at MemoryRouter (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7049:3)
+
+ ✓ src/components/vision/__tests__/VisionResultsPanel.hibrido.test.tsx (9 tests) 326ms
+ ✓ src/components/camera/__tests__/CameraCapture.test.tsx (5 tests) 753ms
+   ✓ CameraCapture > muestra permiso denegado con botón Reintentar 330ms
+ ✓ src/components/vision/__tests__/VisionResultsPanel.escaneo.test.tsx (17 tests) 741ms
+stderr | src/pages/__tests__/PublicProductsPage.searchImage.test.tsx > PublicProductsPage - Búsqueda por imagen (YOLO) > selecciona JPEG: muestra preview, llama detectarVisionPublica y renderiza el panel
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/components/vision/__tests__/VisionResultsPanel.ux.test.tsx (13 tests) 1065ms
+   ✓ MODO ESCANEO INTELIGENTE — vehículo como bloque propio > pide marca, modelo y año antes de permitir verificar compatibilidad 350ms
+ ✓ src/components/vision/__tests__/VisionResultsPanel.ranking.test.tsx (10 tests) 1153ms
+   ✓ Ranking V2 — footer sticky de acciones > ofrece 'Tomar otra foto' y 'Cerrar' al pie del panel 478ms
+stderr | src/pages/__tests__/PublicProductsPage.searchImage.test.tsx > PublicProductsPage - Búsqueda por imagen (YOLO) > selecciona PNG: muestra preview, llama detectarVisionPublica y renderiza el panel
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/components/vision/__tests__/VisionResultsPanel.test.tsx (12 tests) 1305ms
+   ✓ VisionResultsPanel > muestra el error y permite repetir la foto 345ms
+stderr | src/pages/__tests__/PublicProductsPage.searchImage.test.tsx > PublicProductsPage - Búsqueda por imagen (YOLO) > selecciona WebP: muestra preview, llama detectarVisionPublica y renderiza el panel
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/components/vision/__tests__/VisionResultsPanel.disponibilidad.test.tsx (9 tests) 1396ms
+   ✓ DISPONIBILIDAD por sucursal — sección compacta en cada card > muestra por defecto hasta 3 sucursales y 'Ver todas las sucursales' si hay más 408ms
+ ✓ src/pages/__tests__/PublicProductsPage.test.tsx (10 tests) 1507ms
+   ✓ PublicProductsPage > muestra botón limpiar filtros cuando hay filtros activos 494ms
+   ✓ PublicProductsPage > limpiar filtros resetea el campo de búsqueda 376ms
+stderr | src/pages/__tests__/PublicProductsPage.searchImage.test.tsx > PublicProductsPage - Búsqueda por imagen (YOLO) > muestra Analizando... y deshabilita el botón mientras la detección está en curso
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/pages/__tests__/PublicProductsPage.vision.test.tsx (9 tests) 1783ms
+   ✓ PublicProductsPage - Visión por cámara > abre la cámara al pulsar Buscar por cámara 534ms
+stderr | src/pages/__tests__/PublicProductsPage.searchImage.test.tsx > PublicProductsPage - Búsqueda por imagen (YOLO) > error de detección: muestra el mensaje traducido de visionApi en el panel
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/pages/__tests__/PublicProductsPage.searchImage.test.tsx > PublicProductsPage - Búsqueda por imagen (YOLO) > NO usa el endpoint OCR legacy /public/search-image
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/pages/__tests__/PublicProductsPage.searchImage.test.tsx (11 tests) 2081ms
+   ✓ PublicProductsPage - Búsqueda por imagen (YOLO) > sin imagen: muestra Buscar por imagen y no hay preview 774ms
+ ✓ src/components/DemandScenarioPanel.test.tsx (11 tests) 2456ms
+   ✓ interfaz ampliada de Ross > conserva la clave de petición al recuperar una respuesta perdida y la cambia al editar 1107ms
+ ✓ src/pages/__tests__/DashboardPage.test.tsx (3 tests) 367ms
+stderr | src/pages/__tests__/LoginPage.test.tsx > LoginPage > botón se deshabilita durante loading
+Warning: An update to MemoryRouter inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at MemoryRouter (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7049:3)
+Warning: An update to LoginPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LoginPage (E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\frontend\src\pages\LoginPage.tsx:16:51)
+    at Router (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7139:13)
+    at MemoryRouter (file:///E:/NOVENO_SEMESTRE/Programaci%C3%B3nAvanzada/Inventario/frontend/node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs:7049:3)
+
+ ✓ src/pages/__tests__/LoginPage.test.tsx (12 tests) 2417ms
+   ✓ LoginPage > renderiza botón de ingresar 394ms
+   ✓ LoginPage > permite escribir credenciales 537ms
+   ✓ LoginPage > login exitoso llama a authStore.login 352ms
+ ✓ src/pages/__tests__/PredictionsPage.test.tsx (14 tests) 2858ms
+   ✓ pantalla administrativa V2 > muestra recuperación explícita y valida la versión del catálogo 652ms
+   ✓ pantalla administrativa V2 > limpia resultados al cambiar producto, tienda o mes 574ms
+ ✓ src/services/__tests__/saleDraft.test.ts (5 tests) 4ms
+ ✓ src/services/__tests__/reportPages.test.ts (2 tests) 10ms
+ ✓ src/services/__tests__/pendingOperation.test.ts (2 tests) 7ms
+ ✓ src/utils/salePdf.test.ts (1 test) 45ms
+ ✓ src/components/vision/__tests__/DetectionBox.test.tsx (5 tests) 258ms
+stderr | src/components/BankVerificationFields.test.tsx > comprobación bancaria manual > cambiar la referencia invalida una comprobación anterior
+Warning: An update to BankVerificationFields inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at BankVerificationFields (E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\frontend\src\components\BankVerificationFields.tsx:17:35)
+Warning: An update to BankVerificationFields inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at BankVerificationFields (E:\NOVENO_SEMESTRE\ProgramaciónAvanzada\Inventario\frontend\src\components\BankVerificationFields.tsx:17:35)
+
+ ✓ src/components/BankVerificationFields.test.tsx (2 tests) 303ms
+ ✓ src/utils/businessDate.test.ts (2 tests) 21ms
+ ✓ src/utils/dashboardError.test.ts (1 test) 3ms
+ ✓ src/components/RoleRoute.test.tsx (1 test) 153ms
+ ✓ src/components/PredictionRoles.test.tsx (5 tests) 382ms
+ ✓ src/pages/__tests__/ReportsPage.test.tsx (5 tests) 689ms
+   ✓ ADMIN conserva las columnas de costo en el reporte mensual 332ms
+ ✓ src/pages/__tests__/SalesPage.test.tsx (18 tests) 9215ms
+   ✓ SalesPage — Carrito (E7.5) > agregar producto al carrito lo muestra en la tabla 1342ms
+   ✓ SalesPage — Carrito (E7.5) > agregar mismo producto incrementa cantidad 740ms
+   ✓ SalesPage — Carrito (E7.5) > eliminar producto lo quita del carrito 609ms
+   ✓ SalesPage — Carrito (E7.5) > no permite cantidad mayor al stock 684ms
+   ✓ SalesPage — Carrito (E7.5) > boton vaciar carrito funciona 506ms
+   ✓ SalesPage — Carrito (E7.5) > cambio de tier usa el precio correspondiente 505ms
+   ✓ SalesPage — Calculo de total (E7.6) > un producto: total = unitPrice x quantity 533ms
+   ✓ SalesPage — Calculo de total (E7.6) > varios productos: total = suma de subtotales 1054ms
+   ✓ SalesPage — Calculo de total (E7.6) > cambio de cantidad actualiza total 503ms
+   ✓ SalesPage — Calculo de total (E7.6) > cambio de tier actualiza total 475ms
+   ✓ SalesPage — contrato de precio y ubicación PRE-H4 > envía el nivel y cantidad, sin unitPrice controlado por cliente 589ms
+   ✓ SalesPage — contrato de precio y ubicación PRE-H4 > no ignora el modo elegido al agregar un producto que ya está en el carrito 952ms
+   ✓ SalesPage — contrato de precio y ubicación PRE-H4 > ADMIN no confirma una venta sin elegir tienda 522ms
+
+ Test Files  34 passed (34)
+      Tests  277 passed (277)
+   Start at  00:31:54
+   Duration  20.40s (transform 4.11s, setup 30.05s, collect 21.26s, tests 31.44s, environment 202.79s, prepare 13.89s)
+

@@ -13,6 +13,7 @@ PAIR_KEYS = (
     "candidate_rollback_notice", "comparison_report", "comparison_source",
     "comparison_upload_hash", "comparison_upload_error",
     "reference_comparison_session", "reference_comparison_result",
+    "reference_comparison_error",
 )
 
 

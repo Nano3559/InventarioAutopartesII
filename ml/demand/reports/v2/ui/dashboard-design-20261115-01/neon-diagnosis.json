@@ -1,0 +1,18 @@
+{
+  "real_neon": true,
+  "read_only": [
+    {
+      "transaction_read_only": "on"
+    }
+  ],
+  "missing": [
+    {
+      "table": "Sale",
+      "column": "status"
+    },
+    {
+      "table": "Movement",
+      "column": "status"
+    }
+  ]
+}

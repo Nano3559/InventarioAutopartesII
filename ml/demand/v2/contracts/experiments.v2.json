@@ -1,0 +1,386 @@
+{
+  "contract_version": "v2-experiment-plan-1",
+  "stage": "V2-08_PREPARATION",
+  "status": "PREPARED_NOT_TRAINED",
+  "owners": {
+    "Erika": "Modelos y backend, ejecución futura de entrenamiento e inferencia",
+    "Ross": "Dataset, contratos de experimentos, frontend, visualización y revisión de calidad"
+  },
+  "input_build": {
+    "relative_path": "data/repuestopro_v2/2.0.0/academic-20261114-03",
+    "manifest_sha256": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+    "origin": "SYNTHETIC",
+    "scope": "LOW_VOLUME_ACADEMIC_INITIAL_VARIANT_ONLY"
+  },
+  "training_authorized": false,
+  "constant_policy": {
+    "scope": "CURRENT_BUILD_TRAIN_ONLY",
+    "expected_constants_for_this_build": [
+      "antiguedad_tipo_cambio_dias"
+    ],
+    "action": "EXPLICIT_NAMED_FEATURE_VARIANT_EXCLUDES_CONSTANT_AGE",
+    "raw_schema_columns_unchanged": true,
+    "original_full_feature_count": 17,
+    "primary_effective_feature_count": 16,
+    "additional_constants": "FAIL_PREFLIGHT_REQUIRE_REVIEW",
+    "future_age_variation": "Do not jitter column. Derive from known quote events and timestamps in a new versioned build."
+  },
+  "feature_sets": [
+    {
+      "id": "baseline_v1_features_no_constant_age",
+      "source_feature_set": "baseline_v1_features",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos"
+      ],
+      "excluded_if_present": [
+        "antiguedad_tipo_cambio_dias"
+      ],
+      "source_schema_sha256": "1e78a8b03120aee4fbd82bbe9eb1f8d5888c7b8ead2b6c7415defcee9d1a4744"
+    },
+    {
+      "id": "with_modality_no_constant_age",
+      "source_feature_set": "with_modality",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior"
+      ],
+      "excluded_if_present": [
+        "antiguedad_tipo_cambio_dias"
+      ],
+      "source_schema_sha256": "1e78a8b03120aee4fbd82bbe9eb1f8d5888c7b8ead2b6c7415defcee9d1a4744"
+    },
+    {
+      "id": "with_prices_no_constant_age",
+      "source_feature_set": "with_prices",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior",
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida"
+      ],
+      "excluded_if_present": [
+        "antiguedad_tipo_cambio_dias"
+      ],
+      "source_schema_sha256": "1e78a8b03120aee4fbd82bbe9eb1f8d5888c7b8ead2b6c7415defcee9d1a4744"
+    },
+    {
+      "id": "with_exchange_no_constant_age",
+      "source_feature_set": "with_exchange",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior",
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida",
+        "tipo_cambio_bs_usd_conocido",
+        "variacion_tipo_cambio_ultimo_mes"
+      ],
+      "excluded_if_present": [
+        "antiguedad_tipo_cambio_dias"
+      ],
+      "source_schema_sha256": "1e78a8b03120aee4fbd82bbe9eb1f8d5888c7b8ead2b6c7415defcee9d1a4744"
+    },
+    {
+      "id": "with_availability_no_constant_age",
+      "source_feature_set": "with_availability",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior",
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida",
+        "tipo_cambio_bs_usd_conocido",
+        "variacion_tipo_cambio_ultimo_mes",
+        "dias_sin_stock_mes_anterior",
+        "cobertura_stock_mes_anterior"
+      ],
+      "excluded_if_present": [
+        "antiguedad_tipo_cambio_dias"
+      ],
+      "source_schema_sha256": "1e78a8b03120aee4fbd82bbe9eb1f8d5888c7b8ead2b6c7415defcee9d1a4744"
+    },
+    {
+      "id": "v2_full_no_constant_age",
+      "source_feature_set": "v2_full",
+      "columns": [
+        "ventas_mes_anterior",
+        "ventas_hace_2_meses",
+        "ventas_hace_3_meses",
+        "mes_sin",
+        "mes_cos",
+        "proporcion_por_mayor_mes_anterior",
+        "cobertura_modalidad_mes_anterior",
+        "precio_menor_cierre_anterior_bs",
+        "precio_mayor_cierre_anterior_bs",
+        "variacion_precio_menor_conocida",
+        "variacion_precio_mayor_conocida",
+        "tipo_cambio_bs_usd_conocido",
+        "variacion_tipo_cambio_ultimo_mes",
+        "dias_sin_stock_mes_anterior",
+        "cobertura_stock_mes_anterior",
+        "categoryId"
+      ],
+      "excluded_if_present": [
+        "antiguedad_tipo_cambio_dias"
+      ],
+      "source_schema_sha256": "1e78a8b03120aee4fbd82bbe9eb1f8d5888c7b8ead2b6c7415defcee9d1a4744"
+    }
+  ],
+  "preprocessing": {
+    "fit_scope": "TRAIN_ONLY_EACH_FOLD",
+    "all_missing_train_column": "FAIL_GROUP_NO_SILENT_DROP",
+    "numeric_missing": "TRAIN median plus fixed missing indicators for nullable numeric features",
+    "category": "categoryId as label. TRAIN vocabulary plus reserved UNKNOWN bucket, map missing or unseen values to UNKNOWN. No ordinal numeric category. No productId or locationId feature.",
+    "linear_scaling": "StandardScaler on numeric imputed features only. Optional for OLS, explicitly selected for this plan. Do not scale categorical one-hot columns.",
+    "forest_scaling": "NONE",
+    "artifact": "One frozen preprocessing+selected-columns+model pipeline. Backend must use the same object. No fitted objects created now."
+  },
+  "models": {
+    "baseline": {
+      "rule": "prediction = ventas_mes_anterior",
+      "fit_required": false
+    },
+    "linear_regression": {
+      "class": "LinearRegression",
+      "parameters": {
+        "fit_intercept": true
+      },
+      "configurations": 1
+    },
+    "random_forest": {
+      "class": "RandomForestRegressor",
+      "fixed": {
+        "n_estimators": 200,
+        "criterion": "squared_error",
+        "max_features": 1.0,
+        "random_state": 42,
+        "n_jobs": 1,
+        "bootstrap": true
+      },
+      "grid": {
+        "max_depth": [
+          4,
+          8
+        ],
+        "min_samples_leaf": [
+          2,
+          5
+        ]
+      },
+      "configurations": 4
+    },
+    "mlp": {
+      "status": "OPTIONAL_NOT_IN_INITIAL_GRID",
+      "reason": "More tuning and normalization, no need to add complexity before comparing baseline, OLS and forest."
+    }
+  },
+  "temporal_validation": {
+    "outer_train": [
+      "2025-01",
+      "2026-03"
+    ],
+    "outer_validation": [
+      "2026-04",
+      "2026-06"
+    ],
+    "test": [
+      "2026-07",
+      "2026-09"
+    ],
+    "random_row_split": false,
+    "group_unit": "COMPLETE_MONTHS_ALL_PRODUCTS_AND_STORES",
+    "folds": [
+      {
+        "id": "F1",
+        "train": [
+          "2025-01",
+          "2025-06"
+        ],
+        "validation": [
+          "2025-07",
+          "2025-09"
+        ]
+      },
+      {
+        "id": "F2",
+        "train": [
+          "2025-01",
+          "2025-09"
+        ],
+        "validation": [
+          "2025-10",
+          "2025-12"
+        ]
+      },
+      {
+        "id": "F3",
+        "train": [
+          "2025-01",
+          "2025-12"
+        ],
+        "validation": [
+          "2026-01",
+          "2026-03"
+        ]
+      }
+    ],
+    "selection": "Choose RF configuration per feature set using mean fold MAE inside TRAIN. Refit each LR and selected RF on outer TRAIN. Compare the 12 resulting candidates and baseline on outer VALIDATION. Keep TEST reserved until one final selection.",
+    "one_step": "Validation history updates only from previous closed months. Do not refit on validation targets. Do not average or fit transforms across all partitions."
+  },
+  "metrics_and_selection": {
+    "primary": "MAE",
+    "secondary": [
+      "RMSE",
+      "R2"
+    ],
+    "accuracy": false,
+    "mape_primary": false,
+    "rows": "Same VALIDATION rows, explicit coverage and abstentions for every candidate",
+    "tie_numerical_tolerance": 1e-09,
+    "tie_policy": [
+      "BASELINE",
+      "LINEAR_REGRESSION",
+      "RANDOM_FOREST"
+    ],
+    "tolerance_meaning": "Floating-point tie convention, not commercially meaningful improvement threshold",
+    "promotion": "Strictly better validation MAE than baseline beyond numerical tolerance, plus RMSE and group review. If RMSE or relevant groups degrade, flag review, no automatic promotion. Baseline remains valid if nothing improves. No promise RF wins.",
+    "groups": "Report product, store, rotation defined using TRAIN, stock coverage and mode only when known. Report n and undefined R2, never silently drop hard rows.",
+    "r2": "Not accuracy percentage. Undefined for fewer than two samples or constant target: null with reason.",
+    "commercial_error_tolerance": null,
+    "full_coverage_required_for_automatic_selection": true,
+    "abstention_policy": "Any missing or invalid prediction blocks automatic promotion. Report coverage and reasons, do not compare a favorable subset against complete baseline as equivalent."
+  },
+  "prediction_policy": {
+    "version": "NONNEGATIVE_V1",
+    "nonfinite": "REJECT_RESPONSE_COUNT_FAILURE",
+    "negative": "clip to zero before all reported metrics, record raw negative count and publish raw metrics separately",
+    "rounding": "No integer rounding before metrics. UI rounding is separate from replenishment decisions.",
+    "scope": "Predeclared policy, no fitted or predicted values produced now"
+  },
+  "execution_budget": {
+    "feature_sets": 6,
+    "folds": 3,
+    "rf_configs": 4,
+    "lr_configs": 1,
+    "cv_fits": 90,
+    "outer_train_refits": 12,
+    "maximum_planned_fits": 102,
+    "actual_fits": 0,
+    "final_test_evaluation": "Only after selection. Not part of these executed results, none exist."
+  },
+  "tracking": {
+    "path": "reports/v2/2.0.0/academic-20261114-03/experiments.csv",
+    "create_when": "FIRST_AUTHORIZED_EXPERIMENT_ONLY",
+    "columns": [
+      "run_id",
+      "dataset_version",
+      "build_id",
+      "dataset_sha256",
+      "config_sha256",
+      "split_sha256",
+      "feature_set_id",
+      "columns_sha256",
+      "model",
+      "parameters_json",
+      "preprocessing_version",
+      "prediction_policy_version",
+      "fit_partition",
+      "evaluation_partition",
+      "fold_id",
+      "seed",
+      "mae",
+      "rmse",
+      "r2",
+      "r2_status",
+      "rows_requested",
+      "rows_scored",
+      "abstentions",
+      "negative_raw_predictions",
+      "fit_seconds",
+      "predict_seconds",
+      "python_version",
+      "sklearn_version",
+      "artifact_sha256",
+      "notes"
+    ],
+    "v1_log_allowed": false,
+    "planned_runs_are_not_experiments": true
+  },
+  "future_dataset_variant": {
+    "status": "SPECIFIED_NOT_BUILT",
+    "proposed_version": "2.1.0",
+    "age_levels_reference_days": [
+      0,
+      2,
+      7,
+      30
+    ],
+    "age_policy": "A shared quote-event history selects latest observed and published quote available at each cutoff, with explicit source, type and Bs/USD. Age derived from dates. Preserve missing and stale values without silent market substitution.",
+    "wholesale_observed_quantity_examples": [
+      20,
+      40,
+      80
+    ],
+    "quantity_meaning": "Academic coverage fixtures, not UCI automotive quantiles, prevalence or actual RepuestoPro history. Do not create one stable high-volume value across every month.",
+    "scales": [
+      1,
+      3,
+      10
+    ],
+    "stock": "Scale requested-unit mechanisms and forecast-based supply together. Known firm orders may set a stock planning floor before the cutoff. Do not use realized future target, latent requests unknown at cutoff or automatically add wholesale commitments twice.",
+    "calendar": "Receipts become sellable only at actual reception, integer partial receipts, conserve transit. Unknown large orders can remain censored. Stock must not be rewritten to force fulfillment.",
+    "variants": [
+      "recurrent_large_wholesale",
+      "known_exceptional_order",
+      "unknown_exceptional_order",
+      "partial_or_late_receipt",
+      "mixed_retail_wholesale",
+      "stale_or_missing_quote"
+    ],
+    "required_gates": [
+      "Freeze new generator+config+schema, keep 2.0.0 unchanged",
+      "Verify known quote ages vary within TRAIN and stay common per cutoff",
+      "Certify explicit POR_MAYOR fulfilled volumes, not just latent requests",
+      "Verify sellable and transit conservation, costs and both prices",
+      "Repeat V2-07 on each new build, hold out new targets before selecting models",
+      "Keep large legitimate outliers; do not tune weights to win metrics"
+    ],
+    "not_created_in_this_task": true,
+    "registered": false,
+    "known_orders_prediction_limit": "Firm order quantities are simulator supply controls, not one of the 17 approved features. The model cannot be claimed to anticipate an exceptional known order without an approved additional feature or explicit separate decision rule. Preserve that limitation and keep unforeseen peaks."
+  },
+  "pending": [
+    "Explicit training authorization and executable V2 preprocessing adapter",
+    "Erika V2-09B feature-set contract review with actual selected artifact later",
+    "Implement and validate a separate expanded-volume generator/build before claiming that coverage",
+    "No precision, superiority or commercial tolerance can be claimed before results"
+  ]
+}

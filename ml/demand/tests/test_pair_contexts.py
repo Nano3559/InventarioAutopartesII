@@ -181,7 +181,7 @@ class PairStreamlitTests(unittest.TestCase):
             run = app.session_state["retraining_result"]
             service = app.session_state["retraining_session"]
             self.assertEqual((run["product_id"], run["location_id"], run["n_train"]), (1, 5, 6))
-            self.assertTrue(Path(run["folder"]).is_relative_to(Path(tmp)))
+            self.assertTrue(Path(run["folder"]).resolve().is_relative_to(Path(tmp).resolve()))
             self.assertIsNone(app.session_state["h4_runtime"].get_active_model())
             self.activate(app)
             with patch("model_comparison.ComparisonSession",

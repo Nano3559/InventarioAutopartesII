@@ -1,0 +1,26 @@
+{
+  "status": "RECOMMENDATION_ONLY_SELECTION_NOT_CLOSED",
+  "recommended_for_h4": "absolute_forest-d4",
+  "artifact": "ml/demand/models/v2/alternatives-20261115-01/absolute_forest-d4.joblib",
+  "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "secondary_candidate": "low_median_routing",
+  "basis": "Follow predeclared primary MAE criterion for synthetic academic H4, supported by fewer product losses versus baseline and lower MAE in every validation month and store.",
+  "caveats": [
+    "Higher RMSE and 21 errors over 40 units versus 5 for routing.",
+    "Aggregate underprediction 17.27% versus 0.70% for routing in this observed block.",
+    "Not recommended for automatic replenishment or commercial deployment.",
+    "All 21 tail rows had known pre-cutoff wholesale orders not represented as features. Adding them requires a new contract, causal timing and no double-counting.",
+    "Reused VALIDATION and nine observations per product do not provide independent confirmation."
+  ],
+  "why_not_silently_change_winner": "Risk findings are documented, not used to change the agreed primary metric after viewing outcomes. If the team changes the objective to tail/shortage cost, document that new objective and reassess under an approved protocol.",
+  "not_authorized_or_done": [
+    "No new fit, TEST, deployment or model activation.",
+    "No per-product exception learned from these validation errors.",
+    "No replacement of existing candidate or evidence."
+  ],
+  "pending": [
+    "Team acceptance of the academic scope and MAE/RMSE tradeoff.",
+    "Joint contract and inference review with Erika.",
+    "Freeze chosen artifact and prediction policy before any separately authorized TEST."
+  ]
+}

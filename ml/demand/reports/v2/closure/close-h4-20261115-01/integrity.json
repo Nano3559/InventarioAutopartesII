@@ -1,0 +1,71 @@
+{
+  "status": "PASSED_LOCAL_TECHNICAL_CHECKS_INTERACTIVE_SCOPE_INCOMPLETE",
+  "protected_files_checked": 593,
+  "changed_protected_files": [
+    "ml/demand/v2/contracts/preparation.v2.json"
+  ],
+  "datasets_raw_models_historical_reports_unchanged": true,
+  "selection_and_final_test_unchanged": true,
+  "test_repeated": false,
+  "demand_fit_calls": 0,
+  "asr": "Local pretrained speech inference only. Audio not uploaded, no model trained.",
+  "original_audio_sha256": "84008e5659520674321a042c0a420d9324cb37a52fac194a5c6e227160c9142d",
+  "neon_initial_access": "READ_ONLY_TRANSACTION_CONFIRMED",
+  "neon_writes": 0,
+  "neon_after_user_local_only_decision": "NO_FURTHER_ACCESS",
+  "local_migrations_applied": [
+    "20261103_physical_stock_and_returns",
+    "20261103b_commercial_controls"
+  ],
+  "local_schema_diff": "EMPTY",
+  "local_dashboard_status": "200_ADMIN_INVENTARIO_TWO_TIENDAS",
+  "production_dashboard": "NOT_FIXED_USER_DEFERRED_NEON_RECONCILIATION",
+  "recovery": "PASSED_2_2_TO_2_1_TO_2_2",
+  "tests": {
+    "python": 86,
+    "backend": 174,
+    "frontend": 249,
+    "total": 509,
+    "failed": 0
+  },
+  "build_backend": "PASSED",
+  "build_frontend": "PASSED",
+  "new_markdown_files": 0,
+  "git_used": false,
+  "commit": false,
+  "push": false,
+  "teacher_scope": "MATRIX_RECORDED_NOT_IMPLEMENTED_NO_NEW_DATASET_OR_TRAINING",
+  "artifacts_sha256": {
+    "audio_scope_review.json": "a2720add522409c68ed29fe8f58322aff9c006dbcec5287ae245ff15e3511ea8",
+    "audio_transcript_medium.json": "db20f1bda612bc5694cb76f1fe1045f76d627219f6cc6914573834be28ce0290",
+    "backend-build.log": "56b3ae47e3fad0ca09b94539d7c3297733d4fe0a624407ed886b09595357d986",
+    "backend-tests.log": "f1f3ab65732f43774d756074e277e56c1eb3cbb987eb7c7210de032fd6ee0f12",
+    "diagnosis.json": "4fe0610ad782363169e8ac67cc40fdf35334dd182b0da7e521488b13ff1d0aea",
+    "frontend-build.log": "89ee6ed1e336085cc53ce69f93810911f2d1c9a05b14139ab850a561dff76309",
+    "frontend-tests.log": "0e052b0b157ceab003b30ab9a3e86af278c79ada456e285e184755e22da9dd5f",
+    "local-after.json": "31001de53654cd09caa5fb9af9329ca3fea26d708b6b583399e9b815b3919cec",
+    "local-before.json": "ec72c3a9fc436737661c6c73e944c5767c20e4e2037122c7e70b1d5fa0465649",
+    "local-schema-diff.sql": "e69c9f21be2b53770b13ea52bf6c4f304a9fc86b41f1e932729ec2de45574341",
+    "python-full-tests.log": "42b4739ba302241314eec4e55f420b7431377a20b7ef9785cd5c385ec518a772",
+    "python-tests.log": "c744cb626cb25de72b2eab0ea1e2292464b006a335e0244e047ce7d51dedc954",
+    "recovery-smoke.json": "082c061fb3914cb47916543fcbd1e5c4351696a649c8dc7d670e6df9909353e7"
+  },
+  "current_changed_source_document_hashes": {
+    "ml/demand/README.md": "c93af2b5ff4c6c44592cac040faa6f4622a47034388e39e0e812268056a7dcd5",
+    "ml/demand/admin_prediction_v2.py": "59e048cac2a77ce14112782c2357188d61c2f1bd0900181cefa5e267b66c21b6",
+    "backend/src/modules/dashboard/dashboard.routes.ts": "edc9cb8e163fd383c584d5d567e686500dad0d828ec0318f8442b36da48c156c",
+    "backend/src/modules/dashboard/dashboard.test.ts": "a4381ae4d2157be270ff745e7398469d2f18f5614d6972913666acd4d66de20a",
+    "backend/src/modules/predictions/predictions.service.ts": "fa6d162003aa9ce622850517838f0577840486ab2ba7fcaac54338643398482c",
+    "frontend/src/services/demandView.ts": "781b5fc48c3511619647735255aad8570cf2426a7e4ae7b2f139b33c0a537a0d",
+    "frontend/src/pages/PredictionsPage.tsx": "0fbc3f03adfaa074a51ecd3ae33ed43d07258a11d9154af47bf71dee11ad31d0",
+    "frontend/src/pages/__tests__/PredictionsPage.test.tsx": "b3bcb691ba10976ee930369641332e73295c240b87de6b215711052b815c4161",
+    "ml/demand/tests/test_recovery_v2.py": "e612c7c54b63e8c7782717c59d020e2a947b7e48043e665da7dc89b25e6d36bc",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md": "6a19acb701b2f4bf46510ff56b14aedf9d959147e6e781e5b6c59cb455ad4527",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md": "0d8454b93a59fed04ea8434be4a394e691d8f3fc90b6e80b87d1e650aa545c49",
+    "docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md": "2569e34a3d003633084222f75752e59da2e55d4fa5d5bce5c699dddbea022c35"
+  },
+  "new_source_test_files": [
+    "ml/demand/tests/test_recovery_v2.py"
+  ],
+  "git_status_diff_stat": "NOT_EXECUTED_RESPECTING_NO_GIT"
+}

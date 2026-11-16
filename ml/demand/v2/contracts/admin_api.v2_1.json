@@ -1,0 +1,306 @@
+{
+  "version": "v2-admin-api-2.1-1",
+  "paths": {
+    "catalog": "GET /api/predictions/catalog",
+    "demand": "POST /api/predictions/demand"
+  },
+  "role": "ADMIN",
+  "artifact_sha256": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc",
+  "policy": "NONNEGATIVE_V1",
+  "origin": "SYNTHETIC",
+  "mode": "ACADEMIC_REPLAY",
+  "provider": "Approved local VALIDATION snapshot. No live database or TEST queries.",
+  "defaultTargetMonth": "2026-06",
+  "allowedTargetMonths": [
+    "2026-04",
+    "2026-05",
+    "2026-06"
+  ],
+  "request_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "productId",
+      "locationId"
+    ],
+    "properties": {
+      "productId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647
+      },
+      "locationId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647
+      },
+      "targetMonth": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+      },
+      "historySnapshotId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
+      }
+    },
+    "dependentRequired": {
+      "historySnapshotId": [
+        "targetMonth"
+      ]
+    }
+  },
+  "success_response_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "status",
+      "contractVersion",
+      "productId",
+      "locationId",
+      "targetMonth",
+      "issuedAt",
+      "historyCutoff",
+      "horizonMonths",
+      "prediction",
+      "modelVersion",
+      "datasetVersion",
+      "buildId",
+      "historySnapshotId",
+      "origin",
+      "mode",
+      "selectionId",
+      "artifactSha256",
+      "policyVersion",
+      "warnings",
+      "evaluationContext",
+      "version",
+      "model",
+      "baseline",
+      "history",
+      "metrics"
+    ],
+    "properties": {
+      "status": {
+        "const": "OK"
+      },
+      "contractVersion": {
+        "const": "v2-inference-2.1-1"
+      },
+      "productId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647
+      },
+      "locationId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647
+      },
+      "targetMonth": {
+        "type": "string"
+      },
+      "issuedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "historyCutoff": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "horizonMonths": {
+        "const": 1
+      },
+      "prediction": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0
+      },
+      "modelVersion": {
+        "const": "accepted-absolute-2.1-20261115-01"
+      },
+      "datasetVersion": {
+        "const": "2.1.0"
+      },
+      "buildId": {
+        "const": "expanded-20261115-01"
+      },
+      "historySnapshotId": {
+        "type": "string"
+      },
+      "origin": {
+        "const": "SYNTHETIC"
+      },
+      "mode": {
+        "const": "ACADEMIC_REPLAY"
+      },
+      "selectionId": {
+        "const": "accepted-absolute-2.1-20261115-01"
+      },
+      "artifactSha256": {
+        "const": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc"
+      },
+      "policyVersion": {
+        "const": "NONNEGATIVE_V1"
+      },
+      "warnings": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string"
+        }
+      },
+      "evaluationContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "origin",
+          "split",
+          "mae",
+          "rmse",
+          "r2"
+        ],
+        "properties": {
+          "origin": {
+            "const": "SYNTHETIC"
+          },
+          "split": {
+            "const": "TEST"
+          },
+          "mae": {
+            "type": "number",
+            "minimum": 0
+          },
+          "rmse": {
+            "type": "number",
+            "minimum": 0
+          },
+          "r2": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      },
+      "reason": {
+        "enum": [
+          "UNKNOWN_ENTITY",
+          "UNAVAILABLE_REQUIRED_FEATURE",
+          "MODEL_UNAVAILABLE"
+        ]
+      },
+      "featureSnapshotSha256": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "version": {
+        "const": "V2.1.0"
+      },
+      "model": {
+        "const": "RandomForestRegressor"
+      },
+      "baseline": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "history": {
+        "type": "array",
+        "minItems": 3,
+        "maxItems": 3,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "month",
+            "units"
+          ],
+          "properties": {
+            "month": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+            },
+            "units": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "metrics": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mae",
+          "rmse",
+          "r2"
+        ],
+        "properties": {
+          "mae": {
+            "type": "number",
+            "minimum": 0
+          },
+          "rmse": {
+            "type": "number",
+            "minimum": 0
+          },
+          "r2": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "status": {
+              "const": "OK"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "featureSnapshotSha256"
+          ],
+          "properties": {
+            "prediction": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "not": {
+            "required": [
+              "reason"
+            ]
+          }
+        },
+        "else": {
+          "required": [
+            "reason"
+          ],
+          "properties": {
+            "prediction": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "errors": {
+    "401": "Missing/invalid/revoked session",
+    "403": "Non-ADMIN current server-side role",
+    "400": "INVALID_INPUT or UNKNOWN_ENTITY",
+    "409": "SNAPSHOT_MISMATCH",
+    "422": "UNAVAILABLE_REQUIRED_FEATURE",
+    "503": "DEMAND_UNAVAILABLE including integrity, process, runtime and output failures"
+  },
+  "history": "Exactly three preceding closed months from the same approved input lags. No target-month labels.",
+  "evaluationContext": "Saved fixed TEST metrics for this artifact, never recomputed per request.",
+  "v1Fallback": false,
+  "legacyV1FilesPreserved": true,
+  "globalActiveOrLiveForecastEnabled": false
+}

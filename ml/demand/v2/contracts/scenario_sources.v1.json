@@ -1,0 +1,421 @@
+{
+  "registry_version": "scenario-sources-1.0.0",
+  "work_item": "H4-R02",
+  "status": "COMPLETE_FOR_ACADEMIC_SYNTHETIC_SCOPE",
+  "review_basis": "Existing local evidence and user confirmations. No new license search, Neon lookup or commercial permission granted.",
+  "dictionary": {
+    "path": "v2/contracts/dataset_dictionary.scenarios.v1.json",
+    "sha256": "42f426f74c1fbb5ba5b5b4ca65dc0aa7d5746987b58445ca22d90f2fa1fdcb55"
+  },
+  "historical_matrix_preserved": {
+    "path": "reports/v2/source_provenance_matrix.json",
+    "sha256": "acb931693622158c8d47a4a350588397466031884e19d0830047d74a7fa4fbc3"
+  },
+  "superseding_access_reviews": [
+    {
+      "path": "reports/v2/source_reviews/source-access-20261115-02/review.json",
+      "sha256": "e54b8b7213503e5e902753c6bb4f8112c7686cec23685edd4839a273a8a325e3"
+    },
+    {
+      "path": "reports/v2/source_reviews/source-access-20261115-03/review.json",
+      "sha256": "3bc48776133e9de2bc831d484d78a8f516dc0e360d549603e951025bdd1dcfa3"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "CATALOG",
+      "kind": "FROZEN_REFERENCE",
+      "status": "VALID_FOR_IDENTITIES_ONLY",
+      "dictionary_binding": {
+        "kind": "FROZEN_CATALOG_REFERENCE",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/catalog_reference.json",
+        "physical": [
+          "Product.id",
+          "Product.itemCode",
+          "Product.categoryId",
+          "Location.id",
+          "Location.name",
+          "Location.type"
+        ],
+        "state": "Existing frozen reference, not current Neon. Categories assumed fixed for synthetic worlds, not certified historic category assignments."
+      },
+      "limitation": "Corte observado del catálogo, no precios, costos o disponibilidad actuales. No certifica categorías históricas."
+    },
+    {
+      "source_id": "HISTORY",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "NOT_REAL_HISTORY",
+      "dictionary_binding": {
+        "kind": "SYNTHETIC_CLOSED_HISTORY_OR_FUTURE_AUDITED_SOURCE",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/base_mensual.csv",
+        "physical": [
+          "Sale.id",
+          "Sale.saleDate",
+          "Sale.status",
+          "Sale.voidedAt",
+          "SaleItem.saleId",
+          "SaleItem.productId",
+          "SaleItem.quantity"
+        ],
+        "state": "Frozen synthetic reference available. Real historic as-of states and availableAt need R02 audit. Never query real data merely to fill a design field."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "PRICE",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "NOT_REAL_HISTORY",
+      "dictionary_binding": {
+        "kind": "SYNTHETIC_PRICE_PLAN_OR_FUTURE_AUDITED_EVENT",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/pricing_audit.csv",
+        "physical": [
+          "Product.price1",
+          "Product.wholesalePrice"
+        ],
+        "state": "Applied synthetic prices and proposed prices are distinct. Product current values are not a dated history. price_events.csv contains relative reference changes, not actual RepuestoPro price lists."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "QUOTE",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "NOT_REAL_HISTORY",
+      "dictionary_binding": {
+        "kind": "SYNTHETIC_QUOTE_OR_FUTURE_AUDITED_EVENT",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/quote_events.csv",
+        "physical": [
+          "Cost.exchangeRate",
+          "Cost.date",
+          "Cost.createdAt",
+          "Cost.updatedAt"
+        ],
+        "state": "No verified Bs/USD external source approved by this task. Never fill missing with 6.96 or transplant GBP/USD prices. CostsPage uses 6.96 as a UI default or reconstruction fallback. That is not evidence of a real historical quote. The API unitCost path can default an absent exchangeRate to 1, which must not be certified as a historical Bs/USD quote."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "COST",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "NOT_REAL_HISTORY",
+      "dictionary_binding": {
+        "kind": "SYNTHETIC_COST_PLAN_OR_FUTURE_AUDITED_EVENT",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/base_mensual.csv",
+        "physical": [
+          "Product.cost",
+          "Cost.costPrice",
+          "Cost.productId",
+          "Cost.supplierId",
+          "Cost.date",
+          "Cost.percentage"
+        ],
+        "state": "Current UI flow treats Cost.costPrice as landed Bs/unit and unitCost request as USD/unit, with percentage markup. Existing records have no persisted native currency or raw USD field. Historical provenance still needs R02 audit, especially if exchangeRate is null or rows were edited.",
+        "code_evidence": [
+          "backend/src/shared/utils/costing.ts#landedCost",
+          "backend/src/modules/costs/costs.routes.ts",
+          "frontend/src/pages/CostsPage.tsx"
+        ]
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "STOCK",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "NOT_REAL_HISTORY",
+      "dictionary_binding": {
+        "kind": "SYNTHETIC_CUTOFF_STOCK_OR_FUTURE_AUDITED_SNAPSHOT",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/supply_plans.csv",
+        "physical": [
+          "Inventory.productId",
+          "Inventory.locationId",
+          "Inventory.stock"
+        ],
+        "state": "opening_stock at planned_at can support a synthetic cutoff if generator semantics verified. Current Inventory.stock cannot reconstruct historical stock. No persisted reservation fields are claimed."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "ORDERS",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "NOT_REAL_HISTORY",
+      "dictionary_binding": {
+        "kind": "SYNTHETIC_OPEN_ORDER_PLAN",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/orders.csv",
+        "physical": [],
+        "state": "No Prisma model for externally confirmed, pending customer purchase orders is asserted. Sale and SaleItem are completed sales, not this source. fulfilled_units/unmet_units at final outcome are excluded from predictors."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "SUPPLY",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "NOT_REAL_HISTORY",
+      "dictionary_binding": {
+        "kind": "SYNTHETIC_SHIPMENT_PLAN",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/shipments.csv",
+        "physical": [
+          "Movement.id",
+          "Movement.date",
+          "Movement.quantity",
+          "Movement.receivedQuantity",
+          "Movement.receivedAt",
+          "Movement.status",
+          "ProductRequest.expectedDate"
+        ],
+        "state": "Operational transfers and expectedDate do not certify international supplier lead times. Reconstruct pending at cutoff, never reuse the final received/pending fields as earlier state."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "RECEIPTS",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "NOT_REAL_HISTORY",
+      "dictionary_binding": {
+        "kind": "SYNTHETIC_RECEIPT_EVENTS",
+        "path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01/receipts.csv",
+        "physical": [
+          "Movement.receivedAt",
+          "Movement.receivedQuantity",
+          "Return.inspectedAt",
+          "Return.restockedQuantity",
+          "Return.disposition"
+        ],
+        "state": "Receipts after cutoff are outcomes, never cutoff features. Only inspected sellable returns can enter stock. Real observation availability needs audit."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "POLICY",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "EXPLICIT_HYPOTHESIS",
+      "dictionary_binding": {
+        "kind": "EXPLICIT_HYPOTHETICAL_POLICY",
+        "physical": [],
+        "state": "Safety stock, order minimum, multiple and review cycle are not verified supplier rules. Inventory.minStock is not automatically any of these controls."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "ASSUMPTION",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "EXPLICIT_HYPOTHESIS",
+      "dictionary_binding": {
+        "kind": "CLIENT_HYPOTHETICAL_EDIT_SERVER_VALIDATED",
+        "physical": [],
+        "state": "User changes are hypotheses with assumedAsOf. Server recordedAt remains real audit time. No edits to operational facts or source certification."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "CONTEXT",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "EXPLICIT_HYPOTHESIS",
+      "dictionary_binding": {
+        "kind": "SERVER_SCENARIO_CONTEXT",
+        "physical": [],
+        "state": "IDs, hashes, origin, model and snapshot versions supplied/verified by server. Not model quantities."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "CALENDAR",
+      "kind": "DETERMINISTIC",
+      "status": "DERIVATION_NOT_OBSERVATION",
+      "dictionary_binding": {
+        "kind": "DETERMINISTIC_CALENDAR",
+        "physical": [],
+        "state": "America/La_Paz calendar, one-month objective, known before outcome."
+      },
+      "limitation": "Derivar solo desde eventos disponibles al corte o planes explícitos."
+    },
+    {
+      "source_id": "DERIVED",
+      "kind": "DETERMINISTIC",
+      "status": "DERIVATION_NOT_OBSERVATION",
+      "dictionary_binding": {
+        "kind": "DETERMINISTIC_DERIVATION",
+        "physical": [],
+        "state": "Use only explicitly cited eligible inputs. A proposed formula is not an implemented pipeline or an empirical relationship."
+      },
+      "limitation": "Derivar solo desde eventos disponibles al corte o planes explícitos."
+    },
+    {
+      "source_id": "OUTCOME",
+      "kind": "SYNTHETIC_ASSUMPTION",
+      "status": "POST_CUTOFF_LABEL_ONLY",
+      "dictionary_binding": {
+        "kind": "OBSERVED_SYNTHETIC_OUTCOME_OR_FUTURE_AUDITED_LABEL",
+        "physical": [
+          "Sale.saleDate",
+          "Sale.status",
+          "SaleItem.quantity"
+        ],
+        "state": "Label available after month close and observation certification. Late revisions require a new version, not silent rewriting."
+      },
+      "limitation": "No certificado como historia de RepuestoPro. No completar con valores actuales de Neon."
+    },
+    {
+      "source_id": "MODEL_OUTPUT",
+      "kind": "FUTURE_INFERENCE",
+      "status": "BLOCKED_UNTIL_ERIKA_RELEASE",
+      "dictionary_binding": {
+        "kind": "FUTURE_APPROVED_INFERENCE_OUTPUT",
+        "physical": [],
+        "state": "Predictions, metrics and replenishment outputs never become features or observed sales automatically."
+      },
+      "limitation": "No hay artefacto ampliado aceptado. El bosque 2.2 usa cinco variables y no soporta efectos de precio."
+    }
+  ],
+  "external_sources": [
+    {
+      "source_id": "automotive_spare_parts_demand",
+      "manifest": {
+        "path": "sources/manifests/automotive_spare_parts_demand/sha256-190bf444c8dca0888e126613.json",
+        "sha256": "aef94d2f83a61c36d714d4bb38869810c19ead0b5d1e3c3d939a1eb17cd9bd4e"
+      },
+      "decision": "BLOCKED_LICENSE",
+      "processing_status": "PENDING_SOURCE_REVIEW",
+      "license_status": "UNKNOWN",
+      "academic_use_status": "UNKNOWN",
+      "allowed_here": false,
+      "use": "Aggregate reference only. No copied transactions, identity matching or causal inference. Private academic review for Kaggle sources."
+    },
+    {
+      "source_id": "corporacion_favorita",
+      "manifest": {
+        "path": "sources/manifests/corporacion_favorita/sha256-b69a1fa872a46632efa647d8.json",
+        "sha256": "a137720994f2f6e14b32af310e1a4d8a620f10866829b6d11c08ec77969b11a4"
+      },
+      "decision": "APPROVED_ACADEMIC_ONLY",
+      "processing_status": "APPROVED_FOR_PROFILING",
+      "license_status": "VERIFIED",
+      "academic_use_status": "VERIFIED",
+      "allowed_here": true,
+      "use": "Aggregate reference only. No copied transactions, identity matching or causal inference. Private academic review for Kaggle sources."
+    },
+    {
+      "source_id": "m5_walmart",
+      "manifest": {
+        "path": "sources/manifests/m5_walmart/sha256-aa5d519ab121b284a7b07f4d.json",
+        "sha256": "29acc6dd2309d1a8597a63d8108197546df5da4c54eb75db7134eb3215d4451f"
+      },
+      "decision": "APPROVED_ACADEMIC_ONLY",
+      "processing_status": "APPROVED_FOR_PROFILING",
+      "license_status": "VERIFIED",
+      "academic_use_status": "VERIFIED",
+      "allowed_here": true,
+      "use": "Aggregate reference only. No copied transactions, identity matching or causal inference. Private academic review for Kaggle sources."
+    },
+    {
+      "source_id": "monash_car_parts",
+      "manifest": {
+        "path": "sources/manifests/monash_car_parts/sha256-d69d3412b9c45248f1c9c441.json",
+        "sha256": "7ff81c699c254fb3f895dda31ecffe58702ee0dc5daabeba9c3841946e39aba2"
+      },
+      "decision": "APPROVED_ACADEMIC_ONLY",
+      "processing_status": "APPROVED_FOR_PROFILING",
+      "license_status": "VERIFIED",
+      "academic_use_status": "VERIFIED",
+      "allowed_here": true,
+      "use": "Aggregate reference only. No copied transactions, identity matching or causal inference. Private academic review for Kaggle sources."
+    },
+    {
+      "source_id": "uci_online_retail_ii",
+      "manifest": {
+        "path": "sources/manifests/uci_online_retail_ii/sha256-4dc26799b20addb7559df7e2.json",
+        "sha256": "d60f34627301fa58daa4fc1406c550c74b7d3458605a77cd32b19113d40f5e00"
+      },
+      "decision": "APPROVED_ACADEMIC_ONLY",
+      "processing_status": "APPROVED_FOR_PROFILING",
+      "license_status": "VERIFIED",
+      "academic_use_status": "VERIFIED",
+      "allowed_here": true,
+      "use": "Aggregate reference only. No copied transactions, identity matching or causal inference. Private academic review for Kaggle sources."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "PRICE_RESPONSE",
+      "finding": "Sensitivity to retail and wholesale relative price changes is a controlled simulation assumption, not an estimated causal elasticity.",
+      "decision": "Profiles 0, -0.4, -0.8, -1.2. Individual profile remains metadata, never a feature.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "FX",
+      "finding": "No approved real historical Bs/USD source.",
+      "decision": "Synthetic values and quote ages. A cost or FX change alone does not mechanically change sales if customer prices and stock stay unchanged.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "COST",
+      "finding": "Landed cost differs from original import cost.",
+      "decision": "USD cost multiplied by explicit Bs/USD plus freight and other Bs. Reject prices below cost, never silently raise prices.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "LOGISTICS",
+      "finding": "Supplier and internal calendar-day times have no empirical own history.",
+      "decision": "Explicit synthetic scenarios. Arrival is not receipt. Only confirmed receipt adds sellable stock. Inspection precedes resale of returns.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "MODE",
+      "finding": "UCI large orders do not certify wholesale/minor labels.",
+      "decision": "POR_MENOR and POR_MAYOR assigned explicitly by simulation, with cost <= wholesale <= retail.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "STOCK",
+      "finding": "No own as-of historical availability source is certified.",
+      "decision": "Generate and reconcile stock and receipts independently. Exclude quarantine and transit from opening sellable stock.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "COMMITMENTS",
+      "finding": "Committed orders may overlap forecast sales.",
+      "decision": "Repos uses max(forecast, commitments), not their unqualified sum. No causal confidence is implied.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "RETURNS",
+      "finding": "Gross units cannot be made net by negative transactions.",
+      "decision": "Separate future cancellations/returns metadata. No negative target. Do not copy UCI or Favorita fractional quantities.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "TEMPORAL",
+      "finding": "Current 2.2 TEST has been consumed.",
+      "decision": "New release uses new synthetic worlds and future simulated calendar, with family membership confined to one split. No claim that future dates are observed sales.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "MISSING",
+      "finding": "Missing is not zero.",
+      "decision": "Cold start, incomplete month and absent quote are explicit abstention/partial cases, not eligible training rows with invented zeros.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "SOURCE_SCOPE",
+      "finding": "M5/Favorita are other retail domains.",
+      "decision": "M5 overlapping histories not concatenated. Favorita absence not zero and no unit price. Automotive remains blocked.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    },
+    {
+      "id": "REAL_WORLD",
+      "finding": "Synthetic validation is technical, not commercial.",
+      "decision": "No guarantee that a price increase reduces real demand by the assumed amount. No 100% forecasting claim.",
+      "evidence_kind": "EXPLICIT_ACADEMIC_ASSUMPTION_NOT_EMPIRICAL_ESTIMATE"
+    }
+  ],
+  "real_data_requirements": [
+    "Dated price and landed-cost events with recordedAt and effectiveAt",
+    "Identified FX provider, rate kind, observation and availability times",
+    "Stock, quarantine, receipt and reservation ledger with as-of versions",
+    "Order modality, outstanding and fulfilled quantities as-of cutoff",
+    "Promotion and supplier lead-time history, not inferred from absent sales"
+  ],
+  "human_decisions_remaining": [
+    "Automotive dataset-specific permission",
+    "Business tolerances and real-world economic validation",
+    "Joint acceptance of scenario API and new model before activation"
+  ]
+}

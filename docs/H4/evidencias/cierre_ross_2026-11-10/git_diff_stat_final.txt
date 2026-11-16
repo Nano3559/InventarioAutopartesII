@@ -1,0 +1,13 @@
+ docs/H4/H4_CHECKLIST_VALIDACION_ROSS.md        |  6 +--
+ docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md | 63 +++++++++++++++++++++++++-
+ docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.csv       | 16 +++----
+ docs/H4/H4_MATRIZ_CUMPLIMIENTO_FINAL.md        | 28 ++++++------
+ docs/H4/PROMPTS_MODELO_PREDICTIVO_H4.md        | 14 ++++++
+ ml/demand/README.md                            |  8 +++-
+ ml/demand/model_comparison.py                  |  9 ++--
+ ml/demand/pair_contexts.py                     |  1 +
+ ml/demand/streamlit_app.py                     |  2 +
+ ml/demand/tests/test_pair_contexts.py          |  2 +-
+ ml/demand/ui_analysis.py                       |  8 +++-
+ ml/demand/ui_panels.py                         | 54 ++++++++++++++++++++--
+ 12 files changed, 173 insertions(+), 38 deletions(-)

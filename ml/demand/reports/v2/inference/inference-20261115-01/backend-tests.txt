@@ -1,0 +1,13 @@
+✔ predicciones rechaza sesión ausente y roles no ADMIN antes de consultar (373.9423ms)
+✔ ADMIN puede consultar catálogo y predicción (63.8335ms)
+✔ IDs inválidos no llegan a Python (51.5977ms)
+✔ selección inexistente es 400 y fallo de modelo es 503 sin filtrar detalles (11.3571ms)
+✔ HTTP → Node → Python → V1: catálogo y predicción reales sin BD ni entrenamiento (3190.2486ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4378.0137

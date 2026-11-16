@@ -1,0 +1,85 @@
+{
+  "schema_version": "source-access-review-1",
+  "recorded_at": "2026-11-15T16:11:41.186929+00:00",
+  "evidence_basis": "Texto de reglas aportado por Ross, seguido de confirmación expresa en este chat de página oficial, aceptación de reglas y descarga desde su cuenta. No verificación independiente de su cuenta.",
+  "m5": {
+    "source_id": "m5_walmart",
+    "official_rules_url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy/rules",
+    "rules_version_supplied": "Updated March 24, 2020",
+    "confirmed_by": "ROSS",
+    "rules_accepted": true,
+    "downloaded_from_own_account": true,
+    "confirmation_date": "2026-11-15",
+    "actual_download_date": null,
+    "binary_identity_with_provider": "NOT_INDEPENDENTLY_VERIFIED",
+    "license_status": "VERIFIED",
+    "academic_use_status": "VERIFIED",
+    "commercial_use_status": "RESTRICTED",
+    "redistribution_status": "RESTRICTED",
+    "acquisition_verification_status": "PARTIALLY_VERIFIED",
+    "profiling_decision": "APPROVED_ACADEMIC_ONLY",
+    "authorized_user_scope": [
+      "ROSS"
+    ],
+    "other_users_acceptance": "NOT_CONFIRMED",
+    "execution_authorized_in_this_task": false,
+    "clauses": {
+      "specific_terms": "Competition Use, Academic, Non-Commercial Use",
+      "B.7.A": "Uso de datos para fines no comerciales, incluidos investigación académica y educación.",
+      "B.7.B": "Medidas para impedir acceso a personas que no aceptaron las reglas. Restricción de transmisión, publicación y redistribución a terceros no participantes.",
+      "B.8.A": "Prohibición de compartir código privadamente entre equipos durante el periodo de competición. No tratar ese periodo como indefinido.",
+      "B.8.B": "La cláusula de publicación de código exige compartirlo en Kaggle en los canales asociados. No es un permiso de redistribución de datos.",
+      "A.1": "La licencia abierta de la entrega ganadora no licencia los datos originales.",
+      "B.5": "No se exige compra para entrar o ganar. No se documenta una tarifa por el uso académico descrito."
+    },
+    "remaining_limits": [
+      "No publicar RAW, extractos o tablas derivadas que redistribuyan los datos sin permiso aplicable.",
+      "No habilitar uso comercial del modelo o aplicación basándose solo en el permiso académico.",
+      "La publicación de modelos, parámetros y un nuevo dataset sintético derivado necesita revisión de su alcance. No se presume automáticamente permitida ni prohibida.",
+      "La fecha de descarga permanece desconocida. No se afirma aceptación de Erika ni del docente."
+    ]
+  },
+  "favorita": {
+    "status": "BLOCKED_ACCESS_CONFIRMATION",
+    "official_rules_url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/rules",
+    "research_result": "Las reglas primarias indexadas confirman uso académico no comercial tras aceptar las condiciones, restricciones de acceso y datos. La confirmación de M5 no cubre Favorita.",
+    "required_user_confirmation": [
+      "Confirmar si los archivos proceden de favorita-grocery-sales-forecasting, competición de 2017, no Store Sales de 2021.",
+      "Confirmar si Ross aceptó las reglas de esa competición y descargó desde su cuenta.",
+      "Identificar quién tendrá acceso a sus datos y verificar las condiciones aplicables a esas personas."
+    ],
+    "fees": "Las reglas oficiales indican que no se exige compra para participar o ganar. No se identificó una tarifa por el uso académico descrito. Esto no amplía los permisos."
+  },
+  "automotive": {
+    "status": "BLOCKED_LICENSE",
+    "primary_documentation_checked": [
+      "https://raw.githubusercontent.com/StefanoDamato/fable.intermittent/main/man/auto.Rd",
+      "https://github.com/canerturkmen/gluon-ts/tree/intermittent-datasets/datasets",
+      "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0259764"
+    ],
+    "research_result": "Se confirmó documentación de Auto y su procedencia. No se encontró una declaración específica que aclare permisos y condiciones económicas de Auto o RAF. No se atribuye la licencia del software a los datos.",
+    "next_action": "Solicitar al responsable de los datos una declaración sobre análisis académico local, publicación de estadísticas o parámetros, datos sintéticos derivados, atribución y cualquier tarifa. No se envió ninguna solicitud.",
+    "suggested_request": "Somos estudiantes y queremos usar Auto como referencia de patrones para un simulador académico, sin redistribuir los originales. ¿Qué licencia aplica a los datos? ¿Permite análisis académico, publicación de estadísticas agregadas, parámetros, código, modelos o datos sintéticos derivados? ¿Qué atribución, restricciones o tarifas corresponden?",
+    "fees": "UNKNOWN. No se contrató ni compró nada."
+  },
+  "current_source_eligibility": {
+    "approved_for_future_academic_review": [
+      "monash_car_parts",
+      "uci_online_retail_ii",
+      "m5_walmart"
+    ],
+    "blocked": [
+      "automotive_spare_parts_demand",
+      "corporacion_favorita"
+    ]
+  },
+  "no_actions": [
+    "No descarga o procesamiento de datasets",
+    "No entrenamiento",
+    "No RAW modificado",
+    "No Neon",
+    "No nuevos Markdown",
+    "No aceptación de términos ni contacto a terceros por el asistente"
+  ],
+  "roles": "Ross: frontend y dataset. Erika: backend. No se realizan tareas backend."
+}

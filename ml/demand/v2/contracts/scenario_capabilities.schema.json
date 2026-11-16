@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proposed capabilities response for Erika E01, Ross frontend adapter",
+  "description": "Design contract, not proof of an implemented backend endpoint. No availability or model support may be invented.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "contractVersion": {
+      "const": "demand-scenarios-1.0.0"
+    },
+    "status": {
+      "const": "AVAILABLE"
+    },
+    "supportedChanges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "history",
+          "prices",
+          "quote",
+          "cost",
+          "stock",
+          "orders",
+          "logistics"
+        ]
+      }
+    },
+    "snapshots": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "baseSnapshotId": {
+            "$ref": "#/$defs/token"
+          },
+          "productId": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000
+          },
+          "locationId": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000
+          },
+          "targetMonth": {
+            "$ref": "#/$defs/month"
+          },
+          "productName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "locationName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "baseSnapshotId",
+          "productId",
+          "locationId",
+          "targetMonth",
+          "productName",
+          "locationName"
+        ]
+      }
+    },
+    "artifactSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "datasetVersion": {
+      "$ref": "#/$defs/token"
+    },
+    "modelVersion": {
+      "$ref": "#/$defs/token"
+    },
+    "policyVersion": {
+      "$ref": "#/$defs/token"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "status",
+    "supportedChanges",
+    "snapshots",
+    "artifactSha256",
+    "datasetVersion",
+    "modelVersion",
+    "policyVersion"
+  ],
+  "$defs": {
+    "token": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-11-16T04:33:59.026837+00:00",
+  "scope": "Final frontend resilience and actual browser verification",
+  "fixes": [
+    "Stable idempotency key across retries, renewed after edits or selection changes",
+    "Human-readable economic and temporal API errors",
+    "Duplicate product names disambiguated by their actual Product.id"
+  ],
+  "frontendTests": {
+    "passed": 277,
+    "failed": 0
+  },
+  "frontendBuild": "PASS",
+  "unchangedBackendTestsPreviouslyPassed": 184,
+  "unchangedPythonScenarioSuitesPreviouslyPassed": 68,
+  "combinedEvidencePassed": 529,
+  "protectedFilesUnchanged": 199,
+  "protectedChanges": [],
+  "newMarkdown": false,
+  "modelRetrained": false,
+  "testScoredAgain": false,
+  "neonWrites": false,
+  "gitUsed": false,
+  "realBrowserVerification": "AWAITING_USER_MANUAL_ADMIN_SIGN_IN",
+  "visibleBraveWindow": 3160160,
+  "minimizedBraveWindow": 262574,
+  "authenticationNotAutomated": true,
+  "changedFiles": [
+    "frontend/src/services/scenarioView.ts",
+    "frontend/src/components/DemandScenarioPanel.tsx",
+    "frontend/src/components/DemandScenarioPanel.test.tsx"
+  ]
+}

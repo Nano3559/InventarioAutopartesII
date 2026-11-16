@@ -1,0 +1,113 @@
+{
+  "status": "EXPLORATORY_COMPARISON_COMPLETE_SELECTION_PENDING",
+  "run_id": "alternatives-20261115-01",
+  "dataset_origin": "SYNTHETIC",
+  "test_loaded": false,
+  "test_evaluated": false,
+  "active_model_changed": false,
+  "commercial_accuracy_certified": false,
+  "actual_forest_fits": 25,
+  "actual_preprocessor_fits": 25,
+  "cv_option_evaluations": 42,
+  "outer_references": 9,
+  "saved_options": 8,
+  "all_saved_options_reloaded_exactly": true,
+  "tests": {
+    "run": 46,
+    "passed": 46,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "new_contract_tests": 8,
+    "new_artifact_tests": 9,
+    "initial_contract_test_note": "One exact floating-point equality assertion differed by 1.4e-14. Replaced with numerical tolerance 1e-12 before training. Initial and final logs preserved.",
+    "additional_regressor_fits_in_tests": 0
+  },
+  "integrity": {
+    "data": {
+      "previous_files_checked": 59,
+      "unchanged": true
+    },
+    "reports": {
+      "previous_files_checked": 91,
+      "unchanged": true
+    },
+    "models": {
+      "previous_files_checked": 5,
+      "unchanged": true
+    },
+    "candidates": {
+      "previous_files_checked": 5,
+      "unchanged": true
+    },
+    "decisions": {
+      "previous_files_checked": 4,
+      "unchanged": true
+    },
+    "lifecycle": {
+      "previous_files_checked": 13,
+      "unchanged": true
+    },
+    "raw": {
+      "previous_files_checked": 136,
+      "unchanged": true
+    },
+    "manifests": {
+      "previous_files_checked": 5,
+      "unchanged": true
+    },
+    "protected": {
+      "previous_files_checked": 44,
+      "unchanged": true
+    }
+  },
+  "new_models": [
+    "ml/demand/models/v2/alternatives-20261115-01/absolute_forest-d4.joblib",
+    "ml/demand/models/v2/alternatives-20261115-01/derived_forest-d4.joblib",
+    "ml/demand/models/v2/alternatives-20261115-01/lag1.joblib",
+    "ml/demand/models/v2/alternatives-20261115-01/low_median_routing.joblib",
+    "ml/demand/models/v2/alternatives-20261115-01/manifest.json",
+    "ml/demand/models/v2/alternatives-20261115-01/median3.joblib",
+    "ml/demand/models/v2/alternatives-20261115-01/residual_forest-d4.joblib",
+    "ml/demand/models/v2/alternatives-20261115-01/tsb-a0.1-b0.1.joblib",
+    "ml/demand/models/v2/alternatives-20261115-01/weighted_recent.joblib"
+  ],
+  "no_new_markdown": true,
+  "neon_used": false,
+  "git_used": false,
+  "best_mae_option": "absolute_forest-d4",
+  "balanced_alternative": "low_median_routing",
+  "rmse_tradeoff_vs_previous_percent": 3.4936887024004992,
+  "environment": {
+    "python": "3.11.9",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "joblib": "1.6.0"
+  },
+  "implementation_sha256": "07f8c69c957cb794a534b031e9c718b00a300ea6d4615d3ce92adc24505ffc33",
+  "plan_sha256": "3cbca2e79fa0557e17e3a53f6840b5c5eaa5a4d8b58643521e3acd54c88be4a0",
+  "evidence_hashes": {
+    "before.json": "89bb0269edfb84e5415a76f9b233832383eb8833f129d3aebdb2cae59945f41d",
+    "comparison.json": "9ef68e854f37941d788e7970adec4f2a4a675473e3bbfd9dcff90381c5b92e52",
+    "execution.txt": "e0661291f32cd97c8217c2faee30ddd333b6928d4eaf5138041f56f249db49ca",
+    "execution_audit.json": "1aff1502e416a0ecbb29a2a2ff596110e258a9e48a3541d7559456a22c10d3fc",
+    "experiments.csv": "6eaebac5c79ff8da00def3ef2346831cae6922d6e305d61c08fd651a37362017",
+    "frozen_plan.json": "3cbca2e79fa0557e17e3a53f6840b5c5eaa5a4d8b58643521e3acd54c88be4a0",
+    "large_error_examples.json": "713d14dab01075270b1171ecebd06365c32565a97dbd553022131aff7be1a843",
+    "product_comparison.csv": "0e3ac811db69cdcf7e0bfb2cd0d2812b19be3328a35eb7038e0b83237dc00ff1",
+    "tests-contract-final.txt": "6af9231dfc09b731e68e8ff966667870ee48ee58607243ee89436ab0353b0c5f",
+    "tests-contract.txt": "641a5ff6232572fe093cc0f69f2d0936bfe1d58de6bd02afeff734bb0e755c0c",
+    "tests-final-recheck.txt": "b8c96d1acb76279254287f7843afc70c19fc6b0aedeec39005f6786f0d2f5015",
+    "tests-final.txt": "ddc526fbba37fa624365486a7263dff4c7c414ac1d909a7b21c37fcdb4e11eec",
+    "tradeoff_review.json": "ebafd70db7dcf5d000b618032ab9c4935f6006b79229ee23c3a242bb20e02f4d",
+    "validation_comparison.csv": "fc2d4590f7b20bb2ea23e40a5900a9eb1ffc8f24181a94b5b42f01d975402913",
+    "validation_predictions.json": "419fad67b0f42a5f290d3530290cae7a80a9659223e545f9b7fe6f16392be306"
+  },
+  "remaining": [
+    "Choose MAE versus large-error risk and acceptable subgroup tradeoffs before final acceptance.",
+    "Reused VALIDATION is exploratory. No independent performance claim.",
+    "Joint inference/artifact review with Erika.",
+    "TEST only after a frozen selection and explicit authorization."
+  ]
+}

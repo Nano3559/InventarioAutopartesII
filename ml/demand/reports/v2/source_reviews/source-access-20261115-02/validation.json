@@ -1,0 +1,31 @@
+{
+  "tests": {
+    "passed": 16,
+    "failed": 0,
+    "suites": [
+      "tests.test_v2_provenance",
+      "tests.test_v2_structure"
+    ]
+  },
+  "protected_files_checked": 398,
+  "protected_changes": [],
+  "raw_files_unchanged": 136,
+  "data_files_unchanged": 59,
+  "model_files_unchanged": 14,
+  "historical_reports_unchanged": 164,
+  "processing_performed": false,
+  "neon_used": false,
+  "new_markdown_files": 0,
+  "modified": [
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/tests/test_v2_provenance.py",
+    "ml/demand/sources/manifests/m5_walmart/sha256-aa5d519ab121b284a7b07f4d.json"
+  ],
+  "new": [
+    "ml/demand/reports/v2/source_reviews/source-access-20261115-02/review.json",
+    "ml/demand/reports/v2/source_reviews/source-access-20261115-02/validation.json",
+    "ml/demand/tmp/source-access-20261115-02/before.json"
+  ],
+  "git_commands_executed": false
+}

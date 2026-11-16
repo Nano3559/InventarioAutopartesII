@@ -1,0 +1,158 @@
+{
+  "snapshots": {
+    "Product": {
+      "columns": [
+        "id",
+        "itemCode",
+        "manufacturer",
+        "name",
+        "brand",
+        "model",
+        "year",
+        "detail",
+        "oemCode",
+        "factoryCode",
+        "image",
+        "price1",
+        "price2",
+        "wholesalePrice",
+        "cost",
+        "categoryId",
+        "createdAt",
+        "updatedAt",
+        "detalles"
+      ],
+      "sha256": "1fff21f792363bb3c6d046e07211f338c277de26398551b78ebd7722423a977f"
+    },
+    "Inventory": {
+      "columns": [
+        "id",
+        "productId",
+        "locationId",
+        "stock",
+        "minStock"
+      ],
+      "sha256": "6b34a24274af30776c27fd44c25195bf747e7b4e6300699d893363b817ec9a84"
+    },
+    "Sale": {
+      "columns": [
+        "id",
+        "saleDate",
+        "total",
+        "type",
+        "userId",
+        "locationId",
+        "customerId",
+        "createdAt",
+        "updatedAt",
+        "seller",
+        "paraQuien",
+        "lugarEntrega",
+        "datosFactura",
+        "formaPago"
+      ],
+      "sha256": "fb791c0e8d4c1847ffa94ff1bece796ca189628e44eae802ea81fb016fe55a0d"
+    },
+    "SaleItem": {
+      "columns": [
+        "id",
+        "saleId",
+        "productId",
+        "quantity",
+        "unitPrice",
+        "subtotal"
+      ],
+      "sha256": "6050a8de21ca029d59b499f2da3c28c153a52c567edc58d5b80a490f00a81859"
+    },
+    "ProductRequest": {
+      "columns": [
+        "id",
+        "productId",
+        "quantity",
+        "requestedById",
+        "locationId",
+        "status",
+        "date",
+        "createdAt",
+        "updatedAt",
+        "note",
+        "expectedDate"
+      ],
+      "sha256": "9bc55e6ba27c24cc8a391185af374ca12ed574ec3be95e8ac6f843f1af125c2f"
+    },
+    "User": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password",
+        "roleId",
+        "locationId",
+        "createdAt",
+        "updatedAt",
+        "columnPrefs"
+      ],
+      "sha256": "553850b34bac7c4989c41c1c4018775316affdd644812077e0003a917f17e0ed"
+    }
+  },
+  "results": {
+    "ADMIN-null": {
+      "status": 200,
+      "summary": {
+        "totalProducts": 14,
+        "productsWithoutStock": 2,
+        "productsWithLowStock": 12,
+        "salesToday": 2,
+        "salesTodayTotal": 360,
+        "salesMonth": 2,
+        "salesMonthTotal": 360,
+        "pendingRequests": 12,
+        "criticalStock": 12
+      }
+    },
+    "INVENTARIO-null": {
+      "status": 200,
+      "summary": {
+        "totalProducts": 14,
+        "productsWithoutStock": 2,
+        "productsWithLowStock": 12,
+        "salesToday": 2,
+        "salesTodayTotal": 360,
+        "salesMonth": 2,
+        "salesMonthTotal": 360,
+        "pendingRequests": 12,
+        "criticalStock": 12
+      }
+    },
+    "TIENDA-1": {
+      "status": 200,
+      "summary": {
+        "totalProducts": 12,
+        "productsWithoutStock": 0,
+        "productsWithLowStock": 12,
+        "salesToday": 1,
+        "salesTodayTotal": 120,
+        "salesMonth": 1,
+        "salesMonthTotal": 120,
+        "pendingRequests": 12,
+        "criticalStock": 12
+      }
+    },
+    "TIENDA-2": {
+      "status": 200,
+      "summary": {
+        "totalProducts": 1,
+        "productsWithoutStock": 1,
+        "productsWithLowStock": 0,
+        "salesToday": 1,
+        "salesTodayTotal": 240,
+        "salesMonth": 1,
+        "salesMonthTotal": 240,
+        "pendingRequests": 0,
+        "criticalStock": 0
+      }
+    }
+  },
+  "fixture_only": true,
+  "neon_used": false
+}

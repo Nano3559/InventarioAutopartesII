@@ -1,0 +1,280 @@
+{
+  "version": "v2-inference-2.1-1",
+  "selection_sha256": "e4881d38ec32a087904d499fc122e14953cc23946b0c4123e6ce15630ee9f3e0",
+  "catalog_sha256": "5f0633e93b38793caf8ec97f315947864f400210c612654780a464b778980218",
+  "frozen_test_report_sha256": "c7672cecd1fa0a589294478f9dda8c5936ec5ee45c371bd53510b191053bcabd",
+  "approved_gate_sha256": "d6437a766b63a2a1620fc2a41be7cf3e534c45b15b33a7f070319f70c8407c4c",
+  "mode": "ACADEMIC_REPLAY",
+  "replay_window": [
+    "2026-04",
+    "2026-06"
+  ],
+  "required_transport_columns": 17,
+  "selected_model_features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos",
+    "proporcion_por_mayor_mes_anterior",
+    "cobertura_modalidad_mes_anterior",
+    "precio_menor_cierre_anterior_bs",
+    "precio_mayor_cierre_anterior_bs",
+    "variacion_precio_menor_conocida",
+    "variacion_precio_mayor_conocida",
+    "tipo_cambio_bs_usd_conocido",
+    "variacion_tipo_cambio_ultimo_mes",
+    "antiguedad_tipo_cambio_dias"
+  ],
+  "support_only_columns": [
+    "dias_sin_stock_mes_anterior",
+    "cobertura_stock_mes_anterior",
+    "categoryId"
+  ],
+  "units": {
+    "quantity": "nonnegative integer units",
+    "prices": "BOB",
+    "exchange": "BOB per USD",
+    "rates": "fraction not percentage",
+    "quote_age": "days"
+  },
+  "request_keys": [
+    "contractVersion",
+    "productId",
+    "locationId",
+    "targetMonth",
+    "historySnapshotId"
+  ],
+  "reasons": [
+    "UNKNOWN_ENTITY",
+    "UNAVAILABLE_REQUIRED_FEATURE",
+    "MODEL_UNAVAILABLE"
+  ],
+  "no_public_raw_features": true,
+  "no_live_source_approved": true,
+  "no_training": true,
+  "no_test_loader": true,
+  "v1_api_unchanged": true,
+  "api_v2_stage": "V2-10",
+  "request_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "contractVersion",
+      "productId",
+      "locationId",
+      "targetMonth",
+      "historySnapshotId"
+    ],
+    "properties": {
+      "contractVersion": {
+        "const": "v2-inference-2.1-1"
+      },
+      "productId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647
+      },
+      "locationId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647
+      },
+      "targetMonth": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+      },
+      "historySnapshotId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$"
+      }
+    }
+  },
+  "response_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "status",
+      "contractVersion",
+      "productId",
+      "locationId",
+      "targetMonth",
+      "issuedAt",
+      "historyCutoff",
+      "horizonMonths",
+      "prediction",
+      "modelVersion",
+      "datasetVersion",
+      "buildId",
+      "historySnapshotId",
+      "origin",
+      "mode",
+      "selectionId",
+      "artifactSha256",
+      "policyVersion",
+      "warnings",
+      "evaluationContext"
+    ],
+    "properties": {
+      "status": {
+        "enum": [
+          "OK",
+          "ABSTAINED"
+        ]
+      },
+      "contractVersion": {
+        "const": "v2-inference-2.1-1"
+      },
+      "productId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647
+      },
+      "locationId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2147483647
+      },
+      "targetMonth": {
+        "type": "string"
+      },
+      "issuedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "historyCutoff": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "horizonMonths": {
+        "const": 1
+      },
+      "prediction": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0
+      },
+      "modelVersion": {
+        "const": "accepted-absolute-2.1-20261115-01"
+      },
+      "datasetVersion": {
+        "const": "2.1.0"
+      },
+      "buildId": {
+        "const": "expanded-20261115-01"
+      },
+      "historySnapshotId": {
+        "type": "string"
+      },
+      "origin": {
+        "const": "SYNTHETIC"
+      },
+      "mode": {
+        "const": "ACADEMIC_REPLAY"
+      },
+      "selectionId": {
+        "const": "accepted-absolute-2.1-20261115-01"
+      },
+      "artifactSha256": {
+        "const": "e53cdb53f296b38098639f7dd7d748d5ecd088ea6353993d8d3f911ba32b6dfc"
+      },
+      "policyVersion": {
+        "const": "NONNEGATIVE_V1"
+      },
+      "warnings": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string"
+        }
+      },
+      "evaluationContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "origin",
+          "split",
+          "mae",
+          "rmse",
+          "r2"
+        ],
+        "properties": {
+          "origin": {
+            "const": "SYNTHETIC"
+          },
+          "split": {
+            "const": "TEST"
+          },
+          "mae": {
+            "type": "number",
+            "minimum": 0
+          },
+          "rmse": {
+            "type": "number",
+            "minimum": 0
+          },
+          "r2": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      },
+      "reason": {
+        "enum": [
+          "UNKNOWN_ENTITY",
+          "UNAVAILABLE_REQUIRED_FEATURE",
+          "MODEL_UNAVAILABLE"
+        ]
+      },
+      "featureSnapshotSha256": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "status": {
+              "const": "OK"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "featureSnapshotSha256"
+          ],
+          "properties": {
+            "prediction": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "not": {
+            "required": [
+              "reason"
+            ]
+          }
+        },
+        "else": {
+          "required": [
+            "reason"
+          ],
+          "properties": {
+            "prediction": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "provider_authority": "Internal approved build replay only. Backend must resolve approved snapshots server-side. This stage provides no public raw-feature endpoint or live database provider.",
+  "availability_evidence": "Pinned CSV feature_cutoff_at plus immutable build-quality gate, not fabricated per-column timestamps or real-business certification."
+}

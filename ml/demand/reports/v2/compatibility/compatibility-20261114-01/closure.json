@@ -1,0 +1,91 @@
+{
+  "recorded_at": "2026-11-14T22:23:22.998381+00:00",
+  "stage": "V2-04D_AND_V2-04",
+  "status": "DESIGN_COMPLETED_DATASET_NOT_CREATED",
+  "dictionary": {
+    "path": "ml/demand/v2/contracts/dataset_columns.v2.json",
+    "sha256": "da76a5c9eac1742a71546c2ff4ceca432c5a80ed1dcf8f9e9d8332cd11fee8b1",
+    "columns": 24,
+    "roles": {
+      "IDENTIFIER": 3,
+      "FEATURE": 17,
+      "TARGET": 1,
+      "CONTROL": 3
+    },
+    "base_columns": 25,
+    "scenario_columns": 10
+  },
+  "compatibility": {
+    "path": "ml/demand/reports/v2/compatibility/compatibility-20261114-01/source_compatibility_matrix.json",
+    "sha256": "2fd9431012777b65a164dd11c4b19e3570b93bfafe808219e0c8ee1debb0cd71",
+    "sources": [
+      "monash_car_parts",
+      "uci_online_retail_ii"
+    ],
+    "direct_row_combination_allowed": false,
+    "calibration_performed": false
+  },
+  "tests": {
+    "executed": 58,
+    "passed": 58,
+    "failed": 0,
+    "skipped": 0,
+    "log": "ml/demand/tmp/compatibility-20261114-01/tests-final.txt"
+  },
+  "integrity": {
+    "protected": {
+      "checked": 44,
+      "unchanged": true,
+      "changed": []
+    },
+    "raw": {
+      "checked": 136,
+      "unchanged": true,
+      "changed": []
+    },
+    "previous_reports": {
+      "checked": 38,
+      "unchanged": true,
+      "changed": []
+    },
+    "source_manifests": {
+      "checked": 5,
+      "unchanged": true,
+      "changed": []
+    }
+  },
+  "raw_inventory_unchanged": true,
+  "empty_publication_directories": {
+    "sources/external_curated": true,
+    "data/repuestopro_v2": true,
+    "models/v2": true
+  },
+  "files_created": [
+    "ml/demand/v2/contracts/dataset_columns.v2.json",
+    "ml/demand/tests/test_v2_dictionary.py",
+    "ml/demand/reports/v2/compatibility/compatibility-20261114-01/source_compatibility_matrix.json",
+    "ml/demand/reports/v2/compatibility/compatibility-20261114-01/closure.json"
+  ],
+  "files_modified": [
+    "ml/demand/v2/contracts/dataset_schema.schema.json",
+    "ml/demand/v2/contracts/candidate_groups.json",
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/v2/structure.py",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "next_stage": "V2-05 escenarios y supuestos. No iniciada.",
+  "dataset_v2_created": false,
+  "trained": false,
+  "raw_modified": false,
+  "curated_created": false,
+  "neon_used": false,
+  "new_markdown": false,
+  "git_commands": false,
+  "limitations": [
+    "Diccionario y controles de metadata no equivalen a validación de filas todavía inexistentes.",
+    "No se estimó elasticidad, cotización o plazos reales.",
+    "No se atribuye revisión personal de Erika. La consistencia con backend y modelo real se comprobará después.",
+    "El TEST nuevo no existe. Debe reservarse antes de seleccionar modelos."
+  ]
+}

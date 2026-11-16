@@ -1,6 +1,6 @@
 # H4 — Checklist de aceptación manual de Ross
 
-Estado: **pendiente; ninguna casilla acredita trabajo ya realizado**. Complementa la auditoría T21; AppTest no sustituye esta revisión. Registrar fecha/hora, commit o snapshot, versión de Python/Streamlit, ruta/entorno, viewport y persona que valida. Adjuntar capturas reales sin secretos. No activar desde JSON, entrenar V1 ni reevaluar TEST oficial.
+Estado: **aceptación manual del equipo pendiente**. La revisión técnica del 10 de noviembre y sus capturas reales están en la sección 20 de la guía oficial y en evidencias/cierre_ross_2026-11-10. Se verificaron escritorio 1366 × 900, pantalla estrecha 390 × 844, modelos reales, seis cierres, descarga y rollback. Sus 473 pruebas no sustituyen la aceptación personal de los estudiantes. Las casillas siguientes se mantienen como recorrido de aceptación del equipo, sin fingir que sus integrantes lo completaron.
 
 ## Preparación y portabilidad
 
@@ -31,7 +31,7 @@ La URL debe ser la que muestre el proceso local. El runner no requiere entrenar 
 
 ## Referencias — R23/R30
 
-**Falta integración en aplicación normal:** existe el adaptador `ui_panels.compare_reference_models`, pero no una llamada en `streamlit_app.py`. Cualquier cambio de conexión debe realizarse en una tarea autorizada y conservar contratos; este checklist no implementa la conexión.
+**Integración técnica completada el 10 de noviembre:** la aplicación normal invoca render_reference_predictions y utiliza compare_reference_models. La revisión guardó una captura con las tres salidas reales. Este apartado queda para aceptación y repetición por el equipo, no como una tarea de conexión de código pendiente.
 
 - [ ] Conectar una acción/presentación explícita para el mismo par/mes y las mismas cinco features, usando contrato T20 y adaptador existente.
 - [ ] Mostrar baseline lag1 sin depender de ACTIVE; identificar LinearRegression como REFERENCE no promovible; RF V1 únicamente si está ACTIVE en ese par.
@@ -61,7 +61,7 @@ La URL debe ser la que muestre el proceso local. El runner no requiere entrenar 
 
 ## Cierre conjunto
 
-- [ ] R73: implementar en tarea autorizada y verificar desglose por escenario con n/cobertura; cuatro agrupaciones actuales no lo sustituyen.
+- [ ] R73: revisar el desglose por escenario ya implementado, con casos y cobertura, durante la aceptación del equipo.
 - [ ] Recuperar prompts originales disponibles y marcar ausencias, sin inventar fechas/textos.
 - [ ] Revisar matriz final juntos, resolver o aceptar explícitamente pendientes sin marcar casillas retroactivas. Mantener promoción bloqueada hasta protocolo previamente aprobado.
 - [ ] Ensayar demo y defensa con Erika y Ross; guardar evidencia real de participación y aceptación.

@@ -1,0 +1,32 @@
+{
+  "purpose": "DESCRIPTIVE_WITHIN_FILE_PRICE_PROFILE",
+  "source_file": "sell_prices.csv",
+  "comparable_consecutive_observed_week_pairs": 6810631,
+  "increases": 45212,
+  "decreases": 33603,
+  "unchanged": 6731816,
+  "observed_price_relative_changes": {
+    "total": 6810631,
+    "valid": 6810631,
+    "missing_or_nonfinite": 0,
+    "negative": 33603,
+    "zero": 6731816,
+    "fractional": 78546,
+    "minimum": -0.9988864142538976,
+    "maximum": 897.0,
+    "mean": 0.0012448159979636904,
+    "sum": 8477.982425027447,
+    "quantiles_approximate": {
+      "p50": 0.0,
+      "p95": 0.0,
+      "p99": 0.0
+    },
+    "quantile_method": "Systematic positional sample every 997 values. Not an exact quantile or random sample.",
+    "quantile_sample_size": 6832
+  },
+  "limitations": [
+    "Se comparan semanas observadas consecutivas por producto y tienda, no se certifica continuidad semanal entre cada par.",
+    "Sin joins con ventas, estimación causal, conversión a Bs o calibración.",
+    "No distingue precios por mayor y por menor."
+  ]
+}

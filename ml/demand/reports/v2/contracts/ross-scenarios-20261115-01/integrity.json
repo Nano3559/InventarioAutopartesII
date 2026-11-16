@@ -1,0 +1,16 @@
+{
+  "protected_baseline_files": 611,
+  "changed_existing_files": [
+    "v2/contracts/preparation.v2.json"
+  ],
+  "allowed_active_metadata": [
+    "v2/contracts/preparation.v2.json"
+  ],
+  "missing_existing_files": [],
+  "raw_unchanged": true,
+  "historical_data_models_reports_unchanged": true,
+  "all_unexpected_changes_absent": true,
+  "new_builds_added_not_overwritten": true,
+  "neon_used": false,
+  "git_executed": false
+}

@@ -1,0 +1,53 @@
+{
+  "runtime_version": "scenario-runtime-1.0.0",
+  "status": "IMPLEMENTED_LOCAL_ACADEMIC",
+  "contract_version": "demand-scenarios-1.0.0",
+  "dataset_version": "3.0.0",
+  "release_path": "reports/v2/3.0.0/scenarios-model-20261115-01/release.json",
+  "release_sha256": "803cfefe8feabf23383f801235b0c0f63ef7178858ff78f566014839929a1b07",
+  "artifact_sha256": "1ae61ad487d22c3fa8c8e8b5acd0c20d03e1f25d1151a5f680bbd8596d07bde3",
+  "schema_reference": {
+    "path": "v2/contracts/scenarios.v1.json",
+    "sha256": "557aa5638ff1adce55d625d38efa1a58e86b686a352524264c79eea3822acc46"
+  },
+  "snapshots": "BASE input records only, VALIDATION April–June 2028. No target/outcome columns.",
+  "test_evaluation": {
+    "path": "reports/v2/3.0.0/scenarios-model-20261115-01/test-evaluation.json",
+    "sha256": "5030d06587d29f0022f094462d123ca24156583d184894addb985f0c8a65db99",
+    "scored_once": true
+  },
+  "sales_roles": {
+    "model_features": [
+      "ventas_mes_anterior",
+      "ventas_hace_2_meses",
+      "ventas_hace_3_meses",
+      "mes_sin",
+      "mes_cos",
+      "proporcion_por_mayor_mes_anterior",
+      "precio_menor_base_corte_bs",
+      "precio_mayor_base_corte_bs",
+      "variacion_precio_menor_plan_ponderada",
+      "variacion_precio_mayor_plan_ponderada",
+      "dias_vigencia_nuevo_precio_plan",
+      "dias_sin_stock_mes_anterior",
+      "stock_vendible_al_corte_unidades",
+      "reservas_posteriores_unidades",
+      "compromisos_por_menor_horizonte_unidades",
+      "compromisos_por_mayor_horizonte_unidades",
+      "entradas_plan_horizonte_unidades",
+      "dias_hasta_primera_entrada_plan",
+      "categoryId"
+    ],
+    "cost_and_fx": "Decimal validation and hypothetical import cost only. No automatic retail-price pass-through.",
+    "supplier_lead_and_internal_delay": "Replenishment only. Existing shipment plans have separate arrival dates.",
+    "current_database": "Not a predictive input source for this academic release."
+  },
+  "idempotency": "Actor + request ID + canonical hash. Atomic exclusive cache under tmp, survives process restart. No operational writes.",
+  "inference": "Fixed artifact, nonnegative numeric prediction, abstention outside numeric TRAIN range. No fit on request.",
+  "unavailable_inputs": "Reject invalid or mismatched snapshots. No missing history zero-fill.",
+  "provenance": "Synthetic scenario assumptions, not estimated causal effects or certified RepuestoPro history.",
+  "runtime_extension": {
+    "response_impacts_max_items": 2000,
+    "reason": "Trace every scalar for up to 100 orders and 100 shipments. Historical design bytes preserved."
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "status": "LOCAL_H4_ADMIN_2_2_CONNECTED",
+  "selection_id": "accepted-absolute-2.2-20261115-01",
+  "artifact_sha256": "def5a93dcabf27916d1120af0160d2910dc7737f4036ec2507f60eb7d5670f35",
+  "selection_sha256": "7d9f49856b44703021f57fc83f9d763d5d787c428b3d4dedcddac6955babff23",
+  "final_report_sha256": "3a5f4b87c158b49eb447bc37cbf4a541e7b046ef69559e73e3c3c9a42143e283",
+  "runtime_sha256": "fdd8221afe37480cdba9a52c7ca9c822726593e754d84792104b73cc667994e8",
+  "bridge_sha256": "ac7f819ffea0f0e83205ee92d28064f8f361bd16f127e7bd481d58632f0ddc02",
+  "api_contract_sha256": "049263b84413fdf5d15f9a71d59cd9d5622981d212a233ccf2e9e35f646207be",
+  "api_service_sha256": "96330e9b188c112c9ef115f6694213ec93b3d994baa67c2ce058664f0b8a0377",
+  "frontend_guard_sha256": "19c15f8b0b32584bf6797115e405d1ce3ff1c5fdea5b8b02ed780b7dfc89d6cc",
+  "ui_sha256": "2885eced52986f0b08b820ef09c9feaf9bf9ab1b05f2b0b49893d0684c4e7c83",
+  "api_version": "V2.2.0",
+  "previous_version": "2.1.0 preserved, no automatic fallback",
+  "metrics": {
+    "rows_requested": 504,
+    "rows_scored": 504,
+    "abstentions": 0,
+    "negative_raw_predictions": 0,
+    "mae": 9.204618055555557,
+    "rmse": 16.90851955066845,
+    "r2": 0.6465904325570372,
+    "r2_status": "DEFINED",
+    "raw_metrics": {
+      "mae": 9.204618055555557,
+      "rmse": 16.90851955066845,
+      "r2": 0.6465904325570372,
+      "r2_status": "DEFINED"
+    },
+    "status": "OK"
+  },
+  "role_matrix": [
+    {
+      "role": "ADMIN",
+      "read_catalog": 200,
+      "predict": 200
+    },
+    {
+      "role": "TIENDA",
+      "read_catalog": 403,
+      "predict": 403
+    },
+    {
+      "role": "INVENTARIO",
+      "read_catalog": 403,
+      "predict": 403
+    },
+    {
+      "role": "UNKNOWN",
+      "read_catalog": 403,
+      "predict": 403
+    },
+    {
+      "role": "ANONYMOUS_OR_INVALID_OR_REVOKED",
+      "read_catalog": 401,
+      "predict": 401
+    }
+  ],
+  "tests": {
+    "python": 84,
+    "backend": 173,
+    "frontend": 248,
+    "total_distinct_across_suites": 505,
+    "failed": 0
+  },
+  "typecheck_backend": "PASSED",
+  "typecheck_frontend_build": "PASSED",
+  "visual": {
+    "status": "PASSED_ISOLATED_SESSION_REAL_INFERENCE",
+    "desktop_width": 1280,
+    "mobile_width": 390,
+    "horizontal_overflow": false,
+    "session": "FICTITIOUS_LOCAL_ONLY",
+    "api": "REAL_NODE_PYTHON_ARTIFACT",
+    "production_session_verified": false
+  },
+  "test_evaluation_events": 1,
+  "fit_calls": 0,
+  "neon_used": false,
+  "commercial_accuracy_certified": false,
+  "limitations": [
+    "Synthetic academic replay, not a current-month production forecast",
+    "13 products and 36 product-store groups worsened on VALIDATION, accepted before TEST",
+    "Historical stock does not reveal lost demand",
+    "No automatic purchasing or stock mutation",
+    "Operational dashboard and database health not certified without permitted DB access"
+  ],
+  "compiled_backend_smoke": "PASSED: V2.2.0 product28/location5/2026-04 = 40.96",
+  "backend_build": "PASSED"
+}

@@ -1,0 +1,182 @@
+{
+  "stage": "EXPANDED_BUILD_IMPLEMENTATION_AND_VALIDATION",
+  "recorded_on": "2026-11-15",
+  "work_started_on": "2026-11-14",
+  "status": "PASSED_EXPANDED_DATA_GATE_NOT_TRAINED",
+  "dataset_version": "2.1.0",
+  "build_id": "expanded-20261115-01",
+  "build_path": "ml/demand/data/repuestopro_v2/2.1.0/expanded-20261115-01",
+  "manifest_sha256": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+  "counts": {
+    "base": 4032,
+    "supervised": 3528,
+    "audit": 8146,
+    "ledger": 4032,
+    "daily": 122640,
+    "quotes": 25,
+    "orders": 2887,
+    "shipments": 1811,
+    "receipts": 1840,
+    "plans": 4032
+  },
+  "train_quote_ages_days": [
+    0,
+    2,
+    7,
+    30
+  ],
+  "wholesale_volume": {
+    "TRAIN": {
+      "orders": 847,
+      "fully_fulfilled": 786,
+      "partially_or_unfulfilled": 61,
+      "fulfilled_at_least": {
+        "20": 808,
+        "40": 544,
+        "80": 263
+      }
+    },
+    "VALIDATION": {
+      "orders": 164,
+      "fully_fulfilled": 153,
+      "partially_or_unfulfilled": 11,
+      "fulfilled_at_least": {
+        "20": 160,
+        "40": 106,
+        "80": 47
+      }
+    }
+  },
+  "tests": {
+    "main_suite": 169,
+    "registration_checks": 2,
+    "passed_total": 171,
+    "failed": 0,
+    "skipped": 0,
+    "logs": [
+      "ml/demand/tmp/expanded-20261114-01/tests-final.txt",
+      "ml/demand/tmp/expanded-20261114-01/tests-registration.txt"
+    ]
+  },
+  "integrity_before_after": {
+    "raw": {
+      "files": 136,
+      "unchanged": true
+    },
+    "reports": {
+      "files": 60,
+      "unchanged": true
+    },
+    "models": {
+      "files": 2,
+      "unchanged": true
+    },
+    "manifests": {
+      "files": 5,
+      "unchanged": true
+    },
+    "builds": {
+      "files": 36,
+      "unchanged": true
+    },
+    "protected": {
+      "files": 44,
+      "unchanged": true
+    }
+  },
+  "legacy_component_files_unchanged": [
+    "v2/generate.py",
+    "v2/validate_build.py",
+    "v2/validate.py",
+    "v2/experiment_preparation.py",
+    "v2/contracts/dataset_columns.v2.json",
+    "v2/contracts/calibration.v2.json"
+  ],
+  "report_hashes": {
+    "calidad.json": "d6437a766b63a2a1620fc2a41be7cf3e534c45b15b33a7f070319f70c8407c4c",
+    "estadisticas.json": "5183ac6662a260e869434923fd049f2908f9ff0c25b59b476037695d3f4d1d5b",
+    "preflight-final.json": "7f60f9dca8f80325076e3d627b76e884dd09b1331ba730a97ac1ae8b64d125d0",
+    "preflight.json": "8ce8a5a5985f57ae3aa0d5d08066c28b6de502c814ceec79062f7762432ce0cb"
+  },
+  "data_files_sha256": {
+    "base_mensual.csv": "77bdb36197caf0de1e252180daa8248a4ecca1bdb46b06049ea99ea4d2b2255f",
+    "catalog_reference.json": "5f0633e93b38793caf8ec97f315947864f400210c612654780a464b778980218",
+    "checksums.sha256": "9f8a9a74acc4849f0d82c8b1a7082ee43c16ebc3b3fb4c05e8aecc23f9868e3b",
+    "daily_stock.csv": "fe8ed531c25c60166dbdfca8ec3953820ab6f3beaf0b68374b66673fac077314",
+    "dataset_supervisado.csv": "382c9b0ff45e0d1b3130322a9638e2a046268c04d207806b5ffddf8534846a7d",
+    "escenarios_metadatos.csv": "0efd007c33c64b0ac74ddde3ea271717ea1c37b4ff9151751053a7db0631d50d",
+    "generator_config.json": "9a36d175d194b198a8cada5b0cf691918ff8a78bd490cbe13f3a8390f18ec176",
+    "manifest.json": "756d0bb8762ed44dab382b190478b486c1e3199fe7bb1085f1f7f952956349dd",
+    "orders.csv": "de3f66a13bb59d0ad0fa53d912c65ab6a8b784c6dd67b406530987dba88348c9",
+    "quote_events.csv": "c6d645004c90d41a5b6c8e28c24d781543d152ea5dcbe3f0a956346f198c3e41",
+    "receipts.csv": "b0dc339cc7b621e8040ce0baf78979afe2b5691c67b133b6c5e78b79eebec6a6",
+    "schema.json": "b56642e8d7c0bc2b272a7e3688b2eeac8dfe87122b24db6d252f34d622c06ecc",
+    "shipments.csv": "3eeb424c22033478efe53d37258804ef272cb7ca4b324b14ec5aecb0a75ab3d6",
+    "simulation_ledger.csv": "efe2cb21a80e32e21b54eab4f7bb34c2bef386016b06bb3a08f5d6fa33a13881",
+    "source_experiment_preparation.py": "a64ddf3bbe42e246ac8e0e6f24791c7a3c6a782d46836be430bb0531b95c25b8",
+    "source_generate.py": "e14b2177be1b987a1b42ddcbdfb98dcdf405b6a643851415ce1398f8a07fa896",
+    "source_generate_expanded.py": "278d1ae3299b5af95b7973b1a8de45216cec5abf5b0ed44bf60b0a499a66eab1",
+    "source_structure.py": "5e53528d45987a09b43e1ca3703a6146f8ae549faabbfa744b8e7afb47ae06ed",
+    "source_validate_build.py": "2436ba7db15ee26148dcec8b124e4a3c87089e5e8133edf24280573fb3b0187d",
+    "source_validate_expanded.py": "4279ed3eb056d96685592722640e19241e399dc1da715022ae7ac7277187c3a6",
+    "split_manifest.json": "9c2d41d0a173f2e975c8c8bd4bb04604d2422598e5c1156187f860ff6477da2f",
+    "supply_plans.csv": "ef5292a9ca44e93ff09542521fce39638097128cf8bb0d6eab43f5ce98b1dff5",
+    "validation.json": "6c48579637104b17f159df3566bb834c16e3d26aee2759c9b9199294b8b6f3d2"
+  },
+  "modified_files": [
+    "ml/demand/v2/contracts/preparation.v2.json",
+    "ml/demand/README.md",
+    "docs/H4/PLAN_DE_TRABAJO_V2.md",
+    "docs/H4/H4_IMPLEMENTACION_MODELO_PREDICTIVO.md"
+  ],
+  "new_source_files": [
+    "ml/demand/v2/generate_expanded.py",
+    "ml/demand/v2/validate_expanded.py",
+    "ml/demand/tests/test_v2_expanded.py"
+  ],
+  "new_contracts": [
+    "ml/demand/v2/contracts/expanded.v2_1.json",
+    "ml/demand/v2/contracts/dataset_columns.v2_1.json",
+    "ml/demand/v2/contracts/dataset_schema.v2_1.schema.json",
+    "ml/demand/v2/contracts/experiments.v2_1.json"
+  ],
+  "assumptions_and_limits": [
+    {
+      "code": "SYNTHETIC_ASSUMED_PROFILE_WEIGHTS",
+      "blocking": false,
+      "reason": "No prevalencia real certificada ni precisión comercial."
+    },
+    {
+      "code": "SHARED_SINGLE_ECONOMIC_TRAJECTORY",
+      "blocking": false,
+      "reason": "Edades variables no crean múltiples economías independientes."
+    },
+    {
+      "code": "KNOWN_ORDERS_NOT_FORECAST_FEATURES",
+      "blocking": false,
+      "reason": "Capacidad para atender no demuestra capacidad para anticipar pedidos."
+    },
+    {
+      "code": "STOCK_CENSORED_OBSERVED_SALES",
+      "blocking": false,
+      "reason": "Target conserva unidades realmente atendidas, no demanda perdida."
+    }
+  ],
+  "assertions": {
+    "previous_datasets_unchanged": true,
+    "raw_unchanged": true,
+    "previous_reports_unchanged": true,
+    "previous_models_unchanged": true,
+    "no_neon": true,
+    "no_prisma": true,
+    "no_git": true,
+    "no_new_markdown": true,
+    "no_model_training": true,
+    "no_scaler_or_encoder_fit": true,
+    "no_predictive_test_metrics": true,
+    "no_test_for_model_selection": true,
+    "actual_fit_count": 0
+  },
+  "registration": "Legacy 2.0 bindings preserved. dataset_registry and active_dataset_version identify current 2.1 data, not an active model.",
+  "next_step": "V2.1 preprocessing adapter and model experiments only after explicit authorization. Backend artifact review with Erika and commercial pilot still pending."
+}

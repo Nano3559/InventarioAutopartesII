@@ -1,0 +1,116 @@
+{
+  "status": "PASSED",
+  "failures": [],
+  "build_id": "academic-20261114-03",
+  "manifest_sha256": "641f5213f83b6f1a83c0d4c6dc6c8c020a876753ed3a51c73a138ea26ff0bdeb",
+  "counts": {
+    "base": 4032,
+    "supervised": 3528,
+    "audit": 4413
+  },
+  "warnings": [
+    {
+      "code": "CONSTANT_OR_EMPTY_FEATURE",
+      "feature": "antiguedad_tipo_cambio_dias",
+      "blocking": false
+    },
+    {
+      "code": "SYNTHETIC_DOMAIN_ONLY",
+      "blocking": false,
+      "reason": "No evidencia comercial ni causal."
+    },
+    {
+      "code": "ONE_ECONOMIC_PATH",
+      "blocking": false,
+      "reason": "15 meses TRAIN y una cotización compartida no son cientos de shocks económicos independientes."
+    },
+    {
+      "code": "PARTIAL_DYNAMIC_GENERATOR_COVERAGE",
+      "blocking_for_initial_variant_data_gate": false,
+      "blocks_claim_of_full_dynamic_coverage": true,
+      "observed_ids": 10,
+      "unobserved_ids": 47
+    },
+    {
+      "code": "OBSERVED_SALES_ARE_STOCK_CENSORED",
+      "blocking": false,
+      "reason": "No se estima demanda perdida."
+    },
+    {
+      "code": "POLICY_FIXTURES_ARE_NOT_BACKEND_OR_MODEL_VERIFICATION",
+      "blocking": false,
+      "reason": "Devoluciones, anulaciones y reposición se prueban como reglas offline. Su integración requiere revisión con Erika."
+    }
+  ],
+  "test_target_statistics_computed": false,
+  "test_hash_verified": "e086badfd3657d2347ef34fcad0dacdf64ffcf66bd760f461ae46b4de3601181",
+  "training_performed": false,
+  "training_authorized": false,
+  "policy_fixture_count": 65,
+  "policy_fixture_failures": [],
+  "build_scenario_ids_observed": [
+    "A06",
+    "A07",
+    "A08",
+    "A10",
+    "G05",
+    "G06",
+    "G18",
+    "N01",
+    "N02",
+    "N04"
+  ],
+  "build_scenario_ids_not_observed": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A09",
+    "A11",
+    "A12",
+    "A13",
+    "A14",
+    "A15",
+    "A16",
+    "A17",
+    "A18",
+    "A19",
+    "A20",
+    "A21",
+    "A22",
+    "A23",
+    "A24",
+    "A25",
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G07",
+    "G08",
+    "G09",
+    "G10",
+    "G11",
+    "G12",
+    "G13",
+    "G14",
+    "G15",
+    "G16",
+    "G17",
+    "G19",
+    "G20",
+    "N03",
+    "N05",
+    "N06",
+    "N07",
+    "N08",
+    "N09",
+    "N10",
+    "N11",
+    "N12"
+  ],
+  "all_57_dynamic_generator_scenarios_validated": false,
+  "actual_backend_or_model_acceptance_tested": false,
+  "coverage_meaning": "57 fixtures de decisiones por hechos y 8 combinaciones. No 57 simulaciones dinámicas del generador ni integración de backend.",
+  "gate": "PASSED_FOR_DATA_INTEGRITY_AND_OFFLINE_POLICY"
+}

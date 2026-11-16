@@ -1,0 +1,283 @@
+{
+  "branch_id": "br-cool-cake-ay7cr6sc",
+  "recorded_at": "2026-11-16T01:08:37.429Z",
+  "checks": [
+    {
+      "name": "ORM RoleModel",
+      "passed": true
+    },
+    {
+      "name": "ORM User",
+      "passed": true
+    },
+    {
+      "name": "ORM Location",
+      "passed": true
+    },
+    {
+      "name": "ORM Category",
+      "passed": true
+    },
+    {
+      "name": "ORM Product",
+      "passed": true
+    },
+    {
+      "name": "ORM Inventory",
+      "passed": true
+    },
+    {
+      "name": "ORM Customer",
+      "passed": true
+    },
+    {
+      "name": "ORM Sale",
+      "passed": true
+    },
+    {
+      "name": "ORM SaleItem",
+      "passed": true
+    },
+    {
+      "name": "ORM Payment",
+      "passed": true
+    },
+    {
+      "name": "ORM ReceivingAccount",
+      "passed": true
+    },
+    {
+      "name": "ORM PurchaseInvoice",
+      "passed": true
+    },
+    {
+      "name": "ORM Return",
+      "passed": true
+    },
+    {
+      "name": "ORM Movement",
+      "passed": true
+    },
+    {
+      "name": "ORM ProductRequest",
+      "passed": true
+    },
+    {
+      "name": "ORM Supplier",
+      "passed": true
+    },
+    {
+      "name": "ORM Cost",
+      "passed": true
+    },
+    {
+      "name": "ORM Importer",
+      "passed": true
+    },
+    {
+      "name": "ORM ProductImporter",
+      "passed": true
+    },
+    {
+      "name": "ORM RequestHistory",
+      "passed": true
+    },
+    {
+      "name": "ORM AuditLog",
+      "passed": true
+    },
+    {
+      "name": "ORM Notification",
+      "passed": true
+    },
+    {
+      "name": "AuditLog NULL userId",
+      "passed": true,
+      "expected_sqlstate": "23502",
+      "actual_sqlstate": "23502"
+    },
+    {
+      "name": "AuditLog NULL targetType",
+      "passed": true,
+      "expected_sqlstate": "23502",
+      "actual_sqlstate": "23502"
+    },
+    {
+      "name": "Sale void requires justification",
+      "passed": true,
+      "expected_sqlstate": "23514",
+      "actual_sqlstate": "23514"
+    },
+    {
+      "name": "Movement cannot over-receive",
+      "passed": true,
+      "expected_sqlstate": "23514",
+      "actual_sqlstate": "23514"
+    },
+    {
+      "name": "Return inspection cannot exceed sold units",
+      "passed": true,
+      "expected_sqlstate": "23514",
+      "actual_sqlstate": "23514"
+    },
+    {
+      "name": "Return financial allocation",
+      "passed": true,
+      "expected_sqlstate": "23514",
+      "actual_sqlstate": "23514"
+    },
+    {
+      "name": "Bank operation idempotence",
+      "passed": true,
+      "expected_sqlstate": "23505",
+      "actual_sqlstate": "23505"
+    },
+    {
+      "name": "Purchase invoice idempotence",
+      "passed": true,
+      "expected_sqlstate": "23505",
+      "actual_sqlstate": "23505"
+    },
+    {
+      "name": "Inventory conditional update prevents overselling",
+      "passed": true
+    },
+    {
+      "name": "Only one open product-location request",
+      "passed": true,
+      "expected_sqlstate": "23505",
+      "actual_sqlstate": "23505"
+    },
+    {
+      "name": "All SQL fixtures rolled back",
+      "passed": true
+    },
+    {
+      "name": "No persistent fixture rows",
+      "passed": true
+    },
+    {
+      "name": "Anonymous dashboard rejected",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "name": "Schema readiness after migration",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN products?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN inventory?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN sales?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN wholesale?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN returns?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN movements?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN costs?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN prices?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN reports/sales?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN reports/daily",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN reports/inventory?limit=2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN dashboard",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "ADMIN confirmed sales available",
+      "passed": true
+    },
+    {
+      "name": "ADMIN prediction permissions",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "TIENDA dashboard",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "TIENDA confirmed sales available",
+      "passed": true
+    },
+    {
+      "name": "TIENDA prediction permissions",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "name": "INVENTARIO dashboard",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "INVENTARIO confirmed sales available",
+      "passed": true
+    },
+    {
+      "name": "INVENTARIO prediction permissions",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "name": "Saved model inference VALIDATION month only",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "Frozen release unchanged",
+      "passed": true
+    }
+  ],
+  "passed": 58,
+  "failed": 0,
+  "production_used": false,
+  "temporary_signing_key_only": true,
+  "no_test_scored": true,
+  "no_training": true,
+  "fixtures": "Explicit IDs 900000001/2 inside rolled-back transaction. No persistent test rows or sequence allocations."
+}

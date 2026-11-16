@@ -21,6 +21,7 @@ from ui_panels import (  # noqa: E402
     render_retraining,
     render_candidate_decision,
     record_reset, render_lifecycle, render_session_export,
+    render_reference_predictions,
 )
 
 
@@ -256,6 +257,7 @@ def main():
     prediction, monitoring, comparison = st.tabs(["Predicción y observado", "Errores y monitoreo", "Comparación de modelos"])
     with prediction:
         render_prediction(reference, product_id, location_id, month, features, error, scenario)
+        render_reference_predictions(features, complete=complete)
     with monitoring:
         render_monitoring()
     with comparison:

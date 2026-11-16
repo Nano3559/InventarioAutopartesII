@@ -1,0 +1,72 @@
+{
+  "adapter_version": "preprocessing-2.2-1",
+  "dataset_version": "2.2.0",
+  "training_authorized": false,
+  "experiment_contract": "v2/contracts/experiments.v2_2.json",
+  "experiment_contract_sha256": "14b52717e8f8cf71a5b7bd3afce3fb1d1fbd950db5de6b4dd082a3ed57672138",
+  "input_build": {
+    "relative_path": "data/repuestopro_v2/2.2.0/calibrated-20261115-01",
+    "manifest_sha256": "1147c89cc832d35fc1a29dfe65478ff118eb079a30237ee1c07aef5ca4118a5e",
+    "origin": "SYNTHETIC",
+    "scope": "CALIBRATED_M5_FAVORITA_WITH_AUDITED_SYNTHETIC_PRICE_REVIEW"
+  },
+  "csv_sha256": "7df7e95800e6b4d07f1ce532123c690e14b8c40ba309743277135c7889d9ba8f",
+  "schema_sha256": "b48425a12dd49e892b9bf775b3016cc5f0ff0d381280b90dd9e998b1eda2f266",
+  "raw_features": [
+    "ventas_mes_anterior",
+    "ventas_hace_2_meses",
+    "ventas_hace_3_meses",
+    "mes_sin",
+    "mes_cos",
+    "proporcion_por_mayor_mes_anterior",
+    "cobertura_modalidad_mes_anterior",
+    "precio_menor_cierre_anterior_bs",
+    "precio_mayor_cierre_anterior_bs",
+    "variacion_precio_menor_conocida",
+    "variacion_precio_mayor_conocida",
+    "tipo_cambio_bs_usd_conocido",
+    "variacion_tipo_cambio_ultimo_mes",
+    "antiguedad_tipo_cambio_dias",
+    "dias_sin_stock_mes_anterior",
+    "cobertura_stock_mes_anterior",
+    "categoryId"
+  ],
+  "context_column": "mes_objetivo",
+  "fit_windows": [
+    [
+      "2025-01",
+      "2026-03"
+    ],
+    [
+      "2025-01",
+      "2025-06"
+    ],
+    [
+      "2025-01",
+      "2025-09"
+    ],
+    [
+      "2025-01",
+      "2025-12"
+    ]
+  ],
+  "numeric_missing": "MEDIAN_TRAIN_FIXED_NULLABLE_INDICATORS",
+  "categorical_unknown": "RESERVED_UNKNOWN_BUCKET_TRAIN_VOCABULARY",
+  "linear_scaling": "STANDARD_NUMERIC_ONLY",
+  "forest_scaling": "NONE",
+  "all_missing_or_constant_selected_train": "REJECT_REVIEW_NO_SILENT_DROP",
+  "targets_ids_controls": "NOT_ACCEPTED_IN_FEATURE_FRAME",
+  "fit_evidence_current_task": "CONTROLLED_FIXTURES_ONLY_NOT_REAL_DATASET",
+  "repeated_fit": "REJECT_CREATE_NEW_INSTANCE_PER_FOLD",
+  "fit_window_selection": "AUTO_APPROVED_COMPLETE_TRAIN_PREFIX_WITHIN_CONFIGURED_MAXIMUM",
+  "row_alignment": "MultiIndex productId/locationId/mes_objetivo, metadata only, excluded from numeric matrix",
+  "real_frame_cohort": "Complete approved product-store cohort for each TRAIN month. Reject random row folds.",
+  "base_csv_sha256": "2f58c1133f7d0ad4e766faeb9ce12877d3b945fa60ec8796711d61dbd6526f6d",
+  "split_sha256": "c02afe7189991e905af902b110dc52273adec710d608e8030f8a80a9e586520e",
+  "test_loading": "DENIED_BEFORE_OPEN",
+  "real_dataset_fit_in_preparation": false,
+  "frozen_helper_sha256": {
+    "v2/preprocessing.py": "d0f7dc12fd9912ef1664d3b304c128b6fcb23ff7fb081152f357f39328839987",
+    "v2/experiments.py": "abe20673fab4d9cc8fb7ec4d4052a8fa8e1c448384e0fba998fa5571b3211e0c"
+  }
+}
