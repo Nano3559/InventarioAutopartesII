@@ -10,6 +10,15 @@ from v2.register_sources import register
 
 RUN = ROOT / "tmp/structure-20261111-01"
 
+# Insumos locales ignorados por Git (.gitignore): no se distribuyen en el repositorio
+# y los conserva la estación que obtuvo los originales. Su ausencia justifica skip;
+# si están presentes, se exigen tamaño y hash exactos como cualquier archivo obligatorio.
+OPTIONAL_LOCAL_PREFIXES = (
+    "ml/demand/lifecycle/",
+    "ml/demand/sources/external_raw/",
+    "ml/demand/sources/external_curated/",
+)
+
 
 class V2StructureTests(unittest.TestCase):
     def fixture(self):
@@ -24,9 +33,27 @@ class V2StructureTests(unittest.TestCase):
         baseline = json.loads((ROOT / "v2/contracts/protected_files.sha256.json").read_text())
         project = ROOT.parents[1]
         self.assertGreater(len(baseline), 30)
+        problems = []
+        missing_optional = []
         for relative, expected in baseline.items():
-            with self.subTest(path=relative):
-                self.assertEqual(sha256_file(project / relative), expected)
+            target = project / relative
+            if not target.exists():
+                if relative.startswith(OPTIONAL_LOCAL_PREFIXES):
+                    missing_optional.append(relative)
+                else:
+                    problems.append(f"requerido ausente: {relative}")
+            elif sha256_file(target) != expected:
+                problems.append(f"hash distinto al baseline: {relative}")
+        if problems:
+            self.fail("archivos protegidos incumplen la verificación:\n" + "\n".join(problems))
+        if missing_optional:
+            self.skipTest(
+                f"{len(missing_optional)} archivos opcionales de lifecycle/ ausentes (p. ej. "
+                f"{missing_optional[0]}): directorio ignorado por Git que no distribuye el repositorio "
+                f"y cuyos registros históricos conserva la estación que los posee, por lo que sus "
+                f"hashes no pudieron validarse aquí. Los {len(baseline) - len(missing_optional)} "
+                f"archivos protegidos restantes sí se verificaron byte a byte."
+            )
 
     def test_sources_and_tmp_are_outside_data(self):
         root = self.fixture()
@@ -36,19 +63,45 @@ class V2StructureTests(unittest.TestCase):
         self.assertFalse((root / "data/external_curated").exists())
 
     def test_all_real_manifests_match_every_raw_file_byte_hash(self):
-        registered = set()
-        manifests = list((ROOT / "sources/manifests").glob("*/*.json"))
-        self.assertGreaterEqual(len(manifests), 5)
+        manifests = sorted((ROOT / "sources/manifests").glob("*/*.json"))
+        if len(manifests) < 5:
+            self.fail(
+                f"manifiestos distribuidos ausentes o incompletos: {len(manifests)} hallados en "
+                f"sources/manifests/ (Git los incluye; se esperan al menos 5)"
+            )
+        documents = []
         for path in manifests:
-            manifest = json.loads(path.read_text(encoding="utf-8"))
-            validate_contract(manifest, "source_manifest")
-            folder = ROOT / manifest["raw_root"]
-            for item in manifest["files"]:
+            try:
+                document = json.loads(path.read_text(encoding="utf-8"))
+                validate_contract(document, "source_manifest")
+            except Exception as error:
+                self.fail(f"manifiesto presente pero inválido: {path} ({error})")
+            documents.append(document)
+        registered = set()
+        problems = []
+        for document in documents:
+            folder = ROOT / document["raw_root"]
+            for item in document["files"]:
                 original = folder / item["relative_path"]
                 registered.add(original)
-                self.assertEqual(original.stat().st_size, item["file_size_bytes"])
-                self.assertEqual(sha256_file(original), item["sha256"])
-        self.assertEqual(registered, {p for p in (ROOT / "sources/external_raw").rglob("*") if p.is_file()})
+                if not original.exists():
+                    problems.append(f"archivo crudo ausente: {original}")
+                elif original.stat().st_size != item["file_size_bytes"]:
+                    problems.append(f"tamaño distinto al manifiesto: {original}")
+                elif sha256_file(original) != item["sha256"]:
+                    problems.append(f"hash distinto al manifiesto: {original}")
+        raw_files = {p for p in (ROOT / "sources/external_raw").rglob("*") if p.is_file()}
+        if not raw_files:
+            self.skipTest(
+                f"insumos crudos opcionales ausentes: 0 archivos en sources/external_raw/ (ignorado "
+                f"por Git, no distribuido en el repositorio; los originales de terceros los conserva "
+                f"la estación que los obtuvo), por lo que tamaño, hash y registro de los "
+                f"{len(registered)} archivos referenciados no pudieron validarse aquí. Los "
+                f"{len(documents)} manifiestos distribuidos sí se validaron."
+            )
+        if problems:
+            self.fail("insumos crudos presentes pero incumplen los manifiestos:\n" + "\n".join(problems))
+        self.assertEqual(registered, raw_files)
 
     def test_registration_preserves_raw_and_unknown_metadata(self):
         root = self.fixture()

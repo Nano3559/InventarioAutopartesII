@@ -1,0 +1,1475 @@
+{
+  "fecha": "2026-11-17T11:55:48.742Z",
+  "entorno": "Chrome, Vite, Express, PostgreSQL local read-only, Python",
+  "responsable": "Codex QA",
+  "checks": {
+    "services": {
+      "health": 200,
+      "frontend": 200,
+      "db": "read-only"
+    },
+    "auth": {
+      "role": "ADMIN"
+    },
+    "missingHeaders": {
+      "removed": [
+        "X-Scenario-Delivery",
+        "X-Scenario-Runtime-Revision"
+      ],
+      "export": "escenario-scenario-4f581dc82eff5e852764c105.json",
+      "provenance": {
+        "scenarioId": "scenario-4f581dc82eff5e852764c105",
+        "modelVersion": "calendar-model-20261116-01",
+        "recordedAt": "2026-11-17T07:56:26-04:00",
+        "scenarioInputSha256": "4f581dc82eff5e852764c105f89a55d1a5b8e71f739ed4cc7b4f5965b1b64753",
+        "delivery": "unknown",
+        "runtimeRevision": null
+      },
+      "chart": "Base: 87,17\nHipótesis: 87,17"
+    },
+    "additional": {
+      "scenarios": {
+        "cost": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "SET_LANDED_COST_BS",
+                "unitCostBs": "999",
+                "effectiveAt": "2026-11-01T00:00:00-04:00"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "KEEP"
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "ea36788c-76c3-4eba-a8fc-3c61d1e7ff7d"
+          },
+          "expected": "400 INCOHERENT_PRICES",
+          "observed": {
+            "http": 400,
+            "code": "INCOHERENT_PRICES",
+            "delivery": null,
+            "revision": null
+          }
+        },
+        "spike": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "REPLACE_OPEN_ORDER_PLAN",
+                "orders": [
+                  {
+                    "orderId": "j02b-wholesale",
+                    "mode": "POR_MAYOR",
+                    "outstandingUnits": 100000,
+                    "reservedUnits": 0,
+                    "dueAt": "2026-11-10T00:00:00-04:00"
+                  }
+                ]
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "bf853f59-d413-4264-b495-8e4b09983204"
+          },
+          "expected": "200, abstención OUTSIDE_TRAINING_RANGE por compromiso mayorista fuera de dominio",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "OUT_OF_DOMAIN",
+              "salesUnits": null,
+              "reason": "OUTSIDE_TRAINING_RANGE"
+            },
+            "replenishment": {
+              "status": "INCOMPLETE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "FORECAST_UNAVAILABLE"
+              ],
+              "suggestedUnits": null,
+              "requiredUnits": null,
+              "availablePositionUnits": null,
+              "committedUnitsWithinHorizon": null,
+              "reservedUnitsWithinHorizon": null,
+              "reservedUnitsAfterHorizon": null,
+              "eligibleIncomingUnits": null,
+              "expectedNewOrderArrivalAt": null,
+              "rawNeedUnits": null,
+              "minimumOrderUnits": null,
+              "orderMultipleUnits": null,
+              "protectionEndAt": null
+            },
+            "delta": null,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+              "COMMITMENT_OVERLAP_UNCERTAIN",
+              "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK",
+              "OUTSIDE_TRAINING_RANGE"
+            ],
+            "impacts": [
+              {
+                "field": "orders.0.orderId",
+                "before": null,
+                "after": "j02b-wholesale",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.mode",
+                "before": null,
+                "after": "POR_MAYOR",
+                "unit": "identificador",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.outstandingUnits",
+                "before": null,
+                "after": 100000,
+                "unit": "unidades",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.reservedUnits",
+                "before": null,
+                "after": 0,
+                "unit": "unidades",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.dueAt",
+                "before": null,
+                "after": "2026-11-10T00:00:00-04:00",
+                "unit": "fecha",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        },
+        "unknownChannel": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "REPLACE_SYNTHETIC_HISTORY",
+                "months": [
+                  {
+                    "month": "2026-08",
+                    "retailUnits": 39,
+                    "wholesaleUnits": 11,
+                    "unknownModeUnits": 1,
+                    "complete": true
+                  },
+                  {
+                    "month": "2026-09",
+                    "retailUnits": 58,
+                    "wholesaleUnits": 16,
+                    "unknownModeUnits": 0,
+                    "complete": true
+                  },
+                  {
+                    "month": "2026-10",
+                    "retailUnits": 97,
+                    "wholesaleUnits": 33,
+                    "unknownModeUnits": 0,
+                    "complete": true
+                  }
+                ]
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "SET_SELLABLE_STOCK",
+                "sellablePhysicalUnits": 3
+              },
+              "orders": {
+                "mode": "KEEP"
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "200e2693-209b-48aa-adee-6633b63fa82e"
+          },
+          "expected": "200 UNKNOWN_CHANNEL_MIX sin advertencia numérica",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "ABSTAINED",
+              "salesUnits": null,
+              "reason": "UNKNOWN_CHANNEL_MIX"
+            },
+            "replenishment": {
+              "status": "INCOMPLETE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "FORECAST_UNAVAILABLE"
+              ],
+              "suggestedUnits": null,
+              "requiredUnits": null,
+              "availablePositionUnits": null,
+              "committedUnitsWithinHorizon": null,
+              "reservedUnitsWithinHorizon": null,
+              "reservedUnitsAfterHorizon": null,
+              "eligibleIncomingUnits": null,
+              "expectedNewOrderArrivalAt": null,
+              "rawNeedUnits": null,
+              "minimumOrderUnits": null,
+              "orderMultipleUnits": null,
+              "protectionEndAt": null
+            },
+            "delta": null,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+              "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+            ],
+            "impacts": [
+              {
+                "field": "history.0.unknownModeUnits",
+                "before": 0,
+                "after": 1,
+                "unit": "unidades",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Historia hipotética, no modifica ventas registradas.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "stock.sellablePhysicalUnits",
+                "before": 90,
+                "after": 3,
+                "unit": "unidades",
+                "role": "DIRECT_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Solo stock vendible, excluye tránsito y cuarentena.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        },
+        "newProduct": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 999999,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "KEEP"
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "015044c0-dfa3-4286-bd0f-6d9de4399f2a"
+          },
+          "expected": "409 SNAPSHOT_MISMATCH sin pronóstico ni historia fabricada",
+          "observed": {
+            "http": 409,
+            "code": "SNAPSHOT_MISMATCH",
+            "delivery": null,
+            "revision": null
+          }
+        },
+        "month": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-12",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "KEEP"
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "b16753ca-2996-4ad5-9510-f8b723ef1108"
+          },
+          "expected": "409 SNAPSHOT_MISMATCH; mes sin snapshot",
+          "observed": {
+            "http": 409,
+            "code": "SNAPSHOT_MISMATCH",
+            "delivery": null,
+            "revision": null
+          }
+        },
+        "partial": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "KEEP"
+              },
+              "logistics": {
+                "mode": "SET_LOGISTICS_PLAN",
+                "supplierLeadTimeDays": 7,
+                "internalRestockDays": 2,
+                "plannedOrderAt": "2026-11-01T00:00:00-04:00",
+                "pendingShipments": [
+                  {
+                    "shipmentId": "calendar-2026-53-6-november-incoming",
+                    "pendingUnits": 25,
+                    "reservedAfterHorizonUnits": 0,
+                    "expectedArrivalAt": "2026-11-10T00:00:00-04:00"
+                  }
+                ]
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "4f4be192-97d4-46da-b337-3776351ed18b"
+          },
+          "expected": "200; entrada elegible reducida a 25 en primer envío",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "OK",
+              "salesUnits": 87.885,
+              "reason": null
+            },
+            "replenishment": {
+              "status": "OK_MONTH_END_ESTIMATE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "NO_DAILY_STOCKOUT_GUARANTEE"
+              ],
+              "suggestedUnits": 0,
+              "requiredUnits": 93,
+              "availablePositionUnits": 115,
+              "committedUnitsWithinHorizon": 0,
+              "reservedUnitsWithinHorizon": 0,
+              "reservedUnitsAfterHorizon": 0,
+              "eligibleIncomingUnits": 25,
+              "expectedNewOrderArrivalAt": "2026-11-10T00:00:00-04:00",
+              "rawNeedUnits": 0,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "protectionEndAt": "2026-11-10T00:00:00-04:00"
+            },
+            "delta": 0.7150000000000034,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+              "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+            ],
+            "impacts": [
+              {
+                "field": "shipments.0.pendingUnits",
+                "before": 50,
+                "after": 25,
+                "unit": "unidades",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético modificado (calendar-2026-53-6-november-incoming). Afecta entradas derivadas: entradas_plan_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        },
+        "postponed": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "KEEP"
+              },
+              "logistics": {
+                "mode": "SET_LOGISTICS_PLAN",
+                "supplierLeadTimeDays": 7,
+                "internalRestockDays": 2,
+                "plannedOrderAt": "2026-11-01T00:00:00-04:00",
+                "pendingShipments": [
+                  {
+                    "shipmentId": "calendar-2026-53-6-november-incoming",
+                    "pendingUnits": 50,
+                    "reservedAfterHorizonUnits": 0,
+                    "expectedArrivalAt": "2026-12-10T00:00:00-04:00"
+                  }
+                ]
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "0e3b1d8f-c121-4535-aef8-c576bcababe6"
+          },
+          "expected": "200; primer envío fuera de noviembre",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "OK",
+              "salesUnits": 86.57,
+              "reason": null
+            },
+            "replenishment": {
+              "status": "OK_MONTH_END_ESTIMATE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "NO_DAILY_STOCKOUT_GUARANTEE"
+              ],
+              "suggestedUnits": 2,
+              "requiredUnits": 92,
+              "availablePositionUnits": 90,
+              "committedUnitsWithinHorizon": 0,
+              "reservedUnitsWithinHorizon": 0,
+              "reservedUnitsAfterHorizon": 0,
+              "eligibleIncomingUnits": 0,
+              "expectedNewOrderArrivalAt": "2026-11-10T00:00:00-04:00",
+              "rawNeedUnits": 2,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "protectionEndAt": "2026-11-10T00:00:00-04:00"
+            },
+            "delta": -0.6000000000000085,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION"
+            ],
+            "impacts": [
+              {
+                "field": "shipments.0.expectedArrivalAt",
+                "before": "2026-11-10T00:00:00-04:00",
+                "after": "2026-12-10T00:00:00-04:00",
+                "unit": "fecha",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético modificado (calendar-2026-53-6-november-incoming). Afecta entradas derivadas: entradas_plan_horizonte_unidades, dias_hasta_primera_entrada_plan. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        },
+        "known": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "REPLACE_OPEN_ORDER_PLAN",
+                "orders": [
+                  {
+                    "orderId": "j02b-wholesale",
+                    "mode": "POR_MAYOR",
+                    "outstandingUnits": 20,
+                    "reservedUnits": 0,
+                    "dueAt": "2026-11-10T00:00:00-04:00"
+                  }
+                ]
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "16633566-9931-453f-bc6f-7ebb0e90e604"
+          },
+          "expected": "200; 20 comprometidas dentro de horizonte",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "replenishment": {
+              "status": "OK_MONTH_END_ESTIMATE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "NO_DAILY_STOCKOUT_GUARANTEE"
+              ],
+              "suggestedUnits": 0,
+              "requiredUnits": 93,
+              "availablePositionUnits": 140,
+              "committedUnitsWithinHorizon": 20,
+              "reservedUnitsWithinHorizon": 0,
+              "reservedUnitsAfterHorizon": 0,
+              "eligibleIncomingUnits": 50,
+              "expectedNewOrderArrivalAt": "2026-11-10T00:00:00-04:00",
+              "rawNeedUnits": 0,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "protectionEndAt": "2026-11-10T00:00:00-04:00"
+            },
+            "delta": 0,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+              "COMMITMENT_OVERLAP_UNCERTAIN",
+              "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+            ],
+            "impacts": [
+              {
+                "field": "orders.0.orderId",
+                "before": null,
+                "after": "j02b-wholesale",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.mode",
+                "before": null,
+                "after": "POR_MAYOR",
+                "unit": "identificador",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.outstandingUnits",
+                "before": null,
+                "after": 20,
+                "unit": "unidades",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.reservedUnits",
+                "before": null,
+                "after": 0,
+                "unit": "unidades",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.dueAt",
+                "before": null,
+                "after": "2026-11-10T00:00:00-04:00",
+                "unit": "fecha",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        },
+        "reserveWithin": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "REPLACE_OPEN_ORDER_PLAN",
+                "orders": [
+                  {
+                    "orderId": "j02b-wholesale",
+                    "mode": "POR_MAYOR",
+                    "outstandingUnits": 20,
+                    "reservedUnits": 4,
+                    "dueAt": "2026-11-10T00:00:00-04:00"
+                  }
+                ]
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "82deb143-3ffd-4080-8229-df417937a6ee"
+          },
+          "expected": "200; cuatro reservadas dentro y sin doble descuento",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "replenishment": {
+              "status": "OK_MONTH_END_ESTIMATE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "NO_DAILY_STOCKOUT_GUARANTEE"
+              ],
+              "suggestedUnits": 0,
+              "requiredUnits": 93,
+              "availablePositionUnits": 140,
+              "committedUnitsWithinHorizon": 20,
+              "reservedUnitsWithinHorizon": 4,
+              "reservedUnitsAfterHorizon": 0,
+              "eligibleIncomingUnits": 50,
+              "expectedNewOrderArrivalAt": "2026-11-10T00:00:00-04:00",
+              "rawNeedUnits": 0,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "protectionEndAt": "2026-11-10T00:00:00-04:00"
+            },
+            "delta": 0,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+              "COMMITMENT_OVERLAP_UNCERTAIN",
+              "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+            ],
+            "impacts": [
+              {
+                "field": "orders.0.orderId",
+                "before": null,
+                "after": "j02b-wholesale",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.mode",
+                "before": null,
+                "after": "POR_MAYOR",
+                "unit": "identificador",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.outstandingUnits",
+                "before": null,
+                "after": 20,
+                "unit": "unidades",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.reservedUnits",
+                "before": null,
+                "after": 4,
+                "unit": "unidades",
+                "role": "REPLENISHMENT_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Reservas dentro del horizonte: contexto de reposición, no se descuentan dos veces.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.dueAt",
+                "before": null,
+                "after": "2026-11-10T00:00:00-04:00",
+                "unit": "fecha",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: compromisos_por_mayor_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        },
+        "lateOrder": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "REPLACE_OPEN_ORDER_PLAN",
+                "orders": [
+                  {
+                    "orderId": "j02b-wholesale",
+                    "mode": "POR_MAYOR",
+                    "outstandingUnits": 20,
+                    "reservedUnits": 0,
+                    "dueAt": "2026-12-10T00:00:00-04:00"
+                  }
+                ]
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "fe3ef461-4436-46c1-8ac7-3be2e29b3520"
+          },
+          "expected": "200; débito de compromisos del mes igual a cero",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "replenishment": {
+              "status": "OK_MONTH_END_ESTIMATE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "NO_DAILY_STOCKOUT_GUARANTEE"
+              ],
+              "suggestedUnits": 0,
+              "requiredUnits": 93,
+              "availablePositionUnits": 140,
+              "committedUnitsWithinHorizon": 0,
+              "reservedUnitsWithinHorizon": 0,
+              "reservedUnitsAfterHorizon": 0,
+              "eligibleIncomingUnits": 50,
+              "expectedNewOrderArrivalAt": "2026-11-10T00:00:00-04:00",
+              "rawNeedUnits": 0,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "protectionEndAt": "2026-11-10T00:00:00-04:00"
+            },
+            "delta": 0,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+              "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+            ],
+            "impacts": [
+              {
+                "field": "orders.0.orderId",
+                "before": null,
+                "after": "j02b-wholesale",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.mode",
+                "before": null,
+                "after": "POR_MAYOR",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.outstandingUnits",
+                "before": null,
+                "after": 20,
+                "unit": "unidades",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.reservedUnits",
+                "before": null,
+                "after": 0,
+                "unit": "unidades",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.dueAt",
+                "before": null,
+                "after": "2026-12-10T00:00:00-04:00",
+                "unit": "fecha",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        },
+        "reserveAfter": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "REPLACE_OPEN_ORDER_PLAN",
+                "orders": [
+                  {
+                    "orderId": "j02b-wholesale",
+                    "mode": "POR_MAYOR",
+                    "outstandingUnits": 20,
+                    "reservedUnits": 4,
+                    "dueAt": "2026-12-10T00:00:00-04:00"
+                  }
+                ]
+              },
+              "logistics": {
+                "mode": "KEEP"
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "7324c61e-22ff-4518-9cf7-03c0eb1ec271"
+          },
+          "expected": "200; cuatro reservadas posteriores descontadas de la posición",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "replenishment": {
+              "status": "OK_MONTH_END_ESTIMATE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "NO_DAILY_STOCKOUT_GUARANTEE"
+              ],
+              "suggestedUnits": 0,
+              "requiredUnits": 93,
+              "availablePositionUnits": 136,
+              "committedUnitsWithinHorizon": 0,
+              "reservedUnitsWithinHorizon": 0,
+              "reservedUnitsAfterHorizon": 4,
+              "eligibleIncomingUnits": 50,
+              "expectedNewOrderArrivalAt": "2026-11-10T00:00:00-04:00",
+              "rawNeedUnits": 0,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "protectionEndAt": "2026-11-10T00:00:00-04:00"
+            },
+            "delta": 0,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+              "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+            ],
+            "impacts": [
+              {
+                "field": "orders.0.orderId",
+                "before": null,
+                "after": "j02b-wholesale",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.mode",
+                "before": null,
+                "after": "POR_MAYOR",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.outstandingUnits",
+                "before": null,
+                "after": 20,
+                "unit": "unidades",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.reservedUnits",
+                "before": null,
+                "after": 4,
+                "unit": "unidades",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: reservas_posteriores_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.dueAt",
+                "before": null,
+                "after": "2026-12-10T00:00:00-04:00",
+                "unit": "fecha",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: reservas_posteriores_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        },
+        "combined": {
+          "input": {
+            "contractVersion": "demand-scenarios-1.0.0",
+            "mode": "HYPOTHETICAL_SCENARIO",
+            "baseSnapshotId": "calendar-2026-53-6-november",
+            "productId": 53,
+            "locationId": 6,
+            "targetMonth": "2026-11",
+            "changes": {
+              "history": {
+                "mode": "KEEP"
+              },
+              "prices": {
+                "mode": "KEEP"
+              },
+              "quote": {
+                "mode": "KEEP"
+              },
+              "cost": {
+                "mode": "KEEP"
+              },
+              "stock": {
+                "mode": "KEEP"
+              },
+              "orders": {
+                "mode": "REPLACE_OPEN_ORDER_PLAN",
+                "orders": [
+                  {
+                    "orderId": "j02b-wholesale",
+                    "mode": "POR_MAYOR",
+                    "outstandingUnits": 20,
+                    "reservedUnits": 4,
+                    "dueAt": "2026-12-10T00:00:00-04:00"
+                  }
+                ]
+              },
+              "logistics": {
+                "mode": "SET_LOGISTICS_PLAN",
+                "supplierLeadTimeDays": 7,
+                "internalRestockDays": 2,
+                "plannedOrderAt": "2026-11-01T00:00:00-04:00",
+                "pendingShipments": [
+                  {
+                    "shipmentId": "calendar-2026-53-6-november-incoming",
+                    "pendingUnits": 25,
+                    "reservedAfterHorizonUnits": 0,
+                    "expectedArrivalAt": "2026-11-10T00:00:00-04:00"
+                  }
+                ]
+              }
+            },
+            "replenishment": {
+              "requested": true,
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "safetyStockUnits": 5,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "reviewPeriodDays": 0
+            },
+            "clientRequestId": "0dc1bbf5-ec61-4e16-8188-9533d6b37c13"
+          },
+          "expected": "200; recepción parcial y reserva posterior se combinan en posición",
+          "observed": {
+            "http": 200,
+            "baseline": {
+              "status": "OK",
+              "salesUnits": 87.17,
+              "reason": null
+            },
+            "scenario": {
+              "status": "OK",
+              "salesUnits": 87.885,
+              "reason": null
+            },
+            "replenishment": {
+              "status": "OK_MONTH_END_ESTIMATE",
+              "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+              "temporalFeasibility": "MONTH_END_ONLY_NO_DAILY_STOCKOUT_GUARANTEE",
+              "warnings": [
+                "NO_DAILY_STOCKOUT_GUARANTEE"
+              ],
+              "suggestedUnits": 0,
+              "requiredUnits": 93,
+              "availablePositionUnits": 111,
+              "committedUnitsWithinHorizon": 0,
+              "reservedUnitsWithinHorizon": 0,
+              "reservedUnitsAfterHorizon": 4,
+              "eligibleIncomingUnits": 25,
+              "expectedNewOrderArrivalAt": "2026-11-10T00:00:00-04:00",
+              "rawNeedUnits": 0,
+              "minimumOrderUnits": 0,
+              "orderMultipleUnits": 1,
+              "protectionEndAt": "2026-11-10T00:00:00-04:00"
+            },
+            "delta": 0.7150000000000034,
+            "warnings": [
+              "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+              "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+            ],
+            "impacts": [
+              {
+                "field": "orders.0.orderId",
+                "before": null,
+                "after": "j02b-wholesale",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.mode",
+                "before": null,
+                "after": "POR_MAYOR",
+                "unit": "identificador",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.outstandingUnits",
+                "before": null,
+                "after": 20,
+                "unit": "unidades",
+                "role": "VALIDATION_ONLY",
+                "effectStatus": "NOT_USED_BY_SELECTED_MODEL",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Sin variación de entradas del modelo; validación del plan.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.reservedUnits",
+                "before": null,
+                "after": 4,
+                "unit": "unidades",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: reservas_posteriores_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "orders.0.dueAt",
+                "before": null,
+                "after": "2026-12-10T00:00:00-04:00",
+                "unit": "fecha",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético agregado (j02b-wholesale). Afecta entradas derivadas: reservas_posteriores_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              },
+              {
+                "field": "shipments.0.pendingUnits",
+                "before": 50,
+                "after": 25,
+                "unit": "unidades",
+                "role": "DERIVED_MODEL_FEATURE",
+                "effectStatus": "USED",
+                "explanation": "Plan hipotético modificado (calendar-2026-53-6-november-incoming). Afecta entradas derivadas: entradas_plan_horizonte_unidades. No garantiza un cambio en la predicción.",
+                "baseSourceKind": "FROZEN_SYNTHETIC_BASE",
+                "scenarioSourceKind": "HYPOTHETICAL_ASSUMPTION"
+              }
+            ],
+            "delivery": "computed",
+            "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+          }
+        }
+      },
+      "roles": {
+        "ADMIN": 200,
+        "withoutSession": 401,
+        "TIENDA": {
+          "auth": 200,
+          "actualRole": "TIENDA",
+          "capabilities": 403
+        },
+        "INVENTARIO": {
+          "auth": 200,
+          "actualRole": "INVENTARIO",
+          "capabilities": 403
+        }
+      },
+      "initial": {
+        "stock": 90,
+        "shipments": [
+          {
+            "shipmentId": "calendar-2026-53-6-november-incoming",
+            "pendingUnits": 50,
+            "reservedAfterHorizonUnits": 0,
+            "expectedArrivalAt": "2026-11-10T00:00:00-04:00"
+          }
+        ],
+        "orders": []
+      },
+      "baseIntact": true
+    }
+  }
+}

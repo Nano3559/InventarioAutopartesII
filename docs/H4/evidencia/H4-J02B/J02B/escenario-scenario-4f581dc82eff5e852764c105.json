@@ -1,0 +1,144 @@
+{
+  "origin": "SYNTHETIC_SCENARIO_NOT_REAL_SALES",
+  "selection": {
+    "baseSnapshotId": "calendar-2026-53-6-november",
+    "productId": 53,
+    "locationId": 6,
+    "targetMonth": "2026-11",
+    "productName": "Tensador de Correa",
+    "locationName": "Tienda 2",
+    "previousMonthUnits": 130,
+    "historyMonthly": [
+      {
+        "month": "2026-01",
+        "units": 0,
+        "retailUnits": 0,
+        "wholesaleUnits": 0,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-02",
+        "units": 0,
+        "retailUnits": 0,
+        "wholesaleUnits": 0,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-03",
+        "units": 0,
+        "retailUnits": 0,
+        "wholesaleUnits": 0,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-04",
+        "units": 0,
+        "retailUnits": 0,
+        "wholesaleUnits": 0,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-05",
+        "units": 0,
+        "retailUnits": 0,
+        "wholesaleUnits": 0,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-06",
+        "units": 0,
+        "retailUnits": 0,
+        "wholesaleUnits": 0,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-07",
+        "units": 0,
+        "retailUnits": 0,
+        "wholesaleUnits": 0,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-08",
+        "units": 50,
+        "retailUnits": 39,
+        "wholesaleUnits": 11,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-09",
+        "units": 74,
+        "retailUnits": 58,
+        "wholesaleUnits": 16,
+        "unknownModeUnits": 0
+      },
+      {
+        "month": "2026-10",
+        "units": 130,
+        "retailUnits": 97,
+        "wholesaleUnits": 33,
+        "unknownModeUnits": 0
+      }
+    ]
+  },
+  "result": {
+    "scenarioId": "scenario-4f581dc82eff5e852764c105",
+    "datasetVersion": "4.0.0",
+    "modelVersion": "calendar-model-20261116-01",
+    "artifactSha256": "8d73bbfb769e432461f2a202e37842b47820a76627e46be3e4ba412e64562e1e",
+    "policyVersion": "SCENARIO_NONNEGATIVE_1",
+    "status": "OK",
+    "baseline": {
+      "status": "OK",
+      "salesUnits": 87.17,
+      "reason": null
+    },
+    "scenario": {
+      "status": "OK",
+      "salesUnits": 87.17,
+      "reason": null
+    },
+    "deltaSalesUnits": 0,
+    "impacts": [],
+    "assumptions": [
+      "Ventas, sensibilidad al precio y planes sintéticos. No es historia comercial certificada.",
+      "La cotización y el costo no son variables causales de ventas en este modelo. Pueden validar una compra hipotética.",
+      "Ventas observadas no equivalen a demanda total. No se crean compras ni se modifica inventario.",
+      "Dataset 4.0.0: historial sintético cerrado hasta octubre de 2026. Noviembre no tiene target conocido. Métricas finales guardadas, sin reevaluación al consultar."
+    ],
+    "warnings": [
+      "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+      "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+    ],
+    "replenishment": {
+      "status": "NOT_REQUESTED",
+      "warnings": [],
+      "suggestedUnits": null,
+      "requiredUnits": null,
+      "availablePositionUnits": null,
+      "committedUnitsWithinHorizon": null,
+      "reservedUnitsWithinHorizon": null,
+      "reservedUnitsAfterHorizon": null,
+      "eligibleIncomingUnits": null,
+      "rawNeedUnits": null,
+      "minimumOrderUnits": null,
+      "orderMultipleUnits": null,
+      "expectedNewOrderArrivalAt": null,
+      "protectionEndAt": null
+    },
+    "metrics": {
+      "mae": 10.200982142857143,
+      "rmse": 18.404590282111172,
+      "r2": 0.6200614849892667,
+      "partition": "FINAL_TEST_SAVED"
+    }
+  },
+  "provenance": {
+    "scenarioId": "scenario-4f581dc82eff5e852764c105",
+    "modelVersion": "calendar-model-20261116-01",
+    "recordedAt": "2026-11-17T07:56:26-04:00",
+    "scenarioInputSha256": "4f581dc82eff5e852764c105f89a55d1a5b8e71f739ed4cc7b4f5965b1b64753",
+    "delivery": "unknown",
+    "runtimeRevision": null
+  }
+}

@@ -1,6 +1,7 @@
 import copy
 from decimal import Decimal
 import json
+from pathlib import Path
 import unittest
 from unittest.mock import patch
 from v2 import scenario_runtime as runtime
@@ -123,7 +124,7 @@ class ScenarioRuntimeTests(unittest.TestCase):
     def test_19_corrupted_release_never_deserializes(self):
         runtime.release.cache_clear()
         try:
-            with patch.object(runtime, 'sha', return_value='0'*64), patch.object(runtime.joblib, 'load') as loader:
+            with patch.object(Path, 'read_bytes', return_value=b'{}'), patch.object(runtime.joblib, 'load') as loader:
                 with self.assertRaises(runtime.ScenarioError): runtime.release()
                 loader.assert_not_called()
         finally: runtime.release.cache_clear()

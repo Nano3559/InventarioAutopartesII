@@ -1,0 +1,22 @@
+{
+  "version": "4.1.0-exploratory-1",
+  "seed": 42,
+  "train": ["2025-02", "2026-04"],
+  "validation": ["2026-05", "2026-07"],
+  "datasetSha256": "b6535038e4be2d1308ce82fcc1581aa90e38df27994aeb83a1313657f13aa476",
+  "splitSha256": "6014223260cea8f5259c74bf12c4a37aece1aac6358b3f3dd7afc97dbe3ab6bf",
+  "releaseSha256": "949c55733a6818bb93e97261c28f385ee3d2e3b0fcde6c42daa8dbe7d7dde00e",
+  "artifactSha256": "8d73bbfb769e432461f2a202e37842b47820a76627e46be3e4ba412e64562e1e",
+  "randomForest": {"n_estimators": 128, "max_depth": 18, "min_samples_leaf": 3, "max_features": 0.75, "n_jobs": 2},
+  "histGradientBoosting": {"max_iter": 140, "learning_rate": 0.07, "max_leaf_nodes": 23, "min_samples_leaf": 24, "l2_regularization": 1.0, "early_stopping": false},
+  "hybridHistWeight": 0.75,
+  "policy": {
+    "purpose": "Desarrollo exploratorio con VALIDATION reutilizada. Sin evaluación independiente.",
+    "target": "target_ventas_mes",
+    "baselines": ["lag1", "ma3"],
+    "comparison": "MAE primario, RMSE secundario. R2 si el objetivo tiene varianza. Descriptivos, sin selección automática ni umbrales de promoción.",
+    "coverage": "Reportar estimador sobre VALIDATION completa y todos los métodos sobre la misma máscara de rango 4.0.0. Reportar abstenciones de esa política por separado.",
+    "intermittent": "Definición al corte: mezcla de ceros y positivos en los tres lags. La regla hurdle también atiende el segmento de tres ceros. El resto usa Hist.",
+    "weighting": "Peso total uno por familia durante ajuste. Métricas por fila, como VALIDATION oficial. Variantes correlacionadas."
+  }
+}

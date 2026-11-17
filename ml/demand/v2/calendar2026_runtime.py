@@ -2,11 +2,10 @@
 from functools import lru_cache
 import hashlib
 import io
-import json
 import joblib
 from .calendar2026 import private_module, REPORT
-from .scenario_data import ROOT, FEATURES, NUMERIC, sha
-from .scenario_runtime import ScenarioError
+from .scenario_data import ROOT, FEATURES, NUMERIC
+from .scenario_runtime import ScenarioError, _read_verified_json
 
 RELEASE_SHA='949c55733a6818bb93e97261c28f385ee3d2e3b0fcde6c42daa8dbe7d7dde00e'
 METRICS_SHA='bcc14d9a7b04487ccbc8e4e7755d8353d7ad81ec168be9b37a06cadac7b91257'
@@ -14,13 +13,12 @@ METRICS_SHA='bcc14d9a7b04487ccbc8e4e7755d8353d7ad81ec168be9b37a06cadac7b91257'
 
 @lru_cache(maxsize=1)
 def release():
-    if sha(REPORT/'release.json')!=RELEASE_SHA:raise ScenarioError('INCOMPATIBLE_ARTIFACT')
-    r=json.loads((REPORT/'release.json').read_text(encoding='utf8'))
+    r=_read_verified_json(REPORT/'release.json', RELEASE_SHA)
     if r['datasetVersion']!='4.0.0' or r['features']!=FEATURES:raise ScenarioError('INCOMPATIBLE_ARTIFACT')
-    if sha(ROOT/r['snapshots'])!=r['snapshotsSha256']:raise ScenarioError('INCOMPATIBLE_ARTIFACT')
+    snapshots=_read_verified_json(ROOT/r['snapshots'], r['snapshotsSha256'])
     data=(ROOT/r['artifact']).read_bytes()
     if hashlib.sha256(data).hexdigest()!=r['artifactSha256']:raise ScenarioError('INCOMPATIBLE_ARTIFACT')
-    return r,json.loads((ROOT/r['snapshots']).read_text(encoding='utf8')),joblib.load(io.BytesIO(data))
+    return r,snapshots,joblib.load(io.BytesIO(data))
 
 
 @lru_cache(maxsize=1)

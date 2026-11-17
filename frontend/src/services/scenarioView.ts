@@ -206,6 +206,31 @@ export function checkedScenario(v: unknown, selected: Snapshot, capabilities: Ca
   return { scenarioId: token(d.scenarioId), datasetVersion: token(d.datasetVersion), modelVersion: token(d.modelVersion), artifactSha256: String(d.artifactSha256), policyVersion: token(d.policyVersion), status: resultStatus, baseline, scenario, deltaSalesUnits: delta, impacts, assumptions: strings(d.assumptions), warnings: strings(d.warnings), replenishment, metrics: outputMetrics };
 }
 
+export function checkedScenarioResponse(
+  response: { data: unknown; headers?: Record<string, unknown> },
+  selected: Snapshot,
+  capabilities: Capabilities,
+) {
+  const result = checkedScenario(response.data, selected, capabilities);
+  const data = obj(response.data);
+  const deliveryHeader = response.headers?.["x-scenario-delivery"];
+  const delivery: "computed" | "replayed" | "unknown" =
+    deliveryHeader === "computed" || deliveryHeader === "replayed" ? deliveryHeader : "unknown";
+  const revision = response.headers?.["x-scenario-runtime-revision"];
+
+  return {
+    result,
+    provenance: {
+      scenarioId: result.scenarioId,
+      modelVersion: result.modelVersion,
+      recordedAt: instant(data.recordedAt),
+      scenarioInputSha256: String(data.scenarioInputSha256),
+      delivery,
+      runtimeRevision: typeof revision === "string" && /^sha256:[a-f0-9]{64}$/.test(revision) ? revision : null,
+    },
+  };
+}
+
 export type ScenarioBase = ReturnType<typeof checkedScenarioBase>;
 export function checkedScenarioBase(value: unknown, selected: Snapshot) {
   const v = obj(value);

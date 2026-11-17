@@ -1,0 +1,35 @@
+{
+  "fecha": "2026-11-17T11:53:58.033Z",
+  "entorno": "Chrome, Vite, Express, PostgreSQL local read-only, Python",
+  "responsable": "Codex QA",
+  "checks": {
+    "services": {
+      "health": 200,
+      "frontend": 200,
+      "db": "read-only"
+    },
+    "auth": {
+      "role": "ADMIN"
+    },
+    "transitions": {
+      "from": [
+        "53",
+        "6",
+        "2026-11"
+      ],
+      "product": "13",
+      "location": "5",
+      "months": [
+        "2026-11"
+      ]
+    },
+    "late": {
+      "status": 200,
+      "oldProduct": "53",
+      "selected": "13",
+      "stale": false,
+      "release": "cancelled_by_browser"
+    }
+  },
+  "error": "SyntaxError: Failed to execute 'querySelector' on 'Document': '[aria-label^=Comparación visual]' is not a valid selector.\n    at <anonymous>:1:87"
+}

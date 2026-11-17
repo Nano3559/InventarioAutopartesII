@@ -1,0 +1,144 @@
+{
+  "schema": "demand-offline-evaluation-1",
+  "kind": "FIXTURE",
+  "cohortId": "m41-explicit-cases",
+  "datasetVersion": "fixture-m41-1",
+  "modelId": "fixture-predictor",
+  "modelSha256": "3b7d2fff06923d10d6e5ed628f5f8b41bd7b095b954517dccce6ce8046676017",
+  "baselineId": "fixture-baseline",
+  "sources": {
+    "fixture-evidence": "3b7d2fff06923d10d6e5ed628f5f8b41bd7b095b954517dccce6ce8046676017"
+  },
+  "rows": [
+    {
+      "productId": 2,
+      "locationId": 5,
+      "targetMonth": "2027-02",
+      "cutoffAt": "2027-02-01T00:00:00-04:00",
+      "familyId": "f-extreme",
+      "observed": 10,
+      "forecast": 100,
+      "status": "COVERED",
+      "observedAt": "2027-03-01T00:00:00-04:00",
+      "issuedAt": "2027-02-01T00:00:00-04:00",
+      "groups": {
+        "incident": "EXTREME"
+      },
+      "provenance": {
+        "observed": "fixture-evidence",
+        "forecast": "fixture-evidence",
+        "grouping": "fixture-evidence"
+      }
+    },
+    {
+      "productId": 1,
+      "locationId": 5,
+      "targetMonth": "2027-01",
+      "cutoffAt": "2027-01-01T00:00:00-04:00",
+      "familyId": "f-exact",
+      "observed": 10,
+      "forecast": 10,
+      "status": "COVERED",
+      "observedAt": "2027-02-01T00:00:00-04:00",
+      "issuedAt": "2027-01-01T00:00:00-04:00",
+      "groups": {
+        "volume": "LOW",
+        "intermittency": "INTERMITTENT",
+        "availability": "AVAILABLE",
+        "incident": "NONE"
+      },
+      "classifiedAt": "2027-01-01T00:00:00-04:00",
+      "baseline": 8,
+      "baselineIssuedAt": "2027-01-01T00:00:00-04:00",
+      "provenance": {
+        "observed": "fixture-evidence",
+        "forecast": "fixture-evidence",
+        "baseline": "fixture-evidence",
+        "grouping": "fixture-evidence"
+      }
+    },
+    {
+      "productId": 3,
+      "locationId": 5,
+      "targetMonth": "2027-01",
+      "cutoffAt": "2027-01-01T00:00:00-04:00",
+      "familyId": "f-abstain",
+      "observed": 5,
+      "forecast": null,
+      "status": "ABSTAINED",
+      "observedAt": "2027-02-01T00:00:00-04:00",
+      "issuedAt": "2027-01-01T00:00:00-04:00",
+      "groups": {
+        "volume": "LOW",
+        "intermittency": "INTERMITTENT",
+        "availability": "AVAILABLE",
+        "incident": "NONE"
+      },
+      "classifiedAt": "2027-01-01T00:00:00-04:00",
+      "abstentionReason": "OUT_OF_DOMAIN",
+      "baseline": 4,
+      "baselineIssuedAt": "2027-01-01T00:00:00-04:00",
+      "provenance": {
+        "observed": "fixture-evidence",
+        "forecast": "fixture-evidence",
+        "baseline": "fixture-evidence",
+        "grouping": "fixture-evidence"
+      }
+    },
+    {
+      "productId": 4,
+      "locationId": 5,
+      "targetMonth": "2027-01",
+      "cutoffAt": "2027-01-01T00:00:00-04:00",
+      "familyId": "f-ineligible",
+      "observed": null,
+      "forecast": null,
+      "status": "INELIGIBLE",
+      "ineligibilityReason": "MONTH_NOT_CLOSED",
+      "provenance": {}
+    },
+    {
+      "productId": 2,
+      "locationId": 5,
+      "targetMonth": "2027-01",
+      "cutoffAt": "2027-01-01T00:00:00-04:00",
+      "familyId": "f-over",
+      "observed": 0,
+      "forecast": 2,
+      "status": "COVERED",
+      "observedAt": "2027-02-01T00:00:00-04:00",
+      "issuedAt": "2027-01-01T00:00:00-04:00",
+      "provenance": {
+        "observed": "fixture-evidence",
+        "forecast": "fixture-evidence"
+      }
+    },
+    {
+      "productId": 1,
+      "locationId": 5,
+      "targetMonth": "2027-01",
+      "cutoffAt": "2027-01-01T00:00:00-04:00",
+      "familyId": "f-under",
+      "observed": 8,
+      "forecast": 6,
+      "status": "COVERED",
+      "observedAt": "2027-02-01T00:00:00-04:00",
+      "issuedAt": "2027-01-01T00:00:00-04:00",
+      "groups": {
+        "volume": "LOW",
+        "intermittency": "INTERMITTENT",
+        "availability": "AVAILABLE",
+        "incident": "NONE"
+      },
+      "classifiedAt": "2027-01-01T00:00:00-04:00",
+      "baseline": 11,
+      "baselineIssuedAt": "2027-01-01T00:00:00-04:00",
+      "provenance": {
+        "observed": "fixture-evidence",
+        "forecast": "fixture-evidence",
+        "baseline": "fixture-evidence",
+        "grouping": "fixture-evidence"
+      }
+    }
+  ]
+}

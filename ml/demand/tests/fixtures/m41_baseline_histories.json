@@ -1,0 +1,11 @@
+{
+  "origin": "INDEPENDENT_SYNTHETIC_FIXTURE",
+  "constant": [6, 6, 6],
+  "increasing": [2, 4, 6],
+  "decreasing": [6, 4, 2],
+  "intermittent": [0, 8, 0, 12, 0, 0, 4, 0],
+  "allZero": [0, 0, 0],
+  "tsbZeroStreak": [8, 0, 0, 0, 0, 0],
+  "sbaInitialization": [8, 0, 12],
+  "seasonal": [17, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
