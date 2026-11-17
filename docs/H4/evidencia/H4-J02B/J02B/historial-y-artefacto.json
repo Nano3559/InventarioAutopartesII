@@ -1,0 +1,120 @@
+{
+  "fecha": "2026-11-17T11:55:59.670Z",
+  "entorno": "Chrome, Vite, Express, PostgreSQL local read-only, Python",
+  "responsable": "Codex QA",
+  "checks": {
+    "services": {
+      "health": 200,
+      "frontend": 200,
+      "db": "read-only"
+    },
+    "auth": {
+      "role": "ADMIN"
+    },
+    "legacy": {
+      "input": {
+        "contractVersion": "demand-scenarios-1.0.0",
+        "mode": "HYPOTHETICAL_SCENARIO",
+        "clientRequestId": "j02b-isolated-legacy",
+        "baseSnapshotId": "calendar-2026-53-6-november",
+        "productId": 53,
+        "locationId": 6,
+        "targetMonth": "2026-11",
+        "changes": {
+          "history": {
+            "mode": "KEEP"
+          },
+          "prices": {
+            "mode": "KEEP"
+          },
+          "quote": {
+            "mode": "KEEP"
+          },
+          "cost": {
+            "mode": "KEEP"
+          },
+          "stock": {
+            "mode": "KEEP"
+          },
+          "orders": {
+            "mode": "KEEP"
+          },
+          "logistics": {
+            "mode": "KEEP"
+          }
+        },
+        "replenishment": {
+          "requested": false,
+          "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+          "safetyStockUnits": 5,
+          "minimumOrderUnits": 0,
+          "orderMultipleUnits": 1,
+          "reviewPeriodDays": 0
+        }
+      },
+      "http": 200,
+      "delivery": "replayed",
+      "revision": "unknown",
+      "same": true,
+      "retained": true,
+      "recordedAt": "2026-11-17T07:56:26-04:00",
+      "sha": "82aa436256504ee757b46e05419bf78ea0555be29ac6af17c4febffc6bf8d0e4"
+    },
+    "incompatible": {
+      "input": {
+        "contractVersion": "demand-scenarios-1.0.0",
+        "mode": "HYPOTHETICAL_SCENARIO",
+        "clientRequestId": "j02b-invalid-artifact",
+        "baseSnapshotId": "calendar-2026-53-6-november",
+        "productId": 53,
+        "locationId": 6,
+        "targetMonth": "2026-11",
+        "changes": {
+          "history": {
+            "mode": "KEEP"
+          },
+          "prices": {
+            "mode": "KEEP"
+          },
+          "quote": {
+            "mode": "KEEP"
+          },
+          "cost": {
+            "mode": "KEEP"
+          },
+          "stock": {
+            "mode": "KEEP"
+          },
+          "orders": {
+            "mode": "KEEP"
+          },
+          "logistics": {
+            "mode": "KEEP"
+          }
+        },
+        "replenishment": {
+          "requested": false,
+          "policy": "MONTH_END_COMMITMENT_FLOOR_V1",
+          "safetyStockUnits": 5,
+          "minimumOrderUnits": 0,
+          "orderMultipleUnits": 1,
+          "reviewPeriodDays": 0
+        }
+      },
+      "expected": "503 INCOMPATIBLE_ARTIFACT",
+      "observed": {
+        "status": 503,
+        "delivery": null,
+        "revision": null,
+        "body": {
+          "contractVersion": "demand-scenarios-1.0.0",
+          "code": "INCOMPATIBLE_ARTIFACT",
+          "message": "No se pudo cargar el modelo de escenarios. Intenta nuevamente.",
+          "issues": []
+        }
+      },
+      "fixtureSha256": "2560b7bbfd79e5c756335bb7df17a9601d4e1e3cfe71b1af9b2913542be4ba82",
+      "frozenSha256": "8d73bbfb769e432461f2a202e37842b47820a76627e46be3e4ba412e64562e1e"
+    }
+  }
+}

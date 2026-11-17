@@ -290,7 +290,18 @@ describe("interfaz ampliada de Ross", () => {
     expect(screen.queryByText("Comparación")).not.toBeInTheDocument();
   });
   it("exporta solo la comparación validada como JSON, no RAW", async () => {
+    const fixture = resultFixture();
+    const revision = "sha256:" + "c".repeat(64);
+    vi.mocked(api.post)
+      .mockResolvedValueOnce({ data: fixture, headers: { "x-scenario-delivery": "computed", "x-scenario-runtime-revision": revision } })
+      .mockResolvedValueOnce({ data: fixture, headers: { "x-scenario-delivery": "replayed", "x-scenario-runtime-revision": "unknown" } });
     render(<DemandScenarioPanel />); await ready(); await userEvent.click(screen.getByRole("button", { name: "Comparar base e hipótesis" })); await screen.findByText("Comparación");
+    expect(screen.getByText("Respuesta nueva")).toBeVisible();
+    expect(screen.getByText(revision)).toBeVisible();
+    expect(screen.getByText("Generación original (La Paz)").parentElement?.querySelector("time")).toHaveAttribute("datetime", fixture.recordedAt);
+    await userEvent.click(screen.getByRole("button", { name: "Comparar base e hipótesis" }));
+    expect(await screen.findByText("Respuesta recuperada")).toBeVisible();
+    expect(screen.getByText("Revisión desconocida")).toBeVisible();
     const create = vi.fn((_value: Blob | MediaSource) => "blob:fixture"); const revoke = vi.fn();
     const oldCreate = URL.createObjectURL, oldRevoke = URL.revokeObjectURL;
     URL.createObjectURL = create; URL.revokeObjectURL = revoke;
@@ -299,7 +310,33 @@ describe("interfaz ampliada de Ross", () => {
       await userEvent.click(screen.getByRole("button", { name: /Exportar evidencia JSON/ }));
       expect(create).toHaveBeenCalledOnce(); expect(create.mock.calls[0][0]).toBeInstanceOf(Blob);
       expect((create.mock.calls[0][0] as Blob).type).toBe("application/json");
+      const exportText = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(create.mock.calls[0][0] as Blob);
+      });
+      const exported = JSON.parse(exportText);
+      expect(exported.provenance).toEqual({
+        scenarioId: fixture.scenarioId, modelVersion: fixture.modelVersion, recordedAt: fixture.recordedAt,
+        scenarioInputSha256: fixture.scenarioInputSha256, delivery: "replayed", runtimeRevision: null,
+      });
+      expect(exported.result.baseline).toEqual(fixture.baseline);
+      expect(exported.result.scenario).toEqual(fixture.scenario);
+      expect(exported.result.replenishment).toMatchObject({ status: "INCOMPLETE", suggestedUnits: null, availablePositionUnits: 9 });
+      expect(exported.result.impacts).toHaveLength(1);
+      expect(exported.result.impacts[0]).toMatchObject({ before: "120.00", after: "150.00" });
       expect(click).toHaveBeenCalledOnce(); expect(revoke).toHaveBeenCalledWith("blob:fixture");
     } finally { click.mockRestore(); URL.createObjectURL = oldCreate; URL.revokeObjectURL = oldRevoke; }
   });
+  it.each([undefined, { "x-scenario-delivery": "unexpected", "x-scenario-runtime-revision": "malformed" }])(
+    "mantiene los resultados cuando falta procedencia válida (%j)", async headers => {
+      vi.mocked(api.post).mockResolvedValueOnce({ data: resultFixture(), headers });
+      render(<DemandScenarioPanel />); await ready();
+      await userEvent.click(screen.getByRole("button", { name: "Comparar base e hipótesis" }));
+      expect(await screen.findByText("Procedencia desconocida")).toBeVisible();
+      expect(screen.getByText("Revisión desconocida")).toBeVisible();
+      expect(screen.getByRole("img", { name: "Comparación visual base e hipótesis" })).toHaveTextContent("Base: 18");
+    },
+  );
 });

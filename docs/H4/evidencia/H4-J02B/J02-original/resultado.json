@@ -1,0 +1,295 @@
+{
+  "fecha": "2026-11-17T11:45:36.157Z",
+  "entorno": "Chrome, Vite, Express, PostgreSQL local read-only, Python",
+  "responsable": "Codex QA",
+  "checks": {
+    "services": {
+      "health": 200,
+      "frontend": 200,
+      "db": "read-only"
+    },
+    "auth": {
+      "role": "ADMIN"
+    },
+    "panel": {
+      "product": true,
+      "store": true,
+      "first": {
+        "date": "2026-11-17T07:46:11-04:00",
+        "provenance": "Entrega\nRespuesta nueva\nGeneración original (La Paz)\n17/11/26, 7:46:11 a. m.\nRevisión del runtime\nsha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "chart": "Base: 87,17\nHipótesis: 87,17"
+      },
+      "second": {
+        "date": "2026-11-17T07:46:11-04:00",
+        "provenance": "Entrega\nRespuesta recuperada\nGeneración original (La Paz)\n17/11/26, 7:46:11 a. m.\nRevisión del runtime\nsha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "chart": "Base: 87,17\nHipótesis: 87,17"
+      }
+    },
+    "export": {
+      "file": "escenario-scenario-d1ac7925101434e7920fb652.json",
+      "selection": {
+        "product": 53,
+        "store": 6,
+        "month": "2026-11"
+      },
+      "scenarioId": "scenario-d1ac7925101434e7920fb652",
+      "modelVersion": "calendar-model-20261116-01",
+      "recordedAt": "2026-11-17T07:46:11-04:00",
+      "scenarioInputSha256": "d1ac7925101434e7920fb652639b41a7b9114cee3ee382601cdf96a33420bd6d",
+      "delivery": "replayed",
+      "runtimeRevision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b"
+    },
+    "responsive": {
+      "viewport": 390,
+      "rootWidth": 390,
+      "pass": true
+    },
+    "browserApi": {
+      "nullPrice": {
+        "http": 200,
+        "delivery": "computed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": 87.17,
+        "reason": null,
+        "delta": 0,
+        "required": 93,
+        "suggestion": 0,
+        "replenishment": "OK_MONTH_END_ESTIMATE",
+        "at": "2026-11-17T07:46:35-04:00",
+        "sha": "b9f4521c4dba9cd4ae26bd9c4a8ef318322bd439b1ed5222cb43226434a88889",
+        "model": "calendar-model-20261116-01",
+        "impacts": [],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+        ]
+      },
+      "replay": {
+        "http": 200,
+        "delivery": "replayed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": 87.17,
+        "reason": null,
+        "delta": 0,
+        "required": 93,
+        "suggestion": 0,
+        "replenishment": "OK_MONTH_END_ESTIMATE",
+        "at": "2026-11-17T07:46:35-04:00",
+        "sha": "b9f4521c4dba9cd4ae26bd9c4a8ef318322bd439b1ed5222cb43226434a88889",
+        "model": "calendar-model-20261116-01",
+        "impacts": [],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+        ]
+      },
+      "conflict": {
+        "http": 409,
+        "delivery": null,
+        "revision": null,
+        "code": "IDEMPOTENCY_CONFLICT"
+      },
+      "higher": {
+        "http": 200,
+        "delivery": "computed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": 86.685,
+        "reason": null,
+        "delta": -0.48499999999999943,
+        "required": 92,
+        "suggestion": 0,
+        "replenishment": "OK_MONTH_END_ESTIMATE",
+        "at": "2026-11-17T07:46:42-04:00",
+        "sha": "8c9471f4c0edc1c6f216bbb09d069efb4490e97ee264edb58d99ee0db5c53bf2",
+        "model": "calendar-model-20261116-01",
+        "impacts": [
+          "prices.retailPriceBs",
+          "prices.wholesalePriceBs"
+        ],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+        ]
+      },
+      "lower": {
+        "http": 200,
+        "delivery": "computed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": 86.685,
+        "reason": null,
+        "delta": -0.48499999999999943,
+        "required": 92,
+        "suggestion": 0,
+        "replenishment": "OK_MONTH_END_ESTIMATE",
+        "at": "2026-11-17T07:46:48-04:00",
+        "sha": "2d8fc307983b641562a4a6eb5a4c81650a928f72fafbcb5c263434cfbba0736d",
+        "model": "calendar-model-20261116-01",
+        "impacts": [
+          "prices.retailPriceBs",
+          "prices.wholesalePriceBs"
+        ],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+        ]
+      },
+      "invalidPrice": {
+        "http": 400,
+        "delivery": null,
+        "revision": null,
+        "code": "INCOHERENT_PRICES"
+      },
+      "stock": {
+        "http": 200,
+        "delivery": "computed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": 61.785,
+        "reason": null,
+        "delta": -25.385000000000005,
+        "required": 67,
+        "suggestion": 0,
+        "replenishment": "OK_MONTH_END_ESTIMATE",
+        "at": "2026-11-17T07:47:01-04:00",
+        "sha": "f47cb83e3dd6cc01d7aa7fb8e51cc6d8f71fdbb2e4e3a1650752f8949a7ad592",
+        "model": "calendar-model-20261116-01",
+        "impacts": [
+          "stock.sellablePhysicalUnits"
+        ],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+        ]
+      },
+      "zero": {
+        "http": 200,
+        "delivery": "computed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": 32.93,
+        "reason": null,
+        "delta": -54.24,
+        "required": 38,
+        "suggestion": 0,
+        "replenishment": "OK_MONTH_END_ESTIMATE",
+        "at": "2026-11-17T07:47:09-04:00",
+        "sha": "a5dec11b41b070db3a8952fdb1fb9c67565a61ce0d73fafe1d88bb48dfe5b446",
+        "model": "calendar-model-20261116-01",
+        "impacts": [
+          "stock.sellablePhysicalUnits"
+        ],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+        ]
+      },
+      "invalid": {
+        "http": 400,
+        "delivery": null,
+        "revision": null,
+        "code": "INVALID_INPUT"
+      },
+      "abstain": {
+        "http": 200,
+        "delivery": "computed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": null,
+        "reason": "OUTSIDE_TRAINING_RANGE",
+        "delta": null,
+        "required": null,
+        "suggestion": null,
+        "replenishment": "INCOMPLETE",
+        "at": "2026-11-17T07:47:16-04:00",
+        "sha": "e875fc5a0c285c1a76d25410b67c3e97099f68545fc794de93c75066e6637e86",
+        "model": "calendar-model-20261116-01",
+        "impacts": [
+          "stock.sellablePhysicalUnits"
+        ],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK",
+          "OUTSIDE_TRAINING_RANGE"
+        ]
+      },
+      "quote": {
+        "http": 200,
+        "delivery": "computed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": 87.17,
+        "reason": null,
+        "delta": 0,
+        "required": 93,
+        "suggestion": 0,
+        "replenishment": "OK_MONTH_END_ESTIMATE",
+        "at": "2026-11-17T07:47:22-04:00",
+        "sha": "54e648bb31fb16cbef0b73743ee0e6c4d932f6a481b70880db47a48c8ce7b70d",
+        "model": "calendar-model-20261116-01",
+        "impacts": [
+          "quote.observedAt"
+        ],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+        ]
+      },
+      "combined": {
+        "http": 200,
+        "delivery": "computed",
+        "revision": "sha256:bed5fe8ace3197d04ebcadbb738289a66da824c81be782947e7d313994eee93b",
+        "forecast": 51.445,
+        "reason": null,
+        "delta": -35.725,
+        "required": 57,
+        "suggestion": 14,
+        "replenishment": "OK_MONTH_END_ESTIMATE",
+        "at": "2026-11-17T07:47:27-04:00",
+        "sha": "214f55ae58c7c00500067e282b6b29dc743364b81bf3ba35ab76d1619d10f331",
+        "model": "calendar-model-20261116-01",
+        "impacts": [
+          "stock.sellablePhysicalUnits",
+          "orders.0.orderId",
+          "orders.0.mode",
+          "orders.0.outstandingUnits",
+          "orders.0.reservedUnits",
+          "orders.0.dueAt",
+          "orders.1.orderId",
+          "orders.1.mode",
+          "orders.1.outstandingUnits",
+          "orders.1.reservedUnits",
+          "orders.1.dueAt",
+          "shipments.0.shipmentId",
+          "shipments.0.pendingUnits",
+          "shipments.0.reservedAfterHorizonUnits",
+          "shipments.0.expectedArrivalAt",
+          "shipments.1.shipmentId",
+          "shipments.1.pendingUnits",
+          "shipments.1.reservedAfterHorizonUnits",
+          "shipments.1.expectedArrivalAt"
+        ],
+        "warnings": [
+          "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+          "COMMITMENT_OVERLAP_UNCERTAIN",
+          "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK",
+          "FORECAST_EXCEEDS_PLANNED_SUPPLY"
+        ]
+      },
+      "incomplete": {
+        "http": 400,
+        "delivery": null,
+        "revision": null,
+        "code": "INVALID_INPUT"
+      },
+      "newProduct": {
+        "http": 409,
+        "delivery": null,
+        "revision": null,
+        "code": "SNAPSHOT_MISMATCH"
+      },
+      "nextMonth": {
+        "http": 409,
+        "delivery": null,
+        "revision": null,
+        "code": "SNAPSHOT_MISMATCH"
+      },
+      "snapshotUnchanged": true
+    }
+  }
+}

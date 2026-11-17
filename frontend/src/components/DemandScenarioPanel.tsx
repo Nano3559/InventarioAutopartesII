@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import api from "../services/api";
 import ScenarioHistoryChart from "./ScenarioHistoryChart";
 import { productChoices, scenarioDate, scenarioMonth, spanishOrder, type ProductOrder } from "../services/scenarioPresentation";
-import { changeNames, checkedCapabilities, checkedScenario, checkedScenarioBase, draftFromBase, emptyDraft, priorMonths, scenarioRequest, scenarioFailureText, type ScenarioBase, type Capabilities, type ChangeName, type Draft, type ScenarioResult } from "../services/scenarioView";
+import { changeNames, checkedCapabilities, checkedScenarioResponse, checkedScenarioBase, draftFromBase, emptyDraft, priorMonths, scenarioRequest, scenarioFailureText, type ScenarioBase, type Capabilities, type ChangeName, type Draft } from "../services/scenarioView";
 
 const titles: Record<ChangeName, string> = { history: "Cantidades de los tres meses cerrados", prices: "Precios por menor y por mayor", quote: "Cotización Bs/USD", cost: "Costo por unidad", stock: "Stock físico vendible", orders: "Compromisos y reservas", logistics: "Proveedor, tránsito y reposición interna" };
 const shortTitles: Record<ChangeName, string> = { history: "Ventas previas", prices: "Precios", quote: "Tipo de cambio", cost: "Costo unitario", stock: "Stock", orders: "Pedidos y reservas", logistics: "Entregas" };
@@ -18,13 +18,19 @@ const replenishmentLabels: Record<string,string> = { NOT_REQUESTED:"No solicitad
 const fieldLabels: Record<string,string> = { retailPriceBs:"Precio por menor", wholesalePriceBs:"Precio por mayor", bsPerUsd:"Tipo de cambio", unitCostBs:"Costo final", unitCostUsd:"Costo proveedor", freightPerUnitBs:"Flete por unidad", otherPerUnitBs:"Otros costos por unidad", sellablePhysicalUnits:"Stock vendible", supplierLeadTimeDays:"Plazo proveedor", supplierDays:"Plazo proveedor", internalDays:"Reposición interna", internalRestockDays:"Reposición interna", effectiveAt:"Fecha de vigencia", observedAt:"Fecha de cotización", orderAt:"Fecha de compra", dueAt:"Entrega comprometida", expectedArrivalAt:"Llegada prevista", outstandingUnits:"Unidades pendientes", reservedUnits:"Unidades reservadas", pendingUnits:"Unidades en tránsito", reservedAfterHorizonUnits:"Reservadas para después", retailUnits:"Ventas por menor", wholesaleUnits:"Ventas por mayor", unknownModeUnits:"Ventas sin modalidad", orderId:"Pedido", shipmentId:"Envío",mode:"Modalidad" };
 const warningLabels: Record<string,string> = { FORECAST_EXCEEDS_PLANNED_SUPPLY:"La estimación supera las unidades disponibles en el plan. Revisa las entradas y la reposición antes de tomar una decisión.", UNKNOWN_CHANNEL_MIX:"Falta identificar la modalidad de algunas ventas.", QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION:"La cotización tiene más de 30 días. Se utiliza como supuesto, no como cotización vigente certificada.", COMMITMENT_OVERLAP_UNCERTAIN:"Los pedidos se tratan como un mínimo para evitar sumarlos dos veces al pronóstico.", EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK:"Las llegadas previstas todavía no son stock recibido.", OUTSIDE_TRAINING_RANGE:"Hay valores fuera del rango de entrenamiento. No se entrega una estimación numérica.", NO_DAILY_STOCKOUT_GUARANTEE:"El cálculo mensual no garantiza evitar faltantes antes de recibir la mercadería.", FORECAST_UNAVAILABLE:"Se necesita una predicción válida para calcular reposición." };
 const display = (v: unknown) => v === null || v === undefined ? "No disponible" : typeof v === "number" ? v.toLocaleString("es-BO", { maximumFractionDigits: 4 }) : scenarioDate(String(v));
+const deliveryLabels = { computed: "Respuesta nueva", replayed: "Respuesta recuperada", unknown: "Procedencia desconocida" } as const;
+const generationDate = new Intl.DateTimeFormat("es-BO", {
+  dateStyle: "short", timeStyle: "medium", timeZone: "America/La_Paz",
+});
 
 type Selection = {productId:number;locationId:number};
 export default function DemandScenarioPanel({initialSelection,onSelection}: {initialSelection?:Selection|null;onSelection?:(selection:Selection)=>void} = {}) {
   const [caps, setCaps] = useState<Capabilities | null>(null);
   const [selection, setSelection] = useState("");
   const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [result, setResult] = useState<ScenarioResult | null>(null);
+  const [comparison, setComparison] = useState<ReturnType<typeof checkedScenarioResponse> | null>(null);
+  const result = comparison?.result ?? null;
+  const provenance = comparison?.provenance;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -38,11 +44,11 @@ export default function DemandScenarioPanel({initialSelection,onSelection}: {ini
   const generation = useRef(0);
   const snapshot = caps?.snapshots.find(s => s.baseSnapshotId === selection);
   useEffect(()=>{if(snapshot) onSelection?.({productId:snapshot.productId,locationId:snapshot.locationId});},[snapshot?.productId,snapshot?.locationId,onSelection]);
-  function invalidate(resetIntent = true) { if (resetIntent) intentId.current = null; generation.current++; request.current?.abort(); setBusy(false); setResult(null); setError(""); }
+  function invalidate(resetIntent = true) { if (resetIntent) intentId.current = null; generation.current++; request.current?.abort(); setBusy(false); setComparison(null); setError(""); }
   function edit<K extends keyof Draft>(key: K, value: Draft[K]) { invalidate(); setDraft(d => ({ ...d, [key]: value })); }
   useEffect(() => {
     const abort = new AbortController(); let alive = true;
-    setLoading(true); setCaps(null); setResult(null); setSelection(""); setDraft(emptyDraft());
+    setLoading(true); setCaps(null); setComparison(null); setSelection(""); setDraft(emptyDraft());
     api.get("/predictions/scenarios/capabilities", { signal: abort.signal }).then(res => {
       if (!alive) return;
       const verified = checkedCapabilities(res.data); setCaps(verified); setSelection((verified.snapshots.find(s=>s.productId===initialSelection?.productId && s.locationId===initialSelection?.locationId) ?? verified.snapshots[0]).baseSnapshotId); setError("");
@@ -68,14 +74,15 @@ export default function DemandScenarioPanel({initialSelection,onSelection}: {ini
       const abort = new AbortController(); request.current = abort; setBusy(true);
       const res = await api.post("/predictions/scenarios/preview", payload, { signal: abort.signal });
       if (seq !== generation.current || abort.signal.aborted) return;
-      setResult(checkedScenario(res.data, selected, caps));
+      setComparison(checkedScenarioResponse(res, selected, caps));
     } catch (e) {
       if (seq === generation.current) setError(scenarioFailureText(e));
     } finally { if (seq === generation.current) setBusy(false); }
   }
   function exportEvidence() {
-    if (!result || !snapshot) return;
-    const blob = new Blob([JSON.stringify({ origin: "SYNTHETIC_SCENARIO_NOT_REAL_SALES", selection: snapshot, result }, null, 2)], { type: "application/json" });
+    if (!comparison || !snapshot) return;
+    const { result, provenance } = comparison;
+    const blob = new Blob([JSON.stringify({ origin: "SYNTHETIC_SCENARIO_NOT_REAL_SALES", selection: snapshot, result, provenance }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob), a = document.createElement("a"); a.href = url; a.download = `escenario-${result.scenarioId}.json`; a.click(); URL.revokeObjectURL(url);
   }
   if (!caps) return <section className="rounded-2xl border border-slate-700/60 bg-dark-800/50 p-6" aria-label="Escenarios ampliados">
@@ -154,6 +161,11 @@ export default function DemandScenarioPanel({initialSelection,onSelection}: {ini
       {result.replenishment.status !== "NOT_REQUESTED" && <div className="border border-slate-600 rounded p-3 space-y-2"><h3>Reposición: {replenishmentLabels[String(result.replenishment.status)] ?? "Por revisar"}</h3><p className="text-xl font-semibold">{display(result.replenishment.suggestedUnits)}{" "}<span className="ml-1 text-xs font-normal text-gray-400">unidades sugeridas</span></p><details className="text-sm text-gray-400"><summary className="cursor-pointer">Ver cálculo</summary><dl className="grid grid-cols-1 sm:grid-cols-2 gap-3">{Object.entries(result.replenishment).filter(([k]) => k !== "warnings").map(([k, v]) => <div key={k} className="break-words"><dt>{({ suggestedUnits: "Reposición sugerida (unidades)", requiredUnits: "Unidades requeridas", availablePositionUnits: "Posición disponible", committedUnitsWithinHorizon: "Compromisos del mes", reservedUnitsWithinHorizon: "Reservas del mes", reservedUnitsAfterHorizon: "Reservas posteriores", eligibleIncomingUnits: "Entradas elegibles", rawNeedUnits: "Necesidad antes del mínimo y múltiplo", minimumOrderUnits: "Pedido mínimo", orderMultipleUnits: "Múltiplo de compra", expectedNewOrderArrivalAt: "Llegada del nuevo pedido", protectionEndAt: "Fin de protección", status: "Estado" } as Record<string, string>)[k] ?? k}</dt><dd>{k === "status" ? replenishmentLabels[String(v)] : display(v)}</dd></div>)}</dl></details>{(result.replenishment.warnings as string[]).map(w => <p key={w}>{warningLabels[w] ?? w}</p>)}</div>}
       <details className="rounded-xl border border-slate-700/60 p-3 text-xs text-gray-400"><summary className="cursor-pointer">Supuestos, métricas y versión</summary><div className="mt-3 space-y-2">      {result.metrics && <p>Métricas guardadas ({result.metrics.partition === "FINAL_TEST_SAVED" ? "evaluación final" : "validación"}): MAE {display(result.metrics.mae)} unidades, RMSE {display(result.metrics.rmse)}, R² {display(result.metrics.r2)}. No se reevalúa TEST en esta consulta.</p>}
       {result.assumptions.map((a, i) => <p className="text-amber-200" key={i}>Supuesto: {a}</p>)}{result.warnings.map((w, i) => <p className="text-amber-200" key={i}>Advertencia: {warningLabels[w] ?? w}</p>)}<p className="break-all text-sm">Dataset {result.datasetVersion} · Modelo {result.modelVersion} · Política {result.policyVersion} · SHA-256 {result.artifactSha256}</p></div></details>
+      {provenance && <dl aria-label="Procedencia de la comparación" className="grid gap-3 rounded-xl border border-slate-700/60 p-3 text-sm sm:grid-cols-2">
+        <div><dt className="text-gray-400">Entrega</dt><dd>{deliveryLabels[provenance.delivery]}</dd></div>
+        <div><dt className="text-gray-400">Generación original (La Paz)</dt><dd><time dateTime={provenance.recordedAt}>{generationDate.format(new Date(provenance.recordedAt))}</time></dd></div>
+        <div className="sm:col-span-2"><dt className="text-gray-400">Revisión del runtime</dt><dd className="break-all">{provenance.runtimeRevision ?? "Revisión desconocida"}</dd></div>
+      </dl>}
     </div>}
   </section>;
 }

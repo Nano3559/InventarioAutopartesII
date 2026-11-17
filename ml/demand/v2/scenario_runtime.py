@@ -13,7 +13,7 @@ import re
 import joblib
 import numpy as np
 from jsonschema import Draft202012Validator, FormatChecker
-from .scenario_data import ROOT, FEATURES, NUMERIC, canonical, sha, frame
+from .scenario_data import ROOT, FEATURES, NUMERIC, canonical, frame
 
 CONTRACT = 'demand-scenarios-1.0.0'
 RELEASE_PATH = ROOT / 'reports/v2/3.0.0/scenarios-model-20261115-01/release.json'
@@ -33,6 +33,12 @@ def check(condition, code):
         raise ScenarioError(code)
 
 
+def _read_verified_json(path, expected_sha256):
+    data = path.read_bytes()
+    check(hashlib.sha256(data).hexdigest() == expected_sha256, 'INCOMPATIBLE_ARTIFACT')
+    return json.loads(data.decode('utf8'))
+
+
 def instant(value):
     try:
         result = datetime.fromisoformat(value.replace('Z', '+00:00'))
@@ -49,16 +55,14 @@ def end_month(month):
 
 @lru_cache(maxsize=1)
 def release():
-    check(sha(RELEASE_PATH) == EXPECTED_RELEASE_SHA256, 'INCOMPATIBLE_ARTIFACT')
-    r = json.loads(RELEASE_PATH.read_text(encoding='utf8'))
+    r = _read_verified_json(RELEASE_PATH, EXPECTED_RELEASE_SHA256)
     check(r['features'] == FEATURES and r['datasetVersion'] == '3.0.0', 'INCOMPATIBLE_ARTIFACT')
-    for path, digest in [('artifact', 'artifactSha256'), ('snapshots', 'snapshotsSha256')]:
-        check(sha(ROOT / r[path]) == r[digest], 'INCOMPATIBLE_ARTIFACT')
+    snapshots = _read_verified_json(ROOT / r['snapshots'], r['snapshotsSha256'])
     # Only deserialize the exact, code-pinned artifact bytes.
     import io
     data = (ROOT / r['artifact']).read_bytes()
     check(hashlib.sha256(data).hexdigest() == r['artifactSha256'], 'INCOMPATIBLE_ARTIFACT')
-    return r, json.loads((ROOT / r['snapshots']).read_text(encoding='utf8')), joblib.load(io.BytesIO(data))
+    return r, snapshots, joblib.load(io.BytesIO(data))
 
 
 def identity(r):
@@ -117,6 +121,8 @@ def prepare(p, s):
     base = state(s); out = copy.deepcopy(base); edits = p['changes']; impacts = []; warnings = []
     t0, end = instant(s['targetMonth'] + '-01T00:00:00-04:00'), end_month(s['targetMonth'])
     def impact(field, before, after, unit, role, explanation, effect='USED'):
+        if before == after:
+            return
         if isinstance(before, Decimal): before = str(before)
         if isinstance(after, Decimal): after = str(after)
         impacts.append({'field': field, 'before': before, 'after': after, 'unit': unit, 'role': role,
@@ -138,13 +144,18 @@ def prepare(p, s):
         if last['unknownModeUnits']: warnings.append('UNKNOWN_CHANNEL_MIX')
     prices = edits['prices']
     if prices['mode'] != 'KEEP':
-        out['retail'], out['wholesale'], out['priceAt'] = Decimal(prices['retailPriceBs']), Decimal(prices['wholesalePriceBs']), in_month(prices['effectiveAt'])
-        weight = Decimal(str((end - out['priceAt']).total_seconds())) / Decimal(str((end - t0).total_seconds()))
-        for key, feature, field in [('retail', 'variacion_precio_menor_plan_ponderada', 'retailPriceBs'), ('wholesale', 'variacion_precio_mayor_plan_ponderada', 'wholesalePriceBs')]:
-            out['features'][feature] = float((out[key] / base[key] - 1) * weight)
-            impact('prices.' + field, base[key], out[key], 'Bs/unidad', 'DERIVED_MODEL_FEATURE', 'Cambio ponderado por tiempo de vigencia conocido. Sensibilidad sintética, no causalidad comercial.')
-        out['features']['dias_vigencia_nuevo_precio_plan'] = float((end - out['priceAt']).total_seconds() / 86400)
-        impact('prices.effectiveAt', t0.isoformat(), out['priceAt'].isoformat(), 'America/La_Paz', 'DERIVED_MODEL_FEATURE', 'Antes de la fecha se conserva el precio base.')
+        retail = Decimal(prices['retailPriceBs'])
+        wholesale = Decimal(prices['wholesalePriceBs'])
+        price_at = in_month(prices['effectiveAt'])
+        if (retail, wholesale) != (base['retail'], base['wholesale']):
+            out['retail'], out['wholesale'], out['priceAt'] = retail, wholesale, price_at
+            remaining_seconds = (end - price_at).total_seconds()
+            weight = Decimal(str(remaining_seconds)) / Decimal(str((end - t0).total_seconds()))
+            for key, feature, field in [('retail', 'variacion_precio_menor_plan_ponderada', 'retailPriceBs'), ('wholesale', 'variacion_precio_mayor_plan_ponderada', 'wholesalePriceBs')]:
+                out['features'][feature] = float((out[key] / base[key] - 1) * weight)
+                impact('prices.' + field, base[key], out[key], 'Bs/unidad', 'DERIVED_MODEL_FEATURE', 'Cambio ponderado por tiempo de vigencia conocido. Sensibilidad sintética, no causalidad comercial.')
+            out['features']['dias_vigencia_nuevo_precio_plan'] = remaining_seconds / 86400
+            impact('prices.effectiveAt', t0.isoformat(), price_at.isoformat(), 'America/La_Paz', 'DERIVED_MODEL_FEATURE', 'Antes de la fecha se conserva el precio base.')
     quote = edits['quote']
     if quote['mode'] != 'KEEP':
         out['quote'], out['quoteAt'] = Decimal(quote['bsPerUsd']), instant(quote['observedAt'])
@@ -176,18 +187,13 @@ def prepare(p, s):
         check(out['orderAt'] >= t0, 'INVALID_SHIPMENT_PLAN')
         for field in ('supplierDays', 'internalDays', 'orderAt'):
             a, b = base[field], out[field]
-            impact('logistics.' + field, a.isoformat() if isinstance(a, datetime) else a, b.isoformat() if isinstance(b, datetime) else b, 'fecha' if field == 'orderAt' else 'dias', 'REPLENISHMENT_ONLY', 'Determina llegada y viabilidad de la reposición, no incrementa ventas.', 'NOT_USED_BY_SELECTED_MODEL')
+            if a != b:
+                impact('logistics.' + field, a.isoformat() if isinstance(a, datetime) else a, b.isoformat() if isinstance(b, datetime) else b, 'fecha' if field == 'orderAt' else 'dias', 'REPLENISHMENT_ONLY', 'Determina llegada y viabilidad de la reposición, no incrementa ventas.', 'NOT_USED_BY_SELECTED_MODEL')
     for collection, id_key, error in [('orders', 'orderId', 'INVALID_ORDER_PLAN'), ('shipments', 'shipmentId', 'INVALID_SHIPMENT_PLAN')]:
         entries = out[collection]; check(len({o[id_key] for o in entries}) == len(entries), error)
         for o in entries:
             check(o.get('reservedUnits', o.get('reservedAfterHorizonUnits', 0)) <= o.get('outstandingUnits', o.get('pendingUnits', 0)), error)
             if collection == 'shipments': check(instant(o['expectedArrivalAt']) >= t0, error)
-        if edits['orders' if collection == 'orders' else 'logistics']['mode'] != 'KEEP':
-            for i, o in enumerate(entries):
-                old = base[collection][i] if i < len(base[collection]) else {}
-                for key, value in o.items():
-                    role = 'VALIDATION_ONLY' if key in ('orderId', 'shipmentId') else 'REPLENISHMENT_ONLY' if key == 'reservedUnits' and instant(o['dueAt']) < end else 'DERIVED_MODEL_FEATURE'
-                    impact(f'{collection}.{i}.{key}', old.get(key), value, 'fecha' if key.endswith('At') else 'unidades' if key.endswith('Units') else 'identificador', role, 'Plan hipotético. Los compromisos son un mínimo, las llegadas previstas no son stock físico.', 'USED' if role == 'DERIVED_MODEL_FEATURE' else 'NOT_USED_BY_SELECTED_MODEL')
     check(sum(o['reservedUnits'] for o in out['orders']) <= out['stock'], 'INVALID_RESERVATION')
     out['committed'] = sum(o['outstandingUnits'] for o in out['orders'] if instant(o['dueAt']) < end)
     out['reservedWithin'] = sum(o['reservedUnits'] for o in out['orders'] if instant(o['dueAt']) < end)
@@ -200,6 +206,54 @@ def prepare(p, s):
         f[key] = sum(o['outstandingUnits'] for o in out['orders'] if o['mode'] == mode and instant(o['dueAt']) < end)
     f['entradas_plan_horizonte_unidades'] = out['incoming']
     f['dias_hasta_primera_entrada_plan'] = min((instant(o['expectedArrivalAt']) - t0).total_seconds() / 86400 for o in eligible if o['pendingUnits'] > o['reservedAfterHorizonUnits']) if any(o['pendingUnits'] > o['reservedAfterHorizonUnits'] for o in eligible) else ''
+    # Trace the union of stable identities, including rows absent from the new plan.
+    # Indices label this sorted union, not positions in either submitted list.
+    minor, major = 'compromisos_por_menor_horizonte_unidades', 'compromisos_por_mayor_horizonte_unidades'
+    reserved = 'reservas_posteriores_unidades'
+    incoming, first = 'entradas_plan_horizonte_unidades', 'dias_hasta_primera_entrada_plan'
+    base_values = {name: float(base['features'][name]) if base['features'][name] != '' else '' for name in NUMERIC}
+    def contributions(collection, row):
+        if not row: return {}
+        if collection == 'orders':
+            within = instant(row['dueAt']) < end
+            return {minor: row['outstandingUnits'] if within and row['mode'] == 'POR_MENOR' else 0,
+                    major: row['outstandingUnits'] if within and row['mode'] == 'POR_MAYOR' else 0,
+                    reserved: row['reservedUnits'] if not within else 0,
+                    'reservedWithin': row['reservedUnits'] if within else 0}
+        arrival = instant(row['expectedArrivalAt'])
+        net = row['pendingUnits'] - row['reservedAfterHorizonUnits'] if arrival < end else 0
+        return {incoming: net, first: (arrival - t0).total_seconds() / 86400 if net else ''}
+    for collection, id_key, keys, dependencies in [
+        ('orders', 'orderId', ('orderId', 'mode', 'outstandingUnits', 'reservedUnits', 'dueAt'),
+         {'mode': (minor, major), 'outstandingUnits': (minor, major),
+          'reservedUnits': (reserved,), 'dueAt': (minor, major, reserved)}),
+        ('shipments', 'shipmentId', ('shipmentId', 'pendingUnits', 'reservedAfterHorizonUnits', 'expectedArrivalAt'),
+         {k: (incoming, first) for k in ('pendingUnits', 'reservedAfterHorizonUnits', 'expectedArrivalAt')}),
+    ]:
+        if edits['orders' if collection == 'orders' else 'logistics']['mode'] == 'KEEP': continue
+        old_rows = {row[id_key]: row for row in base[collection]}
+        new_rows = {row[id_key]: row for row in out[collection]}
+        for i, identity in enumerate(sorted(old_rows.keys() | new_rows.keys())):
+            old, new = old_rows.get(identity, {}), new_rows.get(identity, {})
+            before, after = contributions(collection, old), contributions(collection, new)
+            action = 'agregado' if not old else 'eliminado' if not new else 'modificado'
+            for key in keys:
+                a, b = old.get(key), new.get(key)
+                if a == b: continue
+                affected = [name for name in dependencies.get(key, ())
+                            if before.get(name, '' if name == first else 0) != after.get(name, '' if name == first else 0)
+                            and base_values[name] != (float(f[name]) if f[name] != '' else '')]
+                role = 'DERIVED_MODEL_FEATURE' if affected else 'VALIDATION_ONLY'
+                detail = 'Sin variación de entradas del modelo; validación del plan.'
+                if affected:
+                    detail = 'Afecta entradas derivadas: ' + ', '.join(affected) + '. No garantiza un cambio en la predicción.'
+                elif collection == 'orders' and key in ('reservedUnits', 'dueAt') and before.get('reservedWithin', 0) != after.get('reservedWithin', 0):
+                    role = 'REPLENISHMENT_ONLY'
+                    detail = 'Reservas dentro del horizonte: contexto de reposición, no se descuentan dos veces.'
+                impact(f'{collection}.{i}.{key}', a, b,
+                       'fecha' if key.endswith('At') else 'unidades' if key.endswith('Units') else 'identificador',
+                       role, f'Plan hipotético {action} ({identity}). ' + detail,
+                       'USED' if affected else 'NOT_USED_BY_SELECTED_MODEL')
     if out['committed']: warnings.append('COMMITMENT_OVERLAP_UNCERTAIN')
     if eligible: warnings.append('EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK')
     return out, impacts, warnings
@@ -230,6 +284,8 @@ def replenishment(p, out, forecast, month):
     required = math.ceil(max(forecast['salesUnits'], out['committed'])) + policy['safetyStockUnits']
     position = out['stock'] - out['reservedAfter'] + out['incoming']
     need = max(0, required - position)
+    # Common quantities must be valid even when no in-horizon order is suggested.
+    check(max(required, position, need) <= 10**9, 'INVALID_QUANTITY')
     r.update(requiredUnits=required, availablePositionUnits=position, committedUnitsWithinHorizon=out['committed'], reservedUnitsWithinHorizon=out['reservedWithin'], reservedUnitsAfterHorizon=out['reservedAfter'], eligibleIncomingUnits=out['incoming'], expectedNewOrderArrivalAt=arrival.isoformat(), rawNeedUnits=need, minimumOrderUnits=policy['minimumOrderUnits'], orderMultipleUnits=policy['orderMultipleUnits'], protectionEndAt=protection.isoformat())
     r['warnings'] = ['NO_DAILY_STOCKOUT_GUARANTEE']
     if arrival >= end or protection >= end:
@@ -246,16 +302,15 @@ def preview(p):
     out, impacts, warnings = prepare(p, s)
     base, _ = estimate(s['features']); scenario, outside = estimate(out['features'])
     if outside: warnings.append('OUTSIDE_TRAINING_RANGE')
-    if scenario['salesUnits'] is not None and scenario['salesUnits'] > out['stock'] - out['reservedAfter'] + out['incoming']:
-        warnings.append('FORECAST_EXCEEDS_PLANNED_SUPPLY')
     if p['changes']['history']['mode'] != 'KEEP' and any(h['unknownModeUnits'] for h in p['changes']['history']['months']):
         scenario = {'status': 'ABSTAINED', 'salesUnits': None, 'reason': 'UNKNOWN_CHANNEL_MIX'}
+    if scenario['salesUnits'] is not None and scenario['salesUnits'] > out['stock'] - out['reservedAfter'] + out['incoming']:
+        warnings.append('FORECAST_EXCEEDS_PLANNED_SUPPLY')
     delta = scenario['salesUnits'] - base['salesUnits'] if base['salesUnits'] is not None and scenario['salesUnits'] is not None else None
     repos = replenishment(p, out, scenario, s['targetMonth'])
     digest = hashlib.sha256(canonical(p)).hexdigest()
     final_path = RELEASE_PATH.parent / 'test-evaluation.json'
-    check(sha(final_path) == FINAL_METRICS_SHA256, 'INCOMPATIBLE_ARTIFACT')
-    final = json.loads(final_path.read_text(encoding='utf8'))
+    final = _read_verified_json(final_path, FINAL_METRICS_SHA256)
     check(final['artifactSha256'] == r['artifactSha256'], 'INCOMPATIBLE_ARTIFACT')
     saved_metrics = {'partition': 'FINAL_TEST_SAVED', 'origin': 'SYNTHETIC', **final['model']}
     response = {'contractVersion': CONTRACT, 'mode': 'HYPOTHETICAL_SCENARIO', 'origin': 'SYNTHETIC_SCENARIO_NOT_REAL_SALES',

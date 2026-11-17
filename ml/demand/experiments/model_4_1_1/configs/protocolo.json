@@ -1,0 +1,24 @@
+{
+  "version": "4.1.1-exploratory-1",
+  "seed": 42,
+  "partition": "TRAIN",
+  "period": ["2025-02", "2026-04"],
+  "fitMonths": [6, 9, 12],
+  "scoreMonthsPerFold": 3,
+  "sha256": {
+    "base_mensual.csv": "becbf279cc0c06bb708b4464d60d6627db3898ebed00d9538ded95a674d36a6c",
+    "closed_history_monthly.csv": "43f42d1646168cc7791fba158276c9c4497c791d4cec8c064afd2cd01176f2be",
+    "dataset_supervisado.csv": "b6535038e4be2d1308ce82fcc1581aa90e38df27994aeb83a1313657f13aa476",
+    "split_manifest.json": "6014223260cea8f5259c74bf12c4a37aece1aac6358b3f3dd7afc97dbe3ab6bf"
+  },
+  "forest": {"n_estimators": 100, "criterion": "absolute_error", "max_depth": 14, "min_samples_leaf": 4, "max_features": 0.9, "n_jobs": 2},
+  "regularization": {"max_depth": 11, "min_samples_leaf": 8},
+  "variants": {
+    "A": {"derived": false, "regularized": false},
+    "B": {"derived": false, "regularized": true},
+    "C": {"derived": true, "regularized": false},
+    "D": {"derived": true, "regularized": true}
+  },
+  "highVariabilityQuantile": 0.75,
+  "selection": "MAE promedio por fold en todas las filas; empate exacto por menor desviacion de MAE, menor numero de features, menor profundidad e ID. Estabilidad y politica de rango se informan por separado."
+}

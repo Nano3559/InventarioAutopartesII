@@ -30,6 +30,7 @@ import notificationsRoutes from "./modules/notifications/notifications.routes";
 import visionRoutes from "./modules/vision/vision.routes";
 import operationsRoutes from "./modules/operations/operations.routes";
 import predictionsRoutes from "./modules/predictions/predictions.routes";
+import { SCENARIO_CONTRACT } from "./modules/predictions/scenarios.service";
 
 const app = express();
 
@@ -44,9 +45,23 @@ app.use(cors({
   origin: [config.frontendUrl, config.mobileUrl],
   credentials: true,
 }));
+const scenarioPath = /^\/api\/predictions\/{1,2}scenarios(?=\/|$)/i;
+const previewPath = /^\/api\/predictions\/{1,2}scenarios\/preview\/?$/i;
 app.use(express.json({ verify(req, _res, buffer) {
-  if (req.url?.split("?")[0] === "/api/predictions/scenarios/preview") (req as any).scenarioRawJson = buffer.toString("utf8");
+  // Express 4 can consume one slash at the end of the predictions mount.
+  // req.path also removes the query string and handles absolute request targets.
+  const request = req as express.Request & { scenarioRawJson?: string };
+  if (request.method === "POST" && previewPath.test(request.path)) {
+    request.scenarioRawJson = buffer.toString("utf8");
+  }
 } }));
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (err?.type === "entity.parse.failed" && scenarioPath.test(req.path)) {
+    return res.status(400).json({ contractVersion: SCENARIO_CONTRACT, code: "INVALID_INPUT",
+      message: "JSON inválido en el cuerpo de la petición", issues: [] });
+  }
+  next(err);
+});
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {

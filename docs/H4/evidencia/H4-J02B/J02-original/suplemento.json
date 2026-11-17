@@ -1,0 +1,24 @@
+{
+  "fecha": "2026-11-17T11:47:34.652Z",
+  "checks": {
+    "unauthenticated": 401,
+    "incoherentCost": {
+      "http": 400,
+      "code": "INVALID_INPUT"
+    },
+    "quoteAbsent": {
+      "http": 400,
+      "code": "INVALID_INPUT"
+    },
+    "unknownChannel": {
+      "http": 200,
+      "value": null,
+      "reason": "UNKNOWN_CHANNEL_MIX",
+      "warnings": [
+        "QUOTE_OLDER_THAN_30_DAYS_ASSUMPTION",
+        "EXPECTED_RECEIPTS_NOT_CONFIRMED_STOCK"
+      ],
+      "required": null
+    }
+  }
+}
